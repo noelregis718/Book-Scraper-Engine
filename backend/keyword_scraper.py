@@ -8,11 +8,11 @@ from excel_utility import save_to_excel
 from playwright.async_api import async_playwright
 
 # Configuration
-STATE_FILE = r"e:\Internship\PocketFM\backend\keyword_state.json"
-OUTPUT_FILE = r"E:\Internship\PocketFM\Amazon Keyword - Paranormal Romance.xlsx"
+STATE_FILE = r"e:\Internship\PocketFM\backend\romantasy_state.json"
+OUTPUT_FILE = r"E:\Internship\PocketFM\Amazon Keyword - Romantasy.xlsx"
 BATCH_SIZE = 50
 MAX_TABS = 8
-SEARCH_URL = "https://www.amazon.com/s?k=Fated+Mates+Paranormal+Romance&i=stripbooks&crid=2DGEYER9D1OQ&sprefix=fated+mates+paranormal+romance%2Cstripbooks%2C2204&ref=nb_sb_noss_2"
+SEARCH_URL = "https://www.amazon.com/s?k=Fae+Romantasy&i=stripbooks&crid=W03L51WC7TEK&sprefix=fae+romantasy%2Cstripbooks%2C326&ref=nb_sb_noss_2"
 
 COLUMNS = [
     "Sub_Genre", "Price_Tier", "Amazon URL", "Book Title", "Book Number in Series",
@@ -149,8 +149,8 @@ LOCK_FILE = r"e:\Internship\PocketFM\keyword_scraper.lock"
 
 async def _run_keyword_mission_core():
     state = load_state()
-    # MISSION TARGET: Scale to 3005 titles (final goal 3000+)
-    MISSION_TARGET = 3005
+    # MISSION TARGET: Scale to 3000 titles (Romantasy Mission)
+    MISSION_TARGET = 3000
     
     print(f"\n{'='*60}", flush=True)
     print(f"INDUSTRIAL SCALING MISSION: Target {MISSION_TARGET} Titles", flush=True)

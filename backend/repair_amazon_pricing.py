@@ -13,8 +13,8 @@ from excel_utility import save_to_excel
 
 # Configuration
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-INPUT_FILE = r"E:\Internship\PocketFM\Amazon Keyword - Werewolves & Shifters.xlsx"
-OUTPUT_FILE = r"E:\Internship\PocketFM\Amazon Keyword - Werewolves & Shifters.xlsx"
+INPUT_FILE = r"E:\Internship\PocketFM\Amazon Keyword - Paranormal Romance.xlsx"
+OUTPUT_FILE = r"E:\Internship\PocketFM\Amazon Keyword - Paranormal Romance.xlsx"
 MAX_CONCURRENT_TABS = 8
 BATCH_LIMIT = 500  # Process 500 at a time
 
@@ -44,10 +44,11 @@ async def repair_amazon_pricing():
     # Identify rows needing repair
     to_repair_mask = df['Price_Tier'].apply(needs_pricing_repair)
     
-    # Range limit: Focus on titles from 1000 onwards
-    START_ROW = 1
-    range_mask = df.index >= (START_ROW - 2)
-    to_repair_indices = df.index[to_repair_mask & range_mask][:BATCH_LIMIT]
+    # Range limit: Focus on titles from 1000 to 1500
+    START_ROW = 2000
+    END_ROW = 4000
+    range_mask = (df.index >= (START_ROW - 2)) & (df.index <= (END_ROW - 2))
+    to_repair_indices = df.index[to_repair_mask & range_mask]
     
     if len(to_repair_indices) == 0:
         print("Coverage is already 100% USD. No repair needed.")

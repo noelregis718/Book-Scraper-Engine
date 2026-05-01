@@ -19,11 +19,11 @@ from excel_utility import save_to_excel
 
 # Configuration
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-INPUT_FILE = r"E:\Internship\PocketFM\Amazon Keyword - Werewolves & Shifters.xlsx"
-OUTPUT_FILE = r"E:\Internship\PocketFM\Amazon Keyword - Werewolves & Shifters.xlsx"
-START_EXCEL_ROW = 2700  # Start from title 2700
+INPUT_FILE = r"E:\Internship\PocketFM\Amazon Keyword - Paranormal Romance.xlsx"
+OUTPUT_FILE = r"E:\Internship\PocketFM\Amazon Keyword - Paranormal Romance.xlsx"
+START_EXCEL_ROW = 2500  # Start from title 2500
 MAX_CONCURRENT_TABS = 12
-BATCH_LIMIT = 500         # Process 500 at a time
+BATCH_LIMIT = 600         # Process to the end
 
 def extract_asin(url):
     """Extract ASIN from Amazon URL."""
@@ -153,12 +153,15 @@ async def perform_deep_repair(df, context):
 
     to_repair_mask = df.apply(is_missing, axis=1)
     
-    # Honor START_EXCEL_ROW (Excel Row 2 is index 0, so Row 292 is index 290)
-    # We only repair rows whose index is >= (START_EXCEL_ROW - 2)
+    # Precise Range Target: Excel Row 1000 to 1500
     start_idx = max(0, START_EXCEL_ROW - 2)
-    to_repair_mask.iloc[:start_idx] = False
+    end_idx = start_idx + BATCH_LIMIT
     
-    to_repair_indices = df.index[to_repair_mask][:BATCH_LIMIT]
+    # We only repair rows within the [1000, 1500] range
+    to_repair_mask.iloc[:start_idx] = False
+    to_repair_mask.iloc[end_idx:] = False
+    
+    to_repair_indices = df.index[to_repair_mask]
     to_repair = df.loc[to_repair_indices].copy()
     
     if to_repair.empty:
