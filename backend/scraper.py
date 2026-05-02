@@ -1410,8 +1410,8 @@ class AuthorScraper:
                 
                 # Enhanced Email Extraction (handles [at] and (at) patterns)
                 def extract_emails(text):
-                    # Standard regex
-                    standard = re.findall(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', text)
+                    # Standard regex with negative lookahead to exclude common image/file extensions (false positives like @2x.png)
+                    standard = re.findall(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(?!png|jpg|jpeg|gif|svg|webp|bmp|ico|tiff|pdf|mp4|mov|avi|zip|tar|gz|exe|dmg)[a-zA-Z]{2,}', text)
                     # Obfuscated patterns
                     obfuscated = re.findall(r'[a-zA-Z0-9._%+-]+\s*[\[\(]\s*at\s*[\]\)]\s*[a-zA-Z0-9.-]+\s*[\[\(]\s*dot\s*[\]\)]\s*[a-zA-Z]{2,}', text, re.I)
                     decoded = [e.replace(' [at] ', '@').replace(' (at) ', '@').replace(' [dot] ', '.').replace(' (dot) ', '.') for e in obfuscated]

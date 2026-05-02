@@ -7,12 +7,11 @@ from scraper import AmazonScraper, GoodreadsScraper, AuthorScraper, clean_text, 
 from excel_utility import save_to_excel
 from playwright.async_api import async_playwright
 
-# Configuration
-STATE_FILE = r"e:\Internship\PocketFM\backend\romantasy_state.json"
+STATE_FILE = r"e:\Internship\PocketFM\backend\dark_romantasy_state.json"
 OUTPUT_FILE = r"E:\Internship\PocketFM\Amazon Keyword - Romantasy.xlsx"
 BATCH_SIZE = 50
 MAX_TABS = 8
-SEARCH_URL = "https://www.amazon.com/s?k=Fae+Romantasy&i=stripbooks&crid=W03L51WC7TEK&sprefix=fae+romantasy%2Cstripbooks%2C326&ref=nb_sb_noss_2"
+SEARCH_URL = "https://www.amazon.com/s?k=Dark+Romantasy&i=stripbooks&crid=2N0YU8MWTGQ4S&sprefix=darkromantasy%2Cstripbooks%2C342&ref=nb_sb_noss"
 
 COLUMNS = [
     "Sub_Genre", "Price_Tier", "Amazon URL", "Book Title", "Book Number in Series",
@@ -48,10 +47,10 @@ async def process_book(context, book_data):
     url = book_data.get("Amazon URL")
     discovery_title = book_data.get("Book Title", "N/A")
     asin = book_data.get("asin", "N/A")
-    
+
     # 1. Amazon Details
     amz_details = await amazon.scrape_product_details_tab(context, url)
-    
+
     # --- USD HEARTBEAT CHECK ---
     price_raw = amz_details.get("Price", "N/A")
     if "INR" in price_raw or "₹" in price_raw or "\u20b9" in price_raw or "Rs" in price_raw:
@@ -71,7 +70,7 @@ async def process_book(context, book_data):
             amz_details = await amazon.scrape_product_details_tab(context, url)
         except Exception as e:
             print(f"    [Heartbeat] Failed to fix location: {e}")
-    
+
     # Final Title for Goodreads search
     actual_title = amz_details.get("Book Title") if (amz_details.get("Book Title") and amz_details.get("Book Title") != "N/A") else discovery_title
     author_name = amz_details.get("Author Name", "N/A")
@@ -100,7 +99,7 @@ async def process_book(context, book_data):
     # Mapping to 33 Columns
     desc = amz_details.get("Description", "N/A")
     one_sentence = desc.split('.')[0] + '.' if desc != "N/A" else "N/A"
-    
+
     # Logic for Price Tier
     price_raw = amz_details.get("Price", "N/A")
     price_tier = price_raw.replace('\n', ' | ') if price_raw != "N/A" else "N/A"
@@ -151,7 +150,7 @@ async def _run_keyword_mission_core():
     state = load_state()
     # MISSION TARGET: Scale to 3000 titles (Romantasy Mission)
     MISSION_TARGET = 3000
-    
+
     print(f"\n{'='*60}", flush=True)
     print(f"INDUSTRIAL SCALING MISSION: Target {MISSION_TARGET} Titles", flush=True)
     print(f"Current Progress: {state['total_processed_global']} | Starting from Page {state['last_page_scanned'] + 1}", flush=True)
@@ -183,14 +182,14 @@ async def _run_keyword_mission_core():
             locale="en-US",
             timezone_id="America/Los_Angeles"
         )
-        
+
         # Process only one batch for this run
         while state['total_processed_global'] < MISSION_TARGET:
             curr_batch_start = state['next_batch_start']
             print(f"\n>>> [MISSION BATCH] Processing {curr_batch_start} to {curr_batch_start + BATCH_SIZE - 1}...")
-            
+
             page = await context.new_page()
-            
+
             # --- Discovery Phase ---
             print(f"  Navigating to Amazon Search (Page {state['last_page_scanned'] + 1})...")
             search_url = SEARCH_URL
@@ -198,10 +197,10 @@ async def _run_keyword_mission_core():
                 # [FIXED] Navigate to base search URL first to set location.
                 print(f"  Navigating directly to base Amazon Search to set location...")
                 await page.goto(SEARCH_URL, wait_until="domcontentloaded", timeout=60000)
-                
+
                 amazon_scraper = AmazonScraper()
                 await amazon_scraper.set_amazon_location(page, "90016")
-                
+
                 # VERIFICATION LOOP
                 location_verified = False
                 for _ in range(3):
@@ -212,7 +211,7 @@ async def _run_keyword_mission_core():
                         break
                     print("    [Location] Verification failed, retrying...")
                     await amazon_scraper.set_amazon_location(page, "90016")
-                
+
                 if not location_verified:
                     print("  [Warning] Could not verify US location, but proceeding anyway.")
 
@@ -224,34 +223,34 @@ async def _run_keyword_mission_core():
                         search_url = re.sub(r'page=\d+', f'page={target_page}', search_url)
                     else:
                         search_url += f"&page={target_page}"
-                    
+
                     if "ref=sr_pg_" in search_url:
                         search_url = re.sub(r'ref=sr_pg_\d+', f'ref=sr_pg_{target_page}', search_url)
                     else:
                         search_url += f"&ref=sr_pg_{target_page}"
-                        
+
                     print(f"  Navigating directly to Target Amazon Search (Page {target_page})...")
                     await page.goto(search_url, wait_until="load", timeout=60000)
                 else:
                     print(f"  Navigating to base Amazon Search...")
                     await page.goto(SEARCH_URL, wait_until="load", timeout=60000)
-                
+
                 all_discovery_links = []
                 page_count = state['last_page_scanned'] + 1
                 seen_titles = [] 
                 consecutive_empty_pages = 0
-                
+
                 mission_aborted_end_of_results = False
                 while len(all_discovery_links) < BATCH_SIZE and consecutive_empty_pages < 3:
                     print(f"\n  [Discovery] Scanning Page {page_count} for new titles...")
-                    
+
                     # Check for "No results" message
                     no_results_text = await page.evaluate("""() => {
                         const text = document.body.innerText;
                         return text.includes("No results for") || 
-                               text.includes("Try checking your spelling") ||
-                               text.includes("did not match any products") ||
-                               text.includes("No more results");
+                                text.includes("Try checking your spelling") ||
+                                text.includes("did not match any products") ||
+                                text.includes("No more results");
                     }""")
                     if no_results_text:
                         print(f"    [Discovery] End of results detected on Page {page_count}. Stopping mission.")
@@ -262,10 +261,10 @@ async def _run_keyword_mission_core():
                         print(f"    [Discovery] Scrolling... ({i+1}/6)")
                         await page.evaluate("window.scrollBy(0, 1500)")
                         await asyncio.sleep(2.0)
-                    
+
                     items = await page.query_selector_all("[data-asin]")
                     found_this_page = 0
-                    
+
                     for item in items:
                         asin = await item.get_attribute('data-asin')
                         if not asin or asin == "N/A" or len(asin) < 5: continue
@@ -281,7 +280,7 @@ async def _run_keyword_mission_core():
                                     title = clean_text(await t_el.inner_text())
                                     if title and title != "N/A": break
                             except: continue
-                        
+
                         clean_title = normalize_title_for_search(title)
                         if clean_title in global_seen_titles: continue # Global Title Protection
                         if clean_title in seen_titles: continue
@@ -301,7 +300,7 @@ async def _run_keyword_mission_core():
                             seen_titles.append(clean_title)
                             found_this_page += 1
                         if len(all_discovery_links) >= BATCH_SIZE: break
-                    
+
                     print(f"    -> Captured {found_this_page} titles on Page {page_count}. (Total Discovery: {len(all_discovery_links)})", flush=True)
 
                     if found_this_page == 0:
@@ -314,18 +313,18 @@ async def _run_keyword_mission_core():
                         # Improved Pagination Logic
                         page_count += 1
                         print(f"    [Pagination] Attempting move to Page {page_count}...")
-                        
+
                         # Try direct URL navigation as it is more reliable for Amazon than clicking Next
                         if "page=" in search_url:
                             search_url = re.sub(r'page=\d+', f'page={page_count}', search_url)
                         else:
                             search_url += f"&page={page_count}"
-                        
+
                         if "ref=sr_pg_" in search_url:
                             search_url = re.sub(r'ref=sr_pg_\d+', f'ref=sr_pg_{page_count}', search_url)
                         else:
                             search_url += f"&ref=sr_pg_{page_count}"
-                        
+
                         try:
                             print(f"    [Pagination] Navigating to {search_url[:60]}...")
                             await page.goto(search_url, wait_until="load", timeout=60000)
@@ -342,7 +341,7 @@ async def _run_keyword_mission_core():
                                     next_btn = await page.query_selector(p_sel)
                                     if next_btn: break
                                 except: continue
-                            
+
                             if next_btn:
                                 await next_btn.click()
                                 state['last_page_scanned'] = page_count - 1
@@ -351,7 +350,7 @@ async def _run_keyword_mission_core():
                             else:
                                 print(f"    [Pagination] Critical: Next button not found and navigation failed. Stopping discovery.")
                                 break
-                
+
                 # --- Extraction Phase ---
                 final_rows = []
                 for i in range(0, len(all_discovery_links), MAX_TABS):
@@ -371,7 +370,7 @@ async def _run_keyword_mission_core():
                 if final_rows:
                     state['last_book_title'] = final_rows[-1]['Book Title']
                 save_state(state)
-                
+
                 if mission_aborted_end_of_results or (not final_rows and consecutive_empty_pages >= 3):
                     if mission_aborted_end_of_results:
                         print(f"\n[Terminating] Reached the end of Amazon results. No more books to scrape.")
@@ -380,20 +379,20 @@ async def _run_keyword_mission_core():
                         print(f"\n[Notice] Hit a wall of 3 empty pages. Advancing starting page to {page_count} and continuing...")
                         state['last_page_scanned'] = page_count
                         save_state(state)
-                
+
                 print(f"\n[OK] Batch Complete. Total Processed: {state['total_processed_global']}/{MISSION_TARGET}")
-                
+
                 # --- AUTO-OPEN (USER REQUESTED: Per Batch) ---
                 if os.name == 'nt' and os.path.exists(OUTPUT_FILE):
                     print(f"  [Mission] Opening updated results for index {curr_batch_start}-{curr_batch_start+BATCH_SIZE-1}...")
                     os.startfile(os.path.abspath(OUTPUT_FILE))
-                
+
             except Exception as e:
                 print(f"[CRITICAL ERROR] Batch failed: {e}. Retrying after short nap...")
                 await asyncio.sleep(5)
-            
+
             await page.close()
-            
+
             # Continue until MISSION_TARGET is reached
             if state['total_processed_global'] >= MISSION_TARGET:
                 print("\n[OK] Mission target reached.")
@@ -404,7 +403,7 @@ async def _run_keyword_mission_core():
         print(f"MISSION ACCOMPLISHED: {state['total_processed_global']} Titles Total.")
         print(f"Final Data: {os.path.abspath(OUTPUT_FILE)}")
         print(f"{'='*60}\n")
-        
+
         if os.name == 'nt' and os.path.exists(OUTPUT_FILE):
             os.startfile(os.path.abspath(OUTPUT_FILE))
 
