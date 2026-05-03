@@ -1,29 +1,30 @@
-# Pocket FM
+# PocketFM
 
-A state-of-the-art, industrial-scale data enrichment engine designed for **PocketFM**. This platform orchestrates a high-performance pipeline to discover, extract, and authorize deep metadata for thousands of titles across target genres (Romantasy, Paranormal Romance, Werewolves & Shifters).
+A high-performance, industrial-scale data extraction engine designed for comprehensive book metadata harvesting. This platform orchestrates a multi-tiered pipeline to discover, extract, and enrich deep metadata for any genre, keyword, or attribute without limits.
 
-## 🚀 Industrial Scaling: 2,500+ Titles Milestone
-Currently executing massive expansion passes across multiple high-priority genres:
-- **Vampire Genre**: **1,094/1,200** titles processed (91% Complete).
-- **Paranormal Romance**: **1,094/1,200** titles processed (91% Complete).
-- **Werewolves & Shifters**: **400/1,200** titles processed (33% Complete).
-- **Quality Standard**: Zero-loss "N/A" filtering for series metadata and author contact extraction.
+## 🚀 Unlimited Scaling & Versatility
+
+Unlike rigid scraping tools, this engine is built for **infinite discovery**:
+- **Zero Limits**: Not restricted to any specific title count or genre boundary.
+- **Dynamic Targeting**: Scrapes per genre, per attribute, or via custom search keywords as requested.
+- **Multi-Genre Support**: Seamlessly transitions between Romantasy, Paranormal Romance, Werewolves, or any other niche market.
+- **Attribute-Level Control**: Fine-tune extraction to target specific data points like price, series info, or author contact details.
 
 ## 🌟 Premium Features
 
-- **Industrial Scaling Engine**: Automated multi-batch orchestration with state persistence and safety cool-downs to prevent IP flagging.
+- **Industrial Scaling Engine**: Automated multi-batch orchestration with state persistence and intelligent rate-limiting to ensure continuous operation.
 - **Multi-Tiered Discovery Intelligence**: 
-    - **Amazon Tier**: Deep extraction of bestseller ranks, pricing, and series hierarchy.
-    - **Goodreads Tier (Columns S-W)**: 5-level fallback search logic including Direct ASIN lookup, Series Extraction from titles, and Broad Discovery.
-    - **Author Contact Tier**: Automated discovery of official websites, social media (FB/IG/Twitter), and professional representation (Agents).
-- **Series Extraction Intelligence**: Automatically identifies series names from Amazon titles (e.g., matching parentheses) to priority-link Goodreads Series URLs.
-- **Professional Excel Utility**: Generates high-fidelity `.xlsx` files with frozen headers, auto-fit row heights, and tiered primary-column mapping.
+    - **Market Tier (Amazon)**: Deep extraction of bestseller ranks, pricing, series hierarchy, and publication details.
+    - **Community Tier (Goodreads)**: Advanced fallback logic to resolve series URLs, book counts, and ratings.
+    - **Author Contact Tier**: Automated discovery of official websites, social media (FB/IG/X), and professional agent representation.
+- **Series Extraction Intelligence**: Sophisticated regex-based parsing to identify series names and link book sequences accurately.
+- **Professional Data Delivery**: Generates high-fidelity, production-ready Excel (`.xlsx`) workbooks with optimized formatting and structured schemas.
 
 ## 🛠️ Technical Stack
 
 - **Backend**: Python 3.11, Playwright (Async), Pandas, OpenPyXL.
-- **Advanced Logic**: Multi-tab extraction (Up to 15 concurrent tabs), Regex-based title normalization, and state-aware mission polling.
-- **Frontend**: React 18, Vite, TypeScript, Tailwind CSS v4, Framer Motion.
+- **Logic Engine**: Multi-tab extraction (optimized for high throughput), Regex-based normalization, and mission-aware state polling.
+- **Frontend**: React 18, Vite, TypeScript, Tailwind CSS, Framer Motion.
 
 ---
 
@@ -36,33 +37,29 @@ PocketFM/
 │   ├── scraper.py           # Multi-Tiered Intelligence (Amazon/Goodreads/Author)
 │   ├── repair_goodreads.py  # Quality Assurance & Deep Metadata Repair
 │   ├── excel_utility.py     # Professional Excel Sync & Formatting
-│   └── keyword_state_shifters.json  # Live Mission Tracking
+│   └── *_state.json         # Real-time Mission Tracking & Persistence
 ├── frontend/
 │   ├── src/                 # Premium React UI for Mission Control
-├── scraped_data_shifters.xlsx # Master Mission Output
-└── task.md                  # Sequential Mission Roadmap
+└── data/                    # Dynamic Output Directory for Master Workbooks
 ```
 
 ---
 
-## 📊 Industrial Data Schema (33 Columns)
+## 📊 Comprehensive Data Schema
 
 | Section | Key Data Points |
 | :--- | :--- |
-| **Amazon Meta** | Sub-Genre, Price Tier, Stars, Ratings, Rank, Print Length, Publisher. |
-| **Goodreads (S-W)** | **Series URL**, Primary Book Count, Total Series Pages, Book 1 Rating, Book 1 Stats. |
-| **Creative Content** | Loglines, One-Sentence hooks, Romantasy classification. |
-| **Author Contact** | Email, Agent Email, Website, Social Media (Facebook, Instagram, Twitter). |
+| **Market Metadata** | Genre/Sub-Genre, Price, Stars, Ratings, Bestseller Rank, Publisher, ASIN. |
+| **Series Intelligence** | Series URL, Book Order, Total Series Volumes, Series Ratings/Stats. |
+| **Creative Content** | Loglines, One-Sentence hooks, Genre classifications. |
+| **Author Enrichment** | Email, Agent Contacts, Website, Facebook, Instagram, Twitter/X. |
 
 ---
 
-## ⚖️ Quality Standards
-The platform enforces the **"Total Fidelity"** rule:
-1. **Deduplication**: Automatic filtering of Amazon "Sponsored" results and repeating titles.
-2. **Series Resolution**: Every book is cross-checked against the Goodreads database to resolve series links.
-3. **Contact Verification**: Multi-source validation for author and agent emails.
+## ⚖️ Quality & Fidelity Standards
 
----
+The platform enforces the **"Total Fidelity"** protocol:
+1. **Deduplication**: Automatic filtering of sponsored results and duplicate entries across missions.
+2. **Cross-Reference Validation**: Every record is cross-validated across multiple sources (Amazon/Goodreads) to ensure accuracy.
+3. **Deep Contact Discovery**: Multi-source validation for author and professional representation emails.
 
-> [!IMPORTANT]
-> This platform is currently running in **Mission Mode**. For log visibility and real-time terminal feedback, monitor the `backend/` logs during the 1,200-title scaling pass.
