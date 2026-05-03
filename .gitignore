@@ -18,6 +18,7 @@ scraped_data.xlsx
 .DS_Store
 
 # Debug & Scraper State
+\# Goodreads Sign in.txt
 *_debug.html
 goodreads_*.html
 backend/scratch/
