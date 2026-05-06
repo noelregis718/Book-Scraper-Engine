@@ -19,11 +19,11 @@ from excel_utility import save_to_excel
 
 # Configuration
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-INPUT_FILE = r"E:\Internship\PocketFM\Amazon Keyword - Fantasy Romance.xlsx"
-OUTPUT_FILE = r"E:\Internship\PocketFM\Amazon Keyword - Fantasy Romance.xlsx"
+INPUT_FILE = r"E:\Internship\PocketFM\Amazon Keyword - Vampire.xlsx"
+OUTPUT_FILE = r"E:\Internship\PocketFM\Amazon Keyword - Vampire.xlsx"
 START_EXCEL_ROW = 2500  # Start from row 2500
 MAX_CONCURRENT_TABS = 12
-BATCH_LIMIT = 1000        # Process to the end (approx. row 3500)
+BATCH_LIMIT = 1000        # Process remaining titles to the end
 
 def extract_asin(url):
     """Extract ASIN from Amazon URL."""

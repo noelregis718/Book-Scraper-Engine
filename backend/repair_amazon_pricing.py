@@ -11,10 +11,16 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from scraper import AmazonScraper, clean_text
 from excel_utility import save_to_excel
 
+# Emoji-Shield: Force UTF-8 for Windows Console to prevent crashes on special characters
+try:
+    if sys.stdout.encoding.lower() != 'utf-8':
+        sys.stdout.reconfigure(encoding='utf-8')
+except AttributeError: pass
+
 # Configuration
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-INPUT_FILE = r"E:\Internship\PocketFM\Amazon Keyword - Fantasy Romance.xlsx"
-OUTPUT_FILE = r"E:\Internship\PocketFM\Amazon Keyword - Fantasy Romance.xlsx"
+INPUT_FILE = r"E:\Internship\PocketFM\Amazon Keyword - Vampire.xlsx"
+OUTPUT_FILE = r"E:\Internship\PocketFM\Amazon Keyword - Vampire.xlsx"
 MAX_CONCURRENT_TABS = 8
 BATCH_LIMIT = 500  # Process 500 at a time
 
@@ -39,14 +45,15 @@ async def repair_amazon_pricing():
         return
 
     print(f"Loading industrial file: {INPUT_FILE}")
-    df = pd.read_excel(INPUT_FILE)
+    with open(INPUT_FILE, 'rb') as f:
+        df = pd.read_excel(f, engine='openpyxl')
     
     # Identify rows needing repair
     to_repair_mask = df['Price_Tier'].apply(needs_pricing_repair)
     
     # Range limit: Focus on titles from 1000 to 1500
     START_ROW = 2500
-    END_ROW = 3100
+    END_ROW = 3500
     range_mask = (df.index >= (START_ROW - 2)) & (df.index <= (END_ROW - 2))
     to_repair_indices = df.index[to_repair_mask & range_mask]
     

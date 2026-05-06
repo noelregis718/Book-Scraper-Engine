@@ -7,11 +7,11 @@ from scraper import AmazonScraper, GoodreadsScraper, AuthorScraper, clean_text, 
 from excel_utility import save_to_excel
 from playwright.async_api import async_playwright
 
-STATE_FILE = r"e:\Internship\PocketFM\backend\vampire_romance_state.json"
-OUTPUT_FILE = r"E:\Internship\PocketFM\Amazon Keyword - Vampire.xlsx"
+STATE_FILE = r"e:\Internship\PocketFM\keyword_state_dark_romance.json"
+OUTPUT_FILE = r"E:\Internship\PocketFM\Amazon Keyword - Dark Romance.xlsx"
 BATCH_SIZE = 50
 MAX_TABS = 8
-SEARCH_URL = "https://www.amazon.com/s?k=Reverse+Harem+Vampire+Romance&i=stripbooks&crid=2HS13FOIJUH73&sprefix=reverse+harem+vampire+romance%2Cstripbooks%2C394&ref=nb_sb_noss_1"
+SEARCH_URL = "https://www.amazon.com/s?k=Dark+Stalker+Romance&i=stripbooks&crid=1IXDMXTX3LBHW&sprefix=dark+stalker+romance%2Cstripbooks%2C343&ref=nb_sb_noss_1"
 
 COLUMNS = [
     "Sub_Genre", "Price_Tier", "Amazon URL", "Book Title", "Book Number in Series",
