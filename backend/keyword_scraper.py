@@ -7,11 +7,11 @@ from scraper import AmazonScraper, GoodreadsScraper, AuthorScraper, clean_text, 
 from excel_utility import save_to_excel
 from playwright.async_api import async_playwright
 
-STATE_FILE = r"e:\Internship\PocketFM\keyword_state_dark_romance.json"
-OUTPUT_FILE = r"E:\Internship\PocketFM\Amazon Keyword - Dark Romance.xlsx"
+STATE_FILE = r"e:\Internship\PocketFM\keyword_state_forbidden_romance.json"
+OUTPUT_FILE = r"E:\Internship\PocketFM\Amazon Keyword - Forbidden Romance.xlsx"
 BATCH_SIZE = 50
 MAX_TABS = 8
-SEARCH_URL = "https://www.amazon.com/s?k=Dark+Stalker+Romance&i=stripbooks&crid=1IXDMXTX3LBHW&sprefix=dark+stalker+romance%2Cstripbooks%2C343&ref=nb_sb_noss_1"
+SEARCH_URL = "https://www.amazon.com/s?k=Forbidden+Student+Romance&i=stripbooks&crid=6XPKPFHBRUQJ&sprefix=forbidden+student+romance%2Cstripbooks%2C339&ref=nb_sb_noss"
 
 COLUMNS = [
     "Sub_Genre", "Price_Tier", "Amazon URL", "Book Title", "Book Number in Series",
@@ -149,7 +149,7 @@ LOCK_FILE = r"e:\Internship\PocketFM\keyword_scraper.lock"
 async def _run_keyword_mission_core():
     state = load_state()
     # MISSION TARGET: Scale to 3000 titles (Romantasy Mission)
-    MISSION_TARGET = 3000
+    MISSION_TARGET = 3100
 
     print(f"\n{'='*60}", flush=True)
     print(f"INDUSTRIAL SCALING MISSION: Target {MISSION_TARGET} Titles", flush=True)
