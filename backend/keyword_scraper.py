@@ -7,11 +7,11 @@ from scraper import AmazonScraper, GoodreadsScraper, AuthorScraper, clean_text, 
 from excel_utility import save_to_excel
 from playwright.async_api import async_playwright
 
-STATE_FILE = r"e:\Internship\PocketFM\keyword_state_forbidden_romance.json"
-OUTPUT_FILE = r"E:\Internship\PocketFM\Amazon Keyword - Forbidden Romance.xlsx"
+STATE_FILE = r"e:\Internship\PocketFM\keyword_state_dark_academia.json"
+OUTPUT_FILE = r"E:\Internship\PocketFM\Amazon Keyword - Dark Academia.xlsx"
 BATCH_SIZE = 50
 MAX_TABS = 8
-SEARCH_URL = "https://www.amazon.com/s?k=Forbidden+Student+Romance&i=stripbooks&crid=6XPKPFHBRUQJ&sprefix=forbidden+student+romance%2Cstripbooks%2C339&ref=nb_sb_noss"
+SEARCH_URL = "https://www.amazon.com/s?k=Boarding+School+Mystery&i=stripbooks&crid=256XY7AFZ14U9&sprefix=%2Cstripbooks%2C339&ref=nb_sb_noss_2"
 
 COLUMNS = [
     "Sub_Genre", "Price_Tier", "Amazon URL", "Book Title", "Book Number in Series",

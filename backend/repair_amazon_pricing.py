@@ -19,8 +19,8 @@ except AttributeError: pass
 
 # Configuration
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-INPUT_FILE = r"E:\Internship\PocketFM\Amazon Keyword - Dark Romance.xlsx"
-OUTPUT_FILE = r"E:\Internship\PocketFM\Amazon Keyword - Dark Romance.xlsx"
+INPUT_FILE = r"E:\Internship\PocketFM\Amazon Keyword - Dark Academia.xlsx"
+OUTPUT_FILE = r"E:\Internship\PocketFM\Amazon Keyword - Dark Academia.xlsx"
 MAX_CONCURRENT_TABS = 8
 BATCH_LIMIT = 500  # Process 500 at a time
 
@@ -53,7 +53,7 @@ async def repair_amazon_pricing():
     
     # Range limit: Focus on titles from 1000 to 1500
     START_ROW = 2500
-    END_ROW = 4000
+    END_ROW = 5000
     range_mask = (df.index >= (START_ROW - 2)) & (df.index <= (END_ROW - 2))
     to_repair_indices = df.index[to_repair_mask & range_mask]
     
