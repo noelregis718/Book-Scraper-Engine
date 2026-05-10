@@ -1324,6 +1324,15 @@ class GoodreadsScraper:
             if final_book1_count == "N/A" or not re.search(r'\d', str(final_book1_count)):
                 final_book1_count = rating_count
 
+            # Extract Description (Synopsis)
+            description = "N/A"
+            try:
+                desc_el = await page.query_selector('[data-testid="description"] .Formatted, .readable')
+                if desc_el:
+                    description = clean_text(await desc_el.inner_text())
+            except Exception:
+                pass
+
             return {
                 "GoodReads_Series_URL": series_url,
                 "GoodReads_Book_URL": page.url, # ALWAYS return the current book URL
@@ -1332,6 +1341,7 @@ class GoodreadsScraper:
                 "Genre": genre_main,
                 "Sub_Genre": genre_sub,
                 "Romantasy_Subgenre": is_romantasy,
+                "Description": description,
                 "Num_Primary_Books": series_data["Num_Primary_Books"] if series_url != "N/A" else "1",
                 "Total_Pages_Primary_Books": series_data["Total_Pages_Primary_Books"] if (series_url != "N/A" and series_data["Total_Pages_Primary_Books"] != 0) else book_pages,
                 "Book1_Rating": final_book1_rating,
