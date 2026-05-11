@@ -7,8 +7,19 @@ from scraper import AmazonScraper, GoodreadsScraper, AuthorScraper, clean_text, 
 from excel_utility import save_to_excel
 from playwright.async_api import async_playwright
 
-STATE_FILE = r"e:\Internship\PocketFM\keyword_state_dark_academia.json"
-OUTPUT_FILE = r"E:\Internship\PocketFM\Amazon Keyword - Dark Academia.xlsx"
+import sys
+
+MASTER_STATE_FILE = r"e:\Internship\PocketFM\backend\master_mission_state.json"
+
+# Default mission
+MISSION_KEY = "dark_academia" 
+
+# Allow overriding mission via command line: python keyword_scraper.py vampire_romance
+if len(sys.argv) > 1:
+    MISSION_KEY = sys.argv[1]
+
+OUTPUT_FILE = rf"E:\Internship\PocketFM\Amazon Keyword - {MISSION_KEY.replace('_', ' ').title()}.xlsx"
+
 BATCH_SIZE = 50
 MAX_TABS = 8
 SEARCH_URL = "https://www.amazon.com/s?k=Boarding+School+Mystery&i=stripbooks&crid=256XY7AFZ14U9&sprefix=%2Cstripbooks%2C339&ref=nb_sb_noss_2"
@@ -24,9 +35,17 @@ COLUMNS = [
 ]
 
 def load_state():
-    if os.path.exists(STATE_FILE):
-        with open(STATE_FILE, 'r') as f:
-            return json.load(f)
+    if os.path.exists(MASTER_STATE_FILE):
+        with open(MASTER_STATE_FILE, 'r') as f:
+            master = json.load(f)
+            if MISSION_KEY in master:
+                state = master[MISSION_KEY]
+                # Cast to int to prevent TypeErrors if JSON has strings
+                state['last_page_scanned'] = int(state.get('last_page_scanned', 0))
+                state['total_processed_global'] = int(state.get('total_processed_global', 0))
+                state['next_batch_start'] = int(state.get('next_batch_start', 1))
+                return state
+    
     return {
         "last_page_scanned": 0,
         "last_book_title": "N/A",
@@ -35,8 +54,14 @@ def load_state():
     }
 
 def save_state(state):
-    with open(STATE_FILE, 'w') as f:
-        json.dump(state, f, indent=4)
+    master = {}
+    if os.path.exists(MASTER_STATE_FILE):
+        with open(MASTER_STATE_FILE, 'r') as f:
+            master = json.load(f)
+    
+    master[MISSION_KEY] = state
+    with open(MASTER_STATE_FILE, 'w') as f:
+        json.dump(master, f, indent=4)
 
 async def process_book(context, book_data):
     """Full 33-column extraction for a single book (Amazon + Goodreads + Author)."""

@@ -13,13 +13,16 @@ try:
 except ImportError:
     def clean_text(text):
         return str(text).strip() if text else "N/A"
-    class GoodreadsScraper: pass
-    class AuthorScraper: pass
+    class GoodreadsScraper:
+        def __init__(self, **kwargs): pass
+        async def scrape_goodreads_data(self, *args, **kwargs): return {}
+    class AuthorScraper:
+        def __init__(self, **kwargs): pass
+        async def find_author_details(self, *args, **kwargs): return {}
 
-# --- CONFIGURATION ---
-AGENCY_CRAWLS_FILE = r"E:\Internship\PocketFM\Agency Crawls.xlsx"
-MAX_CONCURRENT_TABS = 10
 AGENCY_NAME = "Knight Agency"
+SAVE_FILE = r"E:\Internship\PocketFM\Knight Agency.xlsx"
+MAX_CONCURRENT_TABS = 10
 
 # --- ROMANTASY TAXONOMY (For Classification only, not filtering) ---
 TAXONOMY = {
@@ -61,13 +64,13 @@ class AgencyMissionControl:
 
     def _load_existing_books(self):
         """Loads already scraped books to prevent duplicates."""
-        if os.path.exists(AGENCY_CRAWLS_FILE):
+        if os.path.exists(SAVE_FILE):
             try:
-                df = pd.read_excel(AGENCY_CRAWLS_FILE, sheet_name=AGENCY_NAME)
+                df = pd.read_excel(SAVE_FILE)
                 for _, row in df.iterrows():
                     key = f"{str(row['Name of Series']).strip()}|{str(row['Author Name']).strip()}".lower()
                     self.seen_books.add(key)
-                print(f"  [System] Loaded {len(self.seen_books)} existing books from {AGENCY_NAME} sheet.")
+                print(f"  [System] Loaded {len(self.seen_books)} existing books from {SAVE_FILE}.")
             except Exception:
                 pass
 
@@ -81,13 +84,14 @@ class AgencyMissionControl:
         try:
             current_url = start_url
             page_num = 1
+            consecutive_zeros = 0
             
             # --- PHASE 1: DISCOVERY (All Pages) ---
             print("  [Phase 1] Discovering all books from catalog...")
             while True:
                 print(f"    Scanning Page {page_num}: {current_url}")
                 await page.goto(current_url, wait_until="domcontentloaded", timeout=60000)
-                await asyncio.sleep(3)
+                await asyncio.sleep(2)
                 
                 books_elements = await page.query_selector_all('.product')
                 if not books_elements: break
@@ -108,6 +112,15 @@ class AgencyMissionControl:
                             found_on_page += 1
                 
                 print(f"    -> Found {found_on_page} new books. Total Discovery: {len(leads)}")
+                
+                if found_on_page == 0:
+                    consecutive_zeros += 1
+                else:
+                    consecutive_zeros = 0
+                
+                if consecutive_zeros >= 3:
+                    print("    [Info] No new books found for 3 consecutive pages. Stopping discovery.")
+                    break
                 
                 # Pagination
                 next_btn = await page.query_selector('.next.page-numbers, a.next')
@@ -192,20 +205,25 @@ class AgencyMissionControl:
     def save_to_excel(self, data):
         """Incremental save to Excel."""
         if not data: return
+        
+        columns = [
+            "Name of Series", "Author Name", "Publisher", "GoodReads series link",
+            "Number of PRIMARY books in the series", "Rating (out of 5) of Primary Book 1",
+            "Ratings (#) of Primary Book 1", "Synopsis (if available)",
+            "Romantasy Sub-Genre of series", "Name of agent"
+        ]
+        
         df_new = pd.DataFrame(data)
+        df_new = df_new.reindex(columns=columns)
         
         try:
-            if not os.path.exists(AGENCY_CRAWLS_FILE):
-                with pd.ExcelWriter(AGENCY_CRAWLS_FILE, engine='openpyxl') as writer:
-                    df_new.to_excel(writer, sheet_name=AGENCY_NAME, index=False)
+            if not os.path.exists(SAVE_FILE):
+                df_new.to_excel(SAVE_FILE, index=False, header=True)
             else:
-                with pd.ExcelWriter(AGENCY_CRAWLS_FILE, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
-                    try:
-                        existing_df = pd.read_excel(AGENCY_CRAWLS_FILE, sheet_name=AGENCY_NAME)
-                        combined_df = pd.concat([existing_df, df_new], ignore_index=True).drop_duplicates(subset=['Name of Series', 'Author Name'], keep='last')
-                        combined_df.to_excel(writer, sheet_name=AGENCY_NAME, index=False)
-                    except:
-                        df_new.to_excel(writer, sheet_name=AGENCY_NAME, index=False)
+                existing_df = pd.read_excel(SAVE_FILE)
+                combined_df = pd.concat([existing_df, df_new], ignore_index=True).drop_duplicates(subset=['Name of Series', 'Author Name'], keep='last')
+                combined_df = combined_df.reindex(columns=columns)
+                combined_df.to_excel(SAVE_FILE, index=False, header=True)
             
             self.style_excel()
         except Exception as e:
@@ -213,18 +231,45 @@ class AgencyMissionControl:
 
     def style_excel(self):
         try:
-            wb = load_workbook(AGENCY_CRAWLS_FILE)
-            ws = wb[AGENCY_NAME]
+            if not os.path.exists(SAVE_FILE): return
+            wb = load_workbook(SAVE_FILE)
+            if not wb: return
+            ws = wb.active
+            if not ws: return
             header_fill = PatternFill(start_color="1F4E78", end_color="1F4E78", fill_type="solid")
             header_font = Font(color="FFFFFF", bold=True)
+            
+            # Style Headers
             for cell in ws[1]:
                 cell.fill = header_fill
                 cell.font = header_font
-                cell.alignment = Alignment(horizontal="center")
-            for col in ws.columns:
-                ws.column_dimensions[col[0].column_letter].width = 40
-            wb.save(AGENCY_CRAWLS_FILE)
-        except: pass
+                cell.alignment = Alignment(horizontal="center", vertical="center")
+            
+            # Style Data Rows (Wrapping and Alignment)
+            for row in ws.iter_rows(min_row=2):
+                for cell in row:
+                    cell.alignment = Alignment(wrap_text=True, vertical="top")
+            
+            # Adjust Column Widths
+            column_widths = {
+                "A": 30, # Name of Series
+                "B": 25, # Author Name
+                "C": 20, # Publisher
+                "D": 35, # GoodReads link
+                "E": 15, # Num Books
+                "F": 12, # Rating
+                "G": 12, # Num Ratings
+                "H": 60, # Synopsis (Large width + wrapping)
+                "I": 30, # Sub-Genre
+                "J": 25  # Agent
+            }
+            
+            for col_letter, width in column_widths.items():
+                ws.column_dimensions[col_letter].width = width
+                
+            wb.save(SAVE_FILE)
+        except Exception as e:
+            print(f"    [Warning] Styling failed: {e}")
 
 async def main():
     control = AgencyMissionControl(headless=False)
@@ -236,8 +281,11 @@ async def main():
         url = "https://knightagency.net/ourbooks/?product_cat=romantic-suspense"
         await control.run_mission(context, url)
         
+        # Ensure styling is applied
+        control.style_excel()
+        
         await browser.close()
-        if os.name == 'nt': os.startfile(AGENCY_CRAWLS_FILE)
+        if os.name == 'nt': os.startfile(SAVE_FILE)
 
 if __name__ == "__main__":
     asyncio.run(main())

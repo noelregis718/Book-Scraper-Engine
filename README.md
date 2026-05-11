@@ -18,12 +18,15 @@ Unlike rigid scraping tools, this engine is built for **infinite discovery**:
     - **Community Tier (Goodreads)**: Advanced fallback logic to resolve series URLs, book counts, and ratings.
     - **Author Contact Tier**: Automated discovery of official websites, social media (FB/IG/X), and professional agent representation.
 - **Series Extraction Intelligence**: Sophisticated regex-based parsing to identify series names and link book sequences accurately.
-- **Professional Data Delivery**: Generates high-fidelity, production-ready Excel (`.xlsx`) workbooks with optimized formatting and structured schemas.
+- **Agency Mission Control**: 
+    - **Dynamic Site Adapters**: Automated crawling of literary agency catalogs (e.g., Knight Agency) to extract managed author lists and portfolios.
+    - **Intelligent Romantasy Classification**: Automated sub-genre matching (Dark Academia, Gothic, Shifters, etc.) using a built-in taxonomy scanner that analyzes synopses and tags.
+- **Standalone Excel Delivery**: Generates dedicated, standalone `.xlsx` workbooks per agency with advanced formatting (Text Wrapping, Top-Alignment, and Professional Header Styling) for immediate Google Sheets integration.
 
 ## 🛠️ Technical Stack
 
 - **Backend**: Python 3.11, Playwright (Async), Pandas, OpenPyXL.
-- **Logic Engine**: Multi-tab extraction (optimized for high throughput), Regex-based normalization, and mission-aware state polling.
+- **Logic Engine**: Multi-tab extraction (10-tab concurrency for enrichment), Regex-based normalization, Taxonomy-aware classification, and mission-aware state polling.
 - **Frontend**: React 18, Vite, TypeScript, Tailwind CSS, Framer Motion.
 
 ---
@@ -33,6 +36,7 @@ Unlike rigid scraping tools, this engine is built for **infinite discovery**:
 ```text
 PocketFM/
 ├── backend/
+│   ├── agency_mission_control.py # Agency Catalog Crawler & Enrichment Orchestrator
 │   ├── keyword_scraper.py   # Main Industrial Mission Orchestrator
 │   ├── scraper.py           # Multi-Tiered Intelligence (Amazon/Goodreads/Author)
 │   ├── repair_goodreads.py  # Quality Assurance & Deep Metadata Repair
