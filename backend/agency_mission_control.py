@@ -9,7 +9,8 @@ from datetime import datetime
 
 # Import existing scrapers
 try:
-    from scraper import GoodreadsScraper, AuthorScraper, clean_text
+    from goodreads_scraper import GoodreadsScraper
+    from scraper import AuthorScraper, clean_text
 except ImportError:
     def clean_text(text):
         return str(text).strip() if text else "N/A"
@@ -20,38 +21,61 @@ except ImportError:
         def __init__(self, **kwargs): pass
         async def find_author_details(self, *args, **kwargs): return {}
 
-AGENCY_NAME = "Knight Agency"
-SAVE_FILE = r"E:\Internship\PocketFM\Knight Agency.xlsx"
-MAX_CONCURRENT_TABS = 10
+import sys
+import json
 
-# --- ROMANTASY TAXONOMY (For Classification only, not filtering) ---
-TAXONOMY = {
-    "Royal courts / Political": ["royal", "court", "fae", "politics", "epic", "quest", "kingdom", "throne", "prince", "princess", "queen", "king", "empire"],
-    "Gothic / Dark": ["horror", "curse", "dark magic", "atmospheric", "gothic", "haunting", "shadow", "macabre", "creepy", "blood", "morbid"],
-    "Dark Academia": ["school", "university", "academy", "secret society", "rival", "library", "scholar", "student", "professor", "campus", "scholastic"],
-    "Monster / Alien": ["monster", "alien", "inhuman", "non-human", "fated mates", "beast", "creature", "tentacle", "abominable"],
-    "Shifters": ["shapeshifter", "wolf", "bear", "dragon", "leopard", "tiger", "pack", "alpha", "mate", "shifter", "werewolf", "lycan"],
-    "Magical Games / Competitions": ["competition", "game", "tournament", "bargain", "deal", "trial", "forced proximity", "prize", "contest", "deadly game"],
-    "Mythic / Gods": ["mortal", "god", "goddess", "divine", "trial", "prophecy", "pantheon", "myth", "mythology", "olympus", "deity"],
-    "Battle / Beast Bonds": ["lethal training", "dragon bond", "beast bond", "rider", "training", "war", "soldier", "mercenary", "combat"],
-    "Reincarnation / Regression": ["reincarnation", "transmigration", "regression", "past life", "second chance", "isekai", "rebirth", "reborn"],
-    "Paranormal (Vampires/Demons)": ["vampire", "demon", "angel", "reaper", "ghost", "spirit", "undead", "succubus", "incubus", "paranormal"],
-    "Cozy / Low Stakes": ["cozy", "low-stakes", "found family", "slow-burn", "magical bakery", "tea", "comfort", "wholesome"],
-    "Urban Fantasy / Modern": ["modern world", "contemporary", "magic layered", "city", "hidden world", "masquerade", "urban", "street magic"]
-}
+try:
+    from ai_classifier import identify_subgenre
+except ImportError:
+    def identify_subgenre(synopsis, tags): return "N/A"
+
+# --- UNIVERSAL CONFIGURATION ---
+AGENCY_NAME = "Knight Agency"
+if len(sys.argv) > 1:
+    AGENCY_NAME = sys.argv[1]
+
+# Dynamic Pathing
+SAVE_FILE = rf"E:\Internship\PocketFM\{AGENCY_NAME}.xlsx"
+MAX_CONCURRENT_TABS = 15
+
+# Default URL for fallback
+DEFAULT_URL = "https://knightagency.net/ourbooks/?product_cat=romantic-suspense"
+if len(sys.argv) > 2:
+    DEFAULT_URL = sys.argv[2]
 
 def clean_name(name):
     """Removes platform fluff like (Audiobook), (paperback) from names."""
     if not name: return "N/A"
     return re.sub(r'\s*\(.*?\)', '', name).strip()
 
-def identify_subgenre(synopsis, tags):
-    """Matches synopsis and tags against the taxonomy."""
-    text = f"{synopsis} {' '.join(tags)}".lower()
-    for genre, keywords in TAXONOMY.items():
-        if any(kw.lower() in text for kw in keywords):
-            return genre
-    return "N/A"
+# --- STATE MANAGEMENT ---
+STATE_FILE = r"e:\Internship\PocketFM\backend\agency_mission_state.json"
+STATE_KEY = AGENCY_NAME
+if len(sys.argv) > 3:
+    STATE_KEY = sys.argv[3]
+
+def load_agency_state():
+    if os.path.exists(STATE_FILE):
+        try:
+            with open(STATE_FILE, 'r') as f:
+                content = f.read().strip()
+                if not content: return {"last_page": 1}
+                state = json.loads(content)
+                return state.get(STATE_KEY, {"last_page": 1})
+        except:
+            return {"last_page": 1}
+    return {"last_page": 1}
+
+def save_agency_state(page_num):
+    state = {}
+    if os.path.exists(STATE_FILE):
+        try:
+            with open(STATE_FILE, 'r') as f:
+                state = json.load(f)
+        except: pass
+    state[STATE_KEY] = {"last_page": page_num}
+    with open(STATE_FILE, 'w') as f:
+        json.dump(state, f, indent=4)
 
 class AgencyMissionControl:
     def __init__(self, headless=True):
@@ -60,7 +84,38 @@ class AgencyMissionControl:
         self.author_scraper = AuthorScraper(headless=headless)
         self.semaphore = asyncio.Semaphore(MAX_CONCURRENT_TABS)
         self.seen_books = set()
+        self.ensure_schema()
         self._load_existing_books()
+
+    def ensure_schema(self):
+        """Ensures the Excel file matches the 11-column schema."""
+        if not os.path.exists(SAVE_FILE): return
+        
+        try:
+            df = pd.read_excel(SAVE_FILE)
+            if "Is it Romantasy ?" not in df.columns:
+                print(f"  [System] Updating schema for {SAVE_FILE}...")
+                columns = [
+                    "Name of Series", "Author Name", "Publisher", "GoodReads series link",
+                    "Number of PRIMARY books in the series", "Rating (out of 5) of Primary Book 1",
+                    "Ratings (#) of Primary Book 1", "Synopsis (if available)",
+                    "Is it Romantasy ?", "Romantasy Sub-Genre of series", "Name of agent"
+                ]
+                
+                # Insert the column if missing
+                if "Romantasy Sub-Genre of series" in df.columns:
+                    idx = list(df.columns).index("Romantasy Sub-Genre of series")
+                    df.insert(idx, "Is it Romantasy ?", df["Romantasy Sub-Genre of series"].apply(
+                        lambda x: "Yes" if str(x) != "N/A" and str(x) != "nan" else "No"
+                    ))
+                
+                # Reindex to ensure all columns exist and are in order
+                df = df.reindex(columns=columns)
+                df.to_excel(SAVE_FILE, index=False)
+                self.style_excel()
+                print("  [System] Schema update complete.")
+        except Exception as e:
+            print(f"  [Warning] Schema check failed: {e}")
 
     def _load_existing_books(self):
         """Loads already scraped books to prevent duplicates."""
@@ -74,103 +129,173 @@ class AgencyMissionControl:
             except Exception:
                 pass
 
-    async def run_mission(self, context, start_url):
-        """Scrapes the entire catalog and enriches data."""
-        print(f"\n>>> Starting MISSION: {AGENCY_NAME}")
-        
-        page = await context.new_page()
-        leads = []
+    async def run_mission(self, context, start_url, target_count=50):
+        """Scrapes the catalog and enriches data, resuming from state."""
+    async def run_mission(self, context, url, target_count=50):
+        """Standard mission logic for any agency catalog URL."""
+        new_books_gathered = 0
+        state = load_agency_state()
+        current_page = state.get("last_page", 1)
         
         try:
-            current_url = start_url
-            page_num = 1
-            consecutive_zeros = 0
+            page = await context.new_page()
             
-            # --- PHASE 1: DISCOVERY (All Pages) ---
-            print("  [Phase 1] Discovering all books from catalog...")
-            while True:
-                print(f"    Scanning Page {page_num}: {current_url}")
-                await page.goto(current_url, wait_until="domcontentloaded", timeout=60000)
+            while new_books_gathered < target_count:
+                # Build paginated URL
+                target_url = url
+                if "dijkstraagency.com" in url:
+                    # Dijkstra uses a single long page; skip pagination logic
+                    pass
+                elif current_page > 1:
+                    if "?" in url:
+                        target_url = url.replace("?", f"page/{current_page}/?")
+                    else:
+                        target_url = f"{url.rstrip('/')}/page/{current_page}/"
+                
+                print(f"    Scanning Page {current_page}: {target_url}", flush=True)
+                
+                try:
+                    await page.goto(target_url, wait_until="domcontentloaded", timeout=60000)
+                    if await page.query_selector('text="Wait until you are past the block"'):
+                        print("\n" + "!" * 60)
+                        print("  [BLOCK DETECTED] Cloudflare/Antibot active.")
+                        print("  Please solve the CAPTCHA in the browser window.")
+                        print("  The script will resume automatically once you are past the block.")
+                        print("!" * 60 + "\n")
+                        await page.wait_for_selector('.product, #searchform, .next', timeout=300000)
+                        print("  [OK] Block cleared! Resuming...")
+                except Exception as e:
+                    print(f"    [Warning] Could not load Page {current_page}: {e}")
+                    await asyncio.sleep(5)
+                    
                 await asyncio.sleep(2)
                 
-                books_elements = await page.query_selector_all('.product')
-                if not books_elements: break
+                # Scroll loop to ensure all lazy-loaded products are revealed
+                print(f"    [Discovery] Scrolling Page {current_page} deeply to reveal all titles...", flush=True)
+                for i in range(10):
+                    await page.evaluate("window.scrollBy(0, 1000)")
+                    await asyncio.sleep(1.2)
                 
-                found_on_page = 0
-                for el in books_elements:
-                    text = await el.inner_text()
-                    if " by " in text:
-                        parts = text.split(" by ")
-                        title = clean_name(parts[0])
-                        author_and_price = parts[1].strip()
-                        author = clean_name(re.split(r'\$', author_and_price)[0])
-                        
-                        lead_key = f"{title}|{author}".lower()
-                        if lead_key not in self.seen_books:
-                            leads.append({"Name of Series": title, "Author Name": author})
-                            self.seen_books.add(lead_key)
-                            found_on_page += 1
-                
-                print(f"    -> Found {found_on_page} new books. Total Discovery: {len(leads)}")
-                
-                if found_on_page == 0:
-                    consecutive_zeros += 1
+                await page.wait_for_timeout(3000)
+
+                page_leads = []
+                books_elements = []
+                if "dijkstraagency.com" in url:
+                    # Specialized logic for Dijkstra Agency (Single Page, Link-based)
+                    print(f"    [Discovery] Scanning Dijkstra Agency structure...")
+                    wraps = await page.query_selector_all('.books-by-subject-wrap')
+                    for wrap in wraps:
+                        try:
+                            # Title Extraction
+                            title_el = await wrap.query_selector('.book_title_list')
+                            if not title_el:
+                                title_el = await wrap.query_selector('a[href*="book-page.php"]')
+                            
+                            if not title_el: continue
+                            title = (await title_el.inner_text()).strip()
+                            if not title: continue
+                            
+                            # Author Extraction
+                            author_el = await wrap.query_selector('a[href*="author-page.php"]')
+                            author = "Unknown"
+                            if author_el:
+                                author = (await author_el.inner_text()).strip()
+                            else:
+                                # Fallback: check p tags for "By"
+                                ps = await wrap.query_selector_all('p')
+                                for p in ps:
+                                    p_text = await p.inner_text()
+                                    if "By" in p_text:
+                                        author = p_text.replace("By", "").strip()
+                                        break
+                            
+                            lead_key = f"{title}|{author}".lower()
+                            if lead_key not in self.seen_books:
+                                page_leads.append({"Name of Series": title, "Author Name": author})
+                        except Exception as e:
+                            print(f"      [Warning] Error parsing Dijkstra wrap: {e}")
+                            continue
                 else:
-                    consecutive_zeros = 0
+                    # Standard logic for WordPress/WooCommerce agencies (Knight Agency, etc.)
+                    books_elements = await page.query_selector_all('.product')
+                    if not books_elements:
+                        print(f"    [End] No products found on page {current_page}.")
+                        break
+                    
+                    for el in books_elements:
+                        try:
+                            title_el = await el.query_selector('h4.mfn-woo-product-title, h2, h3, .woocommerce-loop-product__title')
+                            if title_el:
+                                full_text = await title_el.inner_text()
+                                if " by " in full_text:
+                                    parts = full_text.split(" by ")
+                                    title = clean_name(parts[0])
+                                    author = clean_name(re.split(r'\$', parts[1])[0].split('\n')[0])
+                                    lead_key = f"{title}|{author}".lower()
+                                    if lead_key not in self.seen_books:
+                                        page_leads.append({"Name of Series": title, "Author Name": author})
+                                else:
+                                    title = clean_name(full_text)
+                                    # Author extraction
+                                    author_el = await el.query_selector('.mfn-woo-product-author, .author, .woocommerce-loop-product__author, .product-author')
+                                    author_name = "Unknown"
+                                    if author_el:
+                                        author_name = (await author_el.inner_text()).strip()
+                                    else:
+                                        # Fallback: check if author is in the title or a separate span
+                                        fallback_author = await el.query_selector('span.author, .desc-author')
+                                        if fallback_author:
+                                            author_name = (await fallback_author.inner_text()).strip()
+                                    author = clean_name(author_name)
+                                    lead_key = f"{title}|{author}".lower()
+                                    if lead_key not in self.seen_books:
+                                        page_leads.append({"Name of Series": title, "Author Name": author})
+                        except: continue
+
+                if not page_leads:
+                    print(f"    -> Page {current_page}: Found {len(books_elements)} total books. (0 NEW). Advancing...")
+                    current_page += 1
+                    save_agency_state(current_page)
+                    continue
+
+                print(f"    -> Page {current_page}: Found {len(books_elements)} total books. {len(page_leads)} are NEW.", flush=True)
+
+                # Enrichment Phase for this page
+                batch_results = []
+                for i in range(0, len(page_leads), MAX_CONCURRENT_TABS):
+                    if new_books_gathered >= target_count: break
+                    
+                    batch = page_leads[i : i + MAX_CONCURRENT_TABS]
+                    tasks = [self.process_lead(context, lead, new_books_gathered + j + 1, target_count) for j, lead in enumerate(batch)]
+                    results = await asyncio.gather(*tasks)
+                    
+                    valid = [r for r in results if r]
+                    batch_results.extend(valid)
+                    new_books_gathered += len(valid)
+
+                if batch_results:
+                    self.save_to_excel(batch_results)
+                    self.seen_books.update([f"{r['Name of Series']}|{r['Author Name']}".lower() for r in batch_results])
                 
-                if consecutive_zeros >= 3:
-                    print("    [Info] No new books found for 3 consecutive pages. Stopping discovery.")
+                if new_books_gathered >= target_count:
+                    print(f"\n[OK] Reached target batch of {target_count} books.")
                     break
-                
-                # Pagination
-                next_btn = await page.query_selector('.next.page-numbers, a.next')
-                if next_btn:
-                    next_url = await next_btn.evaluate("el => el.href")
-                    if next_url and next_url != current_url:
-                        current_url = next_url
-                        page_num += 1
-                        continue
-                
-                # Manual Fallback
-                page_num += 1
-                if "/page/" in current_url:
-                    current_url = re.sub(r'/page/\d+/', f'/page/{page_num}/', current_url)
-                else:
-                    if "?" in current_url:
-                        base, query = current_url.split("?", 1)
-                        current_url = f"{base.rstrip('/')}/page/{page_num}/?{query}"
-                    else:
-                        current_url = f"{current_url.rstrip('/')}/page/{page_num}/"
-                
-                # Small check if page actually exists
-                try:
-                    response = await page.goto(current_url, wait_until="domcontentloaded", timeout=10000)
-                    if response.status != 200: break
-                except: break
+
+                if "dijkstraagency.com" in url:
+                    # Dijkstra is usually all on one page
+                    print(f"\n[Mission] Dijkstra Agency scanning complete.")
+                    mission_active = False 
+                    break
+
+                current_page += 1
+                save_agency_state(current_page)
 
             await page.close()
-            if not leads:
-                print("  [Notice] No new books found to scrape.")
-                return
-
-            # --- PHASE 2: ENRICHMENT & SAVING (Batches) ---
-            print(f"\n  [Phase 2] Enriching {len(leads)} books in batches of {MAX_CONCURRENT_TABS}...")
-            
-            for i in range(0, len(leads), MAX_CONCURRENT_TABS):
-                batch = leads[i : i + MAX_CONCURRENT_TABS]
-                print(f"    Processing Batch {i//MAX_CONCURRENT_TABS + 1}...")
-                
-                tasks = [self.process_lead(context, lead, i + j + 1, len(leads)) for j, lead in enumerate(batch)]
-                batch_results = await asyncio.gather(*tasks)
-                
-                valid_results = [r for r in batch_results if r]
-                if valid_results:
-                    self.save_to_excel(valid_results)
-            
-            print("\nMISSION COMPLETED SUCCESSFULLY.")
+            return new_books_gathered
 
         except Exception as e:
-            print(f"  [Critical] Mission failed: {e}")
+            print(f"[CRITICAL ERROR] Mission failed: {e}")
+            return new_books_gathered
 
     async def process_lead(self, context, lead, index, total):
         async with self.semaphore:
@@ -180,7 +305,22 @@ class AgencyMissionControl:
                     context, lead['Name of Series'], lead['Author Name']
                 )
                 
-                if not gr_data: return None
+                # FALLBACK: If Goodreads fails, we still record the book with N/A fields
+                if not gr_data:
+                    print(f"      [Notice] Goodreads missed: {lead['Name of Series']}. Recording basic info only.")
+                    return {
+                        "Name of Series": lead['Name of Series'],
+                        "Author Name": lead['Author Name'],
+                        "Publisher": "Various / Knight Agency",
+                        "GoodReads series link": "N/A",
+                        "Number of PRIMARY books in the series": "N/A",
+                        "Rating (out of 5) of Primary Book 1": "N/A",
+                        "Ratings (#) of Primary Book 1": "N/A",
+                        "Synopsis (if available)": "N/A",
+                        "Is it Romantasy ?": "N/A",
+                        "Romantasy Sub-Genre of series": "N/A",
+                        "Name of agent": "Knight Agency Representative"
+                    }
                 
                 synopsis = gr_data.get("Description", "N/A")
                 tags = [gr_data.get("Genre", ""), gr_data.get("Sub_Genre", "")]
@@ -195,6 +335,7 @@ class AgencyMissionControl:
                     "Rating (out of 5) of Primary Book 1": gr_data.get("Book1_Rating", "N/A"),
                     "Ratings (#) of Primary Book 1": gr_data.get("Book1_Num_Ratings", "N/A"),
                     "Synopsis (if available)": synopsis[:1000] if synopsis != "N/A" else "N/A",
+                    "Is it Romantasy ?": "Yes" if matched_genre != "N/A" else "No",
                     "Romantasy Sub-Genre of series": matched_genre,
                     "Name of agent": "Knight Agency Representative"
                 }
@@ -203,31 +344,44 @@ class AgencyMissionControl:
                 return None
 
     def save_to_excel(self, data):
-        """Incremental save to Excel."""
+        """Incremental save to Excel with lock protection."""
         if not data: return
+        import time
         
         columns = [
             "Name of Series", "Author Name", "Publisher", "GoodReads series link",
             "Number of PRIMARY books in the series", "Rating (out of 5) of Primary Book 1",
             "Ratings (#) of Primary Book 1", "Synopsis (if available)",
-            "Romantasy Sub-Genre of series", "Name of agent"
+            "Is it Romantasy ?", "Romantasy Sub-Genre of series", "Name of agent"
         ]
         
         df_new = pd.DataFrame(data)
         df_new = df_new.reindex(columns=columns)
         
-        try:
-            if not os.path.exists(SAVE_FILE):
-                df_new.to_excel(SAVE_FILE, index=False, header=True)
-            else:
-                existing_df = pd.read_excel(SAVE_FILE)
-                combined_df = pd.concat([existing_df, df_new], ignore_index=True).drop_duplicates(subset=['Name of Series', 'Author Name'], keep='last')
-                combined_df = combined_df.reindex(columns=columns)
-                combined_df.to_excel(SAVE_FILE, index=False, header=True)
-            
-            self.style_excel()
-        except Exception as e:
-            print(f"    [Warning] Save failed: {e}")
+        max_retries = 10
+        for attempt in range(max_retries):
+            try:
+                if not os.path.exists(SAVE_FILE):
+                    df_new.to_excel(SAVE_FILE, index=False, header=True)
+                else:
+                    existing_df = pd.read_excel(SAVE_FILE)
+                    combined_df = pd.concat([existing_df, df_new], ignore_index=True).drop_duplicates(subset=['Name of Series', 'Author Name'], keep='last')
+                    combined_df = combined_df.reindex(columns=columns)
+                    combined_df.to_excel(SAVE_FILE, index=False, header=True)
+                
+                self.style_excel()
+                return # Success
+            except PermissionError:
+                print(f"\n[!!!] PERMISSION DENIED: Please CLOSE '{os.path.basename(SAVE_FILE)}' so I can save! (Attempt {attempt+1}/{max_retries})")
+                if attempt < max_retries - 1:
+                    time.sleep(10)
+                else:
+                    recovery_path = SAVE_FILE.replace(".xlsx", f"_RECOVERY_{int(time.time())}.xlsx")
+                    print(f"[Critical] Saving to recovery file: {recovery_path}")
+                    df_new.to_excel(recovery_path, index=False)
+            except Exception as e:
+                print(f"    [Warning] Save failed: {e}")
+                break
 
     def style_excel(self):
         try:
@@ -259,9 +413,10 @@ class AgencyMissionControl:
                 "E": 15, # Num Books
                 "F": 12, # Rating
                 "G": 12, # Num Ratings
-                "H": 60, # Synopsis (Large width + wrapping)
-                "I": 30, # Sub-Genre
-                "J": 25  # Agent
+                "H": 60, # Synopsis
+                "I": 18, # Is it Romantasy ?
+                "J": 30, # Sub-Genre
+                "K": 25  # Agent
             }
             
             for col_letter, width in column_widths.items():
@@ -274,18 +429,70 @@ class AgencyMissionControl:
 async def main():
     control = AgencyMissionControl(headless=False)
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=False)
-        context = await browser.new_context(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/121.0.0.0")
+        # Launch using actual Chrome channel for better bypass
+        browser = await p.chromium.launch(
+            headless=False,
+            channel="chrome" 
+        )
+        context = await browser.new_context(
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+            viewport={"width": 1280, "height": 800},
+            device_scale_factor=1,
+            is_mobile=False,
+            has_touch=False,
+            locale="en-US",
+            timezone_id="America/New_York"
+        )
         
-        # TARGET CATEGORY
-        url = "https://knightagency.net/ourbooks/?product_cat=romantic-suspense"
-        await control.run_mission(context, url)
+        print(f"\n>>> [UNIVERSAL MISSION] Agency: {AGENCY_NAME} (State Key: {STATE_KEY})", flush=True)
+        print(f">>> [TARGET URL] {DEFAULT_URL}\n", flush=True)
         
-        # Ensure styling is applied
-        control.style_excel()
+        # Industrial Looping: Process in batches of 50 until no more books are found
+        mission_active = True
+        total_session_new = 0
         
+        while mission_active:
+            print(f"\n--- [Industrial Batch Start] Target: 50 NEW books ---")
+            new_gathered = await control.run_mission(context, DEFAULT_URL, target_count=50)
+            total_session_new += new_gathered
+            
+            # Final Deduplication & Styling per batch
+            if os.path.exists(SAVE_FILE):
+                max_retries = 5
+                for attempt in range(max_retries):
+                    try:
+                        final_df = pd.read_excel(SAVE_FILE)
+                        final_df.drop_duplicates(subset=['Name of Series', 'Author Name'], keep='first', inplace=True)
+                        final_df.to_excel(SAVE_FILE, index=False)
+                        control.style_excel()
+                        
+                        # Auto-open the Excel sheet as requested after each batch
+                        if os.name == 'nt': 
+                            print(f"  [Mission] Opening updated results for batch...")
+                            os.startfile(SAVE_FILE)
+                        break
+                    except PermissionError:
+                        print(f"  [Warning] Could not finalize Excel (Permission Denied). Retrying in 10s... ({attempt+1}/{max_retries})")
+                        await asyncio.sleep(10)
+                    except Exception as e:
+                        print(f"  [Warning] Finalization failed: {e}")
+                        break
+            
+            if new_gathered < 1:
+                # Check if we actually reached the end or just no new books on these pages
+                # If run_mission returns 0, it means it either hit the end of pages or target was 0
+                print("\n[Mission] No more NEW books found or end of catalog reached.")
+                mission_active = False
+            else:
+                print(f"  [Mission] Batch complete ({new_gathered} NEW). Continuing mission...")
+                # Small cool-down between batches
+                await asyncio.sleep(5)
+
         await browser.close()
-        if os.name == 'nt': os.startfile(SAVE_FILE)
+        print(f"\n{'='*60}")
+        print(f"MISSION ACCOMPLISHED: {total_session_new} New Titles added in this session.")
+        print(f"Final Data: {os.path.abspath(SAVE_FILE)}")
+        print(f"{'='*60}\n")
 
 if __name__ == "__main__":
     asyncio.run(main())

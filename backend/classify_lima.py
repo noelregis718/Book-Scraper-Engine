@@ -1,10 +1,10 @@
 import pandas as pd
 import os
 import sys
-from excel_utility import save_jabberwocky_excel
+from excel_utility import save_lima_excel
 
 # --- CONFIGURATION ---
-INPUT_FILE = sys.argv[1] if len(sys.argv) > 1 else r"E:\Internship\PocketFM\awful agents.xlsx"
+INPUT_FILE = r"E:\Internship\PocketFM\Lima Agency.xlsx"
 
 def classify_book(title, author, synopsis):
     title = str(title).lower()
@@ -88,11 +88,11 @@ def run_classification():
         df.at[index, 'Is it Romantasy ?'] = is_romantasy
         df.at[index, 'Romantasy Sub-Genre of series'] = subgenre
         
-        if (index + 1) % 100 == 0:
+        if (index + 1) % 50 == 0:
             print(f"  Processed {index + 1}/{total}...")
             
     print(f"Saving classified results to {INPUT_FILE}...")
-    save_jabberwocky_excel(df.to_dict('records'), INPUT_FILE)
+    save_lima_excel(df.to_dict('records'), INPUT_FILE)
     print("Classification Complete!")
 
 if __name__ == "__main__":

@@ -98,6 +98,49 @@ class GoodreadsScraper:
             print(f"  [Goodreads] Login error: {e}")
             return False
 
+    async def search_author_books(self, context, author_name, max_books=5):
+        """Searches for an author and returns titles of their first few books."""
+        page = await context.new_page()
+        try:
+            print(f"    [Goodreads] Searching for author: {author_name}...", flush=True)
+            # Use general search instead of 'people' search
+            search_url = f"https://www.goodreads.com/search?q={author_name.replace(' ', '+')}"
+            await page.goto(search_url, wait_until="domcontentloaded", timeout=45000)
+            await asyncio.sleep(3) # Wait for results
+            
+            # Look for author links in the results
+            author_link = await page.query_selector('a[href*="/author/show/"]')
+            if not author_link:
+                 # Check for "people" results specifically if general failed
+                 author_link = await page.query_selector('.authorName, .authorName__container a')
+
+            if not author_link:
+                print(f"    [Goodreads] Could not find author profile for: {author_name}", flush=True)
+                return []
+                
+            author_url = await author_link.evaluate("el => el.href")
+            print(f"    [Goodreads] Found author URL: {author_url}", flush=True)
+            await page.goto(author_url, wait_until="domcontentloaded", timeout=45000)
+            await asyncio.sleep(3)
+            
+            # Scrape top book titles
+            book_els = await page.query_selector_all('a.bookTitle, [data-testid="bookTitle"] a')
+            titles = []
+            for el in book_els:
+                title = (await el.inner_text()).strip()
+                if title and title not in titles:
+                    titles.append(title)
+                if len(titles) >= max_books:
+                    break
+            
+            print(f"    [Goodreads] Found {len(titles)} books for {author_name}.", flush=True)
+            return titles
+        except Exception as e:
+            print(f"    [Goodreads] Author search error for {author_name}: {e}", flush=True)
+            return []
+        finally:
+            await page.close()
+
     async def scrape_goodreads_data(self, context, title, author, isbn10="N/A", isbn13="N/A", asin="N/A", existing_url="N/A"):
         if not title or title == "N/A":
             return {}

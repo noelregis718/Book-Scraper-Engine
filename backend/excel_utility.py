@@ -129,34 +129,17 @@ def save_jabberwocky_excel(data, filename=r"E:\Internship\PocketFM\awful agents.
         if col not in df_new.columns:
             df_new[col] = "N/A"
     df_new = df_new.reindex(columns=columns)
-    
-    if os.path.exists(filename):
-        try:
-            # We take the data as provided (already updated in-place)
-            df = df_new
-        except Exception as e:
-            print(f"  [Warning] Could not process {filename}: {e}. Starting fresh.")
-            df = df_new
-    else:
-        df = df_new
+    df = df_new
 
     def _write(path):
         with pd.ExcelWriter(path, engine='openpyxl') as writer:
             df.to_excel(writer, index=False, sheet_name='Jabberwocky Catalog')
             worksheet = writer.sheets['Jabberwocky Catalog']
             worksheet.freeze_panes = "A2"
-            
             header_fill = PatternFill(start_color="1F4E78", end_color="1F4E78", fill_type="solid")
             header_font = Font(bold=True, color="FFFFFF", size=12)
             thin_border = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
-
-            col_widths = {
-                'Name of Series': 40, 'Author Name': 25, 'Publisher': 15, 'GoodReads series link': 40,
-                'Number of PRIMARY books in the series': 15, 'Rating (out of 5) of Primary Book 1': 12,
-                'Ratings (#) of Primary Book 1': 12, 'Synopsis (if available)': 65,
-                'Is it Romantasy ?': 15, 'Romantasy Sub-Genre of series': 25, 'Name of agent': 15
-            }
-
+            col_widths = {'Name of Series': 40, 'Author Name': 25, 'Publisher': 15, 'GoodReads series link': 40, 'Number of PRIMARY books in the series': 15, 'Rating (out of 5) of Primary Book 1': 12, 'Ratings (#) of Primary Book 1': 12, 'Synopsis (if available)': 65, 'Is it Romantasy ?': 15, 'Romantasy Sub-Genre of series': 25, 'Name of agent': 15}
             for idx, col in enumerate(df.columns):
                 col_letter = get_column_letter(idx + 1)
                 width = col_widths.get(col, 20)
@@ -168,7 +151,6 @@ def save_jabberwocky_excel(data, filename=r"E:\Internship\PocketFM\awful agents.
                         cell.fill = header_fill
                         cell.font = header_font
                         cell.alignment = Alignment(horizontal='center', vertical='center')
-
             for row_num in range(2, worksheet.max_row + 1):
                 max_lines = 1
                 for col_idx, col_name in enumerate(df.columns):
@@ -187,11 +169,65 @@ def save_jabberwocky_excel(data, filename=r"E:\Internship\PocketFM\awful agents.
     try:
         _write(filename)
         return os.path.abspath(filename)
-    except PermissionError:
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        base, ext = os.path.splitext(filename)
-        fallback = f"{base}_{timestamp}{ext}"
-        print(f"WARNING: '{filename}' is open. Saving to '{fallback}'")
-        _write(fallback)
-        return os.path.abspath(fallback)
+    except Exception as e:
+        print(f"Error saving Jabberwocky file: {e}")
+        return None
+
+def save_lima_excel(data, filename=r"E:\Internship\PocketFM\Lima Agency.xlsx"):
+    """Professional saving utility specifically for the Lima Agency schema."""
+    columns = [
+        "Name of Series", "Author Name", "Publisher", "GoodReads series link",
+        "Number of PRIMARY books in the series", "Rating (out of 5) of Primary Book 1",
+        "Ratings (#) of Primary Book 1", "Synopsis (if available)",
+        "Is it Romantasy ?", "Romantasy Sub-Genre of series", "Name of agent"
+    ]
+
+    df_new = pd.DataFrame(data)
+    for col in columns:
+        if col not in df_new.columns:
+            df_new[col] = "N/A"
+    df_new = df_new.reindex(columns=columns)
+    df = df_new
+
+    def _write(path):
+        with pd.ExcelWriter(path, engine='openpyxl') as writer:
+            df.to_excel(writer, index=False, sheet_name='Lima Agency Catalog')
+            worksheet = writer.sheets['Lima Agency Catalog']
+            worksheet.freeze_panes = "A2"
+            header_fill = PatternFill(start_color="7030A0", end_color="7030A0", fill_type="solid") # Lima Purple
+            header_font = Font(bold=True, color="FFFFFF", size=12)
+            thin_border = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
+            col_widths = {'Name of Series': 40, 'Author Name': 25, 'Publisher': 15, 'GoodReads series link': 40, 'Number of PRIMARY books in the series': 15, 'Rating (out of 5) of Primary Book 1': 12, 'Ratings (#) of Primary Book 1': 12, 'Synopsis (if available)': 65, 'Is it Romantasy ?': 15, 'Romantasy Sub-Genre of series': 25, 'Name of agent': 15}
+            for idx, col in enumerate(df.columns):
+                col_letter = get_column_letter(idx + 1)
+                width = col_widths.get(col, 20)
+                worksheet.column_dimensions[col_letter].width = width
+                for cell in worksheet[col_letter]:
+                    cell.alignment = Alignment(wrap_text=True, vertical='top', horizontal='left')
+                    cell.border = thin_border
+                    if cell.row == 1:
+                        cell.fill = header_fill
+                        cell.font = header_font
+                        cell.alignment = Alignment(horizontal='center', vertical='center')
+            for row_num in range(2, worksheet.max_row + 1):
+                max_lines = 1
+                for col_idx, col_name in enumerate(df.columns):
+                    col_letter = get_column_letter(col_idx + 1)
+                    cell = worksheet[f"{col_letter}{row_num}"]
+                    val = str(cell.value) if cell.value is not None else ""
+                    col_width = col_widths.get(col_name, 20)
+                    newline_count = val.count('\n') + 1
+                    chars_per_line = max(int(col_width * 1.1), 10)
+                    for line in val.split('\n'):
+                        wrapped = max(1, -(-len(line) // chars_per_line))
+                        newline_count += wrapped - 1
+                    max_lines = max(max_lines, newline_count)
+                worksheet.row_dimensions[row_num].height = max(min(max_lines * 15, 300), 20)
+
+    try:
+        _write(filename)
+        return os.path.abspath(filename)
+    except Exception as e:
+        print(f"Error saving Lima file: {e}")
+        return None
 
