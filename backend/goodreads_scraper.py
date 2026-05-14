@@ -88,20 +88,22 @@ class GoodreadsScraper:
                     await page.wait_for_selector('a.headerPersonalNav__link[href*="/user/show"]', timeout=300000)
                 else:
                     await page.click('input[type="submit"], #signInSubmit')
-                    # Wait to confirm login
+                    # Wait to confirm login by looking for the user menu or profile link
                     try:
-                        await page.wait_for_selector('a.headerPersonalNav__link[href*="/user/show"]', timeout=30000)
+                        print("  [Goodreads] Waiting for user profile to appear...", flush=True)
+                        await page.wait_for_selector('.headerPersonalNav__link[href*="/user/show"], [data-testid="userProfileMenu"]', timeout=45000)
+                        print("  [Goodreads] Login confirmed!", flush=True)
                     except:
-                        print("  [Goodreads] Login took too long or manual intervention needed.")
+                        print("  [Goodreads] Login confirmation timed out. Proceeding cautiously.")
             
             return True
         except Exception as e:
             print(f"  [Goodreads] Login error: {e}")
             return False
 
-    async def search_author_books(self, context, author_name, max_books=5):
+    async def search_author_books(self, page, author_name, max_books=5):
         """Searches for an author and returns titles of their first few books."""
-        page = await context.new_page()
+        # Removed redundant page = await context.new_page()
         try:
             print(f"    [Goodreads] Searching for author: {author_name}...", flush=True)
             # Use general search instead of 'people' search
@@ -139,14 +141,31 @@ class GoodreadsScraper:
         except Exception as e:
             print(f"    [Goodreads] Author search error for {author_name}: {e}", flush=True)
             return []
-        finally:
-            await page.close()
+        # Removed await page.close() to preserve the page for the main caller
 
     async def scrape_goodreads_data(self, context, title, author, isbn10="N/A", isbn13="N/A", asin="N/A", existing_url="N/A"):
-        if not title or title == "N/A":
-            return {}
-
         page = await context.new_page()
+        # If title is missing, we'll try to find the author's top book first
+        if not title or title == "N/A":
+            if author and author != "N/A":
+                # Use the existing context/page to find their first book
+                # We'll reuse the current logic but on the main page
+                try:
+                    books = await self.search_author_books(page, author, max_books=1)
+                    if books:
+                        title = books[0]
+                        print(f"    [Goodreads] Found top book for {author}: {title}", flush=True)
+                    else:
+                        await page.close()
+                        return {}
+                except Exception as e:
+                    print(f"    [Goodreads] Author search failed: {e}", flush=True)
+                    await page.close()
+                    return {}
+            else:
+                await page.close()
+                return {}
+
         try:
             book_url = None
             extracted_series = extract_series_from_title(title)
