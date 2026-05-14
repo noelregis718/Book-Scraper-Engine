@@ -23,6 +23,20 @@ Unlike rigid scraping tools, this engine is built for **infinite discovery**:
     - **Intelligent Romantasy Classification**: Automated sub-genre matching (Dark Academia, Gothic, Shifters, etc.) using a built-in taxonomy scanner that analyzes synopses and tags.
 - **Standalone Excel Delivery**: Generates dedicated, standalone `.xlsx` workbooks per agency with advanced formatting (Text Wrapping, Top-Alignment, and Professional Header Styling) for immediate Google Sheets integration.
 
+### 🏢 Universal Agency Scraper
+Point the industrial engine at any agency catalog to generate a standalone, formatted report.
+
+*   **Command**: `python agency_mission_control.py "Agency Name" "Target URL"`
+*   **Example**: `python agency_mission_control.py "Knight Agency" "https://knightagency.net/ourbooks/?product_cat=romantic-suspense"`
+*   **Features**: Dynamic file naming, automated styling, and intelligent Romantasy classification.
+
+### 🛠️ Universal Agency Repair
+Deep-sync missing Goodreads metadata for any agency file.
+
+*   **Command**: `python repair_agency_goodreads.py "Agency Name"`
+*   **Example**: `python repair_agency_goodreads.py "Knight Agency"`
+*   **Features**: Smart title normalization, fallback series-link detection, and automatic deduplication.
+
 ## 🛠️ Technical Stack
 
 - **Backend**: Python 3.11, Playwright (Async), Pandas, OpenPyXL.

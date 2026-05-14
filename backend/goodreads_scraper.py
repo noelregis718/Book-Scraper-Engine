@@ -2,6 +2,7 @@ import asyncio
 import re
 import json
 import unicodedata
+import os
 
 def clean_text(text):
     if not text:
@@ -150,69 +151,45 @@ class GoodreadsScraper:
             book_url = None
             extracted_series = extract_series_from_title(title)
             
-            # --- TIER 0: Existing URL ---
-            if existing_url and str(existing_url).startswith("http") and "goodreads.com" in str(existing_url):
-                book_url = existing_url
+            book_url = None
             
-            # --- TIER 0.5: Extracted Series ---
-            if not book_url and extracted_series:
-                try:
-                    search_query = f"{extracted_series} {author} series goodreads"
-                    search_url = f"https://www.goodreads.com/search?q={search_query.replace(' ', '+')}"
-                    await page.goto(search_url, wait_until="domcontentloaded", timeout=45000)
-                    series_link = await page.query_selector('a[href*="/series/"]')
-                    if series_link:
-                        book_url = await series_link.evaluate("el => el.href")
-                except: pass
-            
-            # --- TIER 1: Direct ID ---
-            if not book_url:
-                potential_ids = [isbn13, isbn10, asin]
-                for pid in potential_ids:
-                    if pid and pid != "N/A":
+            # --- TIER 1: Internal Search (Title + Author Only) ---
+            # Use a "Clean" title + Author for search query
+            clean_query_title = normalize_title_for_search(title)
+            query = f"{clean_query_title} {author}"
+            try:
+                print(f"    [Goodreads] Searching: {query}...")
+                search_url = f"https://www.goodreads.com/search?q={query.replace(' ', '+')}"
+                await page.goto(search_url, wait_until="domcontentloaded", timeout=45000)
+                
+                # Wait for results to actually populate
+                await asyncio.sleep(2.5)
+                
+                # Broad Selection: Grab the first valid book link from any results container
+                first_link = await page.query_selector('a.bookTitle, [data-testid="bookTitle"] a, .bookTitle, [data-testid="bookSearchResult"] a, h3 a[href*="/book/show/"]')
+                
+                if not first_link:
+                    # Check for CAPTCHA
+                    if await page.query_selector('#captcha-image, .captcha, iframe[src*="captcha"]'):
+                        print(f"\n    [!!! ACTION REQUIRED !!!] CAPTCHA detected for '{title}'! (30s timeout)")
                         try:
-                            direct_url = f"https://www.goodreads.com/book/isbn/{pid}"
-                            await page.goto(direct_url, wait_until="domcontentloaded", timeout=45000)
-                            if "goodreads.com/book/show/" in page.url or "goodreads.com/work/" in page.url:
-                                book_url = page.url
-                                break
-                        except: continue
-
-            # --- TIER 2: Internal Search (Aggressive Banner & Link Capture) ---
-            if not book_url:
-                # Use a "Clean" title + Author for search query
-                clean_query_title = normalize_title_for_search(title)
-                query = f"{clean_query_title} {author}"
-                try:
-                    print(f"    [Goodreads] Searching for first available result: {query}...")
-                    search_url = f"https://www.goodreads.com/search?q={query.replace(' ', '+')}"
-                    await page.goto(search_url, wait_until="domcontentloaded", timeout=45000)
-                    
-                    # Wait for results to actually populate
-                    await asyncio.sleep(2.5)
-                    
-                    # Broad Selection: Grab the first valid book link from any results container
-                    first_link = await page.query_selector('a.bookTitle, [data-testid="bookTitle"] a, .bookTitle, [data-testid="bookSearchResult"] a, h3 a[href*="/book/show/"]')
-                    
-                    if not first_link:
-                        # Check for CAPTCHA
-                        if await page.query_selector('#captcha-image, .captcha, iframe[src*="captcha"]'):
-                            print(f"\n    [!!! ACTION REQUIRED !!!] CAPTCHA detected for '{title}'!")
-                            await page.wait_for_selector('a.bookTitle, [data-testid="bookTitle"] a, .bookTitle', timeout=1200000)
+                            await page.wait_for_selector('a.bookTitle, [data-testid="bookTitle"] a, .bookTitle', timeout=30000)
                             first_link = await page.query_selector('a.bookTitle, [data-testid="bookTitle"] a, .bookTitle, [data-testid="bookSearchResult"] a')
-                        
-                    if first_link:
-                        book_url = await first_link.evaluate("el => el.href")
-                        print(f"    [Goodreads] Success! Captured first result: {book_url}")
-                except Exception as e:
-                    print(f"    [Goodreads] Search error: {e}")
+                        except:
+                            print(f"    [Timeout] CAPTCHA not solved in 30s. Skipping...")
+                            return {}
+                    
+                if first_link:
+                    book_url = await first_link.evaluate("el => el.href")
+                    print(f"    [Goodreads] Success! Captured result: {book_url}")
+            except Exception as e:
+                print(f"    [Goodreads] Search error: {e}")
             
-            # --- TIER 3: Brave Fallback (More Aggressive) ---
+            # --- TIER 2: External Fallback (Title + Author Only) ---
             if not book_url:
                 search_queries = [
-                    f'"{title}" {author} goodreads',
-                    f'"{normalize_title_for_search(title)}" {author} site:goodreads.com/book',
-                    f'"{title}" goodreads'
+                    f'"{clean_query_title}" {author} goodreads',
+                    f'"{title}" {author} site:goodreads.com/book'
                 ]
                 for query in search_queries:
                     brave_url = f"https://search.brave.com/search?q={query.replace(' ', '+')}"
