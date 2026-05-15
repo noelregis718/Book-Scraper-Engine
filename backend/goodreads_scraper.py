@@ -57,6 +57,10 @@ class GoodreadsScraper:
     async def login_to_goodreads(self, page):
         """Logs into Goodreads using stored credentials."""
         print("[Goodreads] Attempting login...")
+        # Set a realistic User-Agent to avoid 403
+        await page.set_extra_http_headers({
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        })
         try:
             creds_path = os.path.join(os.path.dirname(__file__), "gr_creds.json")
             if not os.path.exists(creds_path):
@@ -178,6 +182,10 @@ class GoodreadsScraper:
             query = f"{clean_query_title} {author}"
             try:
                 print(f"    [Goodreads] Searching: {query}...")
+                # Set headers for the search too
+                await page.set_extra_http_headers({
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                })
                 search_url = f"https://www.goodreads.com/search?q={query.replace(' ', '+')}"
                 await page.goto(search_url, wait_until="domcontentloaded", timeout=45000)
                 
