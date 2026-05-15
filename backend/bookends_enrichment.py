@@ -67,7 +67,7 @@ async def enrich_bookends():
     
     # Identify rows needing enrichment
     mask = df['GoodReads series link'].isna() | (df['GoodReads series link'] == 'N/A')
-    rows_to_process = df[mask].index.tolist()
+    rows_to_process = df[mask].index.tolist()[:20] # LIMIT TO NEXT 20
     
     print(f"Total entries in Bookends Catalog: {len(df)}")
     print(f"Remaining to search: {len(rows_to_process)}")
