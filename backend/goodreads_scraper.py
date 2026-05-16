@@ -106,46 +106,103 @@ class GoodreadsScraper:
             return False
 
     async def search_author_books(self, page, author_name, max_books=5):
-        """Searches for an author and returns titles of their first few books."""
-        # Removed redundant page = await context.new_page()
+        """Wrapper for backward compatibility."""
+        results = await self.search_author_books_with_links(page, author_name, max_books)
+        return [r['title'] for r in results]
+
+    async def search_author_books_with_links(self, page, author_name, max_books=5):
+        """Searches for an author and returns titles AND links of their first few books."""
         try:
             print(f"    [Goodreads] Searching for author: {author_name}...", flush=True)
-            # Use general search instead of 'people' search
             search_url = f"https://www.goodreads.com/search?q={author_name.replace(' ', '+')}"
             await page.goto(search_url, wait_until="domcontentloaded", timeout=45000)
-            await asyncio.sleep(3) # Wait for results
+            await asyncio.sleep(3)
             
-            # Look for author links in the results
             author_link = await page.query_selector('a[href*="/author/show/"]')
             if not author_link:
-                 # Check for "people" results specifically if general failed
-                 author_link = await page.query_selector('.authorName, .authorName__container a')
+                author_link = await page.query_selector('.authorName, .authorName__container a')
 
             if not author_link:
                 print(f"    [Goodreads] Could not find author profile for: {author_name}", flush=True)
                 return []
                 
             author_url = await author_link.evaluate("el => el.href")
-            print(f"    [Goodreads] Found author URL: {author_url}", flush=True)
             await page.goto(author_url, wait_until="domcontentloaded", timeout=45000)
             await asyncio.sleep(3)
             
-            # Scrape top book titles
             book_els = await page.query_selector_all('a.bookTitle, [data-testid="bookTitle"] a')
-            titles = []
+            results = []
             for el in book_els:
                 title = (await el.inner_text()).strip()
-                if title and title not in titles:
-                    titles.append(title)
-                if len(titles) >= max_books:
+                link = await el.evaluate("el => el.href")
+                if link and link not in [r['link'] for r in results]:
+                    results.append({'title': title, 'link': link})
+                if len(results) >= max_books:
                     break
             
-            print(f"    [Goodreads] Found {len(titles)} books for {author_name}.", flush=True)
-            return titles
+            return results
         except Exception as e:
-            print(f"    [Goodreads] Author search error for {author_name}: {e}", flush=True)
+            print(f"    [Goodreads] Author search error: {e}", flush=True)
             return []
-        # Removed await page.close() to preserve the page for the main caller
+
+    async def extract_book_details(self, page):
+        """Extracts metadata from a currently open book page."""
+        try:
+            await asyncio.sleep(4)
+            genres = []
+            genre_els = await page.query_selector_all('[data-testid="genresList"] .Button__labelItem, .BookPageMetadataSection__genre a')
+            for gel in genre_els:
+                txt = clean_text(await gel.inner_text())
+                if txt and txt not in genres: genres.append(txt)
+            
+            is_romantasy = "Yes" if any("romantasy" in g.lower() for g in genres) else "No"
+            genre_main = genres[0] if genres else "N/A"
+            genre_sub = genres[1] if len(genres) > 1 else "N/A"
+
+            avg_rating = "N/A"
+            rating_count = "N/A"
+            try:
+                ld_el = await page.query_selector('script[type="application/ld+json"]')
+                if ld_el:
+                    ld_data = json.loads(await ld_el.inner_text())
+                    if isinstance(ld_data, list): ld_data = ld_data[0]
+                    avg_rating = str(ld_data.get('aggregateRating', {}).get('ratingValue', 'N/A'))
+                    rating_count = str(ld_data.get('aggregateRating', {}).get('ratingCount', 'N/A'))
+            except: pass
+
+            description = "N/A"
+            desc_el = await page.query_selector('[data-testid="description"] .Formatted, .readable')
+            if desc_el: description = clean_text(await desc_el.inner_text())
+
+            # Series & Primary Book Logic
+            series_url = "N/A"
+            series_link = await page.query_selector('h3.Text__title3 a[href*="/series/"], [data-testid="series"] a')
+            if series_link: series_url = await series_link.evaluate("el => el.href")
+            
+            series_data = {"Num_Primary_Books": "1", "Book1_Rating": avg_rating, "Book1_Num_Ratings": rating_count}
+            if series_url != "N/A":
+                try:
+                    # We skip navigating to series for speed in multi-tab, but keep primary rating
+                    pass
+                except: pass
+
+            title_el = await page.query_selector('[data-testid="bookTitle"], #bookTitle')
+            title = clean_text(await title_el.inner_text()) if title_el else "N/A"
+
+            return {
+                "GoodReads_Series_URL": series_url,
+                "GoodReads_Book_URL": page.url,
+                "GoodReads_Rating": avg_rating,
+                "GoodReads_Rating_Count": rating_count,
+                "Genre": genre_main,
+                "Sub_Genre": genre_sub,
+                "Description": description,
+                "Num_Primary_Books": series_data["Num_Primary_Books"],
+                "Book_Title": title
+            }
+        except Exception as e:
+            print(f"    [Error] Details extraction: {e}")
+            return None
 
     async def scrape_goodreads_data(self, context, title, author, isbn10="N/A", isbn13="N/A", asin="N/A", existing_url="N/A"):
         page = await context.new_page()

@@ -2,30 +2,32 @@ import re
 
 # --- ROMANTASY TAXONOMY (AI-Enhanced for Classification) ---
 TAXONOMY = {
-    "High Fantasy Court Adventure": ["royal", "court", "fae", "kingdom", "throne", "prince", "princess", "queen", "king", "empire", "epic", "quest", "heir", "magic world", "castle"],
-    "Gothic Dark Romantasy": ["horror", "curse", "dark magic", "atmospheric", "gothic", "haunting", "shadow", "macabre", "creepy", "blood", "morbid", "vampiric", "deathly", "ripper"],
-    "Dark Academia Romantasy": ["school", "university", "academy", "secret society", "rival", "library", "scholar", "student", "professor", "campus", "scholastic", "boarding school", "heritage", "inheritance"],
-    "Monster Romance (Non-Shifter)": ["monster", "alien", "inhuman", "non-human", "beast", "creature", "tentacle", "abominable", "kraken", "orc", "beastman", "non-shifter"],
-    "Werewolf / Shifter Romance": ["shapeshifter", "wolf", "bear", "dragon", "leopard", "tiger", "pack", "alpha", "mate", "shifter", "werewolf", "lycan", "luna", "omega", "knot"],
-    "High-Stakes Games & Deadly Trials": ["competition", "game", "tournament", "bargain", "deal", "trial", "forced proximity", "prize", "contest", "deadly game", "deadly trials", "final trial"],
-    "Mythology, Legend & Fairy Tale Retelling": ["mortal", "god", "goddess", "divine", "prophecy", "pantheon", "myth", "mythology", "olympus", "deity", "retelling", "fairy tale", "fable", "legend"],
-    "War College / Military Academy": ["lethal training", "dragon bond", "beast bond", "rider", "training", "war", "soldier", "mercenary", "combat", "war college", "military academy", "wing", "quadrant"],
-    "Korean Romance Fantasy / Isekai": ["reincarnation", "transmigration", "regression", "past life", "second chance", "isekai", "rebirth", "reborn", "villainess", "empress", "saintess", "system", "incarnation"],
-    "Paranormal Romance": ["vampire", "demon", "angel", "reaper", "ghost", "spirit", "undead", "succubus", "incubus", "paranormal", "witch", "warlock", "coven"],
-    "Cozy / Cottagecore": ["cozy", "low-stakes", "found family", "slow-burn", "magical bakery", "tea", "comfort", "wholesome", "cottagecore", "small town magic", "whimsical"],
-    "Urban / Contemporary Fantasy Romance": ["modern world", "contemporary", "magic layered", "city", "hidden world", "masquerade", "urban", "street magic", "ley-line", "modern day"]
+    "High Fantasy Court Adventure": ["fae", "elven", "magical kingdom", "royal court", "fantasy empire", "epic quest", "magic world", "crown prince", "queen of", "king of", "throne of", "heir to the", "castle of"],
+    "Gothic Dark Romantasy": ["gothic romance", "dark magic", "haunted castle", "vampiric", "macabre", "blood magic", "deathly curse", "gothic mystery"],
+    "Dark Academia Romantasy": ["magical academy", "secret society", "magic school", "university of magic", "scholar of the", "campus of magic"],
+    "Monster Romance (Non-Shifter)": ["monster romance", "tentacle", "orc", "kraken", "minotaur", "beastman", "non-human lover"],
+    "Werewolf / Shifter Romance": ["shapeshifter", "wolf shifter", "bear shifter", "dragon shifter", "pack alpha", "omegaverse", "true mate", "shifter romance"],
+    "High-Stakes Games & Deadly Trials": ["deadly trials", "magical tournament", "deadly games", "magical contest", "trial of the"],
+    "Mythology, Legend & Fairy Tale Retelling": ["greek myth", "norse myth", "retelling", "fairy tale retelling", "gods and monsters", "mortal and god"],
+    "War College / Military Academy": ["war college", "military academy", "dragon rider", "beast bond", "combat training", "lethal training"],
+    "Korean Romance Fantasy / Isekai": ["isekai", "reincarnation", "villainess", "empress", "saintess", "transmigration", "isekai romance"],
+    "Paranormal Romance": ["vampire romance", "demon lover", "succubus", "paranormal mystery", "coven of witches", "warlock"],
+    "Cozy / Cottagecore": ["cozy fantasy", "cottagecore", "magical bakery", "small town magic", "low-stakes fantasy"],
+    "Urban / Contemporary Fantasy Romance": ["urban fantasy", "hidden magic", "magic in the city", "secret supernatural", "hidden world"]
 }
 
 def identify_subgenre(synopsis, tags):
-    """Matches synopsis and tags against the taxonomy to classify sub-genre."""
+    """Matches synopsis and tags against the taxonomy using word boundaries."""
     if not synopsis and not tags:
         return "N/A"
         
     text = f"{synopsis} {' '.join(tags)}".lower()
     
-    # Priority matching for specific high-fidelity keywords
     for genre, keywords in TAXONOMY.items():
-        if any(kw.lower() in text for kw in keywords):
-            return genre
+        for kw in keywords:
+            # Use regex to find whole word matches
+            pattern = rf"\b{re.escape(kw.lower())}\b"
+            if re.search(pattern, text):
+                return genre
             
     return "N/A"
