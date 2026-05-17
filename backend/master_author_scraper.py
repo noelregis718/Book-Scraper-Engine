@@ -4,6 +4,7 @@ import sys
 import pandas as pd
 from playwright.async_api import async_playwright
 from openpyxl import load_workbook
+from openpyxl.utils import get_column_letter
 
 # Ensure backend folder is in path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -174,7 +175,7 @@ def save_results_to_new_file(df, indices):
         # 4. Column Auto-Width
         for col in ws.columns:
             max_length = 0
-            column = col[0].column_letter
+            column = get_column_letter(col[0].column)
             for cell in col:
                 if cell.value and len(str(cell.value)) > max_length:
                     max_length = len(str(cell.value))

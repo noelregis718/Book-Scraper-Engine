@@ -32,7 +32,7 @@ def apply_clean_formatting():
     # 2. Iterate columns for sizing and alignment
     for col in ws.columns:
         max_length = 0
-        col_letter = col[0].column_letter
+        col_letter = get_column_letter(col[0].column)
         header_name = col[0].value
 
         for cell in col:

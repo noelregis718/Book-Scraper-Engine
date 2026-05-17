@@ -1,6 +1,7 @@
 import pandas as pd
 import os
 from openpyxl import load_workbook
+from openpyxl.utils import get_column_letter
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 
 MASTER_FILE = "Deep_Catalog_Enrichment.xlsx"
@@ -65,7 +66,7 @@ def format_excel():
             cell.border = thin_border
             
             # Alignment based on column
-            if cell.column_letter in ['E', 'F', 'G', 'I']:
+            if get_column_letter(cell.column) in ['E', 'F', 'G', 'I']:
                 cell.alignment = center_align
             else:
                 cell.alignment = left_align

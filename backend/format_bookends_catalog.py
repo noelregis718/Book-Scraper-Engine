@@ -1,5 +1,6 @@
 import pandas as pd
 from openpyxl import load_workbook
+from openpyxl.utils import get_column_letter
 from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
 import os
 
@@ -43,7 +44,7 @@ def format_catalog():
             cell.border = thin_border
             
             # Specific Alignments
-            col_letter = cell.column_letter
+            col_letter = get_column_letter(cell.column)
             header_val = str(ws[f"{col_letter}1"].value)
             
             if any(k in header_val for k in ['Rating', 'Number', 'Ratings (#)', 'Yes or No?']):
