@@ -68,7 +68,7 @@ def format_excel():
             cell.border = thin_border
             
             # Alignment based on column
-            if get_column_letter(int(cell.column)) in ['E', 'F', 'G', 'I']:
+            if get_column_letter(cell.column or 1) in ['E', 'F', 'G', 'I']:
                 cell.alignment = center_align
             else:
                 cell.alignment = left_align

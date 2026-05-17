@@ -46,7 +46,7 @@ def format_catalog():
             cell.border = thin_border
             
             # Specific Alignments
-            col_letter = get_column_letter(int(cell.column))
+            col_letter = get_column_letter(cell.column or 1)
             header_val = str(ws[f"{col_letter}1"].value)
             
             if any(k in header_val for k in ['Rating', 'Number', 'Ratings (#)', 'Yes or No?']):
