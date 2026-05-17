@@ -14,6 +14,8 @@ def format_catalog():
     # Load the workbook
     wb = load_workbook(CATALOG_FILE)
     ws = wb.active
+    if ws is None:
+        raise ValueError("Active worksheet is None")
 
     # Define Styles
     header_font = Font(name='Calibri', size=12, bold=True, color='000000')
@@ -44,7 +46,7 @@ def format_catalog():
             cell.border = thin_border
             
             # Specific Alignments
-            col_letter = get_column_letter(cell.column)
+            col_letter = get_column_letter(int(cell.column))
             header_val = str(ws[f"{col_letter}1"].value)
             
             if any(k in header_val for k in ['Rating', 'Number', 'Ratings (#)', 'Yes or No?']):

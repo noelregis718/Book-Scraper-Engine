@@ -16,6 +16,8 @@ def format_excel():
     # Load with openpyxl
     wb = load_workbook(MASTER_FILE)
     ws = wb.active
+    if ws is None:
+        raise ValueError("Active worksheet is None")
 
     # Define Styles
     header_font = Font(name='Outfit', size=12, bold=True, color="FFFFFF")
@@ -66,7 +68,7 @@ def format_excel():
             cell.border = thin_border
             
             # Alignment based on column
-            if get_column_letter(cell.column) in ['E', 'F', 'G', 'I']:
+            if get_column_letter(int(cell.column)) in ['E', 'F', 'G', 'I']:
                 cell.alignment = center_align
             else:
                 cell.alignment = left_align

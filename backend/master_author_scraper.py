@@ -175,7 +175,7 @@ def save_results_to_new_file(df, indices):
         # 4. Column Auto-Width
         for col in ws.columns:
             max_length = 0
-            column = get_column_letter(col[0].column)
+            column = get_column_letter(int(col[0].column))
             for cell in col:
                 if cell.value and len(str(cell.value)) > max_length:
                     max_length = len(str(cell.value))

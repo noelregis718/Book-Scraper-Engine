@@ -15,6 +15,8 @@ def apply_clean_formatting():
     print(f"Applying 'Clean Cutoff' sizing and formatting to {FILE_NAME}...")
     wb = load_workbook(FILE_NAME)
     ws = wb.active
+    if ws is None:
+        raise ValueError("Active worksheet is None")
 
     # 1. Styles
     header_font = Font(bold=True, color="FFFFFF", size=12)
@@ -32,7 +34,7 @@ def apply_clean_formatting():
     # 2. Iterate columns for sizing and alignment
     for col in ws.columns:
         max_length = 0
-        col_letter = get_column_letter(col[0].column)
+        col_letter = get_column_letter(int(col[0].column))
         header_name = col[0].value
 
         for cell in col:

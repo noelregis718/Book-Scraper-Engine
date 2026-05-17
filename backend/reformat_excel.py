@@ -45,7 +45,7 @@ def apply_premium_styling(file_path):
         # --- 3. COLUMN WIDTHS (Dynamic Adjustment) ---
         for col in ws.columns:
             max_length = 0
-            column = get_column_letter(col[0].column)
+            column = get_column_letter(int(col[0].column))
             # Set defaults based on known content types
             if column == 'H': # Synopsis
                 ws.column_dimensions[column].width = 70
