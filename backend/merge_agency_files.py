@@ -15,6 +15,8 @@ def style_excel(file_path):
         if not os.path.exists(file_path): return
         wb = load_workbook(file_path)
         ws = wb.active
+        if ws is None:
+            raise ValueError("Active worksheet is None")
         
         header_fill = PatternFill(start_color="1F4E78", end_color="1F4E78", fill_type="solid")
         header_font = Font(color="FFFFFF", bold=True)

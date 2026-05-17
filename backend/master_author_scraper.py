@@ -149,6 +149,8 @@ def save_results_to_new_file(df, indices):
     try:
         wb = load_workbook(OUTPUT_FILE)
         ws = wb.active
+        if ws is None:
+            raise ValueError("Active worksheet is None")
         
         # 1. Header Styling
         header_fill = PatternFill(start_color="1F4E78", end_color="1F4E78", fill_type="solid")

@@ -6,7 +6,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 # Emoji-Shield: Force UTF-8 for Windows Console to prevent crashes on special characters
 try:
     if sys.stdout.encoding.lower() != 'utf-8':
-        sys.stdout.reconfigure(encoding='utf-8')
+        if hasattr(sys.stdout, "reconfigure"):
+            getattr(sys.stdout, "reconfigure")(encoding="utf-8")
 except AttributeError: pass
 
 import asyncio
@@ -14,7 +15,8 @@ import re
 import pandas as pd
 import random
 from playwright.async_api import async_playwright
-from scraper import GoodreadsScraper, clean_numeric
+from scraper import clean_numeric
+from goodreads_scraper import GoodreadsScraper
 from excel_utility import save_to_excel
 
 # Configuration
@@ -240,7 +242,7 @@ async def repair_goodreads_data():
         
         await browser.close()
         print(f"FINISH! File updated: {excel_path}")
-        if os.name == 'nt': os.startfile(excel_path)
+        if os.name == 'nt' and excel_path: os.startfile(excel_path)
 
 if __name__ == "__main__":
     asyncio.run(repair_goodreads_data())

@@ -16,6 +16,8 @@ def apply_premium_styling(file_path):
         # Load workbook
         wb = load_workbook(file_path)
         ws = wb.active
+        if ws is None:
+            raise ValueError("Active worksheet is None")
         
         # --- STYLE TOKENS ---
         header_fill = PatternFill(start_color="1F4E78", end_color="1F4E78", fill_type="solid")

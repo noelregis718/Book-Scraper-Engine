@@ -14,7 +14,8 @@ from excel_utility import save_to_excel
 # Emoji-Shield: Force UTF-8 for Windows Console to prevent crashes on special characters
 try:
     if sys.stdout.encoding.lower() != 'utf-8':
-        sys.stdout.reconfigure(encoding='utf-8')
+        if hasattr(sys.stdout, "reconfigure"):
+            getattr(sys.stdout, "reconfigure")(encoding="utf-8")
 except AttributeError: pass
 
 # Configuration

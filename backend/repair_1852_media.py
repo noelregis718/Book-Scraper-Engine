@@ -11,9 +11,10 @@ from ai_classifier import identify_subgenre
 
 # Fix console encoding for Windows
 if sys.platform == "win32":
-    import codecs
-    sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
-    sys.stderr = codecs.getwriter("utf-8")(sys.stderr.detach())
+    if hasattr(sys.stdout, "reconfigure"):
+        getattr(sys.stdout, "reconfigure")(encoding="utf-8")
+    if hasattr(sys.stderr, "reconfigure"):
+        getattr(sys.stderr, "reconfigure")(encoding="utf-8")
 
 # Configuration
 MASTER_FILE = "Deep_Catalog_Enrichment.xlsx"
@@ -32,6 +33,7 @@ def normalize(t):
 async def get_all_author_book_links(page, author_name, existing_books):
     """Aggressive discovery of ALL books for an author."""
     print(f"  [Discovery] Finding full catalog for: {author_name}", flush=True)
+    all_links = []
     try:
         # We'll try to find the "All Books" link directly if possible
         search_url = f"https://www.goodreads.com/search?q={author_name.replace(' ', '+')}&search_type=books"
@@ -90,6 +92,7 @@ async def get_all_author_book_links(page, author_name, existing_books):
         return all_links
 
 async def scrape_book_details(context, scraper, link, author_name):
+    page = None
     try:
         page = await context.new_page()
         # Set realistic headers
@@ -107,8 +110,9 @@ async def scrape_book_details(context, scraper, link, author_name):
         await page.close()
     except Exception as e:
         print(f"      [Error] Scraping {link}: {e}", flush=True)
-        try: await page.close()
-        except: pass
+        if page is not None:
+            try: await page.close()
+            except: pass
     return None
 
 def format_row(data):

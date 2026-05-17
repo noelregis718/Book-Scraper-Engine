@@ -177,7 +177,7 @@ async def run_mission():
                         results = await asyncio.gather(*tasks, return_exceptions=True)
                         
                         for gr_data in results:
-                            if isinstance(gr_data, Exception):
+                            if isinstance(gr_data, BaseException):
                                 print(f"      [Error] Book processing failed: {gr_data}")
                                 continue
                                 

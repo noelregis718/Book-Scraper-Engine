@@ -3,7 +3,8 @@ import json
 import os
 import pandas as pd
 import re
-from scraper import AmazonScraper, GoodreadsScraper, AuthorScraper, clean_text, normalize_title_for_search
+from scraper import AmazonScraper, AuthorScraper, clean_text, normalize_title_for_search
+from goodreads_scraper import GoodreadsScraper
 from excel_utility import save_to_excel
 from playwright.async_api import async_playwright
 
@@ -178,7 +179,7 @@ async def _run_keyword_mission_core():
 
     print(f"\n{'='*60}", flush=True)
     print(f"INDUSTRIAL SCALING MISSION: Target {MISSION_TARGET} Titles", flush=True)
-    print(f"Current Progress: {state['total_processed_global']} | Starting from Page {state['last_page_scanned'] + 1}", flush=True)
+    print(f"Current Progress: {state['total_processed_global']} | Starting from Page {int(state['last_page_scanned']) + 1}", flush=True)
     print(f"{'='*60}\n", flush=True)
 
     # --- GLOBAL TITLE & ASIN PROTECTION ---
@@ -209,14 +210,14 @@ async def _run_keyword_mission_core():
         )
 
         # Process only one batch for this run
-        while state['total_processed_global'] < MISSION_TARGET:
-            curr_batch_start = state['next_batch_start']
+        while int(state['total_processed_global']) < MISSION_TARGET:
+            curr_batch_start = int(state['next_batch_start'])
             print(f"\n>>> [MISSION BATCH] Processing {curr_batch_start} to {curr_batch_start + BATCH_SIZE - 1}...")
 
             page = await context.new_page()
 
             # --- Discovery Phase ---
-            print(f"  Navigating to Amazon Search (Page {state['last_page_scanned'] + 1})...")
+            print(f"  Navigating to Amazon Search (Page {int(state['last_page_scanned']) + 1})...")
             search_url = SEARCH_URL
             try:
                 # [FIXED] Navigate to base search URL first to set location.
@@ -241,7 +242,7 @@ async def _run_keyword_mission_core():
                     print("  [Warning] Could not verify US location, but proceeding anyway.")
 
                 # NOW navigate to the target page to ensure it doesn't drop pagination
-                target_page = state['last_page_scanned'] + 1
+                target_page = int(state['last_page_scanned']) + 1
                 if target_page > 1:
                     # Robustly replace or append page parameters
                     if "page=" in search_url:
@@ -261,7 +262,7 @@ async def _run_keyword_mission_core():
                     await page.goto(SEARCH_URL, wait_until="load", timeout=60000)
 
                 all_discovery_links = []
-                page_count = state['last_page_scanned'] + 1
+                page_count = int(state['last_page_scanned']) + 1
                 seen_titles = [] 
                 consecutive_empty_pages = 0
 
@@ -390,8 +391,8 @@ async def _run_keyword_mission_core():
 
                 # --- State Sync ---
                 state['last_page_scanned'] = page_count
-                state['total_processed_global'] += len(final_rows)
-                state['next_batch_start'] += len(final_rows)
+                state['total_processed_global'] = int(state['total_processed_global']) + len(final_rows)
+                state['next_batch_start'] = int(state['next_batch_start']) + len(final_rows)
                 if final_rows:
                     state['last_book_title'] = final_rows[-1]['Book Title']
                 save_state(state)
@@ -419,7 +420,7 @@ async def _run_keyword_mission_core():
             await page.close()
 
             # Continue until MISSION_TARGET is reached
-            if state['total_processed_global'] >= MISSION_TARGET:
+            if int(state['total_processed_global']) >= MISSION_TARGET:
                 print("\n[OK] Mission target reached.")
                 break
 
