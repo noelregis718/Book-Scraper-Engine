@@ -116,7 +116,7 @@ class GoodreadsScraper:
             print(f"    [Goodreads] Searching for author: {author_name}...", flush=True)
             search_url = f"https://www.goodreads.com/search?q={author_name.replace(' ', '+')}"
             await page.goto(search_url, wait_until="domcontentloaded", timeout=45000)
-            await asyncio.sleep(3)
+            await asyncio.sleep(2.5)
             
             author_link = await page.query_selector('a[href*="/author/show/"]')
             if not author_link:
@@ -128,7 +128,7 @@ class GoodreadsScraper:
                 
             author_url = await author_link.evaluate("el => el.href")
             await page.goto(author_url, wait_until="domcontentloaded", timeout=45000)
-            await asyncio.sleep(3)
+            await asyncio.sleep(2.5)
             
             book_els = await page.query_selector_all('a.bookTitle, [data-testid="bookTitle"] a')
             results = []
@@ -148,7 +148,7 @@ class GoodreadsScraper:
     async def extract_book_details(self, page):
         """Extracts metadata from a currently open book page."""
         try:
-            await asyncio.sleep(4)
+            await asyncio.sleep(0.5)
             genres = []
             genre_els = await page.query_selector_all('[data-testid="genresList"] .Button__labelItem, .BookPageMetadataSection__genre a')
             for gel in genre_els:
@@ -296,7 +296,7 @@ class GoodreadsScraper:
                     if first_book: book_url = await first_book.evaluate("el => el.href")
                 await page.goto(book_url, wait_until="domcontentloaded", timeout=60000)
             
-            await asyncio.sleep(4)
+            await asyncio.sleep(0.5)
             genres = []
             genre_els = await page.query_selector_all('[data-testid="genresList"] .Button__labelItem, .BookPageMetadataSection__genre a')
             for gel in genre_els:
