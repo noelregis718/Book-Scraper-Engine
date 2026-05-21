@@ -3,3 +3,5 @@ flask-cors
 playwright
 pandas
 openpyxl
+requests
+beautifulsoup4
