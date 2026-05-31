@@ -1,4 +1,4 @@
-# PocketFM
+# Book Scraper Engine
 
 A high-performance, industrial-scale data extraction engine designed for comprehensive book metadata harvesting. This platform orchestrates a multi-tiered pipeline to discover, extract, and enrich deep metadata for any genre, keyword, or attribute without limits.
 
@@ -48,7 +48,7 @@ Deep-sync missing Goodreads metadata for any agency file.
 ## 📁 System Architecture
 
 ```text
-PocketFM/
+Book Scraper Engine/
 ├── backend/
 │   ├── agency_mission_control.py # Agency Catalog Crawler & Enrichment Orchestrator
 │   ├── keyword_scraper.py   # Main Industrial Mission Orchestrator
