@@ -3,11 +3,9 @@ import os
 import sys
 import pandas as pd
 from playwright.async_api import async_playwright
-import json
-import re
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from goodreads_scraper import GoodreadsScraper, clean_text
+from goodreads_scraper import GoodreadsScraper, clean_text, normalize_title_for_search
 
 try:
     from apply_jra_style import apply_styling
@@ -23,17 +21,18 @@ async def safe_save(df, excel_path):
         except Exception as e:
             print(f"  [Save Error] {e}")
 
-async def scrape_author_top_book(author, existing_agent, context, semaphore, new_rows_list):
+async def scrape_one_book(index, title, author_for_search, df, excel_path, context, semaphore):
     async with semaphore:
         page = await context.new_page()
         await page.set_extra_http_headers({
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         })
+
         try:
-            query = author.strip().replace(' ', '+')
-            search_url = f"https://www.goodreads.com/search?q={query}"
-            print(f"[*] Searching Author: '{author}'")
-            
+            query = f"{normalize_title_for_search(title)} {author_for_search}".strip()
+            search_url = f"https://www.goodreads.com/search?q={query.replace(' ', '+')}"
+            print(f"[{index+1}] Searching: '{query}'")
+
             await page.goto(search_url, wait_until="domcontentloaded", timeout=45000)
             await asyncio.sleep(2.5)
 
@@ -48,17 +47,15 @@ async def scrape_author_top_book(author, existing_agent, context, semaphore, new
                     )
                     book_url = await first_link.evaluate("el => el.href")
                 except Exception:
-                    print(f"[*] No book found for author '{author}'")
+                    print(f"[{index+1}] No result for '{title}'")
+                    df.at[index, "GoodReads series link"] = "N/A"
+                    await safe_save(df, excel_path)
                     return
-            
+
             await page.goto(book_url, wait_until="domcontentloaded", timeout=60000)
             await asyncio.sleep(1.5)
 
-            # Get Book Title
-            title = "Unknown Title"
-            title_el = await page.query_selector('[data-testid="bookTitle"], h1#bookTitle, h1.Text__title1')
-            if title_el:
-                title = clean_text(await title_el.inner_text())
+            import json, re
 
             avg_rating, rating_count = "N/A", "N/A"
             try:
@@ -71,11 +68,9 @@ async def scrape_author_top_book(author, existing_agent, context, semaphore, new
             except: pass
 
             description = "N/A"
-            desc_el = await page.query_selector('[data-testid="description"] .Formatted, .readable, [data-testid="description"]')
+            desc_el = await page.query_selector('[data-testid="description"] .Formatted, .readable')
             if desc_el:
                 description = clean_text(await desc_el.inner_text())
-                if description.startswith("Show more"): 
-                    description = description.replace("Show more", "", 1).strip()
 
             series_url = book_url
             series_link_el = await page.query_selector('h3.Text__title3 a[href*="/series/"], [data-testid="series"] a')
@@ -100,44 +95,57 @@ async def scrape_author_top_book(author, existing_agent, context, semaphore, new
                             book1_ratings = r_match.group(2).replace(',', '')
                 except: pass
 
-            new_row = {
-                "Name of Series": title,
-                "Author Name": author,
-                "Publisher": "",
-                "GoodReads series link": series_url,
-                "Number of PRIMARY books in the series": num_primary,
-                "Rating (out of 5) of Primary Book 1": book1_rating,
-                "Ratings (#) of Primary Book 1": book1_ratings,
-                "Synopsis (if available)": description,
-                "Romantasy = Yes or No?": "",
-                "Romantasy Sub-Genre of series": "",
-                "Name of agent": existing_agent
-            }
-            new_rows_list.append(new_row)
-            print(f"[*] Appended: '{title}' by {author}")
+            df.at[index, "GoodReads series link"] = series_url
+            df.at[index, "Number of PRIMARY books in the series"] = num_primary
+            df.at[index, "Rating (out of 5) of Primary Book 1"] = book1_rating
+            df.at[index, "Ratings (#) of Primary Book 1"] = book1_ratings
+            df.at[index, "Synopsis (if available)"] = description
+
+            print(f"[{index+1}] Done: '{title}'")
+            await safe_save(df, excel_path)
 
         except Exception as e:
-            print(f"[*] Error on author '{author}': {e}")
+            print(f"[{index+1}] Error on '{title}': {e}")
         finally:
             try:
                 await page.close()
             except: pass
 
-async def scrape_aggressive(excel_path):
+def apply_11_columns(excel_path):
+    df = pd.read_excel(excel_path)
+    ELEVEN_COLUMN_HEADERS = [
+        "Name of Series", "Author Name", "Publisher", "GoodReads series link", 
+        "Number of PRIMARY books in the series", "Rating (out of 5) of Primary Book 1", 
+        "Ratings (#) of Primary Book 1", "Synopsis (if available)", 
+        "Romantasy = Yes or No?", "Romantasy Sub-Genre of series", "Name of agent"
+    ]
+    if 'Book Name' in df.columns:
+        df.rename(columns={'Book Name': 'Name of Series'}, inplace=True)
+    
+    for c in ELEVEN_COLUMN_HEADERS:
+        if c not in df.columns:
+            df[c] = ""
+            
+    df = df[ELEVEN_COLUMN_HEADERS]
+    df.to_excel(excel_path, index=False)
+    print("Applied 11-column format.")
+
+async def scrape_ffr(excel_path):
     print(f"Loading: {excel_path}")
     if not os.path.exists(excel_path):
-        print("Error: File not found")
+        print(f"Error: File not found — {excel_path}")
         return
 
+    apply_11_columns(excel_path)
     df = pd.read_excel(excel_path)
-    
-    # Get unique authors
-    unique_authors = df[['Author Name', 'Name of agent']].drop_duplicates(subset=['Author Name'])
-    unique_authors = unique_authors.dropna(subset=['Author Name'])
-    
+
+    for col in ["GoodReads series link", "Number of PRIMARY books in the series",
+                "Rating (out of 5) of Primary Book 1", "Ratings (#) of Primary Book 1",
+                "Synopsis (if available)"]:
+        df[col] = df[col].astype(object)
+
     scraper = GoodreadsScraper(headless=False)
     semaphore = asyncio.Semaphore(10)
-    new_rows_list = []
 
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=False)
@@ -149,36 +157,32 @@ async def scrape_aggressive(excel_path):
         await login_context.close()
         
         main_context = await browser.new_context(storage_state=storage_state)
-        
+
         tasks = []
-        for _, row in unique_authors.iterrows():
-            author = str(row['Author Name']).strip()
-            if author.lower() in ["nan", "", "unknown – pre-pub / unannounced", "tla client", "none"]:
+        for index, row in df.iterrows():
+            title = str(row.get("Name of Series", "")).strip()
+            author = str(row.get("Author Name", "")).strip()
+
+            if not title or title.lower() in ["nan", ""]:
                 continue
-            
-            agent = str(row.get('Name of agent', ''))
-            if agent.lower() == "nan": agent = ""
 
-            tasks.append(scrape_author_top_book(author, agent, main_context, semaphore, new_rows_list))
+            current_link = str(row.get("GoodReads series link", ""))
+            if current_link and current_link not in ["nan", "", "N/A"]:
+                continue
 
-        print(f"Starting aggressive scrape for {len(tasks)} authors...")
+            author_for_search = author if author.lower() not in ["nan", ""] else ""
+
+            tasks.append(scrape_one_book(index, title, author_for_search, df, excel_path, main_context, semaphore))
+
+        print(f"Starting to scrape {len(tasks)} books...")
         await asyncio.gather(*tasks)
+        print("\nScraping complete!")
         
         try:
             await main_context.close()
             await browser.close()
         except: pass
 
-    if new_rows_list:
-        print(f"Appending {len(new_rows_list)} new rows to the spreadsheet...")
-        new_df = pd.DataFrame(new_rows_list)
-        
-        # Merge columns safely to match the existing sheet structure
-        combined_df = pd.concat([df, new_df], ignore_index=True)
-        await safe_save(combined_df, excel_path)
-    else:
-        print("No new rows found.")
-        
     print("Reapplying styling...")
     try:
         apply_styling(excel_path)
@@ -186,5 +190,5 @@ async def scrape_aggressive(excel_path):
     print("All done!")
 
 if __name__ == "__main__":
-    target = r"E:\Internship\PocketFM\handspun_romance_books_combined.xlsx"
-    asyncio.run(scrape_aggressive(target))
+    target = r"E:\Internship\PocketFM\first_for_romance_books.xlsx"
+    asyncio.run(scrape_ffr(target))
