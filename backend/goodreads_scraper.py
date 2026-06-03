@@ -241,7 +241,7 @@ class GoodreadsScraper:
                 # --- TIER 1: Internal Search (Title + Author Only) ---
                 # Use a "Clean" title + Author for search query
                 clean_query_title = normalize_title_for_search(title)
-                query = f"{clean_query_title} {author}"
+                query = f"{clean_query_title} {author}".strip()
                 try:
                     print(f"    [Goodreads] Searching: {query}...")
                     # Set headers for the search too
@@ -350,7 +350,7 @@ class GoodreadsScraper:
                 except: pass
 
             author_found = "Unknown"
-            author_el = await page.query_selector('[data-testid="authorName"], .authorName__container [itemprop="name"]')
+            author_el = await page.query_selector('[data-testid="authorName"], .authorName__container [itemprop="name"], span.ContributorLink__name, .ContributorLink__name, [data-testid="name"], h1 [itemprop="name"], .authorName')
             if author_el:
                 author_found = clean_text(await author_el.inner_text())
 
