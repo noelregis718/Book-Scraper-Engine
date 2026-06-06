@@ -4,7 +4,7 @@ import sys
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-EXCEL_FILE = r"E:\Internship\PocketFM\books_scraped_merged.xlsx"
+EXCEL_FILE = r"E:\Internship\PocketFM\books_authors_corrected.xlsx"
 
 KEYWORD_MAP = [
     ("Werewolf / Shifter Romance", ["werewolf", "shifter", "alpha", "pack", "omega", "luna", "wolf", "lycan"]),
