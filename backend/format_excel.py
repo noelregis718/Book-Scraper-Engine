@@ -1,55 +1,58 @@
 import pandas as pd
-from openpyxl import load_workbook
-from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
-import os
+import sys
 
-file_name = 'kensington_authors_MASTER_1_to_1488.xlsx'
-wb = load_workbook(file_name)
-ws = wb.active
+def main():
+    file_path = 'books_authors.xlsx'
+    try:
+        df = pd.read_excel(file_path)
+    except Exception as e:
+        print(f"Error reading {file_path}: {e}")
+        sys.exit(1)
 
-# Header formatting
-header_fill = PatternFill(start_color='D9E1F2', end_color='D9E1F2', fill_type='solid')
-header_font = Font(bold=True, color='000000')
-thin_border = Border(left=Side(style='thin', color='D4D4D4'), right=Side(style='thin', color='D4D4D4'), 
-                     top=Side(style='thin', color='D4D4D4'), bottom=Side(style='thin', color='D4D4D4'))
+    requested_columns = [
+        "Name of Series",
+        "Author Name",
+        "Publisher",
+        "GoodReads series link",
+        "Number of PRIMARY books in the series",
+        "Rating (out of 5) of Primary Book 1",
+        "Ratings (#) of Primary Book 1",
+        "Synopsis (if available)",
+        "Romantasy = Yes or No?",
+        "Romantasy Sub-Genre of series",
+        "Name of agent"
+    ]
 
-for cell in ws[1]:
-    cell.fill = header_fill
-    cell.font = header_font
-    cell.alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)
-    cell.border = thin_border
+    new_columns = []
+    
+    # We will build the new column order.
+    # Put 'Book Title' right after 'Author Name' to preserve it logically
+    for col in requested_columns:
+        new_columns.append(col)
+        if col == "Author Name":
+            if "Book Title" in df.columns:
+                new_columns.append("Book Title")
 
-# Freeze header row
-ws.freeze_panes = 'A2'
+    # Add any other existing columns that aren't already included
+    for col in df.columns:
+        if col not in new_columns:
+            new_columns.append(col)
 
-# Set preferred column widths based on expected content
-column_widths = {
-    'A': 30, # Name of Series
-    'B': 25, # Author Name
-    'C': 20, # Publisher
-    'D': 35, # GoodReads series link
-    'E': 15, # Number of PRIMARY books in the series
-    'F': 12, # Rating (out of 5)
-    'G': 15, # Ratings (#)
-    'H': 60, # Synopsis
-    'I': 15, # Romantasy = Yes or No?
-    'J': 20, # Romantasy Sub-Genre
-    'K': 20  # Name of agent
-}
+    # For any new column, initialize it with empty string
+    for col in new_columns:
+        if col not in df.columns:
+            df[col] = ""
 
-for col, width in column_widths.items():
-    ws.column_dimensions[col].width = width
+    # Reorder
+    df = df[new_columns]
 
-# Content formatting
-for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=1, max_col=ws.max_column):
-    for cell in row:
-        cell.alignment = Alignment(vertical='top', wrap_text=True)
-        cell.border = thin_border
+    # Save
+    try:
+        df.to_excel(file_path, index=False)
+        print("Successfully formatted the excel file!")
+    except Exception as e:
+        print(f"Error saving {file_path}: {e}")
+        sys.exit(1)
 
-# Save the styled file
-wb.save(file_name)
-print("Styling applied successfully.")
-
-# Open the file on Windows
-os.startfile(os.path.abspath(file_name))
-print("File opened.")
+if __name__ == "__main__":
+    main()
