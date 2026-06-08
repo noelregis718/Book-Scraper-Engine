@@ -1,64 +1,78 @@
-# Book Scraper Engine
+# Universal Book Scraper & Agency Intelligence Engine
 
-A high-performance, industrial-scale data extraction engine designed for comprehensive book metadata harvesting. This platform orchestrates a multi-tiered pipeline to discover, extract, and enrich deep metadata for any genre, keyword, or attribute without limits.
+A high-performance, industrial-scale data extraction platform designed for comprehensive book metadata harvesting, agency catalog processing, and author intelligence gathering. This platform orchestrates a multi-tiered pipeline to discover, extract, and enrich deep metadata across any genre, keyword, or literary agency.
 
 ## 🚀 Unlimited Scaling & Versatility
 
-Unlike rigid scraping tools, this engine is built for **infinite discovery**:
-- **Zero Limits**: Not restricted to any specific title count or genre boundary.
-- **Dynamic Targeting**: Scrapes per genre, per attribute, or via custom search keywords as requested.
-- **Multi-Genre Support**: Seamlessly transitions between Romantasy, Paranormal Romance, Werewolves, or any other niche market.
+Built for **infinite discovery** and adaptability:
+- **Universal Agency Ingestion**: Point the industrial engine at any literary agency catalog to generate a standalone, formatted report without needing custom scripts per agency.
+- **Bestseller & Keyword Scraping**: Dynamic targeting per genre, per attribute, or via custom search keywords.
+- **RESTful API & Web UI**: Features a Flask-based REST API backend integrated with a React 19 / Vite frontend for seamless mission control and monitoring.
+- **Multi-Genre Support**: Seamlessly classifies Romantasy, Paranormal Romance, Werewolves, or any other niche market via AI classification.
 - **Attribute-Level Control**: Fine-tune extraction to target specific data points like price, series info, or author contact details.
 
 ## 🌟 Premium Features
 
-- **Industrial Scaling Engine**: Automated multi-batch orchestration with state persistence and intelligent rate-limiting to ensure continuous operation.
+- **Industrial Orchestration Engine**: Automated multi-batch processing with state persistence (`_state.json`), auto-saving, and intelligent rate-limiting/block-bypassing to ensure continuous operation.
 - **Multi-Tiered Discovery Intelligence**: 
     - **Market Tier (Amazon)**: Deep extraction of bestseller ranks, pricing, series hierarchy, and publication details.
-    - **Community Tier (Goodreads)**: Advanced fallback logic to resolve series URLs, book counts, and ratings.
-    - **Author Contact Tier**: Automated discovery of official websites, social media (FB/IG/X), and professional agent representation.
-- **Series Extraction Intelligence**: Sophisticated regex-based parsing to identify series names and link book sequences accurately.
-- **Agency Mission Control**: 
-    - **Dynamic Site Adapters**: Automated crawling of literary agency catalogs (e.g., Knight Agency) to extract managed author lists and portfolios.
-    - **Intelligent Romantasy Classification**: Automated sub-genre matching (Dark Academia, Gothic, Shifters, etc.) using a built-in taxonomy scanner that analyzes synopses and tags.
-- **Standalone Excel Delivery**: Generates dedicated, standalone `.xlsx` workbooks per agency with advanced formatting (Text Wrapping, Top-Alignment, and Professional Header Styling) for immediate Google Sheets integration.
+    - **Community Tier (Goodreads)**: Advanced fallback logic to resolve series URLs, primary book counts, and ratings.
+    - **Author Contact Tier**: Automated discovery of official websites, social media (FB/IG/X), and professional agent representation via deep web scraping.
+- **Automated AI Subgenre Classification**: Intelligent Romantasy/Subgenre classification analyzing synopses and tags to automatically categorize books.
+- **Standalone Excel Delivery**: Generates dedicated, standalone `.xlsx` workbooks with advanced formatting (Text Wrapping, Top-Alignment, and Professional Header Styling) ready for Google Sheets or CRM integration.
 
-### 🏢 Universal Agency Scraper
-Point the industrial engine at any agency catalog to generate a standalone, formatted report.
+## 🛠️ System Usage
 
-*   **Command**: `python agency_mission_control.py "Agency Name" "Target URL"`
-*   **Example**: `python agency_mission_control.py "Knight Agency" "https://knightagency.net/ourbooks/?product_cat=romantic-suspense"`
-*   **Features**: Dynamic file naming, automated styling, and intelligent Romantasy classification.
+### 1. Web Application Mode (API + UI)
+Launch the full-stack application to run scraping jobs via the frontend UI.
+```bash
+# From the root directory, start both frontend and backend concurrently
+npm run dev
+```
+*   **Features**: REST endpoints (`/api/scrape-bestsellers`, `/api/download`), interactive Playwright sessions, and automated background processing.
 
-### 🛠️ Universal Agency Repair
-Deep-sync missing Goodreads metadata for any agency file.
+### 2. Universal Agency Mission Control
+Run the universal agency catalog crawler directly from the CLI.
+```bash
+python backend/agency_mission_control.py "Agency Name" "Target URL"
+```
+*   **Features**: Dynamic pagination handling, deep scrolling for lazy-loaded catalogs, cloudflare bypass handling, and automated styling.
 
-*   **Command**: `python repair_agency_goodreads.py "Agency Name"`
-*   **Example**: `python repair_agency_goodreads.py "Knight Agency"`
-*   **Features**: Smart title normalization, fallback series-link detection, and automatic deduplication.
+### 3. Deep Metadata Repair
+Deep-sync missing Goodreads metadata for any existing agency file.
+```bash
+python backend/repair_goodreads.py "Path to Excel File"
+```
 
-## 🛠️ Technical Stack
+## 🏗️ Technical Stack
 
-- **Backend**: Python 3.11, Playwright (Async), Pandas, OpenPyXL.
-- **Logic Engine**: Multi-tab extraction (10-tab concurrency for enrichment), Regex-based normalization, Taxonomy-aware classification, and mission-aware state polling.
-- **Frontend**: React 18, Vite, TypeScript, Tailwind CSS, Framer Motion.
+- **Backend / Data Pipeline**: Python 3.11+, Flask (REST API), Playwright (Async Chromium), Pandas, OpenPyXL.
+- **Logic Engine**: Multi-tab extraction (Concurrency limiters), Regex-based normalization, Taxonomy-aware classification, and mission-aware state polling.
+- **Frontend**: React 19, Vite, TypeScript, Tailwind CSS, Framer Motion.
+- **Execution**: `concurrently` for running the full stack, `venv` for Python package isolation.
 
 ---
 
 ## 📁 System Architecture
 
 ```text
-Book Scraper Engine/
+PocketFM/
 ├── backend/
-│   ├── agency_mission_control.py # Agency Catalog Crawler & Enrichment Orchestrator
-│   ├── keyword_scraper.py   # Main Industrial Mission Orchestrator
-│   ├── scraper.py           # Multi-Tiered Intelligence (Amazon/Goodreads/Author)
-│   ├── repair_goodreads.py  # Quality Assurance & Deep Metadata Repair
-│   ├── excel_utility.py     # Professional Excel Sync & Formatting
-│   └── *_state.json         # Real-time Mission Tracking & Persistence
+│   ├── app.py                   # Flask REST API & Core Entrypoint
+│   ├── agency_mission_control.py# Universal Agency Catalog Crawler & Orchestrator
+│   ├── keyword_scraper.py       # Specific Keyword/Search Mission Orchestrator
+│   ├── scraper.py               # Core Multi-Tiered Playwright Scrapers
+│   ├── goodreads_scraper.py     # Dedicated Goodreads Data Enrichment
+│   ├── repair_goodreads.py      # Quality Assurance & Deep Metadata Repair
+│   ├── ai_classifier.py         # AI Synopsis & Subgenre Classification
+│   ├── romantasy_analyzer.py    # Specific Romantasy Taxonomy Logic
+│   ├── excel_utility.py         # Professional Excel Sync & Formatting
+│   └── *_state.json             # Real-time Mission Tracking & Persistence
 ├── frontend/
-│   ├── src/                 # Premium React UI for Mission Control
-└── data/                    # Dynamic Output Directory for Master Workbooks
+│   ├── src/                     # React UI for Mission Control
+│   ├── package.json             # React Dependencies
+│   └── vite.config.ts           # Vite Bundler Config
+└── package.json                 # Root Concurrent Script Runner
 ```
 
 ---
@@ -67,17 +81,14 @@ Book Scraper Engine/
 
 | Section | Key Data Points |
 | :--- | :--- |
-| **Market Metadata** | Genre/Sub-Genre, Price, Stars, Ratings, Bestseller Rank, Publisher, ASIN. |
+| **Market Metadata** | Genre/Sub-Genre, Price, Stars, Ratings, Bestseller Rank, Publisher. |
 | **Series Intelligence** | Series URL, Book Order, Total Series Volumes, Series Ratings/Stats. |
-| **Creative Content** | Loglines, One-Sentence hooks, Genre classifications. |
+| **Creative Content** | Synopsis, Loglines, One-Sentence hooks, AI Classifications. |
 | **Author Enrichment** | Email, Agent Contacts, Website, Facebook, Instagram, Twitter/X. |
-
----
 
 ## ⚖️ Quality & Fidelity Standards
 
 The platform enforces the **"Total Fidelity"** protocol:
-1. **Deduplication**: Automatic filtering of sponsored results and duplicate entries across missions.
+1. **Deduplication**: Automatic filtering of duplicate entries and robust state tracking.
 2. **Cross-Reference Validation**: Every record is cross-validated across multiple sources (Amazon/Goodreads) to ensure accuracy.
 3. **Deep Contact Discovery**: Multi-source validation for author and professional representation emails.
-
