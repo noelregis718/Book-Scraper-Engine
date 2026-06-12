@@ -77,22 +77,27 @@ class GoodreadsScraper:
                 print("  [Goodreads] Already logged in.")
                 return True
 
-            # Login fields
-            email_field = await page.query_selector('input[type="email"], input[name="user[email]"]')
-            pass_field = await page.query_selector('input[type="password"], input[name="user[password]"]')
-            
-            if email_field and pass_field:
-                await email_field.fill(creds['email'])
-                await pass_field.fill(creds['password'])
+            # If on the initial sign-in page, click "Sign in with email"
+            try:
+                email_btn = page.locator('a:has-text("Sign in with email")')
+                if await email_btn.is_visible():
+                    await email_btn.click()
+                    await page.wait_for_load_state("networkidle")
+            except: pass
+
+            # Use Amazon-style selectors for Goodreads login
+            if await page.locator("#ap_email").is_visible():
+                await page.fill("#ap_email", creds['email'])
+                await page.fill("#ap_password", creds['password'])
                 
-                # Check for CAPTCHA
+                # Check for CAPTCHA before submitting
                 if await page.query_selector('#captcha-image, .captcha'):
                     print("  [Action Required] CAPTCHA detected! Please solve it in the browser window...")
-                    # Wait for the user to solve it and for the login to finish
                     await page.wait_for_selector('a.headerPersonalNav__link[href*="/user/show"]', timeout=300000)
                 else:
-                    await page.click('input[type="submit"], #signInSubmit')
-                    # Wait to confirm login by looking for the user menu or profile link
+                    await page.click("#signInSubmit")
+                    print("  [Auto-Login] Credentials submitted...", flush=True)
+                    
                     try:
                         print("  [Goodreads] Waiting for user profile to appear...", flush=True)
                         await page.wait_for_selector('.headerPersonalNav__link[href*="/user/show"], [data-testid="userProfileMenu"]', timeout=45000)
