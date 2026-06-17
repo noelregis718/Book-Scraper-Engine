@@ -8,12 +8,17 @@ wb = openpyxl.load_workbook(file_path)
 ws = wb.active
 
 # Define styles
-header_font = Font(bold=True, color="FFFFFF")
+header_font = Font(bold=True, color="FFFFFF", name='Calibri', size=11)
 header_fill = PatternFill(start_color="4F81BD", end_color="4F81BD", fill_type="solid")
 alignment_center = Alignment(horizontal="center", vertical="center", wrap_text=True)
 alignment_left_top = Alignment(horizontal="left", vertical="top", wrap_text=True)
-thin_border = Border(left=Side(style='thin', color='BFBFBF'), right=Side(style='thin', color='BFBFBF'), 
-                     top=Side(style='thin', color='BFBFBF'), bottom=Side(style='thin', color='BFBFBF'))
+thin_border = Border(left=Side(style='thin', color='BFBFBF'), 
+                     right=Side(style='thin', color='BFBFBF'), 
+                     top=Side(style='thin', color='BFBFBF'), 
+                     bottom=Side(style='thin', color='BFBFBF'))
+
+hyperlink_font = Font(color="0563C1", underline="single", name='Calibri', size=11)
+regular_font = Font(name='Calibri', size=11)
 
 print("Formatting header...")
 for col in range(1, ws.max_column + 1):
@@ -39,19 +44,28 @@ column_widths = {
     'K': 20  # Name of agent
 }
 
-# Apply column widths
 for i, col in enumerate(range(1, ws.max_column + 1)):
     letter = get_column_letter(col)
     if letter in column_widths:
         ws.column_dimensions[letter].width = column_widths[letter]
 
-# Apply alignment and borders to all data cells
+print("Applying data styles...")
 for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=1, max_col=ws.max_column):
     for cell in row:
         cell.alignment = alignment_left_top
         cell.border = thin_border
+        
+        # Format the hyperlink column (Column D is 4)
+        if cell.column == 4 and cell.value and str(cell.value).startswith('http'):
+            cell.font = hyperlink_font
+            cell.hyperlink = cell.value
+        else:
+            cell.font = regular_font
 
-# Freeze the top row so it stays visible when scrolling
+# Try to clear specific row heights so Excel auto-fits the wrapped text
+for row in range(2, ws.max_row + 1):
+    ws.row_dimensions[row].height = None
+
 ws.freeze_panes = 'A2'
 
 print("Saving workbook...")

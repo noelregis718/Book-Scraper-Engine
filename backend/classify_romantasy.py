@@ -1,7 +1,8 @@
 import pandas as pd
 import re
+import sys
 
-EXCEL_FILE = "e:/Internship/PocketFM/books_from_images.xlsx"
+EXCEL_FILE = sys.argv[1] if len(sys.argv) > 1 else "e:/Internship/PocketFM/books_from_images.xlsx"
 
 SUBGENRES = {
     "High Fantasy Court Adventure": [r"\bcourt\b", r"\bking\b", r"\bqueen\b", r"\bkingdom\b", r"\bthrone\b", r"\bcrown\b", r"\bprince\b", r"\bprincess\b", r"\brealm\b", r"\bfae\b", r"\belf\b", r"\bempire\b", r"\broyal\b"],

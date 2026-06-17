@@ -16,7 +16,7 @@ columns = [
     "Synopsis (if available)",
     "Romantasy = Yes or No?",
     "Romantasy Sub-Genre of series",
-    "Name of agent"
+    "Name of agent in the main folder"
 ]
 
 df = pd.DataFrame(columns=columns)

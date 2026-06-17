@@ -4,8 +4,9 @@ import pandas as pd
 import urllib.parse
 import os
 import re
+import sys
 
-EXCEL_FILE = "e:/Internship/PocketFM/books_from_images.xlsx"
+EXCEL_FILE = sys.argv[1] if len(sys.argv) > 1 else "e:/Internship/PocketFM/books_from_images.xlsx"
 
 async def scrape_book(context, df, index, title, author):
     page = await context.new_page()
