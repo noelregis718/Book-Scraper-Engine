@@ -259,23 +259,52 @@ class GoodreadsScraper:
                     # Wait for results to actually populate
                     await asyncio.sleep(2.5)
                     
-                    # Broad Selection: Grab the first valid book link from any results container
-                    first_link = await page.query_selector('a.bookTitle, [data-testid="bookTitle"] a, .bookTitle, [data-testid="bookSearchResult"] a, h3 a[href*="/book/show/"]')
+                    # Broad Selection: Evaluate top results for highest rating if title matches
+                    results_data = []
+                    rows = await page.query_selector_all('tr[itemtype="http://schema.org/Book"], [data-testid="bookSearchResult"]')
                     
-                    if not first_link:
-                        # Check for CAPTCHA
-                        if await page.query_selector('#captcha-image, .captcha, iframe[src*="captcha"]'):
-                            print(f"\n    [!!! ACTION REQUIRED !!!] CAPTCHA detected for '{title}'! Please solve it in the browser window. (5 minute timeout)")
-                        try:
-                            await page.wait_for_selector('a.bookTitle, [data-testid="bookTitle"] a, .bookTitle', timeout=300000)
-                            first_link = await page.query_selector('a.bookTitle, [data-testid="bookTitle"] a, .bookTitle, [data-testid="bookSearchResult"] a')
-                        except:
-                            print(f"    [Timeout] CAPTCHA not solved in 5 minutes. Falling back to Tier 2...")
-                            book_url = None
+                    if rows:
+                        for row in rows[:5]:
+                            title_el = await row.query_selector('a.bookTitle, [data-testid="bookTitle"] a, .bookTitle, h3 a[href*="/book/show/"]')
+                            rating_el = await row.query_selector('.minirating, [data-testid="rating"]')
+                            if title_el:
+                                b_title = await title_el.inner_text()
+                                b_link = await title_el.evaluate("el => el.href")
+                                b_rating = 0.0
+                                if rating_el:
+                                    r_text = await rating_el.inner_text()
+                                    r_match = re.search(r'([\d.]+)\s*avg', r_text.lower())
+                                    if r_match: b_rating = float(r_match.group(1))
+                                results_data.append({"title": b_title.strip(), "link": b_link, "rating": b_rating})
                                 
-                    if first_link and not book_url:
-                        book_url = await first_link.evaluate("el => el.href")
-                        print(f"    [Goodreads] Success! Captured result: {book_url}")
+                    if results_data:
+                        target_t = clean_query_title.lower()
+                        matches = []
+                        for r in results_data:
+                            rt_clean = normalize_title_for_search(r["title"]).lower()
+                            if target_t in rt_clean or rt_clean in target_t:
+                                matches.append(r)
+                                
+                        if not matches:
+                            matches = results_data[:3]
+                            
+                        matches.sort(key=lambda x: x["rating"], reverse=True)
+                        book_url = matches[0]["link"]
+                        print(f"    [Goodreads] Selected highest rated match: '{matches[0]['title']}' ({matches[0]['rating']} avg rating)")
+                    
+                    if not book_url:
+                        first_link = await page.query_selector('a.bookTitle, [data-testid="bookTitle"] a, .bookTitle, [data-testid="bookSearchResult"] a, h3 a[href*="/book/show/"]')
+                        if not first_link:
+                            if await page.query_selector('#captcha-image, .captcha, iframe[src*="captcha"]'):
+                                print(f"\n    [!!! ACTION REQUIRED !!!] CAPTCHA detected for '{title}'! Please solve it in the browser window. (5 minute timeout)")
+                            try:
+                                await page.wait_for_selector('a.bookTitle, [data-testid="bookTitle"] a, .bookTitle', timeout=300000)
+                                first_link = await page.query_selector('a.bookTitle, [data-testid="bookTitle"] a, .bookTitle, [data-testid="bookSearchResult"] a')
+                            except:
+                                print(f"    [Timeout] CAPTCHA not solved in 5 minutes. Falling back to Tier 2...")
+                        if first_link:
+                            book_url = await first_link.evaluate("el => el.href")
+                            print(f"    [Goodreads] Success! Captured fallback result: {book_url}")
                 except Exception as e:
                     print(f"    [Goodreads] Search error: {e}")
                 
@@ -384,3 +413,62 @@ class GoodreadsScraper:
             return {}
         finally:
             await page.close()
+
+    async def scrape_top_books_by_author(self, context, author_name, count=2):
+        """Finds the top `count` highest-rated books for an author and scrapes them."""
+        page = await context.new_page()
+        results = []
+        top_books = []
+        try:
+            print(f"    [Goodreads] Searching for author: {author_name}...", flush=True)
+            search_url = f"https://www.goodreads.com/search?q={author_name.replace(' ', '+')}"
+            await page.set_extra_http_headers({
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            })
+            await page.goto(search_url, wait_until="domcontentloaded", timeout=45000)
+            await asyncio.sleep(2.5)
+            
+            author_link = await page.query_selector('a[href*="/author/show/"]')
+            if not author_link:
+                author_link = await page.query_selector('.authorName, .authorName__container a')
+
+            if not author_link:
+                print(f"    [Goodreads] Could not find author profile for: {author_name}", flush=True)
+                return []
+                
+            author_url = await author_link.evaluate("el => el.href")
+            await page.goto(author_url, wait_until="domcontentloaded", timeout=45000)
+            await asyncio.sleep(2.5)
+            
+            book_els = await page.query_selector_all('tr[itemtype="http://schema.org/Book"]')
+            book_candidates = []
+            
+            for row in book_els[:15]:
+                title_el = await row.query_selector('a.bookTitle')
+                rating_el = await row.query_selector('.minirating')
+                if title_el and rating_el:
+                    title = (await title_el.inner_text()).strip()
+                    link = await title_el.evaluate("el => el.href")
+                    r_text = await rating_el.inner_text()
+                    r_match = re.search(r'([\d.]+)\s*avg', r_text.lower())
+                    rating = float(r_match.group(1)) if r_match else 0.0
+                    
+                    if link not in [b['link'] for b in book_candidates]:
+                        book_candidates.append({'title': title, 'link': link, 'rating': rating})
+            
+            if book_candidates:
+                book_candidates.sort(key=lambda x: x['rating'], reverse=True)
+                top_books = book_candidates[:count]
+                for b in top_books:
+                    print(f"    [Goodreads] Selected '{b['title']}' ({b['rating']} avg rating)")
+        except Exception as e:
+            print(f"    [Goodreads] Author scrape error: {e}", flush=True)
+        finally:
+            await page.close()
+            
+        for b in top_books:
+            details = await self.scrape_goodreads_data(context, title=b['title'], author=author_name, existing_url=b['link'])
+            if details:
+                results.append(details)
+                
+        return results
