@@ -29,3 +29,4 @@ keyword_scraper.lock
 # Credentials
 backend/gr_creds.json
 .env
+playwright_goodreads_profile/
