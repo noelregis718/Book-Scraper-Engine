@@ -24,9 +24,9 @@ async def process_book(index, row, df, excel_path, scraper, context, semaphore):
     if author.lower() == 'nan':
         author = ""
     
-    # Check if already processed (Missing Author Name is the new trigger)
-    current_author = str(row.get("Author Name", ""))
-    if current_author and current_author.lower() != "nan" and current_author.strip() != "":
+    # Check if already processed (Missing Romantasy flag is the new trigger)
+    romantasy_status = str(row.get("Romantasy = Yes or No?", ""))
+    if romantasy_status and romantasy_status.lower() != "nan" and romantasy_status.strip() == "Yes":
         return
 
     if not title or title == "nan":
@@ -48,7 +48,10 @@ async def process_book(index, row, df, excel_path, scraper, context, semaphore):
             df.at[index, "Rating (out of 5) of Primary Book 1"] = data.get("Book1_Rating", "")
             df.at[index, "Ratings (#) of Primary Book 1"] = data.get("Book1_Num_Ratings", "")
             df.at[index, "Synopsis (if available)"] = data.get("Description", "")
-            df.at[index, "Author Name"] = data.get("Author_Found", "")
+            author_val = data.get("Author_Found", "")
+            if author_val == "N/A":
+                author_val = ""
+            df.at[index, "Author Name"] = author_val
             
             # Use proper AI Taxonomy to detect Romantasy and Sub-Genre
             romantasy = str(df.at[index, "Romantasy = Yes or No?"])
@@ -109,5 +112,5 @@ async def scrape_next_agency_books(excel_path):
         print(f"Error applying style: {e}", flush=True)
 
 if __name__ == "__main__":
-    target_excel = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "City Owl Press.xlsx")
+    target_excel = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "Next_Agency.xlsx")
     asyncio.run(scrape_next_agency_books(target_excel))

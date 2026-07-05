@@ -194,10 +194,19 @@ class GoodreadsScraper:
             title_el = await page.query_selector('[data-testid="bookTitle"], #bookTitle')
             title = clean_text(await title_el.inner_text()) if title_el else "N/A"
 
+            # Author Logic
+            author_name = "N/A"
+            try:
+                author_el = await page.query_selector('.ContributorLink__name, [data-testid="authorName"]')
+                if author_el:
+                    author_name = clean_text(await author_el.inner_text())
+            except: pass
+
             return {
                 "GoodReads_Series_URL": series_url,
                 "GoodReads_Book_URL": page.url,
                 "GoodReads_Rating": avg_rating,
+                "Author_Found": author_name,
                 "GoodReads_Rating_Count": rating_count,
                 "Genre": genre_main,
                 "Sub_Genre": genre_sub,
