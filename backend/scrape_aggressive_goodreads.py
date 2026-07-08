@@ -49,7 +49,7 @@ async def process_book(index, row, df, excel_path, scraper, context, semaphore):
             df.at[index, "Ratings (#) of Primary Book 1"] = data.get("Book1_Num_Ratings", "")
             df.at[index, "Synopsis (if available)"] = data.get("Description", "")
             author_val = data.get("Author_Found", "")
-            if author_val == "N/A":
+            if str(author_val).lower() in ["n/a", "nan", "unknown", "none", ""]:
                 author_val = ""
             df.at[index, "Author Name"] = author_val
             

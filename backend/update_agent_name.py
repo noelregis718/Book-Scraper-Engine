@@ -8,8 +8,8 @@ from apply_jra_style import apply_styling
 file_path = 'e:/Internship/PocketFM/Next_Agency.xlsx'
 df = pd.read_excel(file_path)
 
-df['Name of agent in the main folder'] = 'Sherri Somerville'
+df['Name of agent in the main folder'] = 'Elizabeth Fortin'
 df.to_excel(file_path, index=False)
 apply_styling(file_path)
 
-print('Agent name successfully updated to Sherri Somerville!')
+print('Agent name successfully updated to Elizabeth Fortin!')
