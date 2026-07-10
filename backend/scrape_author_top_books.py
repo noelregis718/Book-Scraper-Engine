@@ -8,7 +8,7 @@ from playwright.async_api import async_playwright
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from goodreads_scraper import GoodreadsScraper
 
-EXCEL_FILE = r"E:\Internship\PocketFM\the_rights_factory_books_formatted.xlsx"
+EXCEL_FILE = r"E:\Internship\PocketFM\Next_Agency.xlsx"
 MAX_CONCURRENT = 5
 
 def normalize_title(title):
@@ -35,7 +35,7 @@ async def process_new_book(context, scraper, title, author, semaphore):
             "Synopsis (if available)": "N/A",
             "Romantasy = Yes or No?": "No",
             "Romantasy Sub-Genre of series": "",
-            "Name of agent": ""
+            "Name of agent in the main folder": ""
         }
         
         try:
@@ -94,7 +94,7 @@ async def run_scrape():
             safe_author = author.encode('ascii', 'ignore').decode('ascii')
             print(f"Checking author: {safe_author}")
             # Use login_page to just search the author
-            top_books = await scraper.search_author_books_with_links(login_page, author, max_books=3)
+            top_books = await scraper.search_author_books_with_links(login_page, author, max_books=2)
             
             if not top_books:
                 print(f"  No books found for {safe_author}")
