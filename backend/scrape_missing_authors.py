@@ -77,7 +77,7 @@ async def run():
         return
 
     scraper = GoodreadsScraper(headless=False)
-    semaphore = asyncio.Semaphore(8) # 8 concurrent tabs
+    semaphore = asyncio.Semaphore(10) # 10 concurrent tabs
     
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=False)

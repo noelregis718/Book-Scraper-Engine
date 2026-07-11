@@ -81,8 +81,8 @@ async def scrape_next_agency_books(excel_path):
     # Initialize the core scraper module (Headless=False for captcha bypass)
     scraper = GoodreadsScraper(headless=False)
     
-    # Concurrency of 8 parallel browser tabs as requested
-    semaphore = asyncio.Semaphore(8)
+    # Concurrency of 10 parallel browser tabs as requested
+    semaphore = asyncio.Semaphore(10)
     
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=False)
