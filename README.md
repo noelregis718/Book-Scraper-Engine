@@ -21,6 +21,28 @@ Built for **infinite discovery** and adaptability:
 - **Automated AI Subgenre Classification**: Intelligent Romantasy/Subgenre classification analyzing synopses and tags to automatically categorize books.
 - **Standalone Excel Delivery**: Generates dedicated, standalone `.xlsx` workbooks with advanced formatting (Text Wrapping, Top-Alignment, and Professional Header Styling) ready for Google Sheets or CRM integration.
 
+## 🔄 Scraping & Automation Workflow
+
+The platform orchestrates a seamless end-to-end data extraction and enrichment pipeline, ensuring maximum data fidelity through intelligent fallbacks and cross-validation.
+
+```mermaid
+graph TD
+    A["Start Scraping Job"] --> B{"Trigger Method"}
+    B -->|"Web UI & API"| C["React Frontend + Flask Backend"]
+    B -->|"CLI Script"| D["Universal Agency / Keyword Crawler"]
+    
+    C --> E["Orchestration Engine"]
+    D --> E
+    
+    E --> F["Market Tier<br>Amazon Extractor"]
+    F --> G["Community Tier<br>Goodreads Metadata & Series Fallback"]
+    G --> H["Author Contact Tier<br>Deep Web Social & Email Scraping"]
+    
+    H --> I["AI Classification Engine<br>Synopsis & Taxonomy Analysis"]
+    I --> J["Data Normalization & Deduplication"]
+    J --> K["Standalone Excel Delivery .xlsx"]
+```
+
 ## 🛠️ System Usage
 
 ### 1. Web Application Mode (API + UI)
