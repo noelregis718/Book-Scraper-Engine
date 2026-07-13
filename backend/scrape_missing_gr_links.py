@@ -1,63 +1,103 @@
 import asyncio
-import pandas as pd
-from playwright.async_api import async_playwright
-import sys
 import os
+import openpyxl
+from playwright.async_api import async_playwright
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from goodreads_scraper import GoodreadsScraper
+EXCEL_FILE = '../New_Agency_Template.xlsx'
 
-async def run_scraper():
-    excel_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'Standard_11_Column_Format.xlsx')
+async def fetch_link(context, title, author, sem, row_idx, ws):
+    async with sem:
+        page = await context.new_page()
+        try:
+            print(f"[Row {row_idx}] Searching link for: '{title}' by {author}...")
+            # We use brave search because it's fast and doesn't block
+            query = f'"{title}" {author} goodreads'
+            url = f"https://search.brave.com/search?q={query.replace(' ', '+')}"
+            
+            await page.goto(url, wait_until="domcontentloaded", timeout=45000)
+            await asyncio.sleep(1)
+            
+            # Look for the first goodreads book link
+            links = await page.query_selector_all('a[href*="goodreads.com/book/show/"]')
+            found_link = None
+            if links:
+                for link in links:
+                    href = await link.evaluate("el => el.href")
+                    if href and "goodreads.com/book/show/" in href:
+                        found_link = href
+                        break
+                        
+            if not found_link:
+                # Try a broader search without quotes
+                query = f'{title} {author} goodreads book'
+                url = f"https://search.brave.com/search?q={query.replace(' ', '+')}"
+                await page.goto(url, wait_until="domcontentloaded", timeout=45000)
+                await asyncio.sleep(1)
+                links = await page.query_selector_all('a[href*="goodreads.com/book/show/"]')
+                if links:
+                    for link in links:
+                        href = await link.evaluate("el => el.href")
+                        if href and "goodreads.com/book/show/" in href:
+                            found_link = href
+                            break
+
+            if found_link:
+                print(f"  -> [Row {row_idx}] Success: {found_link}")
+                ws.cell(row=row_idx, column=4).value = found_link
+            else:
+                print(f"  -> [Row {row_idx}] Failed to find link.")
+                ws.cell(row=row_idx, column=4).value = "Not Found"
+                
+        except Exception as e:
+            print(f"  -> [Row {row_idx}] Error: {e}")
+            ws.cell(row=row_idx, column=4).value = "Error"
+        finally:
+            await page.close()
+
+async def main():
+    print(f"Loading Excel file: {EXCEL_FILE}")
+    wb = openpyxl.load_workbook(EXCEL_FILE)
+    ws = wb.active
     
-    print(f"Loading Excel file: {excel_path}")
-    df = pd.read_excel(excel_path)
-
-    scraper = GoodreadsScraper(headless=False)
+    tasks_data = []
+    
+    # Column 4 is GoodReads series link (D)
+    for row in range(2, ws.max_row + 1):
+        title = ws.cell(row=row, column=1).value
+        author = ws.cell(row=row, column=2).value
+        link = ws.cell(row=row, column=4).value
+        
+        if title and str(title).strip() and str(title).strip() != "N/A":
+            if not link or str(link).strip() == "N/A" or str(link).strip() == "nan":
+                tasks_data.append({
+                    'row': row,
+                    'title': str(title).strip(),
+                    'author': str(author).strip() if author else ""
+                })
+                
+    print(f"Found {len(tasks_data)} books missing links.")
+    if not tasks_data:
+        return
+        
+    sem = asyncio.Semaphore(8) # 8 tabs concurrently for maximum speed
     
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=False)
-        context = await browser.new_context()
-        page = await context.new_page()
+        print("Launching headless browser...")
+        browser = await p.chromium.launch(headless=True)
+        context = await browser.new_context(
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        )
         
-        # Login
-        await scraper.login_to_goodreads(page)
-        
-        missing_indices = df.index[(df['GoodReads series link'].isna()) | (df['GoodReads series link'] == 'N/A') | (df['GoodReads series link'] == '')].tolist()
-        print(f"\nFound {len(missing_indices)} books missing Goodreads links. Starting aggressive link scraper...")
-        
-        for idx in missing_indices:
-            title = str(df.at[idx, 'Name of Series'])
-            author = str(df.at[idx, 'Author Name']) if pd.notna(df.at[idx, 'Author Name']) else ""
+        tasks = []
+        for t in tasks_data:
+            tasks.append(fetch_link(context, t['title'], t['author'], sem, t['row'], ws))
             
-            print(f"\n[Scraping Link] {title} by {author}")
-            query = f"{title} {author}".strip()
-            
-            try:
-                search_url = f"https://www.goodreads.com/search?q={query.replace(' ', '+')}"
-                await page.goto(search_url, wait_until="domcontentloaded")
-                await asyncio.sleep(2)
-                
-                # Grab the first book link
-                first_link = await page.query_selector('a.bookTitle, [data-testid="bookTitle"] a')
-                if first_link:
-                    book_url = await first_link.evaluate("el => el.href")
-                    # Remove query params to make the link clean
-                    clean_url = book_url.split('?')[0]
-                    
-                    df.at[idx, 'GoodReads series link'] = clean_url
-                    print(f"  -> Found Link: {clean_url}")
-                else:
-                    print(f"  -> Could not find link for {title}")
-                    
-            except Exception as e:
-                print(f"  -> Error scraping {title}: {e}")
-                
-            # Auto-save
-            df.to_excel(excel_path, index=False)
-            
-        print("\n--- Scrape Complete! Excel file updated. ---")
+        print("\n--- Starting highly concurrent link extraction ---")
+        await asyncio.gather(*tasks)
         await browser.close()
+        
+    wb.save(EXCEL_FILE)
+    print("\nExcel file updated successfully with recovered links!")
 
 if __name__ == "__main__":
-    asyncio.run(run_scraper())
+    asyncio.run(main())
