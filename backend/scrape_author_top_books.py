@@ -2,157 +2,142 @@ import asyncio
 import os
 import sys
 import pandas as pd
-import re
 from playwright.async_api import async_playwright
+import re
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from goodreads_scraper import GoodreadsScraper
 
-EXCEL_FILE = r"E:\Internship\PocketFM\Next_Agency.xlsx"
-MAX_CONCURRENT = 5
+EXCEL_FILE = r"E:\Internship\PocketFM\New_Romantasy_Books.xlsx"
 
-def normalize_title(title):
-    if pd.isna(title) or not title:
-        return ""
-    t = str(title).lower()
-    t = re.sub(r'[^\w\s]', '', t)
-    return t.strip()
-
-async def process_new_book(context, scraper, title, author, semaphore):
-    async with semaphore:
-        safe_title = title.encode('ascii', 'ignore').decode('ascii') if title else 'Unknown'
-        safe_author = author.encode('ascii', 'ignore').decode('ascii') if author else 'Unknown'
-        print(f"  [Scraping New Book] '{safe_title}' by {safe_author}...")
+async def scrape_author_top_books(context, author_name):
+    page = await context.new_page()
+    results = []
+    try:
+        print(f"  Searching Goodreads for author: {author_name}...", flush=True)
+        search_url = f"https://www.goodreads.com/search?q={author_name.replace(' ', '+')}"
+        await page.goto(search_url, wait_until="domcontentloaded", timeout=45000)
+        await asyncio.sleep(2)
         
-        row_data = {
-            "Name of Series": title,
-            "Author Name": author,
-            "Publisher": "",
-            "GoodReads series link": "",
-            "Number of PRIMARY books in the series": 1,
-            "Rating (out of 5) of Primary Book 1": "N/A",
-            "Ratings (#) of Primary Book 1": "N/A",
-            "Synopsis (if available)": "N/A",
-            "Romantasy = Yes or No?": "No",
-            "Romantasy Sub-Genre of series": "",
-            "Name of agent in the main folder": ""
-        }
-        
-        try:
-            data = await scraper.scrape_goodreads_data(context, title, author)
-            if data:
-                link = data.get('GoodReads_Series_URL')
-                if not link or link == 'N/A':
-                    link = data.get('GoodReads_Book_URL', 'N/A')
-                if link == 'N/A': link = ''
-                    
-                row_data['GoodReads series link'] = link
-                row_data['Number of PRIMARY books in the series'] = data.get('Num_Primary_Books', 1)
-                
-                rating = data.get('Book1_Rating', 'N/A')
-                if rating == 'N/A': rating = data.get('GoodReads_Rating', 'N/A')
-                row_data['Rating (out of 5) of Primary Book 1'] = rating
-                
-                count = data.get('Book1_Num_Ratings', 'N/A')
-                if count == 'N/A': count = data.get('GoodReads_Rating_Count', 'N/A')
-                row_data['Ratings (#) of Primary Book 1'] = count
-                
-                row_data['Synopsis (if available)'] = data.get('Description', 'N/A')
-                row_data['Romantasy = Yes or No?'] = data.get('Romantasy_Subgenre', 'No')
-                
-                print(f"  [Done] '{safe_title}'")
-            else:
-                print(f"  [Not Found] '{safe_title}'")
-        except Exception as e:
-            err_msg = str(e).encode('ascii', 'ignore').decode('ascii')
-            print(f"  [Error] '{safe_title}': {err_msg}")
+        # Click the author link
+        author_link = await page.query_selector('a[href*="/author/show/"]')
+        if not author_link:
+            author_link = await page.query_selector('.authorName, .authorName__container a')
+
+        if not author_link:
+            print(f"    Could not find author profile for: {author_name}", flush=True)
+            await page.close()
+            return []
             
-        return row_data
+        author_url = await author_link.evaluate("el => el.href")
+        await page.goto(author_url, wait_until="domcontentloaded", timeout=45000)
+        await asyncio.sleep(2)
+        
+        # Wait for the book list
+        await page.wait_for_selector('tr[itemtype="http://schema.org/Book"]', timeout=10000)
+        
+        # Goodreads author pages list books sorted by popularity by default
+        book_rows = await page.query_selector_all('tr[itemtype="http://schema.org/Book"]')
+        
+        for row in book_rows[:2]: # Get first 2 books
+            try:
+                title_el = await row.query_selector('a.bookTitle span')
+                title = (await title_el.inner_text()).strip() if title_el else "Unknown"
+                
+                link_el = await row.query_selector('a.bookTitle')
+                link = await link_el.evaluate("el => el.href") if link_el else ""
+                
+                # Extract rating and number of ratings
+                # E.g., " 4.39 avg rating — 12,345 ratings"
+                meta_el = await row.query_selector('.minirating')
+                meta_text = (await meta_el.inner_text()).strip() if meta_el else ""
+                
+                rating = ""
+                ratings_count = ""
+                
+                if meta_text:
+                    rating_match = re.search(r'([\d.]+)\s*avg rating', meta_text)
+                    if rating_match:
+                        rating = rating_match.group(1)
+                        
+                    count_match = re.search(r'—\s*([\d,]+)\s*rating', meta_text)
+                    if count_match:
+                        ratings_count = count_match.group(1).replace(',', '')
+                
+                results.append({
+                    'title': title,
+                    'link': link,
+                    'rating': rating,
+                    'ratings_count': ratings_count
+                })
+            except Exception as e:
+                print(f"    Error extracting a book for {author_name}: {e}")
+                
+    except Exception as e:
+        print(f"    Error processing author {author_name}: {e}")
+    finally:
+        await page.close()
+        
+    return results
 
-async def run_scrape():
+async def main():
+    if not os.path.exists(EXCEL_FILE):
+        print(f"Error: {EXCEL_FILE} not found!")
+        return
+
+    print(f"Loading {EXCEL_FILE}...")
     df = pd.read_excel(EXCEL_FILE)
     
-    # Get unique authors
+    # Get unique authors who actually have a name
     authors = df['Author Name'].dropna().unique()
-    authors = [a for a in authors if str(a).strip() != '']
-    print(f"Found {len(authors)} unique authors.")
+    authors = [a for a in authors if str(a).strip() != "" and str(a).strip().lower() != "nan"]
     
-    scraper = GoodreadsScraper()
-    new_books_to_scrape = []
+    # Get existing book titles to avoid duplicates
+    existing_titles = set(str(t).lower().strip() for t in df['Name of Series'].dropna())
+    
+    new_rows = []
     
     async with async_playwright() as p:
+        # Running visible so you can solve CAPTCHAs if needed
         browser = await p.chromium.launch(headless=False)
-        context = await browser.new_context(
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-        )
+        context = await browser.new_context(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
         
-        login_page = await context.new_page()
-        await scraper.login_to_goodreads(login_page)
-        
-        print("--- Finding top 3 books for each author ---")
-        for author in authors:
-            safe_author = author.encode('ascii', 'ignore').decode('ascii')
-            print(f"Checking author: {safe_author}")
-            # Use login_page to just search the author
-            top_books = await scraper.search_author_books_with_links(login_page, author, max_books=2)
+        for idx, author in enumerate(authors):
+            print(f"\n[{idx+1}/{len(authors)}] Processing Author: {author}")
+            books = await scrape_author_top_books(context, author)
             
-            if not top_books:
-                print(f"  No books found for {safe_author}")
-                continue
+            for book in books:
+                print(f"    Found Book: {book['title']} (Rating: {book['rating']}, Votes: {book['ratings_count']})")
                 
-            # Get existing normalized titles for this author
-            existing_titles = df[df['Author Name'] == author]['Name of Series'].apply(normalize_title).tolist()
-            
-            for book in top_books:
-                found_title = book['title']
-                norm_found = normalize_title(found_title)
-                
-                # Check if it exists
-                # We do a basic substring check in both directions just in case
-                exists = False
-                for ex in existing_titles:
-                    if not ex or not norm_found: continue
-                    if ex in norm_found or norm_found in ex:
-                        exists = True
-                        break
-                        
-                if exists:
-                    print(f"  [Skipping] '{found_title.encode('ascii', 'ignore').decode('ascii')}' - Already in sheet")
+                if book['title'].lower().strip() not in existing_titles:
+                    new_row = {col: "" for col in df.columns}
+                    new_row['Author Name'] = author
+                    new_row['Name of Series'] = book['title']
+                    new_row['GoodReads series link'] = book['link']
+                    new_row['Rating (out of 5) of Primary Book 1'] = book['rating']
+                    new_row['Ratings (#) of Primary Book 1'] = book['ratings_count']
+                    # Label where we got it from just like the original script
+                    new_row['Website link from where this is scraped'] = "Goodreads Author Page"
+                    new_rows.append(new_row)
+                    existing_titles.add(book['title'].lower().strip())
                 else:
-                    print(f"  [Adding to Queue] '{found_title.encode('ascii', 'ignore').decode('ascii')}'")
-                    new_books_to_scrape.append({'title': found_title, 'author': author})
-        
-        await login_page.close()
-        
-        if not new_books_to_scrape:
-            print("No new books to scrape. All top books are already in the sheet!")
-        else:
-            print(f"--- Scraping {len(new_books_to_scrape)} new books aggressively ---")
-            semaphore = asyncio.Semaphore(MAX_CONCURRENT)
-            tasks = []
+                    print(f"    -> Book '{book['title']}' is already in the sheet. Skipping.")
             
-            for b in new_books_to_scrape:
-                tasks.append(process_new_book(context, scraper, b['title'], b['author'], semaphore))
-                
-            new_rows = await asyncio.gather(*tasks)
+            # Small delay to avoid hammering the server
+            await asyncio.sleep(2)
             
-            # Append to dataframe
-            new_df = pd.DataFrame(new_rows)
-            df = pd.concat([df, new_df], ignore_index=True)
-            
-            print("--- Rebuilding Excel File with new data ---")
-            df.to_excel(EXCEL_FILE, index=False)
-            
-            try:
-                from apply_jra_style import apply_styling
-                apply_styling(EXCEL_FILE)
-                print("--- Applied styling ---")
-            except Exception as e:
-                print(f"Could not apply styling: {e}")
-                
         await browser.close()
-    
-    print("ALL DONE!")
+        
+    if new_rows:
+        print(f"\nAdding {len(new_rows)} new top books to the spreadsheet...")
+        new_df = pd.DataFrame(new_rows)
+        df = pd.concat([df, new_df], ignore_index=True)
+        df.to_excel(EXCEL_FILE, index=False)
+        
+        # Apply formatting
+        os.system("python format_new_romantasy.py")
+        print("Done! Formatted and saved.")
+    else:
+        print("\nNo new books were added (they might have all been in the sheet already).")
 
-if __name__ == '__main__':
-    asyncio.run(run_scrape())
+if __name__ == "__main__":
+    asyncio.run(main())
