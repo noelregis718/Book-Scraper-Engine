@@ -1,0 +1,697 @@
+[
+  {
+    "text": "Sign Up",
+    "className": "rewards-sign-up__cta font-medium leading-[140%] underline text-[color:var(--color-black-2)]",
+    "href": "/account/login?return_to=https%3A%2F%2Fwww.barnesandnoble.com%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Paper Source",
+    "className": "pencil-banner__logo pencil-banner__alt-bg",
+    "href": "https://www.papersource.com/ "
+  },
+  {
+    "text": "Free Shipping on Orders of $60 or More",
+    "className": "",
+    "href": "https://www.barnesandnoble.com/?terms=free-shipping"
+  },
+  {
+    "text": "Free Shipping on Orders of $60 or More",
+    "className": "",
+    "href": "https://www.barnesandnoble.com/?terms=free-shipping"
+  },
+  {
+    "text": "Pick Up in Store: Ready in Two Hours",
+    "className": "",
+    "href": "https://www.barnesandnoble.com/pages/in-store-pickup"
+  },
+  {
+    "text": "Pick Up in Store: Ready in Two Hours",
+    "className": "",
+    "href": "https://www.barnesandnoble.com/pages/in-store-pickup"
+  },
+  {
+    "text": "Stores & Events",
+    "className": "header-main__utility-child hide-mobile no-hover",
+    "href": "https://stores.barnesandnoble.com/"
+  },
+  {
+    "text": "Gift Cards",
+    "className": "header-main__utility-child hide-mobile no-hover",
+    "href": "https://www.barnesandnoble.com/pages/gift-cards"
+  },
+  {
+    "text": "B&N Reads",
+    "className": "header-main__utility-child hide-mobile no-hover",
+    "href": "https://www.barnesandnoble.com/blog"
+  },
+  {
+    "text": "Barnes & Noble",
+    "className": "header-main__logo",
+    "href": "https://www.barnesandnoble.com/"
+  },
+  {
+    "text": "Join Membership",
+    "className": "header-main__utility-button header-main__utility-button--membership no-hover",
+    "href": "https://www.barnesandnoble.com/pages/membership"
+  },
+  {
+    "text": "Coming Soon",
+    "className": "header-nav__links-link no-hover",
+    "href": "https://www.barnesandnoble.com/collections/books/coming-soon"
+  },
+  {
+    "text": "eBooks & NOOK",
+    "className": "header-nav__links-link no-hover header-nav__links-link--has-megamenu",
+    "href": "https://www.barnesandnoble.com/collections/ebooks-nook"
+  },
+  {
+    "text": "Wishlist",
+    "className": "header-main__utility-child header-main__utility-child--wishlist",
+    "href": "https://www.barnesandnoble.com/account/wishlists"
+  },
+  {
+    "text": "A Court of Thorns and Roses 6",
+    "className": "no-hover",
+    "href": "/w/a-court-of-thorns-and-roses-6-sarah-j-maas/1149621379?ean=9781639739134"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button hide-desktop",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button desktop-only",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Sarah J. Maas",
+    "className": "",
+    "href": "/authors/sarah-j-maas?contributorId=14128641"
+  },
+  {
+    "text": "A Court of Thorns and Roses 7",
+    "className": "no-hover",
+    "href": "/w/a-court-of-thorns-and-roses-7-sarah-j-maas/1149621378?ean=9798260200568"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button hide-desktop",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button desktop-only",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Sarah J. Maas",
+    "className": "",
+    "href": "/authors/sarah-j-maas?contributorId=14128641"
+  },
+  {
+    "text": "Untitled Empyrean (Not Book Four)",
+    "className": "no-hover",
+    "href": "/w/untitled-empyrean-rebecca-yarros/1149915304?ean=9781682818084"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button hide-desktop",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button desktop-only",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Rebecca Yarros",
+    "className": "",
+    "href": "/authors/rebecca-yarros?contributorId=16440252"
+  },
+  {
+    "text": "The Knave and the Moon (B&N Exclusive Edition)",
+    "className": "no-hover",
+    "href": "/w/the-knave-and-the-moon-rachel-gillig/1148304786?ean=9780316608329"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button hide-desktop",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button desktop-only",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Rachel Gillig",
+    "className": "",
+    "href": "/authors/rachel-gillig?contributorId=23441489"
+  },
+  {
+    "text": "Field Guide for the Formerly Villainous (Deluxe Edition)",
+    "className": "no-hover",
+    "href": "/w/field-guide-for-the-formerly-villainous-autumn-k-england/1148080964?ean=9781464243301"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button hide-desktop",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button desktop-only",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Autumn K England",
+    "className": "",
+    "href": "/authors/autumn-k-england?contributorId=32363005"
+  },
+  {
+    "text": "Seven and the Swift (Shield of Sparrows Series #3)",
+    "className": "no-hover",
+    "href": "/w/seven-and-the-swift-devney-perry/1150506265?ean=9781682818251"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button hide-desktop",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button desktop-only",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Devney Perry",
+    "className": "",
+    "href": "/authors/devney-perry?contributorId=18953594"
+  },
+  {
+    "text": "The Ballad of Falling Dragons (Deluxe Limited Edition) (The Moonfall Series #2)",
+    "className": "no-hover",
+    "href": "/w/the-ballad-of-falling-dragons-sarah-a-parker/1146054865?ean=9780063415898"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button hide-desktop",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button desktop-only",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Sarah A. Parker",
+    "className": "",
+    "href": "/authors/sarah-a-parker?contributorId=28026734"
+  },
+  {
+    "text": "Rites of the Starling (Shield of Sparrows Series #2)",
+    "className": "no-hover",
+    "href": "/w/rites-of-the-starling-devney-perry/1148334932?ean=9781682816752"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button hide-desktop",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button desktop-only",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Devney Perry",
+    "className": "",
+    "href": "/authors/devney-perry?contributorId=18953594"
+  },
+  {
+    "text": "A Court of Thorns and Roses (A Court of Thorns and Roses Series #1)",
+    "className": "no-hover",
+    "href": "/w/a-court-of-thorns-and-roses-sarah-j-maas/1120160516?ean=9781635575569"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button hide-desktop",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button desktop-only",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Sarah J. Maas",
+    "className": "",
+    "href": "/authors/sarah-j-maas?contributorId=14128641"
+  },
+  {
+    "text": "The Knight and the Moth",
+    "className": "no-hover",
+    "href": "/w/the-knight-and-the-moth-rachel-gillig/1146221051?ean=9780316573757"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button hide-desktop",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button desktop-only",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Rachel Gillig",
+    "className": "",
+    "href": "/authors/rachel-gillig?contributorId=23441489"
+  },
+  {
+    "text": "Adversary to the Villain (B&N Exclusive Edition) (Assistant and the Villain #4)",
+    "className": "no-hover",
+    "href": "/w/adversary-to-the-villain-hannah-nicole-maehrer/1148285004?ean=9781682817230"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button hide-desktop",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button desktop-only",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Hannah Nicole Maehrer",
+    "className": "",
+    "href": "/authors/hannah-nicole-maehrer?contributorId=29490090"
+  },
+  {
+    "text": "Fourth Wing",
+    "className": "no-hover",
+    "href": "/w/fourth-wing-rebecca-yarros/1142297916?ean=9781649377371"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button hide-desktop",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button desktop-only",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Rebecca Yarros",
+    "className": "",
+    "href": "/authors/rebecca-yarros?contributorId=16440252"
+  },
+  {
+    "text": "Starside (Deluxe Limited Edition): A Novel",
+    "className": "no-hover",
+    "href": "/w/starside-alex-aster/1148270716?ean=9780063462434"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button hide-desktop",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button desktop-only",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Alex Aster",
+    "className": "",
+    "href": "/authors/alex-aster?contributorId=21330847"
+  },
+  {
+    "text": "When the Moon Hatched (The Moonfall Series #1)",
+    "className": "no-hover",
+    "href": "/w/when-the-moon-hatched-sarah-a-parker/1144506650?ean=9780063415805"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button hide-desktop",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button desktop-only",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Sarah A. Parker",
+    "className": "",
+    "href": "/authors/sarah-a-parker?contributorId=28026734"
+  },
+  {
+    "text": "Stormside (Deluxe Limited Edition) (Signed B&N Exclusive Book)",
+    "className": "no-hover",
+    "href": "/w/stormside-alex-aster/1150045994?ean=9780063579026"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button hide-desktop",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button desktop-only",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Alex Aster",
+    "className": "",
+    "href": "/authors/alex-aster?contributorId=21330847"
+  },
+  {
+    "text": "Onyx Storm (Wing and Claw Collection)",
+    "className": "no-hover",
+    "href": "/w/onyx-storm-rebecca-yarros/1145190835?ean=9781649374189"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button hide-desktop",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button desktop-only",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Rebecca Yarros",
+    "className": "",
+    "href": "/authors/rebecca-yarros?contributorId=16440252"
+  },
+  {
+    "text": "Fae & Alchemy Book 3 (Deluxe Limited Edition)",
+    "className": "no-hover",
+    "href": "/w/fae-alchemy-book-3-callie-hart/1148727327?ean=9781538774250"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button hide-desktop",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button desktop-only",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Callie Hart",
+    "className": "",
+    "href": "/authors/callie-hart?contributorId=16532618"
+  },
+  {
+    "text": "The Exquisite Torment of Loving Your Enemy (B&N Exclusive Edition)",
+    "className": "no-hover",
+    "href": "/w/the-exquisite-torment-of-loving-your-enemy-brigitte-knightley/1148477233?ean=9798217193547"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button hide-desktop",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button desktop-only",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Brigitte Knightley",
+    "className": "",
+    "href": "/authors/brigitte-knightley?contributorId=31723903"
+  },
+  {
+    "text": "Iron Flame",
+    "className": "no-hover",
+    "href": "/w/iron-flame-rebecca-yarros/1143445645?ean=9781649377579"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button hide-desktop",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button desktop-only",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Rebecca Yarros",
+    "className": "",
+    "href": "/authors/rebecca-yarros?contributorId=16440252"
+  },
+  {
+    "text": "In the Wake of the Ruined: A Novel",
+    "className": "no-hover",
+    "href": "/w/in-the-wake-of-the-ruined-kalie-cassidy/1148669234?ean=9780316587587"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button hide-desktop",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button desktop-only",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Kalie Cassidy",
+    "className": "",
+    "href": "/authors/kalie-cassidy?contributorId=31777386"
+  },
+  {
+    "text": "Fury Bound (Deluxe Limited Edition)",
+    "className": "no-hover",
+    "href": "/w/fury-bound-sable-sorensen/1147438479?ean=9780316601412"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button hide-desktop",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button desktop-only",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Sable Sorensen",
+    "className": "",
+    "href": "/authors/sable-sorensen?contributorId=31986159"
+  },
+  {
+    "text": "A Court of Mist and Fury (A Court of Thorns and Roses Series #2)",
+    "className": "no-hover",
+    "href": "/w/a-court-of-mist-and-fury-sarah-j-maas/1123052907?ean=9781635575583"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button hide-desktop",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button desktop-only",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Sarah J. Maas",
+    "className": "",
+    "href": "/authors/sarah-j-maas?contributorId=14128641"
+  },
+  {
+    "text": "Fourth Wing (Wing and Claw Collection)",
+    "className": "no-hover",
+    "href": "/w/fourth-wing-rebecca-yarros/1142297916?ean=9781649379290"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button hide-desktop",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button desktop-only",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Rebecca Yarros",
+    "className": "",
+    "href": "/authors/rebecca-yarros?contributorId=16440252"
+  },
+  {
+    "text": "Light Wielder: Fire & Metal: Book Two",
+    "className": "no-hover",
+    "href": "/w/light-wielder-rachel-schneider/1148378195?ean=9781250419101"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button hide-desktop",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Add Item to wish list",
+    "className": "wishlist-add__button desktop-only",
+    "href": "/account/login?return_to=%2Fpages%2Fbestsellers%3ForderBy%3Dattributes.mfield_bnb__salesRank%26attributes.subjectCategoryDisplayName%3DFantasy%2BRomance"
+  },
+  {
+    "text": "Rachel Schneider",
+    "className": "",
+    "href": "/authors/rachel-schneider?contributorId=14988654"
+  },
+  {
+    "text": "Help Center",
+    "className": "footer__column-link no-hover",
+    "href": "https://help.barnesandnoble.com/"
+  },
+  {
+    "text": "Shipping & Returns",
+    "className": "footer__column-link no-hover",
+    "href": "https://help.barnesandnoble.com/hc/en-us/categories/4520916573595-Shipping-Returns"
+  },
+  {
+    "text": "Gift Cards",
+    "className": "footer__column-link no-hover",
+    "href": "https://www.barnesandnoble.com/pages/gift-cards"
+  },
+  {
+    "text": "Store Pickup",
+    "className": "footer__column-link no-hover",
+    "href": "https://www.barnesandnoble.com/pages/in-store-pickup"
+  },
+  {
+    "text": "Product Recalls",
+    "className": "footer__column-link no-hover",
+    "href": "https://www.barnesandnoble.com/terms/product-recalls"
+  },
+  {
+    "text": "Corrections & Updates",
+    "className": "footer__column-link no-hover",
+    "href": "https://www.barnesandnoble.com/terms/corrections-updates"
+  },
+  {
+    "text": "B&N Press",
+    "className": "footer__column-link no-hover",
+    "href": "https://press.barnesandnoble.com/"
+  },
+  {
+    "text": "Publisher & Author Guidelines",
+    "className": "footer__column-link no-hover",
+    "href": "https://help.barnesandnoble.com/app/publisher_author/list"
+  },
+  {
+    "text": "Bulk Order Discounts",
+    "className": "footer__column-link no-hover",
+    "href": "https://www.barnesandnoble.com/pages/bulk-orders"
+  },
+  {
+    "text": "B&N Mastercard",
+    "className": "footer__column-link no-hover",
+    "href": "https://cards.barclaycardus.com/banking/credit-card/barnes-noble/mastercard-platinum/co-brand-partner-site/9c9f39e2-ed40-4783-a466-52143c029a96/?referrerid=PTRBAGFTTXT"
+  },
+  {
+    "text": "B&N Bookfairs",
+    "className": "footer__column-link no-hover",
+    "href": "https://www.barnesandnoble.com/pages/bn-bookfairs"
+  },
+  {
+    "text": "B&N Affiliate Program",
+    "className": "footer__column-link no-hover",
+    "href": "https://www.barnesandnoble.com/terms/affiliates"
+  },
+  {
+    "text": "About B&N",
+    "className": "footer__column-link no-hover",
+    "href": "https://www.barnesandnoble.com/terms/about-barnesandnoble"
+  },
+  {
+    "text": "Careers at B&N",
+    "className": "footer__column-link no-hover",
+    "href": "http://careers.barnesandnoble.com/"
+  },
+  {
+    "text": "B&N Inc.",
+    "className": "footer__column-link no-hover",
+    "href": "https://www.barnesandnobleinc.com/"
+  },
+  {
+    "text": "B&N Mobile Apps",
+    "className": "footer__column-link no-hover",
+    "href": "https://www.barnesandnoble.com/pages/bn-apps"
+  },
+  {
+    "text": "Store Locator",
+    "className": "footer__column-link no-hover footer__column-link--icon",
+    "href": "https://stores.barnesandnoble.com/"
+  },
+  {
+    "text": "Order Status",
+    "className": "footer__column-link no-hover footer__column-link--icon",
+    "href": "https://www.barnesandnoble.com/account"
+  },
+  {
+    "text": "Coupons & Deals",
+    "className": "footer__column-link no-hover footer__column-link--icon",
+    "href": "https://www.barnesandnoble.com/pages/coupons-deals"
+  },
+  {
+    "text": "Privacy Policy",
+    "className": "font-medium hover:underline",
+    "href": "https://www.barnesandnoble.com/terms/privacy-policy"
+  },
+  {
+    "text": "Terms of Use",
+    "className": "footer__legal-link",
+    "href": "https://www.barnesandnoble.com/terms/terms-of-use"
+  },
+  {
+    "text": "Copyright & Trademark",
+    "className": "footer__legal-link",
+    "href": "https://www.barnesandnoble.com/terms/copyright-policy"
+  },
+  {
+    "text": "Privacy",
+    "className": "footer__legal-link",
+    "href": "https://bn.clarip.com/privacycenter/?brand=barnesandnoble"
+  },
+  {
+    "text": "Your Privacy Choices",
+    "className": "footer__legal-link",
+    "href": "#"
+  },
+  {
+    "text": "Accessibility",
+    "className": "footer__legal-link",
+    "href": "https://www.barnesandnoble.com/terms/accessibility"
+  },
+  {
+    "text": "Cookie Policy",
+    "className": "footer__legal-link",
+    "href": "https://www.barnesandnoble.com/terms/cookie-policy"
+  },
+  {
+    "text": "Sitemap",
+    "className": "footer__legal-link",
+    "href": "https://www.barnesandnoble.com/pages/sitemap"
+  },
+  {
+    "text": "Cookie Policy",
+    "className": "ot-cookie-policy-link",
+    "href": "https://www.barnesandnoble.com/h/help/cookie-policy"
+  },
+  {
+    "text": "More information",
+    "className": "privacy-notice-link",
+    "href": "https://cookiepedia.co.uk/giving-consent-to-cookies"
+  }
+]
