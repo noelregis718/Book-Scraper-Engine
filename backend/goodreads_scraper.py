@@ -369,6 +369,15 @@ class GoodreadsScraper:
             description = "N/A"
             desc_el = await page.query_selector('[data-testid="description"] .Formatted, .readable')
             if desc_el: description = clean_text(await desc_el.inner_text())
+            
+            num_pages = "N/A"
+            try:
+                pages_el = await page.query_selector('[data-testid="pagesFormat"]')
+                if pages_el:
+                    pages_text = clean_text(await pages_el.inner_text())
+                    m = re.search(r'(\d+)\s+pages', pages_text, re.IGNORECASE)
+                    if m: num_pages = m.group(1)
+            except: pass
 
             # Series Logic
             series_url = "N/A"
@@ -415,7 +424,8 @@ class GoodreadsScraper:
                 "Book1_Rating": series_data["Book1_Rating"],
                 "Book1_Num_Ratings": series_data["Book1_Num_Ratings"],
                 "Author_Found": author_found,
-                "Book_Title": book_title_found
+                "Book_Title": book_title_found,
+                "Num_Pages": num_pages
             }
         except Exception as e:
             print(f"  Goodreads: Error: {e}")
