@@ -34,14 +34,16 @@ def apply_sleek_styling(file_path):
     # Fixed Column Widths
     for col_idx in range(1, ws.max_column + 1):
         column = ws.cell(row=1, column=col_idx).column_letter
-        ws.column_dimensions[column].width = 25
-        
-    # Apply Zebra Striping & cell formatting
+        if ws.cell(row=1, column=col_idx).value == "Podium Summary / Description":
+            ws.column_dimensions[column].width = 65
+        else:
+            ws.column_dimensions[column].width = 25
+            
+    # Apply uniform white background & cell formatting (Excel will auto-fit row height)
     for row in range(2, ws.max_row + 1):
-        fill = zebra_dark if row % 2 == 0 else zebra_light
         for col in range(1, ws.max_column + 1):
             cell = ws.cell(row=row, column=col)
-            cell.fill = fill
+            cell.fill = zebra_light  # All rows pure white
             cell.border = thin_border
             cell.alignment = Alignment(vertical="center", wrap_text=True)
 

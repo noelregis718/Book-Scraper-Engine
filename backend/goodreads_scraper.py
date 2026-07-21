@@ -212,7 +212,8 @@ class GoodreadsScraper:
                 "Sub_Genre": genre_sub,
                 "Description": description,
                 "Num_Primary_Books": series_data["Num_Primary_Books"],
-                "Book_Title": title
+                "Book_Title": title,
+                "All_Genres": genres[:7]
             }
         except Exception as e:
             print(f"    [Error] Details extraction: {e}")
@@ -425,7 +426,8 @@ class GoodreadsScraper:
                 "Book1_Num_Ratings": series_data["Book1_Num_Ratings"],
                 "Author_Found": author_found,
                 "Book_Title": book_title_found,
-                "Num_Pages": num_pages
+                "Num_Pages": num_pages,
+                "All_Genres": genres[:7]
             }
         except Exception as e:
             print(f"  Goodreads: Error: {e}")
