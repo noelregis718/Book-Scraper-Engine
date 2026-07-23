@@ -1,19 +1,11 @@
 import pandas as pd
-import time
+df = pd.read_excel(r"e:\Internship\PocketFM\Romantasy_v2_Scraped.xlsx")
+missing = 0
+for index, row in df.iterrows():
+    num_books = row.get('No. of books in the series', pd.NA)
+    page_count = row.get('Page count', pd.NA)
+    is_missing = pd.isna(num_books) or str(num_books).strip() == '' or str(num_books).strip().lower() == 'nan'
+    if is_missing:
+        missing += 1
 
-excel_path = 'e:/Internship/PocketFM/Next_Agency.xlsx'
-df = None
-
-for i in range(10):
-    try:
-        df = pd.read_excel(excel_path)
-        break
-    except Exception as e:
-        time.sleep(1)
-
-if df is not None:
-    total = len(df)
-    processed = len(df[df['Romantasy = Yes or No?'].astype(str).str.strip().str.lower() == 'yes'])
-    print(f'Processed: {processed} | Total: {total} | Left: {total - processed}')
-else:
-    print('Failed to read Excel file due to lock.')
+print(f"Remaining missing rows: {missing} out of {len(df)}")
