@@ -2,20 +2,50 @@ import asyncio
 import re
 import os
 import openpyxl
+import json
 from playwright.async_api import async_playwright
 from goodreads_scraper import GoodreadsScraper
 
 INPUT_FILE = r"e:\Internship\PocketFM\All-Genre Licensing Tracker.xlsx"
+STATE_FILE = r"e:\Internship\PocketFM\backend\scraper_state.json"
+
+class BlockedError(Exception):
+    pass
+
+async def load_state():
+    if os.path.exists(STATE_FILE):
+        try:
+            with open(STATE_FILE, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except:
+            return {}
+    return {}
+
+async def save_state(state, lock):
+    async with lock:
+        with open(STATE_FILE, 'w', encoding='utf-8') as f:
+            json.dump(state, f, indent=4)
 
 async def solve_captcha_if_present(page, url=""):
     try:
-        if await page.query_selector('#captcha-image, .captcha, iframe[src*="captcha"]'):
-            print(f"    [!!!] CAPTCHA detected! Please solve it manually.")
-            try:
-                await page.wait_for_selector('a.bookTitle, [data-testid="pagesFormat"], .listWithDividers__item, h1', timeout=120000)
-                print(f"    [Success] CAPTCHA solved.")
-            except:
-                print(f"    [Timeout] CAPTCHA wait timeout.")
+        page_text = await page.evaluate("document.body ? document.body.innerText.toLowerCase() : ''")
+        if "unexpected error" in page_text or "403 forbidden" in page_text or ("captcha" in page_text and not await page.query_selector('.bookTitle')):
+            if await page.query_selector('#captcha-image, .captcha, iframe[src*="captcha"]'):
+                print(f"    [!!!] CAPTCHA detected! Please solve it manually.")
+                try:
+                    await page.wait_for_selector('a.bookTitle, [data-testid="pagesFormat"], .listWithDividers__item, h1', timeout=120000)
+                    print(f"    [Success] CAPTCHA solved.")
+                    return
+                except:
+                    print(f"    [Timeout] CAPTCHA wait timeout. Blocked.")
+                    raise BlockedError("CAPTCHA timeout")
+            else:
+                # It's an unexpected error page or silent block
+                print(f"    [!!!] Unexpected Goodreads error page detected. Blocked.")
+                raise BlockedError("Unexpected error page")
+                
+    except BlockedError:
+        raise
     except Exception:
         pass
 
@@ -37,7 +67,11 @@ async def search_book_on_goodreads(page, title, author):
             if b_url.startswith('/'):
                 b_url = f"https://www.goodreads.com{b_url}"
             return b_url
+    except BlockedError:
+        raise
     except Exception as e:
+        if "TargetClosedError" in str(type(e)) or "Timeout" in str(e):
+            raise BlockedError(f"Blocked during search: {e}")
         print(f"    Error searching for {search_term}: {e}")
     return None
 
@@ -73,11 +107,15 @@ async def get_book_details(page, url):
                 series_link = "https://www.goodreads.com" + series_link
                 
         return pages, agency, series_link
+    except BlockedError:
+        raise
     except Exception as e:
+        if "TargetClosedError" in str(type(e)) or "Timeout" in str(e):
+            raise BlockedError(f"Blocked during book details: {e}")
         print(f"    Error scraping book page {url}: {e}")
         return 0, "", None
 
-async def get_series_pages(page, url):
+async def get_series_pages(page, url, row_idx, global_state, state_lock, global_stop_event):
     try:
         await page.goto(url, wait_until="domcontentloaded", timeout=60000)
         await asyncio.sleep(2)
@@ -96,24 +134,57 @@ async def get_series_pages(page, url):
             book1_link = urls_to_visit[0]
         
         urls_to_visit = list(set(urls_to_visit))
-        total_pages = 0
         num_books = len(urls_to_visit)
         print(f"    Found {num_books} books in series.")
         
-        agency = ""
+        if num_books == 0:
+            raise BlockedError("0 books found (silent block)")
+        
+        # Initialize or fetch state
+        str_row = str(row_idx)
+        async with state_lock:
+            if str_row not in global_state:
+                global_state[str_row] = {
+                    "scraped_urls": [],
+                    "total_pages": 0,
+                    "agency": "",
+                    "book1_link": book1_link,
+                    "num_books": num_books
+                }
+            row_state = global_state[str_row]
+            
+        agency = row_state["agency"]
+        total_pages = row_state["total_pages"]
+        
         for b_url in urls_to_visit:
+            if global_stop_event.is_set():
+                raise BlockedError("Global stop triggered by another tab")
+                
+            if b_url in row_state["scraped_urls"]:
+                print(f"      - Skipping already scraped book ({b_url})")
+                continue
+                
             pages, bk_agency, _ = await get_book_details(page, b_url)
             print(f"      - {pages} pages ({b_url})")
+            
             total_pages += pages
             if not agency and bk_agency:
                 agency = bk_agency
+                
+            # Update state immediately
+            async with state_lock:
+                global_state[str_row]["scraped_urls"].append(b_url)
+                global_state[str_row]["total_pages"] = total_pages
+                global_state[str_row]["agency"] = agency
+            await save_state(global_state, state_lock)
             
-        return num_books, total_pages, book1_link, agency
+        return num_books, total_pages, row_state.get("book1_link", book1_link), agency
+    except BlockedError:
+        raise
     except Exception as e:
-        print(f"    Error scraping series {url}: {e}")
-        return 0, 0, "", ""
+        raise BlockedError(f"Blocked or error during series scrape: {e}")
 
-async def process_row(row_idx, ws, col_map, context, semaphore, excel_lock, wb):
+async def process_row(row_idx, ws, col_map, context, semaphore, excel_lock, wb, global_state, state_lock, global_stop_event):
     s_no = ws.cell(row=row_idx, column=col_map['S. No.']).value
     title = ws.cell(row=row_idx, column=col_map['Title']).value or ""
     author = ws.cell(row=row_idx, column=col_map['Author Name']).value or ""
@@ -123,6 +194,9 @@ async def process_row(row_idx, ws, col_map, context, semaphore, excel_lock, wb):
     agency = ws.cell(row=row_idx, column=col_map['Agency (if)']).value or ""
     
     async with semaphore:
+        if global_stop_event.is_set():
+            return
+            
         print(f"\n[Row {row_idx}] (S.No {s_no}) Processing: {title}")
         page = await context.new_page()
         try:
@@ -135,8 +209,8 @@ async def process_row(row_idx, ws, col_map, context, semaphore, excel_lock, wb):
                 if not target_book:
                     target_book = await search_book_on_goodreads(page, str(title), str(author))
                     if target_book:
-                        async with excel_lock:
-                            ws.cell(row=row_idx, column=col_map['GR Book 1 link']).value = target_book
+                        # We don't save to excel yet until everything finishes
+                        book1_link = target_book
                             
                 if target_book:
                     # Find series link from book page
@@ -145,8 +219,6 @@ async def process_row(row_idx, ws, col_map, context, semaphore, excel_lock, wb):
                         series_link = found_series
                         has_series = True
                         print(f"  [Row {row_idx}] Found Series Link: {series_link}")
-                        async with excel_lock:
-                            ws.cell(row=row_idx, column=col_map['GR Series Link']).value = series_link
                     else:
                         print(f"  [Row {row_idx}] No Series Link found on book page. Standalone.")
                         async with excel_lock:
@@ -154,16 +226,19 @@ async def process_row(row_idx, ws, col_map, context, semaphore, excel_lock, wb):
                             ws.cell(row=row_idx, column=col_map['Page count']).value = pages
                             if bk_agency and not agency:
                                 ws.cell(row=row_idx, column=col_map['Agency (if)']).value = bk_agency
+                            ws.cell(row=row_idx, column=col_map['GR Book 1 link']).value = target_book
                             wb.save(INPUT_FILE)
                         return
                         
             if has_series:
                 print(f"  [Row {row_idx}] Scraping series: {series_link}")
-                num_books, total_pages, found_book1, found_agency = await get_series_pages(page, series_link)
+                num_books, total_pages, found_book1, found_agency = await get_series_pages(page, series_link, row_idx, global_state, state_lock, global_stop_event)
                 
+                # If we get here, series scrape completed fully without BlockedError
                 async with excel_lock:
                     ws.cell(row=row_idx, column=col_map['No. of books in the series']).value = num_books
                     ws.cell(row=row_idx, column=col_map['Page count']).value = total_pages
+                    ws.cell(row=row_idx, column=col_map['GR Series Link']).value = series_link
                     
                     if (not book1_link or str(book1_link).strip() == "") and found_book1:
                         ws.cell(row=row_idx, column=col_map['GR Book 1 link']).value = found_book1
@@ -173,9 +248,22 @@ async def process_row(row_idx, ws, col_map, context, semaphore, excel_lock, wb):
                         
                     wb.save(INPUT_FILE)
                     print(f"  [Row {row_idx}] Saved: {num_books} books, {total_pages} pages")
+                
+                # Clear state for this row since it's fully complete
+                async with state_lock:
+                    if str(row_idx) in global_state:
+                        del global_state[str(row_idx)]
+                await save_state(global_state, state_lock)
                     
+        except BlockedError as e:
+            print(f"  [Row {row_idx}] BLOCKED by Goodreads! Saving state and halting this row. Reason: {e}")
+            global_stop_event.set()
         except Exception as e:
-            print(f"  [Row {row_idx}] Failed to process: {e}")
+            if "TargetClosedError" in str(type(e)) or "Timeout" in str(e):
+                print(f"  [Row {row_idx}] BLOCKED by Goodreads! Saving state and halting this row. Reason: {e}")
+                global_stop_event.set()
+            else:
+                print(f"  [Row {row_idx}] Failed to process: {e}")
         finally:
             await page.close()
 
@@ -200,6 +288,10 @@ async def main():
             print(f"Required column '{req}' not found in headers!")
             return
             
+    global_state = await load_state()
+    state_lock = asyncio.Lock()
+    global_stop_event = asyncio.Event()
+    
     # Aggressive scraper with 5 tabs concurrently
     semaphore = asyncio.Semaphore(5)
     excel_lock = asyncio.Lock()
@@ -219,14 +311,15 @@ async def main():
         
         tasks = []
         for row_idx in range(header_row + 1, ws.max_row + 1):
-            s_no_val = ws.cell(row=row_idx, column=col_map['S. No.']).value
-            if s_no_val is not None:
-                try:
-                    s_no = int(s_no_val)
-                    if s_no in [297, 280, 268, 260, 253]:
-                        tasks.append(process_row(row_idx, ws, col_map, context, semaphore, excel_lock, wb))
-                except ValueError:
-                    pass
+            if 285 <= row_idx <= 322:
+                books_val = ws.cell(row=row_idx, column=col_map['No. of books in the series']).value
+                pages_val = ws.cell(row=row_idx, column=col_map['Page count']).value
+                
+                if books_val not in [0, "0", 0.0, None, ""] and pages_val not in [0, "0", 0.0, None, ""]:
+                    # Skipping row quietly to avoid console spam for thousands of rows
+                    continue
+                    
+                tasks.append(process_row(row_idx, ws, col_map, context, semaphore, excel_lock, wb, global_state, state_lock, global_stop_event))
             
         print(f"Found {len(tasks)} tasks to run.")
         if tasks:
@@ -236,8 +329,7 @@ async def main():
             
         await browser.close()
     
-    wb.save(INPUT_FILE)
-    print(f"Scraping fully complete. Saved to {INPUT_FILE}")
+    print(f"Scraping run complete.")
 
 if __name__ == "__main__":
     asyncio.run(main())
