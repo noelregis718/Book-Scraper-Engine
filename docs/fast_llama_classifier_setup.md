@@ -1,6 +1,6 @@
 # Fast Llama Classifier Setup & Execution Guide
 
-This comprehensive guide covers everything you need to know to set up, configure, and run the `fast_llama_classifier.py` script from scratch. The script uses a local AI model (`Qwen 2.5`) to automatically classify book genres based on their descriptions and categories in an Excel spreadsheet.
+This comprehensive guide covers everything you need to know to set up, configure, and run the `fast_llama_classifier.py` script from scratch. The script uses a local AI model (`Llama 3.2 1B`) to automatically classify book genres based on their descriptions and categories in an Excel spreadsheet.
 
 ---
 
@@ -20,12 +20,12 @@ The script relies on Ollama to run the AI model entirely locally on your machine
 3. Run the downloaded `OllamaSetup.exe` file and complete the installation.
 4. **Crucial:** Ensure the Ollama app is running in the background. You should see its little llama icon in your Windows system tray (bottom right corner of your screen).
 
-### 3. Downloading the Qwen Model
-We use **Qwen 2.5 (1.5 Billion parameters)** because it is incredibly fast and highly accurate for strict JSON classification tasks.
+### 3. Downloading the Llama 3.2 Model
+We use **Llama 3.2 (1 Billion parameters)** because it is the fastest model available and highly accurate for strict JSON classification tasks.
 1. Open a **new** PowerShell or Command Prompt window (so it recognizes the newly installed Ollama).
 2. Run the following command to download the model:
    ```powershell
-   ollama run qwen2.5:1.5b
+   ollama pull llama3.2:1b
    ```
 3. The download is approximately 1 GB. Once it finishes, you will see a `>>>` prompt indicating the model is loaded and ready.
 4. Type `/bye` and press Enter to exit the prompt.
