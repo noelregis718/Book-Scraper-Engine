@@ -45,8 +45,8 @@ def run_pipeline(start_row: int, end_row: int):
     
     # Process rows in the specified range
     for row_idx, row in enumerate(ws.iter_rows(min_row=start_row, max_row=end_row), start=start_row):
-        series_name = row[4].value
-        goodreads_link = row[5].value
+        series_name = row[1].value
+        goodreads_link = row[3].value
         
         if not goodreads_link or not isinstance(goodreads_link, str):
             print(f"[Row {row_idx}] Skipping missing or invalid link.")
