@@ -22,7 +22,7 @@ def sanitize_folder_name(name: str) -> str:
 
 import sys
 
-def run_pipeline(start_row: int, end_row: int):
+def run_pipeline(start_row: int, end_row: int = None, limit: int = None):
     import time
     pipeline_start_time = time.time()
     excel_path = r"e:\Internship\PocketFM\Romantasy - Subjective Reviews - 9.9.26.xlsx"
@@ -37,11 +37,17 @@ def run_pipeline(start_row: int, end_row: int):
     sheet_name = wb.sheetnames[0]
     ws = wb[sheet_name]
     
+    if end_row is None:
+        end_row = ws.max_row
+    
     total_ocean_downloaded = 0
     total_zlib_downloaded = 0
+    valid_processed_count = 0
+    last_row_checked = start_row - 1
     
     # Process rows in the specified range (Note: start_row/end_row is 1-indexed in Excel)
     for row_idx, row in enumerate(ws.iter_rows(min_row=start_row, max_row=end_row), start=start_row):
+        last_row_checked = row_idx
         # Column 0 is 'Series Name', Column 3 is 'Book Series (GoodReads URL)', Column 11 is 'POC'
         series_name = row[0].value
         goodreads_link = row[3].value
@@ -150,6 +156,11 @@ def run_pipeline(start_row: int, end_row: int):
         print(f"  - Failed DOCX conversion (PDF/EPUB kept): {failed_count}")
         print(f"  - Failed to download entirely: {download_failed}")
         
+        valid_processed_count += 1
+        if limit is not None and valid_processed_count >= limit:
+            print(f"\n[INFO] Reached requested limit of {limit} valid rows for Noel Regis.")
+            break
+        
     pipeline_end_time = time.time()
     total_seconds = int(pipeline_end_time - pipeline_start_time)
     minutes = total_seconds // 60
@@ -157,7 +168,9 @@ def run_pipeline(start_row: int, end_row: int):
     
     print(f"\n{'='*50}")
     print("PIPELINE RUN COMPLETE")
-    print(f"Total rows processed: {end_row - start_row + 1}")
+    print(f"Total valid 'Noel Regis' rows processed: {valid_processed_count}")
+    print(f"Last Excel row checked: {last_row_checked}")
+    print(f"-> START AT ROW {last_row_checked + 1} NEXT TIME <-")
     print(f"Grand Total - OceanOfPDF downloads: {total_ocean_downloaded}")
     print(f"Grand Total - Z-Library downloads:  {total_zlib_downloaded}")
     print(f"Total Execution Time: {minutes} minutes and {seconds} seconds")
@@ -165,9 +178,10 @@ def run_pipeline(start_row: int, end_row: int):
         
 if __name__ == "__main__":
     import argparse
-    parser = argparse.ArgumentParser(description="Run the romantasy downloader pipeline for a range of rows.")
+    parser = argparse.ArgumentParser(description="Run the romantasy downloader pipeline.")
     parser.add_argument("--start", type=int, required=True, help="Starting row index (e.g. 2)")
-    parser.add_argument("--end", type=int, required=True, help="Ending row index (e.g. 10)")
+    parser.add_argument("--end", type=int, required=False, help="Ending row index (e.g. 100)")
+    parser.add_argument("--limit", type=int, required=False, help="Process exactly N valid rows assigned to Noel Regis")
     args = parser.parse_args()
     
-    run_pipeline(args.start, args.end)
+    run_pipeline(args.start, args.end, args.limit)
