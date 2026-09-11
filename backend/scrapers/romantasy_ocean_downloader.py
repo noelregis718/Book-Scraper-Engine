@@ -55,35 +55,46 @@ def download_book_sync(task: BookDownloadTask, download_dir: str):
             )
             page = context.new_page()
             
-            # Block popups
-            page.on("popup", lambda popup: popup.close())
-            
             search_query = task.title
             if getattr(task, 'author', None):
                 search_query = f"{task.title} by {task.author}"
             query = urllib.parse.quote(search_query)
             search_url = f"https://oceanofpdf.com/?s={query}"
             
-            for search_attempt in range(10):
-                print(f"[OceanOfPDF] [{task.title}] Searching: {search_url} (Attempt {search_attempt+1}/10)")
-                page.goto(search_url, wait_until="domcontentloaded", timeout=60000)
+            for search_attempt in range(5):
+                if search_attempt == 0:
+                    print(f"[OceanOfPDF] [{task.title}] Searching: {search_url} (Attempt {search_attempt+1}/5)")
+                    page.goto(search_url, wait_until="domcontentloaded", timeout=60000)
+                else:
+                    print(f"[OceanOfPDF] [{task.title}] Waiting and retrying search page check... (Attempt {search_attempt+1}/5)")
                 
                 page.wait_for_timeout(5000) # Give cloudflare a chance
                 
                 # Look for all links
-                links_data = page.evaluate("""
-                    () => {
-                        const links = Array.from(document.querySelectorAll("a"));
-                        return links.map(a => {
-                            let container = a.closest('article') || a.closest('li') || a.closest('.post') || a.parentElement.parentElement;
-                            let textContext = container ? container.innerText : a.innerText;
-                            return {
-                                href: a.href,
-                                text: textContext.replace(/\\n/g, ' ').trim()
-                            };
-                        });
-                    }
-                """)
+                try:
+                    links_data = page.evaluate("""
+                        () => {
+                            const links = Array.from(document.querySelectorAll("a"));
+                            return links.map(a => {
+                                let textContext = a.innerText;
+                                if (!textContext || textContext.trim().length < 3) {
+                                    textContext = a.getAttribute('title') || a.getAttribute('aria-label') || '';
+                                    if (!textContext) {
+                                        let container = a.closest('h2') || a.closest('h3') || a.parentElement;
+                                        textContext = container ? container.innerText : '';
+                                    }
+                                }
+                                return {
+                                    href: a.href,
+                                    text: textContext ? textContext.replace(/\\n/g, ' ').trim() : ''
+                                };
+                            });
+                        }
+                    """)
+                except Exception as eval_err:
+                    print(f"[OceanOfPDF] [{task.title}] Cloudflare redirect detected during evaluation. Retrying...")
+                    page.wait_for_timeout(2000)
+                    continue
                 
                 best_link = None
                 best_score = 0
@@ -91,31 +102,65 @@ def download_book_sync(task: BookDownloadTask, download_dir: str):
                 for item in links_data:
                     text = item['text']
                     href = item['href']
-                    if href and "oceanofpdf.com" in href and len(text) > 5 and not text.lower() == "oceanofpdf":
+                    # Skip common non-book links that might accidentally match title words
+                    if not href or "oceanofpdf.com" not in href or "donate" in href or "/category/" in href or "/author/" in href:
+                        continue
+                    
+                    if len(text) > 5 and not text.lower() == "oceanofpdf":
                         score = score_match(text, task.title, getattr(task, 'author', ''))
                         if score > best_score:
                             best_score = score
                             best_link = {'href': href, 'text': text}
                                 
                 if not best_link:
-                    if search_attempt < 9:
+                    if search_attempt < 4:
                         print(f"[OceanOfPDF] [{task.title}] No valid results found. Retrying in 5 seconds...")
                         page.wait_for_timeout(5000)
                         continue
                     else:
                         task.status = "failed"
-                        task.error_message = "No search results found after 10 attempts."
-                        print(f"[OceanOfPDF] [{task.title}] Gave up after 10 failed search attempts.")
+                        task.error_message = "No search results found after 5 attempts."
+                        print(f"[OceanOfPDF] [{task.title}] Gave up after 5 failed search attempts.")
                         browser.close()
                         return
                     
                 # Click the best matched result in a NEW TAB as requested
                 target_url = best_link['href']
                 
-                print(f"[OceanOfPDF] [{task.title}] Opening correct result in a NEW tab: {target_url}")
-                book_page = context.new_page()
-                book_page.goto(target_url, wait_until="domcontentloaded")
-                book_page.wait_for_load_state("domcontentloaded")
+                print(f"[OceanOfPDF] [{task.title}] Attempting to click correct result and bypass ads: {target_url}")
+                book_page = None
+                for click_attempt in range(5):
+                    try:
+                        with context.expect_page(timeout=15000) as new_page_info:
+                            page.evaluate(f"""
+                                () => {{
+                                    const links = Array.from(document.querySelectorAll("a")).filter(a => a.href === '{target_url}');
+                                    if (links.length > 0) {{
+                                        links[0].setAttribute('target', '_blank');
+                                        links[0].click();
+                                    }}
+                                }}
+                            """)
+                        popup_page = new_page_info.value
+                        popup_page.wait_for_load_state("domcontentloaded")
+                        
+                        popup_url = popup_page.url
+                        if "oceanofpdf.com" in popup_url and "donate" not in popup_url:
+                            book_page = popup_page
+                            print(f"[OceanOfPDF] [{task.title}] Successfully opened book page on click attempt {click_attempt+1}!")
+                            break
+                        else:
+                            print(f"[OceanOfPDF] [{task.title}] Click {click_attempt+1} opened an ad/popup ({popup_url}). Closing and trying again...")
+                            popup_page.close()
+                            page.wait_for_timeout(1000)
+                    except Exception as click_err:
+                        print(f"[OceanOfPDF] [{task.title}] Click attempt {click_attempt+1} timed out or failed: {click_err}")
+                        
+                if not book_page:
+                    print(f"[OceanOfPDF] [{task.title}] Failed to open book page after 5 clicks, falling back to goto...")
+                    book_page = context.new_page()
+                    book_page.goto(target_url, wait_until="domcontentloaded")
+                    book_page.wait_for_load_state("domcontentloaded")
                 
                 # Check for Cloudflare challenge and wait if present
                 for _ in range(15):
@@ -126,29 +171,75 @@ def download_book_sync(task: BookDownloadTask, download_dir: str):
                     else:
                         break
                 
-                # Find the PDF download form
-                pdf_form = book_page.locator("form[action*='Fetching_Resource.php']").filter(has=book_page.locator("input[name='filename'][value$='.pdf']")).first
+                # Find the PDF download form or link
+                # First try the classic form
+                pdf_form = book_page.locator("form[action*='Fetching_Resource.php'], form[action*='Get_Resource.php']").filter(has=book_page.locator("input[name='filename'][value$='.pdf']")).first
                 
+                # If classic form fails, try finding any form with a PDF button
                 if pdf_form.count() == 0:
+                    pdf_form = book_page.locator("form").filter(has=book_page.locator("button, input[type='submit']").filter(has_text="PDF")).first
+                
+                # If forms fail, try finding a direct download link
+                pdf_link = None
+                if pdf_form.count() == 0:
+                    pdf_link = book_page.locator("a").filter(has_text="PDF").first
+                    
+                if pdf_form.count() == 0 and (pdf_link is None or pdf_link.count() == 0):
                     if search_attempt < 9:
-                        print(f"[OceanOfPDF] [{task.title}] Could not find PDF download form on page. Retrying search...")
+                        print(f"[OceanOfPDF] [{task.title}] Could not find PDF download form or link on page. Retrying search...")
                         book_page.close()
                         continue
                     else:
                         task.status = "failed"
-                        task.error_message = "Could not find PDF download form."
-                        print(f"[OceanOfPDF] [{task.title}] Could not find PDF download form.")
+                        task.error_message = "Could not find PDF download form or link."
+                        print(f"[OceanOfPDF] [{task.title}] Could not find PDF download form or link.")
                         browser.close()
                         return
                     
-                print(f"[OceanOfPDF] [{task.title}] Found PDF download form, clicking...")
+                print(f"[OceanOfPDF] [{task.title}] Found PDF download trigger, initiating download sequence...")
+                download = None
+                for dl_attempt in range(5):
+                    print(f"[OceanOfPDF] [{task.title}] Attempting to trigger PDF download (Attempt {dl_attempt+1})...")
+                    try:
+                        with book_page.expect_download(timeout=15000) as download_info:
+                            if pdf_form.count() > 0:
+                                pdf_form.evaluate("form => { form.removeAttribute('target'); form.submit(); }")
+                            else:
+                                pdf_link.evaluate("a => { a.removeAttribute('target'); a.click(); }")
+                                
+                        download = download_info.value
+                        print(f"[OceanOfPDF] [{task.title}] Download successfully triggered on attempt {dl_attempt+1}!")
+                        break
+                    except Exception as e:
+                        print(f"[OceanOfPDF] [{task.title}] Download trigger attempt {dl_attempt+1} failed/timed out (likely an ad intercepted it).")
+                        # If the ad navigated our current page away from OceanOfPDF, go back!
+                        if "oceanofpdf.com" not in book_page.url:
+                            print(f"[OceanOfPDF] [{task.title}] Click navigated to ad ({book_page.url}). Going back to book page...")
+                            book_page.go_back(wait_until="domcontentloaded")
+                            book_page.wait_for_timeout(2000)
+                        
+                        # Close any popups/ads that opened in new tabs
+                        for p in context.pages:
+                            if p != page and p != book_page:
+                                try:
+                                    print(f"[OceanOfPDF] [{task.title}] Closing ad popup: {p.url}")
+                                    p.close()
+                                except:
+                                    pass
+                                    
+                if not download:
+                    if search_attempt < 4:
+                        print(f"[OceanOfPDF] [{task.title}] Failed to trigger download after 5 attempts. Retrying entire search...")
+                        book_page.close()
+                        continue
+                    else:
+                        task.status = "failed"
+                        task.error_message = "Failed to trigger download after 5 attempts due to ads."
+                        print(f"[OceanOfPDF] [{task.title}] Download completely failed.")
+                        book_page.close()
+                        break
+                        
                 try:
-                    # Remove target="_blank" so download happens in this page context
-                    pdf_form.evaluate("form => form.removeAttribute('target')")
-                    with book_page.expect_download(timeout=120000) as download_info:
-                        pdf_form.evaluate("form => form.submit()")
-                            
-                    download = download_info.value
                     safe_title = sanitize_filename(task.title)
                     file_name = f"{task.number}_{safe_title}.pdf"
                     pdf_path = os.path.join(download_dir, file_name)
@@ -161,14 +252,14 @@ def download_book_sync(task: BookDownloadTask, download_dir: str):
                     book_page.close()
                     break # Success! break out of the 10-attempt loop
                 except Exception as e:
-                    if search_attempt < 9:
-                        print(f"[OceanOfPDF] [{task.title}] Download attempt failed: {e}. Retrying search...")
+                    if search_attempt < 4:
+                        print(f"[OceanOfPDF] [{task.title}] Failed to save download: {e}. Retrying search...")
                         book_page.close()
                         continue
                     else:
                         task.status = "failed"
-                        task.error_message = f"Failed to trigger or save download: {str(e)}"
-                        print(f"[OceanOfPDF] [{task.title}] Download failed: {e}")
+                        task.error_message = f"Failed to save download: {str(e)}"
+                        print(f"[OceanOfPDF] [{task.title}] Download save failed: {e}")
                         book_page.close()
                         break
                     
