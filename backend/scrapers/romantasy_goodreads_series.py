@@ -62,7 +62,7 @@ def get_primary_books_from_goodreads(goodreads_url: str) -> Tuple[List[BookDownl
                     # Only primary books (whole numbers)
                     if "." not in num_str:
                         book_number = int(num_str)
-                        if book_number > 5: # LIMIT TO 5 BOOKS FOR ROMANTASY
+                        if book_number < 1 or book_number > 5: # ONLY BOOKS 1-5
                             continue
                         title = span.text.strip()
                         
