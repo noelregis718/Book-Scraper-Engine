@@ -45,6 +45,14 @@ def run_pipeline(start_row: int, end_row: int = None, limit: int = None):
     valid_processed_count = 0
     last_row_checked = start_row - 1
     
+    # Load history of already processed series to prevent duplicates across runs
+    processed_history_path = os.path.join(downloads_base, "processed_series.txt")
+    processed_links = set()
+    if os.path.exists(processed_history_path):
+        with open(processed_history_path, "r", encoding="utf-8") as f:
+            for line in f:
+                processed_links.add(line.strip())
+    
     # Process rows in the specified range (Note: start_row/end_row is 1-indexed in Excel)
     for row_idx, row in enumerate(ws.iter_rows(min_row=start_row, max_row=end_row), start=start_row):
         last_row_checked = row_idx
@@ -64,6 +72,11 @@ def run_pipeline(start_row: int, end_row: int = None, limit: int = None):
             
         if 'goodreads.com/series' not in goodreads_link:
             print(f"[Row {row_idx}] Skipping non-series link: {goodreads_link}")
+            continue
+            
+        # GLOBAL DUPLICATE CHECK
+        if goodreads_link in processed_links:
+            print(f"[Row {row_idx}] Skipping duplicate series already processed: {series_name}")
             continue
             
         # 1. Scrape Goodreads for book list and true series name (MAX 5 BOOKS)
@@ -155,6 +168,11 @@ def run_pipeline(start_row: int, end_row: int = None, limit: int = None):
         print(f"  - Successfully downloaded & converted to DOCX: {success_count} (OceanOfPDF: {ocean_count}, Z-Library: {zlib_count})")
         print(f"  - Failed DOCX conversion (PDF/EPUB kept): {failed_count}")
         print(f"  - Failed to download entirely: {download_failed}")
+        
+        # Mark as globally processed
+        processed_links.add(goodreads_link)
+        with open(processed_history_path, "a", encoding="utf-8") as f:
+            f.write(f"{goodreads_link}\n")
         
         valid_processed_count += 1
         if limit is not None and valid_processed_count >= limit:
