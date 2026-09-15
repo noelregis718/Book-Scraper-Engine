@@ -146,7 +146,7 @@ async def run_scraper():
         print(f"Excel load error: {e}")
         return
 
-    user_data_dir = os.path.join(r"e:\Internship\PocketFM", "playwright_goodreads_profile_missing")
+    user_data_dir = os.path.join(r"e:\Internship\PocketFM", "browser_profile_missing_scraper")
     
     total_to_process = min(TARGET_ROWS, len(df))
     

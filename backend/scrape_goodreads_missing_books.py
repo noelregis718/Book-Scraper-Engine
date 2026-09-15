@@ -135,7 +135,7 @@ async def main():
 
     async with async_playwright() as p:
         # Launch persistent context to use existing Goodreads cookies
-        user_data_dir = os.path.join(r"E:\Internship\PocketFM", "playwright_goodreads_profile")
+        user_data_dir = os.path.join(r"E:\Internship\PocketFM", "browser_profile_main")
         context = await p.chromium.launch_persistent_context(
             user_data_dir,
             headless=False,

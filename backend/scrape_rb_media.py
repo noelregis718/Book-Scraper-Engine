@@ -297,7 +297,7 @@ async def run_scraper():
     base_dir = os.path.dirname(os.path.abspath(__file__))
     parent_dir = os.path.dirname(base_dir)
     target_path = os.path.join(parent_dir, 'RB Media _ Pocket FM List - 2 (Testing Final) _ Internal Copy - Noel.csv')
-    user_data_dir = os.path.join(parent_dir, 'playwright_goodreads_profile')
+    user_data_dir = os.path.join(parent_dir, 'browser_profile_main')
     
     print(f"Loading {target_path}...")
     try:

@@ -184,7 +184,7 @@ async def process_row(context, df, idx, target_path, lock, semaphore):
 async def run_scraper():
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     target_path = os.path.join(base_dir, 'CT_Series_Base_Part_6_of_6.xlsx')
-    user_data_dir = os.path.join(base_dir, 'playwright_goodreads_profile')
+    user_data_dir = os.path.join(base_dir, 'browser_profile_main')
     
     print(f"Loading {target_path}...")
     df = pd.read_excel(target_path)

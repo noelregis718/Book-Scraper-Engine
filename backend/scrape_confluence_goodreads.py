@@ -7,7 +7,7 @@ from openpyxl.styles import Alignment, Border, Side, PatternFill, Font
 from playwright.async_api import async_playwright
 
 EXCEL_FILE = '../New_Agency_Template.xlsx'
-PROFILE_DIR = '../playwright_goodreads_profile'
+PROFILE_DIR = '../browser_profile_main'
 
 async def scrape_author(context, author_name, sem, results_dict):
     async with sem:

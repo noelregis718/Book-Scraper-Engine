@@ -437,7 +437,7 @@ async def run_scraper():
 
     print(f"Running MEGA-style Scraper on FIRST {TARGET_ROWS} ROWS with CONCURRENCY {CONCURRENCY}...")
 
-    user_data_dir = os.path.join(r"E:\Internship\PocketFM", "playwright_goodreads_profile")
+    user_data_dir = os.path.join(r"E:\Internship\PocketFM", "browser_profile_main")
     
     total_to_process = min(TARGET_ROWS, len(df))
     

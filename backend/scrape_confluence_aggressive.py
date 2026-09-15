@@ -10,7 +10,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from goodreads_scraper import GoodreadsScraper
 
 EXCEL_FILE = '../New_Agency_Template.xlsx'
-PROFILE_DIR = '../playwright_goodreads_profile'
+PROFILE_DIR = '../browser_profile_main'
 
 async def process_author_aggressive(context, author_name, sem, scraper, results_dict):
     async with sem:

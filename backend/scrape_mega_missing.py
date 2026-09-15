@@ -292,7 +292,7 @@ async def main():
     if not rows_to_process:
         return
         
-    user_data_dir = os.path.join(os.path.dirname(EXCEL_FILE), "playwright_goodreads_profile")
+    user_data_dir = os.path.join(os.path.dirname(EXCEL_FILE), "browser_profile_main")
     
     async with async_playwright() as p:
         context = await p.chromium.launch_persistent_context(

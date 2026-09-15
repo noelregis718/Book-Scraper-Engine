@@ -5,7 +5,7 @@ from playwright.async_api import async_playwright
 async def test_search():
     async with async_playwright() as p:
         context = await p.chromium.launch_persistent_context(
-            user_data_dir=r"e:\Internship\PocketFM\playwright_goodreads_profile",
+            user_data_dir=r"e:\Internship\PocketFM\browser_profile_main",
             headless=False
         )
         page = await context.new_page()
