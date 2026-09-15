@@ -15,7 +15,8 @@ keyword_scraper.lock
 # Credentials
 backend/gr_creds.json
 .env
-playwright_goodreads_profile/
+browser_profile_main/
+browser_profile_missing_scraper/
 # Node
 node_modules/
 dist/
@@ -33,7 +34,8 @@ keyword_scraper.lock
 # Credentials
 backend/gr_creds.json
 .env
-playwright_goodreads_profile/
+browser_profile_main/
+browser_profile_missing_scraper/
 downloads/
 
 .env

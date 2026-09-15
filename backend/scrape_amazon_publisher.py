@@ -227,7 +227,7 @@ async def run():
     print(f"Found {len(missing)} rows with missing Publisher. Processing 10 concurrently...")
 
     import os
-    user_data_dir = os.path.join(os.getcwd(), 'playwright_goodreads_profile')
+    user_data_dir = os.path.join(os.getcwd(), 'browser_profile_main')
     
     async with async_playwright() as p:
         context = await p.chromium.launch_persistent_context(

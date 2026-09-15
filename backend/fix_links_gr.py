@@ -8,7 +8,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from goodreads_scraper import GoodreadsScraper
 
 EXCEL_FILE = '../New_Agency_Template.xlsx'
-PROFILE_DIR = '../playwright_goodreads_profile'
+PROFILE_DIR = '../browser_profile_main'
 
 async def fetch_link(context, scraper, title, author, sem, row_idx, ws):
     async with sem:
