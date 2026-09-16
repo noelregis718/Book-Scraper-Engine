@@ -8,8 +8,13 @@ from backend.scrapers.romantasy_ocean_downloader import process_ocean_downloads
 from backend.scrapers.zlib_scraper import process_zlib_downloads
 from backend.utils.file_optimizer import process_file_optimizations
 from backend.utils.pdf_converter import process_pdf_conversions
+from backend.utils.drive_uploader import upload_folder_to_drive
 from urllib.parse import urlparse
 from dotenv import load_dotenv
+
+# Target Google Drive Folder ID provided by the user
+TARGET_DRIVE_FOLDER_ID = "1XSby2d7Tf0s894JHpnAer_893zk-jo_O"
+
 
 load_dotenv()
 
@@ -153,6 +158,12 @@ def run_pipeline(start_row: int, end_row: int = None, limit: int = None):
             
             # 4. Convert downloaded PDFs to Word docs
             process_pdf_conversions(books)
+            
+        # 5. Upload the final folder to Google Drive
+        try:
+            upload_folder_to_drive(series_dir, TARGET_DRIVE_FOLDER_ID)
+        except Exception as e:
+            print(f"[Row {row_idx}] Exception during Google Drive Upload: {e}")
         
         success_count = sum(1 for b in books if b.status == "completed")
         failed_count = sum(1 for b in books if b.status == "conversion_failed")
