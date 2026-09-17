@@ -30,7 +30,7 @@ import sys
 def run_pipeline(start_row: int, end_row: int = None, limit: int = None):
     import time
     pipeline_start_time = time.time()
-    excel_path = r"e:\Internship\PocketFM\Romantasy - Subjective Reviews - 9.9.26.xlsx"
+    excel_path = r"e:\Internship\PocketFM\Romantasy - Subjective Reviews - 9.9.26 (1).xlsx"
     downloads_base = r"e:\Internship\PocketFM\downloads"
     
     if not os.path.exists(downloads_base):
@@ -69,6 +69,13 @@ def run_pipeline(start_row: int, end_row: int = None, limit: int = None):
         # STRICT FILTER: Only process rows assigned to Noel Regis
         if poc_name.lower() != "noel regis":
             print(f"[Row {row_idx}] Skipping because POC is '{poc_name}' (Not Noel Regis).")
+            continue
+            
+        # COMPLETED CHECK: Skip if Columns N or O are already filled
+        col_n = str(row[13].value).strip() if len(row) > 13 and row[13].value else ""
+        col_o = str(row[14].value).strip() if len(row) > 14 and row[14].value else ""
+        if col_n or col_o:
+            print(f"[Row {row_idx}] Skipping because row is already marked as done (N/O columns).")
             continue
         
         if not goodreads_link or not isinstance(goodreads_link, str):
