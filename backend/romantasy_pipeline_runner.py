@@ -27,11 +27,13 @@ def sanitize_folder_name(name: str) -> str:
 
 import sys
 
+from datetime import datetime
+
 def run_pipeline(start_row: int, end_row: int = None, limit: int = None):
     import time
     pipeline_start_time = time.time()
-    excel_path = r"e:\Internship\PocketFM\Romantasy - Subjective Reviews - 9.9.26 (1).xlsx"
-    downloads_base = r"e:\Internship\PocketFM\downloads"
+    excel_path = r"e:\Internship\PocketFM\Romantasy - Subjective Review- New Sheet 133 titles.xlsx"
+    downloads_base = r"e:\Internship\PocketFM\downloads part 2"
     
     if not os.path.exists(downloads_base):
         os.makedirs(downloads_base)
@@ -61,21 +63,38 @@ def run_pipeline(start_row: int, end_row: int = None, limit: int = None):
     # Process rows in the specified range (Note: start_row/end_row is 1-indexed in Excel)
     for row_idx, row in enumerate(ws.iter_rows(min_row=start_row, max_row=end_row), start=start_row):
         last_row_checked = row_idx
-        # Column 0 is 'Series Name', Column 3 is 'Book Series (GoodReads URL)', Column 11 is 'POC'
         series_name = row[0].value
         goodreads_link = row[3].value
-        poc_name = str(row[11].value).strip() if row[11].value else ""
         
-        # STRICT FILTER: Only process rows assigned to Noel Regis
-        if poc_name.lower() != "noel regis":
-            print(f"[Row {row_idx}] Skipping because POC is '{poc_name}' (Not Noel Regis).")
+        # New sheet logic:
+        # Col 12 (idx 11) = Crawling POC
+        # Col 13 (idx 12) = Crawling Date
+        # Col 14 (idx 13) = Links POC
+        # Col 15 (idx 14) = Links Date
+        
+        c_poc = str(row[11].value or '').strip().lower() if len(row) > 11 else ""
+        c_date = row[12].value if len(row) > 12 else None
+        c_date_str = c_date.strftime('%d-%b') if isinstance(c_date, datetime) else str(c_date or '')
+        
+        l_poc = str(row[13].value or '').strip().lower() if len(row) > 13 else ""
+        l_date = row[14].value if len(row) > 14 else None
+        l_date_str = l_date.strftime('%d-%b') if isinstance(l_date, datetime) else str(l_date or '')
+        
+        is_match = False
+        if 'noel regis' in c_poc and ('17' in c_date_str or 'sep' in c_date_str.lower() or '09' in c_date_str):
+            is_match = True
+        if 'noel regis' in l_poc and ('17' in l_date_str or 'sep' in l_date_str.lower() or '09' in l_date_str):
+            is_match = True
+            
+        if not is_match:
+            print(f"[Row {row_idx}] Skipping (Not assigned to Noel Regis on Sept 17th).")
             continue
             
-        # COMPLETED CHECK: Skip if Columns N or O are already filled
-        col_n = str(row[13].value).strip() if len(row) > 13 and row[13].value else ""
-        col_o = str(row[14].value).strip() if len(row) > 14 and row[14].value else ""
-        if col_n or col_o:
-            print(f"[Row {row_idx}] Skipping because row is already marked as done (N/O columns).")
+        # COMPLETED CHECK: Skip if Book Links (Cols 16 or 17) are already filled
+        col_p = str(row[15].value).strip() if len(row) > 15 and row[15].value else ""
+        col_q = str(row[16].value).strip() if len(row) > 16 and row[16].value else ""
+        if col_p or col_q:
+            print(f"[Row {row_idx}] Skipping because row is already marked as done (Book Link columns).")
             continue
         
         if not goodreads_link or not isinstance(goodreads_link, str):
