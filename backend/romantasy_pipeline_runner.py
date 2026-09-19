@@ -33,7 +33,7 @@ def run_pipeline(start_row: int, end_row: int = None, limit: int = None):
     import time
     pipeline_start_time = time.time()
     excel_path = r"e:\Internship\PocketFM\Romantasy - Subjective Review- New Sheet 133 titles.xlsx"
-    downloads_base = r"e:\Internship\PocketFM\downloads part 2"
+    downloads_base = r"e:\Internship\PocketFM\downloads part 3"
     
     if not os.path.exists(downloads_base):
         os.makedirs(downloads_base)
@@ -43,9 +43,6 @@ def run_pipeline(start_row: int, end_row: int = None, limit: int = None):
     
     sheet_name = wb.sheetnames[0]
     ws = wb[sheet_name]
-    
-    if end_row is None:
-        end_row = ws.max_row
     
     total_ocean_downloaded = 0
     total_zlib_downloaded = 0
@@ -59,64 +56,37 @@ def run_pipeline(start_row: int, end_row: int = None, limit: int = None):
         with open(processed_history_path, "r", encoding="utf-8") as f:
             for line in f:
                 processed_links.add(line.strip())
+                
+    # Process the missing 2 rows
+    target_rows = [1248, 1251]
     
-    # Process rows in the specified range (Note: start_row/end_row is 1-indexed in Excel)
-    for row_idx, row in enumerate(ws.iter_rows(min_row=start_row, max_row=end_row), start=start_row):
-        last_row_checked = row_idx
-        series_name = row[0].value
-        goodreads_link = row[3].value
+    for row_idx in target_rows:
+        row = next(ws.iter_rows(min_row=row_idx, max_row=row_idx, values_only=True))
         
-        # New sheet logic:
-        # Col 12 (idx 11) = Crawling POC
-        # Col 13 (idx 12) = Crawling Date
-        # Col 14 (idx 13) = Links POC
-        # Col 15 (idx 14) = Links Date
-        
-        c_poc = str(row[11].value or '').strip().lower() if len(row) > 11 else ""
-        c_date = row[12].value if len(row) > 12 else None
-        c_date_str = c_date.strftime('%d-%b') if isinstance(c_date, datetime) else str(c_date or '')
-        
-        l_poc = str(row[13].value or '').strip().lower() if len(row) > 13 else ""
-        l_date = row[14].value if len(row) > 14 else None
-        l_date_str = l_date.strftime('%d-%b') if isinstance(l_date, datetime) else str(l_date or '')
-        
-        is_match = False
-        if 'noel regis' in c_poc and ('17' in c_date_str or 'sep' in c_date_str.lower() or '09' in c_date_str):
-            is_match = True
-        if 'noel regis' in l_poc and ('17' in l_date_str or 'sep' in l_date_str.lower() or '09' in l_date_str):
-            is_match = True
-            
-        if not is_match:
-            print(f"[Row {row_idx}] Skipping (Not assigned to Noel Regis on Sept 17th).")
+        series_name_raw = row[0]
+        if not series_name_raw:
             continue
             
-        # COMPLETED CHECK: Skip if Book Links (Cols 16 or 17) are already filled
-        col_p = str(row[15].value).strip() if len(row) > 15 and row[15].value else ""
-        col_q = str(row[16].value).strip() if len(row) > 16 and row[16].value else ""
-        if col_p or col_q:
-            print(f"[Row {row_idx}] Skipping because row is already marked as done (Book Link columns).")
-            continue
+        series_name = str(series_name_raw).strip()
+        goodreads_link = str(row[3] or '').strip()
         
-        if not goodreads_link or not isinstance(goodreads_link, str):
-            print(f"[Row {row_idx}] Skipping missing or invalid link.")
+        if not goodreads_link or goodreads_link.lower() == 'none':
+            print(f"[Row {row_idx}] Skipping {series_name} - No link found.")
             continue
             
         if 'goodreads.com/series' not in goodreads_link:
             print(f"[Row {row_idx}] Skipping non-series link: {goodreads_link}")
             continue
             
-        # GLOBAL DUPLICATE CHECK
-        if goodreads_link in processed_links:
-            print(f"[Row {row_idx}] Skipping duplicate series already processed: {series_name}")
-            continue
-            
-        # 1. Scrape Goodreads for book list and true series name (MAX 5 BOOKS)
-        books, series_name = get_primary_books_from_goodreads(goodreads_link)
+        print(f"\n[Row {row_idx}] Targeting: {series_name} ({goodreads_link})")
+        
+        # 1. Scrape Goodreads for book list and true series name
+        books, actual_series_name = get_primary_books_from_goodreads(goodreads_link)
         if not books:
             print(f"[Row {row_idx}] No primary books found or failed to scrape series.")
             continue
             
-        clean_series_name = sanitize_folder_name(series_name)
+        clean_series_name = sanitize_folder_name(actual_series_name)
         series_dir = os.path.join(downloads_base, f"{row_idx}_{clean_series_name}")
         
         if not os.path.exists(series_dir):
