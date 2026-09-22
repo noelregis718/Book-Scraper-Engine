@@ -66,6 +66,13 @@ Deep-sync missing Goodreads metadata for any existing agency file.
 python backend/repair_goodreads.py "Path to Excel File"
 ```
 
+### 4. Document Processing Utility
+Compress PDFs and automatically convert them into Microsoft Word (.docx) documents.
+```bash
+python backend/process_pdfs.py
+```
+*   **Features**: See the [PDF Processing Documentation](pdf_processing_script.md) for full details on usage, libraries, and execution flow.
+
 ## 🏗️ Technical Stack
 
 - **Backend / Data Pipeline**: Python 3.11+, Flask (REST API), Playwright (Async Chromium), Pandas, OpenPyXL.
