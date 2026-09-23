@@ -32,8 +32,8 @@ from datetime import datetime
 def run_pipeline(start_row: int, end_row: int = None, limit: int = None):
     import time
     pipeline_start_time = time.time()
-    excel_path = r"e:\Internship\PocketFM\Romantasy - Subjective Review- New Sheet 133 titles.xlsx"
-    downloads_base = r"e:\Internship\PocketFM\downloads part 3"
+    excel_path = r"e:\Internship\PocketFM\Romantasy - Subjective Reviews - 9.9.26.xlsx"
+    downloads_base = r"e:\Internship\PocketFM\downloads_part2"
     
     if not os.path.exists(downloads_base):
         os.makedirs(downloads_base)
@@ -57,8 +57,8 @@ def run_pipeline(start_row: int, end_row: int = None, limit: int = None):
             for line in f:
                 processed_links.add(line.strip())
                 
-    # Process the missing 2 rows
-    target_rows = [1248, 1251]
+    # Process exactly the 130 part2 rows to fill in missing books
+    target_rows = [192, 193, 196, 197, 203, 204, 211, 215, 216, 221, 223, 225, 227, 228, 235, 239, 247, 250, 251, 252, 256, 257, 258, 259, 262, 263, 266, 268, 269, 273, 275, 276, 289, 290, 297, 303, 306, 310, 312, 314, 315, 316, 318, 320, 322, 323, 325, 329, 330, 332, 333, 334, 335, 338, 339, 343, 349, 351, 353, 354, 357, 360, 362, 364, 365, 370, 371, 372, 375, 376, 378, 379, 380, 381, 382, 615, 616, 618, 619, 620, 622, 623, 628, 703, 704, 709, 710, 712, 716, 718, 721, 722, 723, 725, 727, 729, 730, 731, 860, 864, 866, 867, 868, 869, 871, 876, 877, 878, 880, 881, 882, 883, 885, 887, 891, 893, 894, 897, 899, 902, 906, 908, 909, 910, 961, 990, 1004, 1005, 1007, 1008]
     
     for row_idx in target_rows:
         row = next(ws.iter_rows(min_row=row_idx, max_row=row_idx, values_only=True))
@@ -100,8 +100,11 @@ def run_pipeline(start_row: int, end_row: int = None, limit: int = None):
         
         # Pre-check: Skip books that already exist in the folder
         from backend.scrapers.romantasy_ocean_downloader import sanitize_filename
+        import re
         for book in books:
-            safe_title_file = sanitize_filename(book.title)
+            # Clean Goodreads (Series, #1) trailing tags
+            clean_book_title = re.sub(r'\s*\(.*?\)\s*$', '', book.title)
+            safe_title_file = sanitize_filename(clean_book_title)
             base_filename = f"{book.number}_{safe_title_file}"
             
             docx_path = os.path.join(series_dir, f"{base_filename}.docx")

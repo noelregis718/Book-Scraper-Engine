@@ -103,7 +103,7 @@ def download_book_sync(task: BookDownloadTask, download_dir: str):
                     text = item['text']
                     href = item['href']
                     # Skip common non-book links that might accidentally match title words
-                    if not href or "oceanofpdf.com" not in href or "donate" in href or "/category/" in href or "/author/" in href:
+                    if not href or "oceanofpdf.com" not in href or "donate" in href:
                         continue
                     
                     if len(text) > 5 and not text.lower() == "oceanofpdf":
@@ -124,45 +124,20 @@ def download_book_sync(task: BookDownloadTask, download_dir: str):
                         browser.close()
                         return
                     
-                # Click the best matched result in a NEW TAB as requested
                 target_url = best_link['href']
                 
-                print(f"[OceanOfPDF] [{task.title}] Attempting to click correct result and bypass ads: {target_url}")
-                book_page = None
-                for click_attempt in range(5):
-                    try:
-                        with context.expect_page(timeout=15000) as new_page_info:
-                            page.evaluate(f"""
-                                () => {{
-                                    const links = Array.from(document.querySelectorAll("a")).filter(a => a.href === '{target_url}');
-                                    if (links.length > 0) {{
-                                        links[0].setAttribute('target', '_blank');
-                                        links[0].click();
-                                    }}
-                                }}
-                            """)
-                        popup_page = new_page_info.value
-                        popup_page.wait_for_load_state("domcontentloaded")
-                        
-                        popup_url = popup_page.url
-                        if "oceanofpdf.com" in popup_url and "donate" not in popup_url:
-                            book_page = popup_page
-                            print(f"[OceanOfPDF] [{task.title}] Successfully opened book page on click attempt {click_attempt+1}!")
-                            break
-                        else:
-                            print(f"[OceanOfPDF] [{task.title}] Click {click_attempt+1} opened an ad/popup ({popup_url}). Closing and trying again...")
-                            popup_page.close()
-                            page.wait_for_timeout(1000)
-                    except Exception as click_err:
-                        print(f"[OceanOfPDF] [{task.title}] Click attempt {click_attempt+1} timed out or failed: {click_err}")
-                        
-                if not book_page:
-                    print(f"[OceanOfPDF] [{task.title}] Failed to open book page after 5 clicks, falling back to goto...")
-                    book_page = context.new_page()
-                    book_page.goto(target_url, wait_until="domcontentloaded")
-                    book_page.wait_for_load_state("domcontentloaded")
-                
                 # Check for Cloudflare challenge and wait if present
+                book_page = context.new_page()
+                print(f"[OceanOfPDF] [{task.title}] Navigating directly to target URL: {target_url}")
+                
+                try:
+                    book_page.goto(target_url, wait_until="domcontentloaded", timeout=60000)
+                except Exception as goto_err:
+                    print(f"[OceanOfPDF] [{task.title}] Failed to goto target url: {goto_err}")
+                    task.status = "failed"
+                    task.error_message = "Failed to load book page."
+                    browser.close()
+                    return
                 for _ in range(15):
                     content = book_page.content().lower()
                     if "cloudflare" in content or "security verification" in content or "verify you are human" in content:
@@ -171,18 +146,43 @@ def download_book_sync(task: BookDownloadTask, download_dir: str):
                     else:
                         break
                 
+                import re
+                text_only = re.sub(r'<[^>]+>', ' ', book_page.content().lower())
+                is_english = True
+                
+                if "language:" in text_only:
+                    parts = text_only.split("language:")
+                    for p in parts[1:]:
+                        segment = p[:50].strip()
+                        if any(lang in segment for lang in ["spanish", "french", "german", "italian", "portuguese", "dutch", "russian", "polish", "turkish"]):
+                            is_english = False
+                            break
+                    
+                if not is_english:
+                    print(f"[OceanOfPDF] [{task.title}] Book is NOT in English (metadata check failed)! Skipping...")
+                    if search_attempt < 9:
+                        book_page.close()
+                        continue
+                    else:
+                        task.status = "failed"
+                        task.error_message = "Only non-English versions found."
+                        browser.close()
+                        return
+                
                 # Find the PDF download form or link
+                import re
+                
                 # First try the classic form
                 pdf_form = book_page.locator("form[action*='Fetching_Resource.php'], form[action*='Get_Resource.php']").filter(has=book_page.locator("input[name='filename'][value$='.pdf']")).first
                 
-                # If classic form fails, try finding any form with a PDF button
+                # If classic form fails, try finding any form with a PDF button (case-insensitive)
                 if pdf_form.count() == 0:
-                    pdf_form = book_page.locator("form").filter(has=book_page.locator("button, input[type='submit']").filter(has_text="PDF")).first
+                    pdf_form = book_page.locator("form").filter(has=book_page.locator("button, input[type='submit']").filter(has_text=re.compile(r"PDF", re.IGNORECASE))).first
                 
-                # If forms fail, try finding a direct download link
+                # If forms fail, try finding a direct download link (case-insensitive)
                 pdf_link = None
                 if pdf_form.count() == 0:
-                    pdf_link = book_page.locator("a").filter(has_text="PDF").first
+                    pdf_link = book_page.locator("a, button").filter(has_text=re.compile(r"PDF", re.IGNORECASE)).first
                     
                 if pdf_form.count() == 0 and (pdf_link is None or pdf_link.count() == 0):
                     if search_attempt < 9:
