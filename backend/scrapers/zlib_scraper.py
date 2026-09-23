@@ -99,7 +99,7 @@ def download_book_sync_zlib(task: BookDownloadTask, download_dir: str, state_fil
             search_query = task.title
             if getattr(task, 'author', None):
                 search_query = f"{task.title} {task.author}"
-            search_url = f"https://z-library.website/s/{urllib.parse.quote(search_query)}?e=1&extensions[]=epub&extensions[]=pdf"
+            search_url = f"https://z-library.website/s/{urllib.parse.quote(search_query)}?e=1&extensions[]=epub&extensions[]=pdf&languages[]=english"
             
             for search_attempt in range(5):
                 try:
@@ -169,10 +169,16 @@ def download_book_sync_zlib(task: BookDownloadTask, download_dir: str, state_fil
                         print(f"[Z-Library] [{task.title}] Navigating to book page: {target_url} (Score: {best_link['score']})")
                         page.goto(target_url, wait_until="domcontentloaded", timeout=60000)
                         
-                        # Check the actual format provided on the page
+                        # Check the actual format and language provided on the page
                         page.wait_for_timeout(2000)
                         format_text = page.evaluate("() => document.body.innerText")
-                        is_epub = "EPUB" in format_text or ".epub" in format_text.lower()
+                        page_text_lower = format_text.lower()
+                        
+                        if "language:" in page_text_lower and "english" not in page_text_lower.split("language:")[1][:50]:
+                            print(f"[Z-Library] [{task.title}] Book page explicitly states non-English language! Skipping...")
+                            continue
+                            
+                        is_epub = "EPUB" in format_text or ".epub" in page_text_lower
                         is_pdf = "PDF" in format_text or ".pdf" in format_text.lower()
                         
                         download_btn = page.locator(".addDownloadedBook, a:has-text('Download ('), button:has-text('Download (')").first
