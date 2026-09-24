@@ -8,11 +8,11 @@ import json
 from playwright.async_api import async_playwright
 import format_excel
 
-EXCEL_FILE = r"e:\Internship\PocketFM\vanshika_part2.xlsx"
-START_ROW = 1750
-TARGET_ROWS = 2150
-CONCURRENCY = 5
-BATCH_SIZE = 50
+EXCEL_FILE = r"e:\Internship\PocketFM\book_details_from_email_rechecked_filled.xlsx"
+START_ROW = 35
+TARGET_ROWS = 65
+CONCURRENCY = 2
+BATCH_SIZE = 30
 
 # We use urllib for the Autocomplete API to bypass AWS WAF
 HEADERS = {
@@ -39,8 +39,14 @@ def get_autocomplete_book_url(query):
     return None
 
 async def process_row(index, row, df, context, sem):
+    print(f"DEBUG: Entered process_row for index {index}")
     async with sem:
-        book_name = str(row.get("Book Title", row.get("Book Name", row.get("Book 1 Title", "")))).strip()
+        # Prefer Book Name for searching Goodreads instead of Series Name
+        book_name = str(row.get("Book Name", row.get("Series Name", ""))).strip()
+        
+        # If Book Name is literally 'nan', try Series Name
+        if book_name.lower() == 'nan':
+            book_name = str(row.get("Series Name", "")).strip()
         
         # SANITIZE BOOK NAME: Take only the part before a colon to avoid confusing the search
         if ":" in book_name:
@@ -59,6 +65,7 @@ async def process_row(index, row, df, context, sem):
         has_books = str(num_books) != '0' and str(num_books) != '0.0' and pd.notna(num_books)
         has_pages = str(num_pages) != '0' and str(num_pages) != '0.0' and pd.notna(num_pages)
         
+        # Restored skip logic to fast-forward past completed rows
         if has_url and has_books and has_pages:
             print(f"[{index}] Row is fully complete (URL, Books, Pages). Skipping.")
             return
@@ -163,9 +170,11 @@ async def process_row(index, row, df, context, sem):
                     pages_text = await pages_el.inner_text()
                     p_match = re.search(r'(\d+)\s*pages', pages_text, re.IGNORECASE)
                     if p_match:
+                        pages = int(p_match.group(1))
                         df.at[index, "Num_Primary_Books_in_Series"] = 1
-                        df.at[index, "Total_Page_Count_of_Primary_Books"] = int(p_match.group(1))
-                        print(f"[{index}] Standalone Book Pages: {p_match.group(1)}")
+                        df.at[index, "Total_Page_Count_of_Primary_Books"] = pages
+                        df.at[index, "Approx Length (Hrs)"] = round((pages * 250) / 10000, 1)
+                        print(f"[{index}] Standalone Book Pages: {pages}")
                 
                 _apply_romantasy_checker(df, index, row, genres)
                 return
@@ -191,8 +200,8 @@ async def process_row(index, row, df, context, sem):
                 match = re.search(r'Book\s+([0-9a-zA-Z\.\-]+)', item_text, re.IGNORECASE)
                 if match:
                     book_num = match.group(1)
-                    # Check if it is purely a whole number (primary book)
-                    if book_num.isdigit():
+                    # Strictly ensure it's a whole number > 0, and not a 'Part' of a book
+                    if book_num.isdigit() and int(book_num) > 0 and "part" not in item_text.lower():
                         num_primary_books += 1
                         
                         # Aggressive scraping: Always visit the book page to get accurate page count
@@ -287,6 +296,8 @@ async def process_row(index, row, df, context, sem):
             print(f"[{index}] Aggressive Scraping Complete. Primary Books: {num_primary_books} | Total Pages: {total_page_count}")
             df.at[index, "Num_Primary_Books_in_Series"] = num_primary_books
             df.at[index, "Total_Page_Count_of_Primary_Books"] = total_page_count
+            if total_page_count > 0:
+                df.at[index, "Approx Length (Hrs)"] = round((total_page_count * 250) / 10000, 1)
             
             _apply_romantasy_checker(df, index, row, genres)
 
@@ -348,7 +359,7 @@ async def run_scraper():
         return
 
     # Ensure all target columns exist
-    for col in ["Num_Primary_Books_in_Series", "Total_Page_Count_of_Primary_Books", "Genre Tags", "Synopsis", "Romantasy Checker", "Book1_Rating", "Book1_Num_Ratings", "GoodReads_Series_URL"]:
+    for col in ["GoodReads_Series_URL", "Book1_Rating", "Book1_Num_Ratings", "Num_Primary_Books_in_Series", "Total_Page_Count_of_Primary_Books", "Approx Length (Hrs)", "Genre Tags", "Synopsis", "Romantasy Checker"]:
         if col not in df.columns:
             df[col] = None
 
@@ -379,7 +390,7 @@ async def run_scraper():
             if not (has_url and has_books and has_pages):
                 needs_processing = True
                 break
-                
+        
         if not needs_processing:
             print(f"Entire batch {batch_start}-{batch_end} is already fully complete. Skipping.")
             continue

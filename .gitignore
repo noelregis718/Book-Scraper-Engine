@@ -56,3 +56,8 @@ Romantasy_Drive_Folders_Master.zip
 backend/OllamaSetup.exe
 test_gdown/
 
+
+# Browser Profiles
+browser_profile/
+browser_profile_missing_scraper/
+browser_profile_main/

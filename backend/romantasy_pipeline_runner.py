@@ -98,33 +98,27 @@ def run_pipeline(start_row: int, end_row: int = None, limit: int = None):
         print(f"Directory: {series_dir}")
         print(f"{'='*50}")
         
-        # Pre-check: Skip books that already exist in the folder
-        from backend.scrapers.romantasy_ocean_downloader import sanitize_filename
-        import re
-        for book in books:
-            # Clean Goodreads (Series, #1) trailing tags
-            clean_book_title = re.sub(r'\s*\(.*?\)\s*$', '', book.title)
-            safe_title_file = sanitize_filename(clean_book_title)
-            base_filename = f"{book.number}_{safe_title_file}"
-            
-            docx_path = os.path.join(series_dir, f"{base_filename}.docx")
-            pdf_path = os.path.join(series_dir, f"{base_filename}.pdf")
-            epub_path = os.path.join(series_dir, f"{base_filename}.epub")
-            
-            if os.path.exists(docx_path):
-                print(f"[Smart Skip] {book.title} already exists as DOCX. Skipping download and conversion.")
-                book.status = "completed"
-                book.source = "Pre-existing"
-            elif os.path.exists(pdf_path):
-                print(f"[Smart Skip] {book.title} already exists as PDF. Skipping download, queuing for conversion.")
-                book.status = "downloaded"
-                book.pdf_path = pdf_path
-                book.source = "Pre-existing"
-            elif os.path.exists(epub_path):
-                print(f"[Smart Skip] {book.title} already exists as EPUB. Skipping download, queuing for conversion.")
-                book.status = "downloaded"
-                book.epub_path = epub_path
-                book.source = "Pre-existing"
+        # Pre-check: Skip books that already exist in the folder (matching by book number)
+        if os.path.exists(series_dir):
+            existing_files = os.listdir(series_dir)
+            for book in books:
+                for ef in existing_files:
+                    if ef.startswith(f"{book.number}_"):
+                        if ef.endswith(".docx"):
+                            print(f"[Smart Skip] Book {book.number} already exists as DOCX. Skipping download.")
+                            book.status = "completed"
+                            book.source = "Pre-existing"
+                            break
+                        elif ef.endswith(".pdf") and book.status != "completed":
+                            print(f"[Smart Skip] Book {book.number} already exists as PDF. Queuing for conversion.")
+                            book.status = "downloaded"
+                            book.pdf_path = os.path.join(series_dir, ef)
+                            book.source = "Pre-existing"
+                        elif ef.endswith(".epub") and book.status not in ["completed", "downloaded"]:
+                            print(f"[Smart Skip] Book {book.number} already exists as EPUB. Queuing for conversion.")
+                            book.status = "downloaded"
+                            book.epub_path = os.path.join(series_dir, ef)
+                            book.source = "Pre-existing"
             
         max_retries = 3
         for attempt in range(max_retries):

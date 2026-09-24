@@ -1,5 +1,5 @@
 import os
-import fitz  # PyMuPDF
+import pymupdf as fitz  # PyMuPDF
 from pdf2docx import Converter
 
 def compress_pdf(input_path, output_path):
@@ -33,10 +33,10 @@ def convert_pdf_to_docx(pdf_path, docx_path):
 
 if __name__ == "__main__":
     pdfs = [
-        "_OceanofPDF.com_In_Another_World_With_My_Smartphone_Volume_2_-_Patora_Fuyuhara.pdf",
-        "_OceanofPDF.com_In_Another_World_With_My_Smartphone_Volume_3_-_Patora_Fuyuhara.pdf",
-        "_OceanofPDF.com_In_Another_World_With_My_Smartphone_Volume_4_-_Patora_Fuyuhara.pdf",
-        "_OceanofPDF.com_In_Another_World_With_My_Smartphone_Volume_5_-_Patora_Fuyuhara.pdf"
+        "_OceanofPDF.com_Scum_villains_self_saving_system_-_MXTX.pdf",
+        "_OceanofPDF.com_The_Scum_Villains_Self-Saving_System__Ren_Zha_Fanpai_Zijiu_Xitong_Novel_Vol_2_-_Mo_Xiang_Tong_Xiu.pdf",
+        "_OceanofPDF.com_The_Scum_Villains_Self-Saving_System_Vol_3_-_Mo_Xiang_Tong_Xiu.pdf",
+        "_OceanofPDF.com_The_Scum_Villains_Self-Saving_System__Ren_Zha_Fanpai_Zijiu_Xitong_Novel_Vol_4_-_Mo_Xiang_Tong_Xiu.pdf"
     ]
     
     for pdf in pdfs:
