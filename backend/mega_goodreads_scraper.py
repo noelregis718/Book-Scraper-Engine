@@ -8,9 +8,10 @@ import json
 from playwright.async_api import async_playwright
 import format_excel
 
-EXCEL_FILE = r"e:\Internship\PocketFM\book_details_from_email_rechecked_filled.xlsx"
-START_ROW = 35
-TARGET_ROWS = 65
+EXCEL_FILE = r"e:\Internship\PocketFM\KF Literary Scouts Series .xlsx"
+SHEET_NAME = "GR data populated sheet"
+START_ROW = 33
+TARGET_ROWS = 48
 CONCURRENCY = 2
 BATCH_SIZE = 30
 
@@ -353,7 +354,7 @@ def _apply_romantasy_checker(df, index, row, genres):
 async def run_scraper():
     print(f"Loading {EXCEL_FILE}...")
     try:
-        df = pd.read_excel(EXCEL_FILE)
+        df = pd.read_excel(EXCEL_FILE, sheet_name=SHEET_NAME)
     except Exception as e:
         print(f"Excel load error: {e}")
         return
@@ -419,9 +420,10 @@ async def run_scraper():
 
             await context.close()
             
-        # Securely save after every batch
+        # Securely save after every batch using append mode to preserve other sheets
         try:
-            df.to_excel(EXCEL_FILE, index=False)
+            with pd.ExcelWriter(EXCEL_FILE, engine='openpyxl', mode='a', if_sheet_exists='replace') as writer:
+                df.to_excel(writer, sheet_name=SHEET_NAME, index=False)
             print(f"\nBatch {batch_start}-{batch_end} saved successfully.")
         except Exception as e:
             print(f"Failed to save batch {batch_start}-{batch_end}: {e}")
