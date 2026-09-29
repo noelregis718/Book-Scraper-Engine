@@ -128,17 +128,17 @@ Once the `AI_Context_Bundle` is generated, we use the GPT for Sheets plugin to w
 Create two new columns in your spreadsheet: `Final Draft Subject` and `Final Draft Email`.
 
 ### The Subject Line Prompt
-Paste this formula into the first empty cell of the `Final Draft Subject` column (assuming your Context Bundle is in column **CA**) and drag it down:
+Paste this formula into the first empty cell of the `Final Draft Subject` column (assuming your Context Bundle is in column **F**) and drag it down:
 
 ```text
-=IF(OR(CA4="", LEFT(CA4, 7)="Bundled"), "", GPT("Context: " & CA4 & " Task: Write a short, professional email subject line for this context. Do not use quotes."))
+=IF(OR(F4="", LEFT(F4, 7)="Bundled"), "", GPT("Write a short, professional email subject line asking to license audio rights based on this context: " & F4))
 ```
 
 ### The Email Body Prompt
 Paste this formula into the first empty cell of the `Final Draft Email` column and drag it down. *(Make sure to replace John Doe with your manager's actual details!)*
 
 ```text
-=IF(OR(CA4="", LEFT(CA4, 7)="Bundled"), "", GPT("Context: " & CA4 & " Task: Write a highly personalized audio rights licensing email. Rule 1: Read the context. If it is an agency, start with 'Dear [Agency Name]'. If it is a direct author, start with 'Dear [Author Name]'. Rule 2: You MUST mention the specific Book title(s) listed in the context. Rule 3: NEVER use placeholders or brackets—use the actual names from the context. Rule 4: You MUST use HTML <br><br> tags to separate your paragraphs instead of normal line breaks. Rule 5: Sign off as John Doe, Head of Licensing, PocketFM."))
+=IF(OR(F4="", LEFT(F4, 7)="Bundled"), "", GPT("Context: " & F4 & " Task: Write a highly personalized audio rights licensing email. Rule 1: Read the context. If it is an agency, start with 'Dear [Agency Name]'. If it is a direct author, start with 'Dear [Author Name]'. Rule 2: You MUST mention the specific Book title(s) listed in the context. Rule 3: NEVER use placeholders or brackets—use the actual names from the context. Rule 4: You MUST use HTML <br><br> tags to separate your paragraphs instead of normal line breaks. Rule 5: Sign off as John Doe, Head of Licensing, PocketFM."))
 ```
 
 ---
@@ -157,3 +157,37 @@ The final step is to blast the perfectly drafted emails to the recipients withou
 5. Click the red **GMass Send Button** at the bottom left.
 
 **Why it works:** GMass will automatically skip the rows that were left blank by the `=IF()` statement (the bundled books), ensuring that Agencies receive only ONE beautifully formatted email containing the grouped list of books you want to license!
+
+---
+---
+
+# Post-Sales CRM Lifecycle Engine
+
+This section details the automation for post-sales email tracking, ensuring authors receive timely updates about vendor onboarding, MG payments, show launches, and revenue statements.
+
+## The Apps Script (Automated Drafts & Official Templates)
+The script `processPostSalesTriggers()` automatically scans the Internal Tracker for specific date milestones and drafts the appropriate email in Gmail.
+* **Important:** The script contains the official Pocket FM HTML design (black header/footer, logos, rounded corners) and the exact text rules from the PostSales SOP. It does **NOT** require GPT to write the email bodies.
+
+## Optional: GPT Prompts for Customized Subject Lines
+If the team wants AI-generated subject lines, add the following columns to your sheet (assuming Author is F4 and Title is G4):
+
+1. **Welcome Subject AI**
+`=IF(G4="", "", GPT("Write a warm, highly engaging email subject line welcoming the author " & F4 & " to PocketFM for their book '" & G4 & "'."))`
+
+2. **Vendor Subject AI**
+`=IF(G4="", "", GPT("Write a clear, urgent email subject line instructing the author " & F4 & " to complete their vendor onboarding for '" & G4 & "'."))`
+
+3. **MG Initiated Subject AI**
+`=IF(G4="", "", GPT("Write a short, professional email subject line for " & F4 & " stating that their Minimum Guarantee payment for '" & G4 & "' has been initiated."))`
+
+4. **MG Confirmed Subject AI**
+`=IF(G4="", "", GPT("Write an exciting email subject line for " & F4 & " confirming their Minimum Guarantee payment for '" & G4 & "' has successfully cleared."))`
+
+5. **Show Launch Subject AI**
+`=IF(G4="", "", GPT("Write a highly celebratory email subject line announcing to " & F4 & " that their audio show '" & G4 & "' is officially live!"))`
+
+6. **Rev Statement Subject AI**
+`=IF(G4="", "", GPT("Write a professional email subject line delivering the quarterly revenue statement for '" & G4 & "' to the author " & F4 & "."))`
+
+*(Note: If the GPT formula returns an error regarding "balance and settings of the spreadsheet's owner", the owner of the document must authorize their OpenAI API key in the GPT sidebar, or you must make a copy of the sheet).*
