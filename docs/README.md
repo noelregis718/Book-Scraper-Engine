@@ -115,9 +115,22 @@ PocketFM/
 | **Creative Content** | Synopsis, Loglines, One-Sentence hooks, AI Classifications. |
 | **Author Enrichment** | Email, Agent Contacts, Website, Facebook, Instagram, Twitter/X. |
 
-## ⚖️ Quality & Fidelity Standards
-
 The platform enforces the **"Total Fidelity"** protocol:
 1. **Deduplication**: Automatic filtering of duplicate entries and robust state tracking.
 2. **Cross-Reference Validation**: Every record is cross-validated across multiple sources (Amazon/Goodreads) to ensure accuracy.
 3. **Deep Contact Discovery**: Multi-source validation for author and professional representation emails.
+
+---
+
+## 📬 CRM Lifecycle & Automated Email Bundler Engine
+
+In addition to scraping, the platform features a complete **Google Apps Script Automation Engine** (`docs/apps_script_drafter.js`) that sits directly inside the team's central CRM ("Lifecycle Tracker - Master"). It completely automates the lifecycle outreach workflow.
+
+### 🌟 Smart Email Features
+- **Intelligent Stage Triggers**: Automatically scans the master tracker daily and instantly generates personalized drafts for 8 distinct lifecycle stages (Welcome, Vendor Onboarding, MG Initiated, MG Confirmed, 15-Day Check-in, 30-Day Check-in, Show Launch, and Revenue Statement).
+- **Intelligent Grammar Engine**: Dynamically analyzes the *Title/IP* column. If it detects multiple books, it intelligently flips the template grammar to use plural pronouns and verbs (e.g., swapping "is" to "are" and "it" to "them").
+- **Smart Skip Rules**: 
+  - Prevents check-in emails from sending if a show has already launched early (detects non-empty "Show Link" columns).
+  - Instantly blocks all outgoing emails for a row if the "Launch Status" is ever marked as *bad* or *dropped*.
+- **GMass Queue Injection**: Instead of just creating raw drafts, it perfectly compiles the email data (including the official Pocket FM red-and-white HTML banners and footer icons) and writes it into a central `Queue` tab database.
+- **Scheduled Delays**: Intelligently staggers emails—for example, automatically stamping the Vendor Onboarding email to send exactly 6 hours (3:30 PM) after the Welcome email (9:30 AM).
