@@ -110,7 +110,7 @@ ${bodyContent}
 <tr><td style="padding-top:30px;"></td></tr>
 
 <tr><td align="center" style="font-size:12px; color:#464646;">
-Pocket FM Private Limited © 2018 - 2024
+Pocket FM Private Limited © 2018 - 2026
 </td></tr>
 
 <tr><td style="padding-top:30px;"></td></tr></tbody></table>
