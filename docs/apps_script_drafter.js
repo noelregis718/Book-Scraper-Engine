@@ -52,8 +52,11 @@ function processOutreachQueue() {
   
   const emailCol = findCol("Email ID");
   const authorCol = findCol("Author Name");
+  const firstNameCol = findCol("First Name"); 
   const titleCol = findCol("Title / IP");
   const showLinkCol = findCol("Show Link"); 
+  const ccCol = findCol("cc"); // For CC mail
+  const revLinkCol = findCol("Revenue Statement Drive"); // Revenue Statement Drive Link
   
   const contractSignedCol = findCol("Contract Signing date"); 
   const vendorLifecycleExitedCol = findCol("Vendor lifecycle Status") + 2; 
@@ -68,7 +71,7 @@ function processOutreachQueue() {
   const checkIn2Col = findCol("Check-In 2"); 
   const launchCol = findCol("Show Launch Announcement"); 
   const revStatementEmailCol = findCol("Revenue Statement + Insights Email"); 
-  const launchStatusCol = findCol("Launch Status"); // NEW COLUMN
+  const launchStatusCol = findCol("Launch Status"); 
 
   // -------------------------------------------------------------
   // OFFICIAL POCKET FM HTML WRAPPER
@@ -122,12 +125,12 @@ Pocket FM Private Limited © 2018 - 2026
   // -------------------------------------------------------------
   // EMAIL BODIES
   // -------------------------------------------------------------
-  function getBody(type, author, title, link, grammar) {
+  function getBody(type, firstName, title, link, grammar, revLink) {
     switch(type) {
       case 'welcome':
         return `
           <tr><td align="left" style="font-size:18px; font-weight:600; color:#121212; padding:30px 35px 10px; line-height:24px;">
-          Hi ${author},
+          Hi ${firstName},
           </td></tr>
           
           <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
@@ -187,11 +190,15 @@ Pocket FM Private Limited © 2018 - 2026
       case 'vendor':
         return `
           <tr><td align="left" style="font-size:18px; font-weight:600; color:#121212; padding:30px 35px 10px; line-height:24px;">
-          Hi ${author},
+          Hi ${firstName},
           </td></tr>
           
           <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
           Please find attached the vendor onboarding documents for <b>${title}</b>. Kindly fill these out and return ${grammar.it} so we can process your MG payment.
+          </td></tr>
+
+          <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
+          <a href="..." style="color:#E51A4D; font-weight:bold; text-decoration:none;">Access Onboarding Documents</a>
           </td></tr>
           
           <tr><td align="left" style="font-size:16px; font-weight:400; color:#121212; padding:10px 35px 30px; line-height:24px;">
@@ -204,7 +211,7 @@ Pocket FM Private Limited © 2018 - 2026
       case 'mgInitiated':
         return `
           <tr><td align="left" style="font-size:18px; font-weight:600; color:#121212; padding:30px 35px 10px; line-height:24px;">
-          Hi ${author},
+          Hi ${firstName},
           </td></tr>
           
           <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
@@ -221,7 +228,7 @@ Pocket FM Private Limited © 2018 - 2026
       case 'mgConfirmed':
         return `
           <tr><td align="left" style="font-size:18px; font-weight:600; color:#121212; padding:30px 35px 10px; line-height:24px;">
-          Hi ${author},
+          Hi ${firstName},
           </td></tr>
           
           <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
@@ -242,7 +249,7 @@ Pocket FM Private Limited © 2018 - 2026
       case 'checkIn1':
         return `
           <tr><td align="left" style="font-size:18px; font-weight:600; color:#121212; padding:30px 35px 10px; line-height:24px;">
-          Hi ${author},
+          Hi ${firstName},
           </td></tr>
           
           <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
@@ -259,7 +266,7 @@ Pocket FM Private Limited © 2018 - 2026
       case 'checkIn2':
         return `
           <tr><td align="left" style="font-size:18px; font-weight:600; color:#121212; padding:30px 35px 10px; line-height:24px;">
-          Hi ${author},
+          Hi ${firstName},
           </td></tr>
           
           <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
@@ -276,7 +283,7 @@ Pocket FM Private Limited © 2018 - 2026
       case 'launch':
         return `
           <tr><td align="left" style="font-size:18px; font-weight:600; color:#121212; padding:30px 35px 10px; line-height:24px;">
-          Hi ${author},
+          Hi ${firstName},
           </td></tr>
           
           <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
@@ -284,7 +291,7 @@ Pocket FM Private Limited © 2018 - 2026
           </td></tr>
           
           <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
-          You can check ${grammar.it} out here: <a href="${link}">${link}</a>
+          You can check ${grammar.it} out here: <a href="${link}" style="color:#E51A4D;">${link}</a>
           </td></tr>
           
           <tr><td align="left" style="font-size:16px; font-weight:400; color:#121212; padding:10px 35px 30px; line-height:24px;">
@@ -295,15 +302,20 @@ Pocket FM Private Limited © 2018 - 2026
         `;
         
       case 'revStatement':
+        const revHref = revLink ? revLink : "#";
         return `
           <tr><td align="left" style="font-size:18px; font-weight:600; color:#121212; padding:30px 35px 10px; line-height:24px;">
-          Hi ${author},
+          Hi ${firstName},
           </td></tr>
           
           <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
           As per our contract, please find your quarterly revenue statement for <b>${title}</b> attached below.
           </td></tr>
           
+          <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
+          <a href="${revHref}" style="color:#E51A4D; font-weight:bold; text-decoration:none;">Access Revenue Statement</a>
+          </td></tr>
+
           <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
           Please review the statement and raise an invoice against it so we can process your payment.
           </td></tr>
@@ -324,7 +336,7 @@ Pocket FM Private Limited © 2018 - 2026
   // -------------------------------------------------------------
   // DRAFTING LOGIC WITH VARIABLE MAPPING & QUEUE INJECTION
   // -------------------------------------------------------------
-  function createDraft(email, subject, author, type, title, link, rIdx, cIdx, customSendTime) {
+  function createDraft(email, subject, firstName, type, title, link, rIdx, cIdx, customSendTime, ccMail, revLink) {
     // 1. Variable Mapping (Singular vs Plural logic from 'Variable Mapping' tab)
     const isMulti = title.includes(",");
     const grammar = {
@@ -337,7 +349,7 @@ Pocket FM Private Limited © 2018 - 2026
       its: isMulti ? "their" : "its"
     };
 
-    const body = getBody(type, author, title, link, grammar);
+    const body = getBody(type, firstName, title, link, grammar, revLink);
     const wrappedBody = wrapHtml(body);
     
     // 2. Map 'type' to the exact Automation Rule Template Name
@@ -354,9 +366,10 @@ Pocket FM Private Limited © 2018 - 2026
     // 3. Generate Data for Queue
     const queueId = Utilities.getUuid();
     const sendDate = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd");
-    const sendTime = customSendTime ? customSendTime : "9:30 AM IST"; // Default to 9:30 AM
+    const sendTime = customSendTime ? customSendTime : "9:30 AM IST"; 
+    const ccValue = ccMail ? ccMail : "";
     
-    // 4. Append to Queue Tab (Queue ID, Recipient, Sender, Template, Subject, HTML Body, Send Date, Send Time, Status, Row IDs, Approved)
+    // 4. Append to Queue Tab (Queue ID, Recipient, Sender, Template, Subject, HTML Body, Send Date, Send Time, Status, Row IDs, Approved, CC)
     if (queueSheet) {
       queueSheet.appendRow([
         queueId,
@@ -369,15 +382,20 @@ Pocket FM Private Limited © 2018 - 2026
         sendTime,
         "Ready", 
         rIdx + 1, 
-        "Yes" 
+        "Yes",
+        ccValue // Appended CC to queue for GMass
       ]);
     }
 
     // (Optional) We keep the traditional draft creation just in case you want to manually verify in Gmail
-    GmailApp.createDraft(email, subject, "", { htmlBody: wrappedBody });
+    let draftOptions = { htmlBody: wrappedBody };
+    if (ccMail && ccMail !== "") {
+      draftOptions.cc = ccMail;
+    }
+    GmailApp.createDraft(email, subject, "", draftOptions);
     
-    // Update main tracker sheet
-    sheet.getRange(rIdx + 1, cIdx + 1).setValue("Sent");
+    // Update main tracker sheet to "Queued" instead of "Sent"
+    sheet.getRange(rIdx + 1, cIdx + 1).setValue("Queued");
   }
 
   // Iterate over all rows starting from row 4 (index 3)
@@ -388,7 +406,14 @@ Pocket FM Private Limited © 2018 - 2026
     let author = row[authorCol];
     let title = row[titleCol];
     let link = row[showLinkCol];
+    let ccMail = ccCol > -1 ? row[ccCol] : "";
+    let revLink = revLinkCol > -1 ? row[revLinkCol] : "";
     let launchStatus = row[launchStatusCol] ? row[launchStatusCol].toString().toLowerCase() : "";
+    
+    // Graceful fallback: If First Name is missing, use Author Name
+    let firstName = (firstNameCol > -1 && row[firstNameCol] && row[firstNameCol].toString().trim() !== "") 
+                    ? row[firstNameCol] 
+                    : author;
     
     if (!email) continue; 
     
@@ -397,46 +422,48 @@ Pocket FM Private Limited © 2018 - 2026
       continue;
     }
     
+    const isReady = (status) => status !== "Scheduled" && status !== "Sent" && status !== "Queued";
+    
     // Welcome Email (Today)
-    if (isToday(row[contractSignedCol]) && row[welcomeCol] !== "Scheduled" && row[welcomeCol] !== "Sent") {
-      createDraft(email, `Welcome to Pocket FM – here's what happens next`, author, 'welcome', title, link, i, welcomeCol);
+    if (isToday(row[contractSignedCol]) && isReady(row[welcomeCol])) {
+      createDraft(email, `Welcome to Pocket FM – here's what happens next`, firstName, 'welcome', title, link, i, welcomeCol, null, ccMail, revLink);
     }
     
     // Vendor Onboarding Email (Today - 6 Hours After Welcome)
-    if (isToday(row[contractSignedCol]) && row[vendorCol] !== "Scheduled" && row[vendorCol] !== "Sent") {
-      // Pass "3:30 PM IST" as the customSendTime so GMass waits 6 hours to send it
-      createDraft(email, `Action Required: Vendor Onboarding for ${title}`, author, 'vendor', title, link, i, vendorCol, "3:30 PM IST");
+    if (isToday(row[contractSignedCol]) && isReady(row[vendorCol])) {
+      // Changed subject from 'Action Required: Vendor...' to 'Vendor...'
+      createDraft(email, `Vendor Onboarding for ${title}`, firstName, 'vendor', title, link, i, vendorCol, "3:30 PM IST", ccMail, revLink);
     }
     
     // MG Payout Initiated (Today based on vendor lifecycle exit)
-    if (isToday(row[vendorLifecycleExitedCol]) && row[mgPayoutInitiatedCol] !== "Scheduled" && row[mgPayoutInitiatedCol] !== "Sent") {
-      createDraft(email, `Payment Initiated: Minimum Guarantee for ${title}`, author, 'mgInitiated', title, link, i, mgPayoutInitiatedCol);
+    if (isToday(row[vendorLifecycleExitedCol]) && isReady(row[mgPayoutInitiatedCol])) {
+      createDraft(email, `Payment Initiated: Minimum Guarantee for ${title}`, firstName, 'mgInitiated', title, link, i, mgPayoutInitiatedCol, null, ccMail, revLink);
     }
     
     // MG Payout Confirmation (Today based on MG payout exit)
-    if (isToday(row[mgPayoutExitedCol]) && row[mgPayoutConfirmationCol] !== "Scheduled" && row[mgPayoutConfirmationCol] !== "Sent") {
-      createDraft(email, `Payment Processed: Minimum Guarantee for ${title}`, author, 'mgConfirmed', title, link, i, mgPayoutConfirmationCol);
+    if (isToday(row[mgPayoutExitedCol]) && isReady(row[mgPayoutConfirmationCol])) {
+      createDraft(email, `Payment Processed: Minimum Guarantee for ${title}`, firstName, 'mgConfirmed', title, link, i, mgPayoutConfirmationCol, null, ccMail, revLink);
     }
     
     // 15 Day Check-In (15 Days Ago AND Show Link must be BLANK)
     let isShowLinkBlank = (link === "" || link === null || link === undefined);
-    if (isDaysAgo(row[mgPayoutExitedCol], 15) && isShowLinkBlank && row[checkIn1Col] !== "Scheduled" && row[checkIn1Col] !== "Sent") {
-      createDraft(email, `Checking in on ${title}`, author, 'checkIn1', title, link, i, checkIn1Col);
+    if (isDaysAgo(row[mgPayoutExitedCol], 15) && isShowLinkBlank && isReady(row[checkIn1Col])) {
+      createDraft(email, `Checking in on ${title}`, firstName, 'checkIn1', title, link, i, checkIn1Col, null, ccMail, revLink);
     }
     
     // 30 Day Check-In (30 Days Ago AND Show Link must be BLANK)
-    if (isDaysAgo(row[mgPayoutExitedCol], 30) && isShowLinkBlank && row[checkIn2Col] !== "Scheduled" && row[checkIn2Col] !== "Sent") {
-      createDraft(email, `Checking in on ${title}`, author, 'checkIn2', title, link, i, checkIn2Col);
+    if (isDaysAgo(row[mgPayoutExitedCol], 30) && isShowLinkBlank && isReady(row[checkIn2Col])) {
+      createDraft(email, `Checking in on ${title}`, firstName, 'checkIn2', title, link, i, checkIn2Col, null, ccMail, revLink);
     }
     
     // Show Launch Announcement Status (Any time Show Link is filled)
-    if (link && link !== "" && row[launchCol] !== "Scheduled" && row[launchCol] !== "Sent") {
-      createDraft(email, `Congratulations! ${title} is Live on Pocket FM`, author, 'launch', title, link, i, launchCol);
+    if (link && link !== "" && isReady(row[launchCol])) {
+      createDraft(email, `Congratulations! ${title} is Live on Pocket FM`, firstName, 'launch', title, link, i, launchCol, null, ccMail, revLink);
     }
     
     // Revenue Statement Email (Today)
-    if (isToday(row[revStatementDueCol]) && row[revStatementEmailCol] !== "Scheduled" && row[revStatementEmailCol] !== "Sent") {
-      createDraft(email, `Revenue Statement for ${title}`, author, 'revStatement', title, link, i, revStatementEmailCol);
+    if (isToday(row[revStatementDueCol]) && isReady(row[revStatementEmailCol])) {
+      createDraft(email, `Revenue Statement for ${title}`, firstName, 'revStatement', title, link, i, revStatementEmailCol, null, ccMail, revLink);
     }
   }
 }
