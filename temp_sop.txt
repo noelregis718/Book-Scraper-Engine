@@ -1,0 +1,1030 @@
+Post-Sales Tracker: Feedback & Engagement Flow
+Post-Sales Comms: Feedback & Engagement Flow
+New: 
+Comms details
+Welcome email - warm, inviting and sets expectations -
+Vendor onboarding & documentation ( ) to kickoff the onboarding process and sharing manuscripts
+Once the documents are shared, we will initiate the payment process for MG. MG will be paid out in 30 days from the date of contract signing. Will keep you posted until the payment is processed from our end. 
+Payment processed update
+From this point onwards, we will kickstart the production process, keep you posted about the show launch and traction / performance metrics
+As per the contract, we will be sharing revenue statements at a quarterly frequency post which you have to raise an invoice for receiving the payment.
+Customer support team
+Vendor onboarding
+MG Pay processed
+Feedback Mail Date
+Show launch announcement mail (except for AI testing for no AI show) + revenue statement re-iteration
+Possible to share : (a) AI allowed / (b) Direct PGC launch -> Show launch date announcement + link share + expectation setting about sharing feedback / insights (listeners, user sentiment etc within next 3 months)
+Not possible to share : No AI allowed and testing in AI -> Concept testing / evaluation announcement + expectation setting about sharing feedback / insights 
+Content related updates 
+Revenue statement + insights (user comments, LDAUs, duration of show produced etc)
+Next steps
+Worked well - invite to community etc
+Did not work (testing fail) - Based on these numbers and our internal benchmarks, we have decided to not produce further episodes on this show, however we will keep sharing revenue statements for the content already live on the platform. Author referral etc
+What next - convert to non-exclusive
+General community - Discord community with onboarded authors
+Non-Timeline Based Events
+Beyond the timeline above, we also reach out to authors — over call or email — for the following non-timeline based events:
+When we're hosting an event or mixer, to invite authors and partners.
+When there's public news or a mention about Pocket FM worth sharing.
+When we want to showcase a case study from a blockbuster show.
+When there's a big partnership to discuss with an agency, publisher, or author.
+When an author has just been newly onboarded to Pocket FM.
+September - JAS
+OND - News Content - by September
+Revised Email Template Library
+Email Template Library
+12. Blockbuster Show Case Study
+NEW — case-based, non-timeline
+Subject: Inside a Pocket FM Success Story
+Hi {{First Name}},
+We thought we'd share a few observations from one of Pocket FM's most successful audio series.
+{{Blockbuster Title}} connected with listeners in a remarkable way, and looking back on its journey, a few interesting patterns stood out.
+What we learned
+{{Case Study Insights}}
+There's no single formula for building a successful show, but looking across many stories often reveals ideas that are worth sharing. We thought these observations might be interesting as you continue your own journey on Pocket FM.
+If any of them spark an idea or a question, just reply to this email—we'd be happy to chat.
+Best,
+Name
+US Licensing & Commissioning
+Pocket FM
+Variables used:
+{{First Name}}  •  {{Blockbuster Title}}  •  {{Case Study Insights}}  •  {{Book Title}}
+13. Newly Onboarded Author — Welcome
+Subject: Welcome to Pocket FM, {{First Name}}
+Hi {{First Name}},
+Welcome to Pocket FM.
+We're pleased to welcome {{Book Title}} to the platform and look forward to working with you.
+Over the next few days, here's what you can expect:
+{{Next Steps Summary}}
+From here on, Name will be your primary point of contact. If you ever have a question about your show or the publishing process, just reply to this email—we'll be happy to help.
+You'll also start receiving the Pocket FM Author Digest, our fortnightly newsletter where we share editorial insights, author spotlights, platform updates and other news from across the Pocket FM author community.
+We're looking forward to working with you.
+Best,
+Name
+US Licensing & Commissioning
+Pocket FM
+Variables used:
+{{First Name}}  •  {{Book Title}}  •  {{Next Steps Summary}}  •  Name
+14. Monthly insights : generic
+Subject: {{Book Title}} — Monthly Insights
+Hi {{First Name}},
+Here's a summary of how {{Book Title}} connected with listeners over the past month.
+{{PerformanceMetrics}}
+Listener Insights:
+{{ListenerInsights}}
+If you have any questions, feel free to reply to this email.
+Best,
+Name
+US Licensing & Commissioning
+Pocket FM
+15. Discord community channel invite
+Subject: Join the Pocket FM Author Community on Discord
+Hi {{First Name}},
+We'd like to invite you to the Pocket FM Author Community on Discord.
+The community brings together Pocket FM authors to discuss writing, publishing, and the craft of storytelling, while also providing a place to hear about platform updates, workshops and community events.
+If you'd like to be part of it, you can join using the link below:
+{{Discord Invite Link}}
+We hope to see you there.
+Best,
+Name
+US Licensing & Commissioning
+Pocket FM
+Testing Cases :
+Welcome email
+1. Welcome Email
+
+Subject: Welcome to Pocket FM — here's what happens next
+
+Hi {{First Name}},
+Welcome to Pocket FM! We couldn't be more excited to have you join the platform. It's always a good day when a new story (and a new author) becomes part of the community.
+Here's a quick walkthrough of what happens next:
+Onboarding & Documentation
+Within 1 business day of this email, you'll receive a follow-up from us with the vendor onboarding documents, manuscript submission instructions, and invoice requirements to kick off the formal onboarding process.
+MG Payment
+Once all documentation is submitted from your end, we'll initiate your Minimum Guarantee (MG) payment. As per your contract, this is paid out within 30 days of the contract signing date. We'll send you a confirmation once the payment has been processed.
+Production & Launch
+Once onboarding is complete, we'll move into production. The typical timeline for production and launching your show on Pocket FM is around 3 months. We'll keep you updated as we reach key milestones throughout the process, including when your show goes live.
+Revenue Statements
+As outlined in the contract, we share revenue statements on a quarterly basis. You'll need to raise an invoice against each statement to receive your payment.
+Support
+Our Relationship Management team is always here if you have any questions along the way. Just reply to this email or reach out to {{RM Contact}}.
+We're genuinely glad to be starting this journey with you, and we look forward to bringing your story to listeners around the world.
+Best,
+US Licensing & Commissioning Team
+Pocket FM
+Variables used: {{First Name}} • {{RM Contact}}
+
+
+Vendor Onboarding Email
+2a. Vendor Onboarding Email
+Subject: Vendor Onboarding Requirements for PocketFM 
+Hi {{First Name}},
+Now the exciting part begins: let's get everything in place so we can start bringing your story to life on Pocket FM!
+Please share the manuscript(s) for your licensed series with us in DOC or PDF format. 
+As the next step, we'll onboard you as a vendor in our systems so we can disburse your Minimum Guarantee (MG) payment and any subsequent revenue-linked payouts.
+Required Documents for Vendor Onboarding
+Please share the following documents as separate attachments/PDFs:
+W-9 (if you're a US citizen) or W-8BEN (if you're a non-US citizen) (attached). If you would like to be onboarded as an entity, please complete the W-8BEN-E form instead.
+Signed Vendor Registration Form (VRF) (attached)
+Conflict of Interest (COI) Declaration (attached)
+Bank letter or void cheque, along with your bank account details.
+Invoice for the Minimum Guarantee / Advance (details below).
+Important: Please ensure that the legal name mentioned on the bank letter / void cheque or bank account details matches the name you provide on the invoice, W-9, VRF and COI declaration. Whatever name appears on your bank cheque or bank proof must match across all documents. This consistency is critical to avoid payment delays.
+[ADD MANUALLY ON VRF: Vendor name and the Name of the account holder under bank account details on the VRF form must match.]
+Invoice for the Minimum Guarantee / Advance
+Along with the documents above, please share an invoice for the minimum guarantee / advance amount. The invoice must include the following details:
+Access Onboarding Documents Here: https://drive.google.com/drive/folders/1YasA2TJL27zcyin1A-Wg-eJq9_vTQnL0?usp=drive_link 
+Let us know if you have any questions — happy to help.
+Best,
+US Licensing & Commissioning Team
+Pocket FM
+Variables used:
+{{First Name}}
+Docs - Onboarding Acknowledgement
+2b. Acknowledgement of receiving Onboarding Docs
+
+Hi {{First Name}},
+Thank you for sending across your onboarding documents. We've received everything safely and our team has started reviewing the submission.
+If we need any additional information or clarification, we'll reach out to you. Otherwise, we'll move ahead with the onboarding process from our end.
+Once the review is complete, we'll initiate the next steps towards processing your Minimum Guarantee (MG) payment in line with the timeline outlined in your agreement. We'll also keep you informed as we reach each major milestone.
+If you have any questions in the meantime, simply reply to this email or reach out to {{RM Contact}}.
+We're excited to keep things moving and will be in touch soon.
+Best,
+US Licensing & Commissioning Team
+Pocket FM
+Variables used: {{First Name}} • {{RM Contact}}
+Scripts Acknowledgement
+2c. Acknowledgement of receiving original scripts
+
+
+Hi {{First Name}},
+Thank you for sharing your books/original scripts with us. We've received the files successfully.
+Our content team will now begin reviewing the material and preparing it for the next phase of adaptation. If we need any additional files or information along the way, we'll be in touch.
+We're excited to start working on your story and can't wait to bring it to life on Pocket FM.
+Best,
+US Licensing & Commissioning Team
+Pocket FM
+Variables used: {{First Name}}
+MG Payment Initiated
+3a. MG Payment Initiated
+
+
+Subject: Pocket FM: Your MG payment has been initiated for {{Show Name}}
+
+Hi {{First Name}},
+Great news—your Minimum Guarantee (MG) payment has now been initiated from our end for {{Show Name}}
+The amount should reflect in your account once your bank completes the processing. If you don't receive it within the usual banking timeline (7-10 days), please let us know and we'll be happy to look into it.
+With this milestone complete, we're one step closer to bringing your story to listeners around the world.
+Thank you once again for partnering with Pocket FM.
+Best,
+US Licensing & Commissioning Team
+Pocket FM
+Variables used: {{First Name}} {{Show Name}}
+MG Payment Processed / Completed
+3b. MG Payment Processed
+Subject: Pocket FM: Your Minimum Guarantee Payment Has Been Processed
+
+Hi {{First Name}},
+We're happy to let you know that the Minimum Guarantee (MG) payment for your title has been successfully processed and credited to your registered bank account.
+Payment Details:
+Series: {{Series Name}}
+MG Amount: {{MG Amount}}
+As we wrap up the onboarding process, we'd love to hear about your experience working with us. Your feedback helps us improve the experience for future authors and partners.
+Take our quick 2-minute survey here:
+https://forms.gle/3nJwBt4KgnzgTThH6
+If you have any questions regarding your payment or anything else along the way, simply reply to this email; we're always happy to help.
+Best,
+US Licensing & Commissioning Team
+Pocket FM
+
+Variable: {{Series Name}} {{MG Amount}}
+Personal Check In 1
+5a. Personal Check In 1: 2 questions about the show
+
+
+Subject: We'd love your thoughts on {{Series Name}}
+Hi {{First Name}},
+We hope you're doing well!
+As {{Series Name}} continues its journey with Pocket FM, we'd love to learn a little more about the world you've created. While production is already underway, there are often small details, character nuances, or creative insights that don't always make it onto the page but can be incredibly valuable for our teams as we continue building and promoting the adaptation.
+We have just two quick questions—it should take less than two minutes.
+1. Is there a character, relationship, or recurring theme from {{Series Name}} that you feel readers connect with the most, and that you'd like us to know?
+2. Is there anything about the world, tone, or characters of {{Series Name}} that you'd want our team to keep in mind as the adaptation evolves?
+While we may not be able to incorporate every suggestion into the current production, your perspective helps us better understand your story and informs future creative, marketing, and audience engagement decisions.
+
+In case the creative team has any questions for you, we might reach out again for clarifications.
+
+If you haven't already had a chance to do so, we'd also appreciate your feedback on your onboarding experience. It helps us improve the experience for future authors and partners.
+→ Share your onboarding feedback here: https://forms.gle/3nJwBt4KgnzgTThH6
+
+Best,
+US Licensing & Commissioning Team
+Pocket FM
+
+Variables: {{Series Name}} 
+Personal Check In - 2
+5b. Personal Check In 2: Asking incase they want to ask/ tell something
+
+Subject: Pocket FM: A quick update on your show: {{Series Name}}
+
+Hi {{First Name}},
+We hope you're doing well!
+It's been about a month since we completed the onboarding process, so we wanted to share a quick update on {{Series Name}}.
+The show is currently under production, and our team is actively working on bringing your story to life. Producing a high-quality audio adaptation involves several stages, and we're making steady progress behind the scenes. We'll continue to keep you updated as we reach key milestones along the way.
+If you haven't already had a chance to do so, we'd also love to hear about your onboarding experience. Your feedback helps us improve the experience for future authors and partners.
+Share your feedback here: https://forms.gle/3nJwBt4KgnzgTThH6
+We'll be in touch with more updates on {{Series Name}} as production progresses.
+Best,
+US Licensing & Commissioning Team
+Pocket FM
+Variables: {{Series Name}}
+Show Launch Announcement
+Show Launch Announcement
+AI Allowed - Show Launch Announcement
+6a. Show Launch Announcement — Possible to Share
+Subject: 🎉 Your Pocket FM Show Is Now Live
+Hi {Name}, 
+Exciting news! Your work {{Show Name}} is now live on Pocket FM!
+Congratulations on reaching this milestone. Feel free to check out the show here on the app : (Show Link)
+Over the coming weeks, we'll closely track the show's performance. From listener engagement to audience feedback, and we'll keep you updated as it finds its audience.
+Please also find attached your quarterly revenue statement, which includes a breakdown of your show's performance for the reporting period.
+The Amount Due for this quarter is $0.00, as the show is still recouping the {{MG Amount}} Minimum Guarantee (MG) advance paid under the agreement. We've also attached the revenue calculation for your reference. Once the MG has been fully recouped, any subsequent revenue due will be payable in accordance with the agreement.
+If you'd like to help spread the word, we'd love for you to share the show with your readers, followers, friends, and family. Every new listener helps your story reach even more people.
+Thank you for trusting Pocket FM with your story. We can't wait to see where this journey takes us!
+Best,
+US Licensing & Commissioning Team
+Pocket FM
+Variables used: {{First Name}} • {{Show Name}} • {{Show Link}}, {{MG Amount}}
+No AI Allowed - Show Launch Announcement
+6b. Show Launch Announcement — Not Possible to Share
+Subject: We are working on {{Series Name}}
+Hi {{First Name}},
+Exciting news - your show has been picked up by our creative teams for deeper evaluation!
+Over the next few weeks, we'll be working closely to shape how the story lands, and we might come back with questions, or creative insights once this process is through.
+Once the show is launched, we'll closely track how the show performs—from listener engagement to audience feedback—and we'll keep you updated as it finds its audience.
+As outlined in your agreement, you'll receive revenue statements on a quarterly basis, with a detailed breakdown of your earnings for the reporting period. If any revenue is due, you can raise an invoice against the statement for payment.
+If you have any questions in the meantime, just reply to this email.
+Best,
+US Licensing & Commissioning
+Pocket FM
+Variables used:
+{{First Name}} 
+The Author Edit
+Subject: What’s new at Pocket FM + a few things worth knowing
+Preheader: Listener insights, storytelling ideas, and what we’ve been up to.
+Hi {{First Name}},
+We wanted to keep you in the loop with a few things happening across Pocket FM: from what listeners are responding to, to what we’re learning about stories that work particularly well in audio.
+1. WHAT’S HAPPENING AT POCKET FM
+We had the absolute honour of having the legendary Ruskin Bond spend time exploring Sherpa and share his experience with us.
+For someone who has spent a lifetime telling stories and inspired generations of people to read, imagine and write, experiencing something we have built is incredibly special. This is a proud moment for everyone who has worked on Sherpa across product, engineering, content, design, marketing and so many other teams.
+Thank you, Mr. Bond. Truly an honour for all of us at Pocket FM. 
+Do watch and share:
+Founder’s Linkedin post: https://lnkd.in/p/g6rd7Zta
+Instagram link: https://www.instagram.com/reel/Dd0vnVwqoML/?stkn=dG1jcTd4YWM3czBu
+Youtube link: https://youtube.com/shorts/1IpKrpoAoWs?si=MjKK00iT4JaICsvJ
+2. A STORY WORTH KNOWING
+Meet Steven Ade: the writer who kept writing even when writing didn’t look like a career.
+For years, Steven’s creative life existed alongside the jobs that paid the bills. He worked in a youth facility, supported children on the spectrum, and later delivered pizzas - all while carrying a love for storytelling that went back to his school days.
+He had once been told that writing wasn’t a practical career. But when he began publishing on Pocket FM, the audience for his stories started growing. What began alongside his day job eventually became the work he could do full-time. 
+Today, Steven is the writer behind The System Creation: Intergalactic Entry, which has reached nearly 8 million plays, holds a 4.6-star rating, and has received over a thousand reviews on Pocket FM.
+For any author who has ever had to fit writing around work, responsibilities, or doubts about whether it could become something more, Steven’s journey may feel familiar.
+
+[ Watch Steven’s Story → https://youtu.be/IO2XWbTNafY?si=dOzc2ZTD0IxZSQpk
+Check out the show here: https://pocketfm.com/show/a6268ee1800866a09bab6b47c61f885556992b45 
+(Check if video template can be added)
+3. WHAT WE’RE SEEING FROM LISTENERS
+Genre in Spotlight: Romantasy
+What tends to make a Romantasy story stronger in audio?
+Across the Romantasy titles we’ve been reviewing, a few patterns come up repeatedly:
+1. Let the romance build through choice, not just chemistry. 
+
+Supernatural bonds, instant attraction, and physical pull can create intrigue, but they shouldn’t do all the emotional work. Give the leads shared experiences, moments of vulnerability, conflict, and trust-building so the relationship feels earned rather than predetermined.
+See it in action: The Alpha She Chose
+ What makes this premise interesting is the emphasis on choice rather than predestination. In a genre where fated-mate bonds can bring two characters together automatically, the heroine’s decision becomes part of the relationship itself. The supernatural connection may create the pull, but choosing what to do with that connection gives the romance its emotional stakes.
+[ Explore The Alpha She Chose →https://pocketfm.com/show/the-alpha-she-chose/69e2eb3772b49e749fed57ae96a86147dde154cb ]
+2. Give the protagonist a goal beyond the relationship.
+
+A strong Romantasy lead should actively shape the plot. Give her something she wants, investigate, protect, or fight for outside the romance, so the love story complicates her journey rather than becoming the whole journey.
+See it in action: Last Witch of Swendel
+ The protagonist is defined first by who she is and what is at stake for her, rather than by her relationship to a romantic partner. Being the “last witch” creates a larger story around survival, identity, power, and what she stands to protect. That gives the romance another narrative arc to intersect with and complicate.
+[ Explore Last Witch of Swendel →https://pocketfm.com/show/96f6721dc499b730f42b02d86e640d682f4f665d ]
+3. Make the fantasy world put pressure on the romance.
+
+The magic, politics, rules, and antagonists should create real obstacles for the couple. A forbidden bond, dangerous power, faction conflict, or recurring antagonist can make the relationship harder in a way that is specific to that world, which is what makes the fantasy feel essential rather than decorative.
+See it in action: Bride of a Dragon
+ Here, the fantasy premise itself shapes the relationship. The heroine isn’t simply falling for someone who happens to exist in a magical world — becoming the bride of a dragon brings questions of power, obligation, and danger directly into the romantic dynamic. Remove the fantasy setup, and you fundamentally change the relationship and its conflict.
+[ Explore Bride of a Dragon → https://pocketfm.com/show/bride-of-a-dragon/514efd834428337923e640a1254ea9d7477b18b3]
+4. BEFORE YOU GO
+What would help you most as an author working in audio?
+[ Understanding what listeners respond to ]
+ [ Learning how stories translate to audio ]
+ [ Seeing examples of stories that performed well ]
+ [ Understanding new opportunities at Pocket FM ]
+Lastly…working on something new?
+We’d love to hear about it.
+[ Share a Story → ]
+us-licensing@pocketfm.com
+Until next time,
+Team Pocket FM
+Notes and template
+The Author Edit — Sample 
+Purpose: A light, recurring post-MG communication to keep authors connected with Pocket FM through relevant company updates, listener insights, storytelling learnings, and creator stories.
+Format: Each edition contains 3 core sections, selected from the content options below, followed by one optional interactive CTA.
+Note: 
+Suggested Buttons are in red
+ Sources in blue
+Subject: What’s new at Pocket FM + a few things worth knowing
+Preheader: Listener insights, storytelling ideas, and what we’ve been up to.
+Hi {{First Name}},
+We wanted to keep you in the loop with a few things happening across Pocket FM: from what listeners are responding to, to what we’re learning about stories that work particularly well in audio.
+WHAT’S HAPPENING AT POCKET FM
+(from Leadership Bytes in #general maybe or otherwise some feat, from linkedin)
+{{2–3 sentence update about a meaningful company/product/content development.}}
+[See What’s New →]
+We can combine or keep one of these:  UGC - How to write a story for Pocket FM Bharat Dhir
+WHAT WE’RE SEEING FROM LISTENERS
+(app metrics)
+{{Interesting listener/content insight. Example: “Stories that establish a clear character goal early are seeing stronger engagement…”}}
+A quick look at what audiences are responding to and how listening behaviour is evolving.
+[Explore the Insight →]
+OR
+ONE IDEA TO TAKE AWAY (Genre in Spotlight)
+(can be an AI analysis fetched from author comments about books in respective genre mastersheets)
+{{Short headline, e.g. “Make the first episode earn the second.”}}
+{{50–70 word genuinely useful writing/audio-storytelling insight.}}
+[Read More →]
+We can keep one of these: A STORY WORTH KNOWING 
+WHY THIS WORKED - pick content relevant to US
+(available on LinkedIn)
+{{Short case study — 2–3 sentences explaining a title/author/content success and what made it interesting.}}
+[Read the Case Study →]
+OR
+STORYTELLER SPOTLIGHT
+(inspiring stories available on #general)
+Share an inspiring author journey that shows what storytelling through Pocket FM has made possible. The focus should be on the author’s journey and experience, rather than simply performance metrics or company promotion.
+Lastly…..
+A quick storytelling question for you: 
+(Just a random interactive poll)
+What would you like to see more of from us?
+[Listener Trends] 
+[Storytelling Tips]
+ [Pocket FM Updates]
+OR
+Working on something new?
+We’d love to hear about it.
+[ Share a Story → ]  us-licensing@pocketfm.com
+Until next time,
+Team Pocket FM
+Other Brainstorming Notes below: 
+WHAT LISTENERS ARE LOVING
+ {{Trend / trope / genre insight}}
+ {{One-sentence explanation}}
+ {{Second insight}}
+ {{One-sentence explanation}}
+ {{Third insight}}
+ {{One-sentence explanation}}
+[Explore This Month’s Insights →]
+Ideas that can be inserted here:
+Genres or subgenres currently seeing stronger listener interest
+Tropes/themes audiences are responding to
+Character types or relationships generating strong reactions
+Patterns seen in listener comments
+What appears to encourage continued listening
+Interesting binge/listening behaviour
+Story elements repeatedly mentioned by listeners
+Emerging content preferences
+An interesting or unexpected audience insight
+A simple data point accompanied by what it could mean for storytellers
+Example:
+Listeners are talking about the villain. A lot.
+ Across {{X}} recent shows, some of the most engaged comment sections weren't centred on the protagonist at all. Complex antagonists were generating some of the strongest conversations.
+Possible CTA:
+ [ Explore the Insight → ]
+FROM THE CATALOG
+{{Case Study / Show Name}}
+{{Brief story of what happened — what audiences responded to and one interesting takeaway. Avoid making this simply “look how successful Pocket FM is.”}}
+The takeaway: {{one strong sentence}}
+[Read the Story →]
+ONE-MINUTE STORYTELLING TIP
+{{e.g. “The power of an unanswered question”}}
+{{Short, useful writing insight specifically relevant to serialized/audio storytelling.}}
+[Explore More Storytelling Insights →]
+ONE IDEA TO TAKE AWAY
+One short, actionable insight about storytelling for serialized audio.
+Possible topics:
+Creating a strong opening hook
+Ending an episode with momentum
+Introducing characters effectively in audio
+Building tension
+Pacing a serialized story
+Creating unanswered questions
+Character motivations
+Dialogue for audio
+Building emotional investment
+Moving from page to audio
+Keep this extremely short—ideally one idea rather than a generic list of writing tips.
+CTA: [ Explore the Idea → ]
+A QUICK QUESTION
+Occasionally replace educational content with a one-click interactive question.
+Example:
+What keeps you listening after Episode 1?
+[ A character I care about ]
+ [ An unanswered question ]
+ [ High stakes ]
+ [ A cliffhanger ]
+The following edition could reveal what authors chose alongside what Pocket FM sees from listeners.
+Trend vs. Myth: A very lightweight interactive format. For example: “Do shorter episodes always retain better?” → See What Our Data Says. Or “Romance needs to begin in Episode 1: true or false?” It gives the email a curiosity hook.
+“Have something new?” passive submission CTA: Don't send a separate acquisition email. Occasionally put a small footer: “Working on something new? We’d love to hear about it.” → Share a Story. It quietly turns relationship nurturing into potential repeat acquisition
+The Audio Adaptation Playbook: A recurring micro-series rather than a newsletter. Each email teaches one thing about writing for serialized audio: The first 10 minutes, Building episode-end hooks, Introducing characters without visual cues, Turning internal monologue into audio, etc. 
+CTA: See the Example →
+Pocket FM “Wrapped” for Authors: Once or twice a year, create a highly visual mass email: “A year of stories at Pocket FM.” Listening hours, genres that grew, interesting audience behaviours, biggest storytelling trends, markets reached, etc. Think Spotify Wrapped, but not personalized.
+//or writing tip series: From Page to Play
+ #01 — The First 10 Minutes
+#02 — The Episode-End Hook
+#03 — Writing Characters You Can't See
+#04 — Building a Bingeable Story
+#05 — Dialogue That Works in Audio
+Content Update - worked well
+6.1.a. Worked Well - Content Related Update (New Quarter)
+
+Hi {{First Name}},
+We wanted to share a quick update on how {{Series Title}} has been performing on Pocket FM. It's always exciting to see a story find its audience, and we thought you'd enjoy a snapshot of how listeners have been engaging with your show so far.
+Show Snapshot
+Duration Produced: {{Duration Produced}}
+Plays {{Daily Active Listeners (LDAUs)}}
+Comments: {{Number of Comments}}
+Ratings
+Reviews
+We'll continue to keep you updated as your show reaches more listeners and share new milestones along the way.
+If your latest revenue statement reflects an amount payable, we'll send you a separate email with the invoice format and instructions to help you raise your invoice.
+If you have any questions about your show's performance or production, simply reply to this email—we're always happy to help.
+Best,
+US Licensing & Commissioning Team
+Pocket FM
+Variables used: {{First Name}} • {{Series Title}} • {{Listening Hours}} • {{Daily Active Listeners (LDAUs)}} • {{Duration Produced}} • {{Number of Comments}} • {{AI Summary of Audience Comments}} • 
+Worked Well - Payment-Related Update
+7.1.b. Worked Well - Payment-Related Update (New Quarter)
+
+Subject Line: Pocket FM: Your earnings are waiting for you!
+
+Hi,
+We're excited to share the latest performance update for {{Series Title}} on Pocket FM. Attached, you'll find your revenue statement for this quarter, which provides a detailed breakdown of your earnings for the reporting period, along with a snapshot of how your show has been performing on the platform.
+Invoice template for the revenue share payment
+Please share an invoice for the due amount for us to process the payout. The invoice must include the following details:
+If you have any questions about the attached revenue statement or your show's performance, simply reply to this email - we're happy to help.
+Click here to check your revenue statement : {{Revenue Statement Drive}}
+Best,
+US Licensing & Commissioning Team
+Pocket FM
+Variables used: Variables used: {{First Name}}{{Series Title}} 
+Didnt work well - Content Related Update
+7.2. Didn’t work well - Content + Payment Related Update
+Subject: Pocket FM: An Update on {{Series Title}}
+
+Hi,
+We're sharing the latest performance update for {{Series Title}} on Pocket FM. Attached, you'll find your revenue statement for this quarter, which provides a breakdown of your earnings for the reporting period, along with a snapshot of how your show has been performing.
+Show Snapshot
+Duration Produced: {{Duration Produced}}
+Plays {{Daily Active Listeners (LDAUs)}}
+Comments: {{Number of Comments}}
+Ratings
+Reviews
+Based on the show's performance and our internal benchmarks, we've decided not to produce additional episodes for {{Series Title}} at this time. This is purely dependent on how our audience has been responding to this show and doesn't take away from the value of your story at all. We'll continue to share quarterly revenue statements for the episodes already live on Pocket FM.
+If you know other authors who may be a good fit for Pocket FM, we'd love an introduction. Our referral program offers meaningful incentives for every author you refer who signs with us.
+Please watch out for a separate email about the referral program.
+If you have any questions about your revenue statement or your show's performance, simply reply to this email—we're happy to help.
+Best,
+US Licensing & Commissioning Team
+Pocket FM
+
+Click here to check your revenue statement : {{Revenue Statement Drive}}
+Variables used: {{Series Title}} • {{Listening Hours}} • {{Daily Active Listeners (LDAUs)}} • {{Duration Produced}} • {{Number of Comments}} • {{AI Summary of Audience Comments}} 
+Quarterly Statements
+Quarterly Revenue Statement, will also have insights
+Subject: Pocket FM: Quarterly Update for {{Series Title}}
+
+Hi,
+We hope you're doing well! It's time for the quarterly update for {{Series Title}}. Attached, you'll find your revenue statement, which includes a detailed breakdown of your earnings for the reporting period, along with a snapshot of how your show has been performing on Pocket FM.
+
+Show Snapshot
+Listening Hours: {{Listening Hours}}
+Daily Active Listeners (LDAUs): {{Daily Active Listeners (LDAUs)}}
+Duration Produced: {{Duration Produced}}
+Comments: {{Number of Comments}}
+Summary of Audience Comments
+{{AI Summary of Audience Comments}}
+We always enjoy sharing how stories are connecting with listeners, and we hope this update gives you a helpful glimpse into your show's journey this quarter. A detailed financial breakdown is included in the attached revenue statement.
+If you have any questions about the statement or would like to discuss your show's performance, simply reply to this email — we're always happy to help.
+Thank you for being part of the Pocket FM community. We look forward to sharing more updates with you in the months ahead!
+Best,
+US Licensing & Commissioning Team
+Pocket FM
+Variables used:
+{{Quarter}} • {{Series Title}} • {{Listening Hours}} • {{Daily Active Listeners (LDAUs)}} • {{Duration Produced}} • {{Number of Comments}} • {{AI Summary of Audience Comments}}
+Event / Mixer Invitation
+Event / Mixer Invitation
+NEW — case-based, non-timeline
+Subject: Save the date: {{Event Name}}
+Hi {{First Name}},
+We're hosting {{Event Name}} on {{Date}} in {{Location}}, and we'd love to have you join us.
+{{Event Description}}
+It's a chance to meet fellow Pocket FM authors, connect with our editorial, production, and partnerships teams, and hear more about what's happening across the platform. Whether you're looking to exchange ideas, learn from other creators, or simply spend an evening with the Pocket FM community, we'd be delighted to see you there.
+RSVP → {{RSVP Link}}
+If you have any questions about the event, just reply to this email—we're happy to help.
+Best,
+Name
+US Licensing & Commissioning
+Pocket FM
+Variables used:
+{{First Name}}  •  {{Event Name}}  •  {{Date}}  •  {{Location}}  •  {{Event Description}}  •  {{RSVP Link}}
+Public News About Pocket FM
+Public News About Pocket FM
+NEW — case-based, non-timeline
+Subject: Latest news from Pocket FM
+Hi {{First Name}},
+We wanted to share an update from Pocket FM that we thought you might find interesting.
+{{News Headline}}
+{{News Summary}}
+We'll continue to keep you posted whenever there are developments that we think are relevant to our authors and publishing partners.
+If you'd like to read the full announcement, you can find it here:
+Read more → {{Article Link}}
+Best,
+Name
+US Licensing & Commissioning
+Pocket FM
+Variables used:
+{{First Name}}  •  {{News Headline}}  •  {{News Summary}}  •  {{Article Link}}11. Public News About Pocket FM
+NEW — case-based, non-timeline
+Subject: Latest news from Pocket FM
+Hi {{First Name}},
+We wanted to share an update from Pocket FM that we thought you might find interesting.
+{{News Headline}}
+{{News Summary}}
+We'll continue to keep you posted whenever there are developments that we think are relevant to our authors and publishing partners.
+If you'd like to read the full announcement, you can find it here:
+Read more → {{Article Link}}
+Best,
+Name
+US Licensing & Commissioning
+Pocket FM
+Variables used:
+{{First Name}}  •  {{News Headline}}  •  {{News Summary}}  •  {{Article Link}}
+Email Template Library
+Email Template Library
+Templates already in the Author Lifecycle SOP are marked EXISTING and referenced, not rewritten. Everything marked NEW is drafted below for the first time, matching the tone of the reference emails: direct, warm, specific — no corporate padding.
+1. MG Payout Released
+Subject: Your MG payment has been processed
+Hi {{First Name}},
+Great news! Your Minimum Guarantee (MG) payment has now been completed.
+Amount: {{Amount}}
+We hope the payment has reached your account smoothly and that everything is in order. If you have any questions or if anything doesn't look quite right, just let us know! We're always happy to help.
+Thank you for being a part of the Pocket FM journey. Your partnership means a lot to us. 
+Best,
+Name
+US Licensing & Commissioning
+Pocket FM
+Variables used:
+{{First Name}}  •  {{Amount}}  •  {{Date}}  •  Name
+2. Onboarding Feedback Survey
+Subject: A quick check-in: how was your experience?
+Hi {{First Name}},
+Now that your Minimum Guarantee payment for {{Series Name}} has been processed, we wanted to check in and see how the process has been so far.
+From signing the agreement to receiving your payment, we know there are a few steps along the way. We'd love to hear how the experience felt from your perspective.
+We've put together a short, three-question survey that takes about two minutes to complete. Your feedback goes directly to our team and helps us improve the experience for every author.
+→ Share your feedback here: https://forms.gle/aJ7s4QNGYUp8URyv8 
+Best,
+Name
+US Licensing & Commissioning, Pocket FM
+Variables used:
+{{First Name}}  •  {{Series Name}}  •  {{Feedback Form Link}}  •  {{Sender Name}}
+3. Show Worked — Success Mail + Production/Show Insights
+if there's any metrics missing or anything, or something can be added about pocketfm or if we can make it more comfortable instead of corporate while remaining respectful and non -ai like check for these changes also if applicable in the mail
+Subject: {{Book Title}} is now live on Pocket FM: Performance Update & Revenue Statement
+Hi {{First Name}},
+We're excited to share that {{Book Title}} is now live on Pocket FM! 
+🎧 Listen here: {{Show Link}}
+We've also attached your revenue statement for {{Period}}, along with an early look at how listeners have been engaging with your show.
+Audience Snapshot
+• Listening Hours: {{Listening Hours}}
+• Unique Listeners: {{Number of Listeners}}
+• Likes: {{Number of Likes}}
+• Comments: {{Number of Comments}}
+Listener Insights
+Here are a few themes emerging from early listener feedback:
+• {{Listener Insight 1}}/completion rate maybe
+• {{Listener Insight 2}}
+Meet the Team Behind the Show!
+Every Pocket FM adaptation is a collaborative effort, and we're delighted to see your story brought to life.
+Director
+{{Director Name}} — {{Director Background}}
+Cast
+{{Cast Names}} — {{Cast Background}}
+Voice Artists
+{{Voice Over Artist Names}} — {{Voice Over Background}}
+We'll continue to share how the show is performing as it reaches more listeners.
+If you have any questions about the attached statement or your show's performance, just reply to this email. We'd be happy to help.
+Best,
+Name
+US Licensing & Commissioning
+Pocket FM
+Variables used:
+{{First Name}}  •  {{Book Title}}  •  {{Show Link}}  •  {{Listening Hours}}  •  {{Number of Listeners}}  •  {{Number of Comments}}  •  {{What Listeners Liked}}  •  {{What Listeners Are Talking About}}  •  {{Director Name}} / {{Director Background}}  •  {{Cast Names}} / {{Cast Background}}  •  {{Voice Over Artist Names}} / {{Voice Over Background}}  •  Name
+4. Show Didn't Work — AI Testing Fail
+NEW — the milder, testing-stage “didn't work” case (distinct from the full beta-rejection template already in the SOP). No extra insights, no invites; cycle ends here.
+Subject: Concept Testing Summary for {{Book Title}}
+Hi {{First Name}},
+We've completed the concept testing for {{Book Title}} and wanted to share a summary of how listeners engaged with the story.
+Below you'll find the engagement metrics, along with a summary of the feedback we received during testing. We hope these insights provide a helpful view of how the concept resonated with listeners.
+Engagement Summary
+{{Engagement Metrics}}
+Listener Insights
+{{AudienceCommentsSummary}}
+We've also attached the revenue statement.
+If you have any questions about the engagement metrics, listener feedback or the concept testing process, feel free to reply to this email.
+Best,
+{{Author Success Manager}}
+ US Licensing & Commissioning
+ Pocket FM
+Variables used:
+{{First Name}}  •  {{Book Title}}  •  {{Engagement Metrics}}  •  {{Audience Comments Summary}}  •  Name
+5. Show Worked Mid — Statement + Mixed Reviews 
+Subject: {{Book Title}} : Your {{Period}} Update & Revenue Statement
+Hi {{First Name}},
+We wanted to share a quick update on how {{Book Title}} has been doing on Pocket FM over {{Period}}. We've also attached your revenue statement for this period.
+Show Snapshot
+Listening Hours: {{Listening Hours}}
+Unique Listeners: {{Number of Listeners}}
+Comments: {{Number of Comments}}
+Audience Feedback
+Here's a summary of what we've been hearing from listeners:
+{{Mixed Reviews Summary}}
+It's always interesting to see which characters, moments, and story arcs resonate most with listeners, and we hope these insights give you a useful glimpse into how your story is being received.
+If you have any questions about the attached statement or your show's performance, just reply to this email. We're happy to help.
+Thank you for being part of Pocket FM.
+Best,
+Name
+US Licensing & Commissioning
+Pocket FM
+Variables used:
+{{First Name}}  •  {{Book Title}}  •  {{Period}}  •  {{Mixed Reviews Summary}}  •  {{Referral Incentive Details}}  •  {{Referral Link}}  •  Name
+6. Show Worked Really Well — Community Invite + Insights
+Marketing and production insights
+Subject: {{Book Title}} — Revenue Statement & an Invitation to the Pocket FM Author Collective!
+Hi {{First Name}},
+We have some exciting news to share {{Book Title}} performed exceptionally well in our concept testing! It's always exciting to see a story resonate with listeners, and we're thrilled by the response.
+
+Listen to your show on Pocket FM here: {{Show Link}}
+We've also attached your revenue statement for {{Period}}, along with a few highlights from your show's journey so far.
+Production Highlights
+{{Production Insights}}
+Marketing Highlights
+{{Marketing Initiatives}}
+Thanks to these efforts, {{Book Title}} continues to reach more listeners and build a growing audience on Pocket FM. We're excited to see its journey continue.
+Seeing stories like {{Book Title}} connect with listeners is exactly why we'd love to invite you to join the Pocket FM Author Collective a community of authors we work closely with as we continue to grow the platform.
+As a member, you'll be invited to workshops, editorial conversations, community events, and occasional early access to new initiatives. It's also a chance to connect with fellow authors and the creative teams behind Pocket FM Originals.
+Join the Author Collective → {{Join Link}}
+If you have any questions about your attached statement, your show's performance, or the Author Collective, simply reply to this email—we'd be happy to help.
+Thank you for being a part of Pocket FM. Your partnership truly means a lot to us.
+Best,
+Name
+US Licensing & Commissioning
+Pocket FM
+Variables used:
+{{First Name}}  •  {{Book Title}}  •  {{Show Insights}}  •  {{Marketing Initiatives}}  •  {{Join Link}}  •  Name
+7. Quarterly Revenue Statement, will also have insights
+Subject: {{Quarter}} update for {{Series Name}} & revenue statement
+Hi {{First Name}},
+We wanted to share your quarterly update for {{Series Name}}. We've attached your revenue statement for {{Quarter}}, along with a summary of how the show has been performing during this period.
+Show Snapshot
+Listening Hours: {{Listening Hours}}
+Unique Listeners: {{Number of Listeners}}
+Likes: {{Number of Likes}}
+Comments: {{Number of Comments}}
+Audience Insights
+{{Audience Insights}}
+Revenue Summary
+{{Revenue Summary}}
+A detailed breakdown is included in the attached revenue statement.
+If you have any questions about the statement or would like to discuss your show's performance, simply reply to this email—we're happy to help.
+Thank you for being part of Pocket FM.
+Best,
+Name
+US Licensing & Commissioning
+Pocket FM
+Variables used:
+{{First Name}}  •  {{Series Name}}  •  {{Quarter}}  •  {{Revenue Summary}}  •  Name
+8. Event / Mixer Invitation
+NEW — case-based, non-timeline
+Subject: Save the date: {{Event Name}}
+Hi {{First Name}},
+We're hosting {{Event Name}} on {{Date}} in {{Location}}, and we'd love to have you join us.
+{{Event Description}}
+It's a chance to meet fellow Pocket FM authors, connect with our editorial, production, and partnerships teams, and hear more about what's happening across the platform. Whether you're looking to exchange ideas, learn from other creators, or simply spend an evening with the Pocket FM community, we'd be delighted to see you there.
+RSVP → {{RSVP Link}}
+If you have any questions about the event, just reply to this email—we're happy to help.
+Best,
+Name
+US Licensing & Commissioning
+Pocket FM
+Variables used:
+{{First Name}}  •  {{Event Name}}  •  {{Date}}  •  {{Location}}  •  {{Event Description}}  •  {{RSVP Link}}
+9. Public News About Pocket FM
+NEW — case-based, non-timeline
+Subject: Latest news from Pocket FM
+Hi {{First Name}},
+We wanted to share an update from Pocket FM that we thought you might find interesting.
+{{News Headline}}
+{{News Summary}}
+We'll continue to keep you posted whenever there are developments that we think are relevant to our authors and publishing partners.
+If you'd like to read the full announcement, you can find it here:
+Read more → {{Article Link}}
+Best,
+Name
+US Licensing & Commissioning
+Pocket FM
+Variables used:
+{{First Name}}  •  {{News Headline}}  •  {{News Summary}}  •  {{Article Link}}
+10. Blockbuster Show Case Study
+NEW — case-based, non-timeline
+Subject: Inside a Pocket FM Success Story
+Hi {{First Name}},
+We thought we'd share a few observations from one of Pocket FM's most successful audio series.
+{{Blockbuster Title}} connected with listeners in a remarkable way, and looking back on its journey, a few interesting patterns stood out.
+What we learned
+{{Case Study Insights}}
+There's no single formula for building a successful show, but looking across many stories often reveals ideas that are worth sharing. We thought these observations might be interesting as you continue your own journey on Pocket FM.
+If any of them spark an idea or a question, just reply to this email—we'd be happy to chat.
+Best,
+Name
+US Licensing & Commissioning
+Pocket FM
+Variables used:
+{{First Name}}  •  {{Blockbuster Title}}  •  {{Case Study Insights}}  •  {{Book Title}}
+11. Newly Onboarded Author — Welcome
+Subject: Welcome to Pocket FM, {{First Name}}
+Hi {{First Name}},
+Welcome to Pocket FM.
+We're pleased to welcome {{Book Title}} to the platform and look forward to working with you.
+Over the next few days, here's what you can expect:
+{{Next Steps Summary}}
+From here on, Name will be your primary point of contact. If you ever have a question about your show or the publishing process, just reply to this email—we'll be happy to help.
+You'll also start receiving the Pocket FM Author Digest, our fortnightly newsletter where we share editorial insights, author spotlights, platform updates and other news from across the Pocket FM author community.
+We're looking forward to working with you.
+Best,
+Name
+US Licensing & Commissioning
+Pocket FM
+Variables used:
+{{First Name}}  •  {{Book Title}}  •  {{Next Steps Summary}}  •  Name
+12. Monthly insights : generic
+Subject: {{Book Title}} — Monthly Insights
+Hi {{First Name}},
+Here's a summary of how {{Book Title}} connected with listeners over the past month.
+{{PerformanceMetrics}}
+Listener Insights:
+{{ListenerInsights}}
+If you have any questions, feel free to reply to this email.
+Best,
+Name
+US Licensing & Commissioning
+Pocket FM
+13. Discord community channel invite
+Subject: Join the Pocket FM Author Community on Discord
+Hi {{First Name}},
+We'd like to invite you to the Pocket FM Author Community on Discord.
+The community brings together Pocket FM authors to discuss writing, publishing, and the craft of storytelling, while also providing a place to hear about platform updates, workshops and community events.
+If you'd like to be part of it, you can join using the link below:
+{{Discord Invite Link}}
+We hope to see you there.
+Best,
+Name
+US Licensing & Commissioning
+Pocket FM
+Testing Cases :
+Human Touch initiatives
+Turning Data into Artifacts
+Initiative 1: Author Milestone Postcards
+A lightweight personalized visual card they can optionally share.
+Small branded postcard with cool doodles and the author’s name/show that they can save or share.
+Milestones like 1K likes, 10K listening hours, 100K hours, 1K comments, first major ranking, etc. 
+Launch postcard: One sentence + optional visual
+Pocket FM Polaroids: Digital “polaroid” cards from milestones, studio moments, events, or launch days.
+Author Desk Postcard: Ask authors to send a photo of their writing desk; feature one in the community.
+Community Birthday Card: Not literal birthdays necessarily , “6 months on Pocket FM.”
+“You’re Trending in…” Card: If the show enters a genre list or collection.
+“Listener Map” Postcard: “This month, listeners found your show from X regions.” Keep it broad and privacy-safe.
+Listener quote drop: “Unexpected Fan Theory”,“Team Favourite Comment” with the actual comment and who picked it: “Chosen by Priya from Production.”
+Send one or two standout comments exactly because they’re interesting, funny, emotional, or unexpected.
+“Character Card” Drop: A designed card for a beloved character with one quote or listener reaction.
+“Season Wrap Card”: One visual summary: episodes, hours, comments, most-discussed character, standout listener quote.
+Initiative 2: Pocket FM Playbook/newsletter/
+ZINE MIGHT WORK BEST (websites like Readymag, Cargo Collective etc. have amazing free templates)
+Just a newly onboarded author zine// authors in spotlight zine//
+Meet the Team Rotation: One non-writer employee each month: sound engineer, casting lead, data analyst, marketer, producer. You had already thought of highlighting non-writer employees in the newsletter; this is a strong community extension.
+Non-Performance Spotlight:
+Case studies:  why one opening worked, what listeners do in first 3 episodes, how cliffhangers work in audio, how casting decisions get made, etc.
+useful creator resources, opportunities and platform knowledge for songwriters and publishers rather than just sending company news
+Author recommendation exchange: Ask authors to recommend one book/podcast/show they loved recently and feature a few in the community. Makes the relationship about taste, not transactions.
+Annual initiatives: 
+“Pocket FM Care Package” for major milestones: Physical postcard, bookmark, small print, sticker pack, or bookplate. Only for genuinely meaningful moments.
+Handwritten Thank-You Card: For major authors or long partnerships, actual physical mail once a year can stand out hugely.
+“Mystery Envelope” Mailer: For a top-performing thriller, send a themed physical card/prop tied to the show. Very selective, but memorable.
+Author Anniversary: “One year with Pocket FM” + one or two highlights from their journey.
+Initiative 3: DISCORD ACTIVITY (interactive, optional sign-up ideas)
+“You Asked, We Answered”: Authors submit questions; Pocket FM answers the top 3 publicly. This prevents Discord becoming a dead announcement server. Can be anonymous.
+Author Matchmaker/Creator Skill Swaps
+One author teaches something they’re good at — plotting, research, serial writing, marketing, character design, etc.
+Opt-in introductions between 2–3 authors with similar genres, markets or challenges. Page Two explicitly uses curated author introductions and networking alongside webinars to build community./Opt-in activity
+Some reward inclusion, if possible for initial momentum
+Ask a Producer / Ask an Editor
+Creative Prompt Nights: “write a 60-second cliffhanger,” “rewrite a scene for audio,” etc. Winners can be featured in the newsletter/community + some reward
+Genre Trend Briefs: Short, useful brief: what’s changing in crime, romantasy, fantasy, etc. Can include listener trends without exposing confidential beta data.
+Listener Question of the Month
+Author Choice Polls: Let authors vote on the next workshop topic, AMA guest, resource guide, etc. Small but gives them agency.
+“What are you working on?” room: monthly thread where authors share what they’re writing, researching, or stuck on
+Author recommendation exchange: Ask authors to recommend one book/podcast/show they loved recently and feature a few in the community. Make the relationship about taste, not transactions.
+Post zine
+[could try to leverage other social media platforms as well]
+Vendor Engagement Plan
+90-Day Human-Touch Journey (Every 10th Day)
+Licensing Team | Post-Sales, Pre-Launch Engagement
+A vendor doesn't sign with Pocket FM and then disappear into a queue — behind every contract is a person who just handed us a story that means something to them, and then... silence, until the next official update. That silence is where relationships quietly erode. This plan exists to fill it — not with more process, but with small, genuine moments that remind the vendor a real human at Pocket FM is thinking about them, not just their deliverable.
+Because Licensing sits before production, we deliberately never touch recording status, episode counts, or launch timelines — that's not ours to share, and pretending otherwise would break trust the moment the vendor compares notes elsewhere. What we can own, fully, is the relationship: making sure that whatever happens on the production side, the vendor never feels forgotten on ours.
+So the rule for every touchpoint below is the same: keep it short — under two minutes for the vendor to read and respond to — but make it unmistakably human. A quick, warm message sent with real attention will always land better than a long, polished one that reads like a template.
+What We Want the Vendor to Feel
+“Pocket FM is still connected with me — I'm not just a line item in a system.”
+“My story matters to them, not just the numbers it might generate.”
+“I know exactly whom I can reach out to, and they'll actually reply.”
+“I am part of the Pocket FM ecosystem — not just someone who signed a contract and went quiet.”
+“Even when I don't hear about production, I never feel forgotten.”
+The 90 Days at a Glance
+A quick-reference view of the cadence — full detail, sample messages, and the reasoning behind each one follow below.
+The Journey, Day by Day
+  Day 10  —  Personal Check-in
+Why this matters: The first ten days after signing can feel purely transactional — contracts, paperwork, payment timelines. This is the moment to remind the vendor that there's a real person on the other end who genuinely cares how they're doing, not just someone tracking a deal.
+What to do: A short 5–10 minute call is best if you can manage it — voice carries warmth that text can't. If a call isn't possible, a personal, unhurried email works just as well. Ask an open question and actually make space for the answer.
+Ready-to-send message: 
+"Hi [Name], hope you're doing well! I just wanted to personally check in now that we're a couple of weeks into our journey with [Show Name]. How are you feeling about everything so far? And is there anything — big or small — I can help make easier from our side?"
+Pro tip: If you spoke during the deal process, reference something specific they said then (“I remember you mentioning you were most excited about ___”). It shows you were genuinely listening, not just closing a deal.
+  Day 20  —  Story Behind the Story
+Why this matters: Authors love talking about their craft. This is an easy, joyful conversation that costs the vendor almost nothing but makes them feel seen as a storyteller — not a signature on a contract.
+What to do: Ask one genuine, specific question about their story. Keep it conversational, not like an interview.
+Ready-to-send message: 
+"Hi [Name] 😊 Been thinking about [Show Name] and wanted to ask — what first inspired you to write this story? I'd love to hear a little of the story behind the story, if you're up for sharing!"
+Pro tip: If they answer, reply with a genuine reaction, not just “thanks!” — a one-line “that's such a lovely reason” goes a long way.
+  Day 30  —  Favourite Character
+Why this matters: A lighter, almost playful touchpoint — a good reminder that not every message from Pocket FM is transactional or serious.
+What to do: Keep it short and fun. This one doesn't need a call — a quick, casual message is perfect.
+Ready-to-send message: 
+"Quick fun question for you today — out of everyone in [Show Name], which character do you think listeners are going to fall for the most? And honestly... is it your favourite too? 😄"
+Pro tip: Remember their answer — if you ever do a community spotlight or shoutout later, mentioning the character they picked is a small, memorable callback.
+  Day 40  —  Feedback Pulse
+Why this matters: A genuine, judgment-free space to raise concerns before they build up. It also quietly signals that you care about their experience, not just their deliverable.
+What to do: One simple, sincere question. Make it easy and safe for them to say something isn't working.
+Ready-to-send message: 
+"Hi [Name], quick and honest check-in — how has your overall experience with Pocket FM been so far? If anything has felt confusing, slow, or just not great, I'd genuinely love to know so we can fix it."
+Pro tip: If they do share a concern, thank them for being honest before addressing it — never get defensive, even if the concern feels unfair.
+  Day 50  —  Community Invite
+Why this matters: Moves the relationship from one-to-one to belonging — being part of something larger than a single contract.
+What to do: Invite them personally; don't just drop a generic link and move on.
+Ready-to-send message: 
+"Hi [Name], I wanted to personally invite you to our author community — it's where a lot of our Pocket FM authors hang out, swap notes, and sometimes just vent about writer's block 😊 Would love to have you there: [Link]"
+Pro tip: If there's an upcoming mixer or event, mention it by name instead of just sharing the community link — specificity always reads warmer.
+  Day 60  —  Pocket FM Insider Update
+Why this matters: Makes the vendor feel like an insider rather than an outside party — they're hearing news as part of the family, not through a press release.
+What to do: Share one genuinely interesting, non-production update — a milestone, a feature, or a relevant case study.
+Ready-to-send message: 
+"Hi [Name], thought you'd find this interesting — [share news / case study link]. Just wanted to keep you in the loop as someone who's part of the Pocket FM family now!"
+Pro tip: Pick something actually relevant to their genre or interests rather than a generic company announcement — relevance is what makes it feel personal.
+  Day 70  —  Ask Their Opinion
+Why this matters: Flips the usual dynamic — instead of always asking things of the vendor, you're asking for their expertise. That builds real respect.
+What to do: Ask a light, opinion-based question about storytelling — not about business or process.
+Ready-to-send message: 
+"Hi [Name], picking your brain today 😊 As someone who really understands storytelling, what do you think makes an audio story truly addictive for listeners? Genuinely curious what you'd say."
+Pro tip: If their answer is interesting, tell them so — “I'll keep that in mind” costs nothing and makes people feel properly heard.
+  Day 80  —  Referral Conversation
+Why this matters: A natural, non-pushy way to grow the vendor network through trust — best reserved for vendors who've clearly had a warm experience so far.
+What to do: Frame the ask as a compliment, never as a sales pitch.
+Ready-to-send message: 
+"Hi [Name], I've genuinely loved working with you on [Show Name] — it's been such a smooth, lovely partnership. If you happen to know other authors or agencies with stories you think would be a great fit for Pocket FM, I'd love an introduction!"
+Pro tip: Only send this if the relationship has visibly been warm so far. If engagement has felt lukewarm, it's fine to skip or delay this one.
+  Day 90  —  Appreciation & Recap
+Why this matters: Closes the 90-day loop with warmth, not a whimper — and reminds the vendor the relationship isn't ending here, just evolving.
+What to do: A heartfelt, personal thank-you note — not a templated closing message.
+Ready-to-send message: 
+"Hi [Name], hard to believe it's been 90 days since we partnered on [Show Name]! Thank you for trusting Pocket FM with your story — it's genuinely meant a lot working with you. I'm still right here on the licensing side, so please don't hesitate to reach out anytime."
+Pro tip: If a small personal gesture feels appropriate — a handwritten-style note, a shoutout — Day 90 is the natural moment for it.
+Making It Feel Real, Not Templated
+Always use their name, and reference something specific from your last conversation — it's the single biggest difference between “warm” and “corporate.”
+Vary the channel. Don't let every touchpoint be an email — mix in calls, a WhatsApp voice note, or even a short personal video message occasionally.
+Reply quickly and warmly if they respond. The follow-through matters more than the outreach itself — a fast, genuine reply builds more trust than the original message did.
+Keep a short personal note per vendor (a hobby, a detail about their story, something they mentioned once) so future touchpoints can reference something real instead of feeling generic.
+Don't rush the message. One extra minute of genuine thought is usually the difference between something that reads as sincere and something that reads as templated.
+Guardrails — What to Avoid
+Production progress, recording status, or episode-level updates — this sits outside Licensing's scope, and sharing it (even informally) can create confusion or false expectations.
+Making every touchpoint about contracts, payments, or process — the vendor should feel like a person to us, not a pending task.
+Over-communicating beyond the 10-day cadence, even with good intentions — consistency builds trust faster than frequency.
+Promising information or timelines that Licensing does not own, such as exact launch dates.
+If the Vendor Doesn't Respond
+Don't chase. One gentle, warm nudge at most — then simply move on to the next scheduled touchpoint.
+Keep the tone light and low-pressure. This is relationship-building, not status-chasing, and it should never feel like either party owes the other a reply.
+Log it as “no response” in the tracker so the pattern is visible over time — some vendors are simply less responsive by nature, and that's fine.
+Simple Engagement KPIs
+Vendor contact rate (touchpoints sent on schedule)
+Response rate
+Feedback received
+Community / event participation
+Vendor referrals / new IP leads
+Vendor satisfaction or sentiment
+Overall approach: fewer automated updates, more genuine short conversations. Ninety days is a long time to be quiet — but it's also a real opportunity to become the one person at Pocket FM a vendor actually looks forward to hearing from. That's the whole plan.
+Feedback Mail
+4. Feedback Mail (Onboarding Survey)
+Subject: A quick check-in: how was your experience?
+Hi {{First Name}},
+Now that you’re officially a part of our community, we wanted to pause and check in - not about the show, but about you.
+From signing the agreement to receiving your payment, we know there were a few steps along the way, and we genuinely want to know how it felt from your side of the table.
+We've put together a short, three-question survey -  about two minutes, we promise. It goes straight to our team and shapes how we treat everyone who comes after you.
+→ Share your feedback here: https://forms.gle/3nJwBt4KgnzgTThH6 
+Thank you for being open with us — it genuinely helps.
+Best,
+US Licensing & Commissioning Team
+Pocket FM
+Variables used:
+{{First Name}}
+Brainstorming
+Gap 1 -
+Vendor Docs received (within 1 day of receiving docs) 
+books or original scripts received (when sent / after MG payout) 
+MG payment initiated  confirmation - Templates to be added by Anvita 
+Production timeline live steps shown to the author as well as the team , in that case the approval becomes easier : Feasibility of connecting Gmail account for making a dashboard, if it breaches the TAT, automated slack reminders should go to that respective POC
+3 steps for which we will need email based dashboard:
+
+RM assign to that author - WIP
+Gap 2
+(MG Payout T+15)Personal Check-in 1: 2 questions about their series / book itself? - Jyoti Bansal we can ask what production surely adds. 
+Personal Check-in 2: (T+30) - Optional?
+
+Pocket FM News & Milestones / Genre Trend or Success Case Study: We decide on the piece for the next quarter - a month before the quarter starts - For OND, we can send the BrahmaYodha by Ajit Kumar in conversation with Prateek Dixit for The Hollywood Reporter India
+
+--- TABLES ---
+
+Type of deal | Treatment | Show launch comms | Other comms
+All AI allowed | AI Beta testing = show launch | Announce show launch + share show link | Monthly update - metrics + insights
+No AI allowed / Direct PGC launch | PGC (Beta) Launch = show launch | Announce show launch + share show link | Monthly update - metrics + insights
+No AI allowed / AI testing | Testing Pass | Post testing - When show is launched in PGC + share show link | “Show has cleared our internal benchmarks and is now going into full production”
+No AI allowed / AI testing/ AI allowed and failed | Testing Fail | N/A | “Here are the user engagement metrics on the concept testing of your show – share data + user insights etc”
+
+Field | Applicability | Description
+Heading | Mandatory | Must be titled “Tax Invoice,” “Invoice,” or “Sales Invoice.” Proforma invoices and quotations cannot be accepted.
+Date | Mandatory | Invoice date
+Invoice No. | Mandatory | Must be unique
+Vendor Name | Mandatory | Complete legal name, as provided in the onboarding form
+Address | Mandatory | Complete registered address, including city, state, and pin/ZIP code
+Phone & Email | Optional | —
+PO Number | Optional | —
+VAT | If applicable | VAT number is mandatory where applicable
+Pocket Entertainment Corp Details | Mandatory | POCKET ENTERTAINMENT SERVICES LLC, 13 W Main Street, PO Box 953, Felton, DE 19943, County of Kent
+Product / Service Description | Mandatory | Clear description of the product or service
+Service Period | Mandatory | Should match the term specified in the agreement
+Amount | Mandatory | Clear bifurcation of base amount and VAT (if applicable)
+Bank Details | Mandatory | Beneficiary name, account number / IBAN, SWIFT code, routing number (mandatory for US vendors), local transit number, and bank name
+Signature | Mandatory | Digital or wet signature
+
+Field | Applicability | Description
+Heading | Mandatory | Must be titled “Tax Invoice,” “Invoice,” or “Sales Invoice.” Proforma invoices and quotations cannot be accepted.
+Date | Mandatory | Invoice date
+Invoice No. | Mandatory | Must be unique
+Vendor Name | Mandatory | Complete legal name, as provided in the onboarding form
+Address | Mandatory | Complete registered address, including city, state, and pin/ZIP code
+Phone & Email | Optional | —
+PO Number | Optional | —
+VAT | If applicable | VAT number is mandatory where applicable
+Pocket Entertainment Corp Details | Mandatory | POCKET ENTERTAINMENT SERVICES LLC, 13 W Main Street, PO Box 953, Felton, DE 19943, County of Kent
+Product / Service Description | Mandatory | Clear description of the product or service
+Service Period | Mandatory | Should match the term specified in the agreement
+Amount | Mandatory | Clear bifurcation of base amount and VAT (if applicable)
+Bank Details | Mandatory | Beneficiary name, account number / IBAN, SWIFT code, routing number (mandatory for US vendors), local transit number, and bank name
+Signature | Mandatory | Digital or wet signature
+
+Type of deal | Treatment | Show launch comms | Other comms
+All AI allowed | AI Beta testing = show launch | Announce show launch + share show link | Monthly update - metrics + insights
+No AI allowed / Direct PGC launch | PGC (Beta) Launch = show launch | Announce show launch + share show link | Monthly update - metrics + insights
+No AI allowed / AI testing | Testing Pass | Post testing - When show is launched in PGC + share show link | “Show has cleared our internal benchmarks and is now going into full production”
+No AI allowed / AI testing/ AI allowed and failed | Testing Fail | N/A | “Here are the user engagement metrics on the concept testing of your show – share data + user insights etc”
+
+Feature an interesting author, genre, writing ritual, unusual background, or creative process. Recognition shouldn’t only go to top performers.
+
+Day | Theme | Vendor Time | Channel
+Day 10 | Personal Check-in | ~2 min | Call (preferred) or email
+Day 20 | Story Behind the Story | ~1 min | Email / WhatsApp
+Day 30 | Favourite Character | ~1 min | Email / WhatsApp
+Day 40 | Feedback Pulse | ~1 min | Email
+Day 50 | Community Invite | ~2 min | Email
+Day 60 | Pocket FM Insider Update | ~2 min | Email / WhatsApp
+Day 70 | Ask Their Opinion | ~1 min | Email / WhatsApp
+Day 80 | Referral Conversation | ~2 min | Call or email
+Day 90 | Appreciation & Recap | ~1 min | Email (personal note)
+
+Stage | Subject | Author Email ID | Sender Email ID | CC’d mail ID | Pocket Last email sent date | Author last email sent date | 5 day TAT reply breached? (Pocket Last email sent date+5)
+Contract Negotiation | Licensing Opportunity with Pocket FM (New format - Serialized Audio Adaptation) |  |  |  |  |  | 
+Vendor Email ID | Vendor Onboarding Requirements for PocketFM |  |  |  |  |  | 
+
