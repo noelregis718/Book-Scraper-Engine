@@ -67,6 +67,9 @@ def run_pipeline(start_row: int, end_row: int):
             print(f"[Row {row_idx}] No primary books found or failed to scrape series.")
             continue
             
+        # Limit to only the first 4 books per user request
+        books = books[:4]
+            
         clean_series_name = sanitize_folder_name(series_name)
         series_dir = os.path.join(downloads_base, clean_series_name)
         

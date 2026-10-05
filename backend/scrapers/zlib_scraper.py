@@ -28,7 +28,7 @@ def ensure_zlib_logged_in(email: str, password: str, state_file: str) -> bool:
             if os.path.exists(state_file):
                 context = browser.new_context(storage_state=state_file)
                 page = context.new_page()
-                page.goto("https://z-library.website/", wait_until="domcontentloaded")
+                page.goto("https://z-library.im/", wait_until="domcontentloaded")
                 page.wait_for_timeout(3000)
                 # If we see logout or profile link, we are logged in
                 if page.locator("a[href*='/logout']").count() > 0 or page.locator(".profile-menu").count() > 0 or page.locator("text='Log out'").count() > 0 or page.locator(".addDownloadedBook").count() > 0:
@@ -43,7 +43,7 @@ def ensure_zlib_logged_in(email: str, password: str, state_file: str) -> bool:
             page = context.new_page()
             
             print("[Z-Library] Navigating to login page...")
-            page.goto("https://z-library.website/", wait_until="domcontentloaded", timeout=60000)
+            page.goto("https://z-library.im/", wait_until="domcontentloaded", timeout=60000)
             page.wait_for_timeout(5000)
             
             email_input = page.locator("input[type='email'], input[name='email']").first
@@ -99,7 +99,7 @@ def download_book_sync_zlib(task: BookDownloadTask, download_dir: str, state_fil
             search_query = task.title
             if getattr(task, 'author', None):
                 search_query = f"{task.title} {task.author}"
-            search_url = f"https://z-library.website/s/{urllib.parse.quote(search_query)}?e=1&extensions[]=epub&extensions[]=pdf&languages[]=english"
+            search_url = f"https://z-library.im/s/{urllib.parse.quote(search_query)}?e=1&extensions[]=epub&extensions[]=pdf&languages[]=english"
             
             for search_attempt in range(5):
                 try:

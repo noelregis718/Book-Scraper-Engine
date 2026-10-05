@@ -115,18 +115,16 @@ for _, row in data_df.iterrows():
     show_html = template_html
     
     # Replace the title and metrics
-    show_title = f"{deal['title']} by {deal['author_name']}"
-    show_html = re.sub(r'Witches of Cleopatra Hill by Christine Pope', show_title, show_html)
+    author_first_name = deal['author_name'].split()[0] if deal['author_name'] else ""
+    show_html = re.sub(r'\[AUTHOR_FIRST_NAME\]', author_first_name, show_html)
+    show_html = re.sub(r'\[SHOW_NAME\]', deal['title'], show_html)
+    show_html = re.sub(r'\[AUTHOR_NAME\]', deal['author_name'], show_html)
     show_html = re.sub(r'26,647', f"{total_plays:,.0f}", show_html)
     show_html = re.sub(r'5,993', f"{total_listeners:,.0f}", show_html)
     
     # Construct the dynamic tbody based on deal type
     if calc_type == 'Net':
         tbody_content = f"""
-                        <tr style="background-color: #bfbfbf; font-weight: 700;">
-                            <td style="text-align: left; width: 60%; padding: 10px;">Period</td>
-                            <td style="text-align: right; width: 40%; padding: 10px;">April-May-June 2026</td>
-                        </tr>
                         <tr>
                             <td style="text-align: left; font-weight: 700; padding: 10px;">Revenue Generated (Gross Exc Distribution Costs) $</td>
                             <td style="text-align: right; padding: 10px;">{rev_generated:,.2f}</td>
@@ -166,10 +164,6 @@ for _, row in data_df.iterrows():
         """
     else:
         tbody_content = f"""
-                        <tr style="background-color: #bfbfbf; font-weight: 700;">
-                            <td style="text-align: left; width: 60%; padding: 10px;">Period</td>
-                            <td style="text-align: right; width: 40%; padding: 10px;">April-May-June 2026</td>
-                        </tr>
                         <tr>
                             <td style="text-align: left; font-weight: 700; padding: 10px;">Revenue Generated (Gross) $</td>
                             <td style="text-align: right; padding: 10px;">{rev_generated:,.2f}</td>
