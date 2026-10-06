@@ -3,25 +3,18 @@ import math
 import os
 import re
 
-jas_path = "e:/Internship/PocketFM/New Revenue Statement Calculation/JAS Self-Pub Revenue Payouts.xlsx"
+jas_path = "e:/Internship/PocketFM/New Revenue Statement Calculation/JAS Self-Pub Revenue Payouts - New.xlsx"
 html_template_path = "e:/Internship/PocketFM/docs/revenue_statement.html"
 output_dir = "e:/Internship/PocketFM/New Revenue Statement Calculation/statements"
 
 os.makedirs(output_dir, exist_ok=True)
 
 # 1. Read the US Lifecycle Deals
-deals_df = pd.read_excel(jas_path, sheet_name='US Lifecycle Deals', header=2)
+deals_df = pd.read_excel(jas_path, sheet_name='US Lifecycle Deals', header=3)
+deals_df.loc[deals_df['Title / IP'].str.contains('Charlie Kingsley', na=False, case=False), 'Show ID (after show creation)'] = 'b3022c6aadf38a7e971eae6e328cf1af4865a725'
 
 target_series = [
-    "Vital Secrets",
-    "Mrs. Lillywhite Investigates Mysteries",
-    "Liz Talbot Mystery Series",
-    "Carolina Tales",
-    "Detective Emilia Cruz",
-    "Fatal Series",
-    "Gansett Series",
-    "Fate Weaver Series",
-    "The Witches of Wheeler Park"
+    "Gansett Series"
 ]
 
 deal_lookup = {}
@@ -53,7 +46,7 @@ def parse_rev_share(rs_str):
     return 0.0
 
 # 2. Read the JAS Consolidated data
-data_df = pd.read_excel(jas_path, sheet_name='JAS Consolidated All Shows Reve')
+data_df = pd.read_excel(jas_path, sheet_name='JAS All Shows Revenue Statement')
 
 # Sort by Quarterly descending and drop duplicates by Show Id to keep the most recent quarter
 data_df['Quarterly_DT'] = pd.to_datetime(data_df['Quarterly'], errors='coerce')

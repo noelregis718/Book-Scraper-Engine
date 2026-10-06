@@ -8,7 +8,10 @@ links = [
     'Revenue_Statement_Detective_Emilia_Cruz.html',
     'Revenue_Statement_Fatal_Series.html',
     'Revenue_Statement_Fate_Weaver_Series.html',
-    'Revenue_Statement_The_Witches_of_Wheeler_Park.html'
+    'Revenue_Statement_The_Witches_of_Wheeler_Park.html',
+    'Revenue_Statement_Jackal_Among_Snakes.html',
+    'Revenue_Statement_Redemption_Arc.html',
+    'Revenue_Statement_Gansett_Series.html'
 ]
 
 html = '<html><body style="font-family: Arial, sans-serif; padding: 20px;">'
