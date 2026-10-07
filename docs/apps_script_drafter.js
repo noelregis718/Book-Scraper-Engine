@@ -22,9 +22,9 @@ function processOutreachQueue(isDelayedRun = false) {
     // Standardize weird dashes to normal hyphens just in case
     sName = sName.replace("–", "-").replace("—", "-");
     
-    // Exact matches take priority (with or without hyphen)
+    // Exact matches take priority
     if (sName === "lifecycle tracker - master") { mainSheet = s; }
-    else if (sName === "post-sales tracker" || sName === "post sales tracker") { psSheet = s; }
+    else if (sName === "post sale comms tracker") { psSheet = s; }
     else if (sName === "queue") { queueSheet = s; }
   }
   
@@ -32,7 +32,7 @@ function processOutreachQueue(isDelayedRun = false) {
   if (!psSheet) {
     for (let s of allSheets) {
       let sName = s.getName().toLowerCase().trim();
-      if (sName.includes("post-sales tracker") || sName.includes("post sales tracker")) { psSheet = s; break; }
+      if (sName.includes("post sale comms tracker")) { psSheet = s; break; }
     }
   }
   
