@@ -3,10 +3,10 @@ import math
 import os
 import re
 
-jas_path = "e:/Internship/PocketFM/JAS Self-Pub Revenue Payouts (1).xlsx"
+jas_path = "e:/Internship/PocketFM/New Revenue Statement Calculation/JAS Self-Pub Revenue Payouts.xlsx"
 html_template_path = "e:/Internship/PocketFM/docs/revenue_statement.html"
-output_dir = "e:/Internship/PocketFM/docs/statements"
-output_excel = "e:/Internship/PocketFM/JAS Self-Pub Revenue Payouts (1)_Processed.xlsx"
+output_dir = "e:/Internship/PocketFM/New Revenue Statement Calculation/statements"
+output_excel = "e:/Internship/PocketFM/New Revenue Statement Calculation/JAS Self-Pub Revenue Payouts_Processed.xlsx"
 
 os.makedirs(output_dir, exist_ok=True)
 
@@ -40,8 +40,13 @@ def parse_rev_share(rs_str):
         return float(match.group(1)) / 100.0
     return 0.0
 
-# 2. Read the Oct 1, 2026 data
-data_df = pd.read_excel(jas_path, sheet_name='Oct 1, 2026')
+# 2. Read the JAS Consolidated data
+data_df = pd.read_excel(jas_path, sheet_name='JAS Consolidated All Shows Reve')
+
+# Sort by Quarterly descending and drop duplicates by Show Id to keep the most recent quarter
+data_df['Quarterly_DT'] = pd.to_datetime(data_df['Quarterly'], errors='coerce')
+data_df = data_df.sort_values('Quarterly_DT', ascending=False).drop_duplicates(subset=['Show Id'])
+
 
 # 3. Process each show
 consolidated_rows = []
@@ -60,39 +65,42 @@ for _, row in data_df.iterrows():
     
     deal = deal_lookup[show_id]
     deal_type = deal['deal_type'].lower()
-    rev_share = parse_rev_share(deal['rev_share_str'])
     
-    # Extract raw numbers
-    total_plays = row['Total Listeners'] # Column index 4
-    total_listeners = row['Total LDAU'] # Column index 5
+    # Extract raw numbers exactly from the table
+    total_plays = row['Total Listeners'] # Mapped to TOTAL PLAYS
+    total_listeners = row['Total LDAU'] # Mapped to UNIQUE LISTENERS (LDAU)
     revenue_pg_exc = row['Revenue (PG Exc) $']
-    marketing_cost = row['Marketing Cost $']
-    production_cost = row['Production Cost $']
+    net_revenue_col = row['Net Revenue (Exc PG & Misc Cost)']
     mg_paid = row['Licensce Fee $']
     
     if pd.isna(revenue_pg_exc): revenue_pg_exc = 0.0
-    if pd.isna(marketing_cost): marketing_cost = 0.0
-    if pd.isna(production_cost): production_cost = 0.0
+    if pd.isna(net_revenue_col): net_revenue_col = 0.0
     if pd.isna(mg_paid): mg_paid = 0.0
     
-    # Calculate
+    # Calculate and map based on Deal Type
     if 'net' in deal_type:
         calc_type = 'Net'
-        rev_generated = revenue_pg_exc
-        net_revenue = rev_generated - marketing_cost - production_cost
-        rev_share_amount = net_revenue * rev_share
+        rev_share_amount = row['Author Share Net $ ']
+        author_payout = row['Author Payout Net $']
+        final_payout = row['Payable Amount $ (Net)']
     else:
         calc_type = 'Gross'
-        rev_generated = revenue_pg_exc
-        net_revenue = rev_generated # same for gross
-        rev_share_amount = rev_generated * rev_share
+        rev_share_amount = row['Author Share Gross $']
+        author_payout = row['Author Payout Gross $']
+        final_payout = row['Payable Amount $ (Gross)']
         
-    mg_recouped = mg_paid - rev_share_amount
-    if mg_recouped < 0: mg_recouped = 0.0 # Standard recoup logic
+    if pd.isna(rev_share_amount): rev_share_amount = 0.0
+    if pd.isna(author_payout): author_payout = 0.0
+    if pd.isna(final_payout): final_payout = 0.0
     
-    final_payout = rev_share_amount - mg_paid
-    if final_payout < 0: final_payout = 0.0
-    
+    # MG to be recouped logic based on table values
+    mg_recouped = 0.0
+    if author_payout < 0:
+        mg_recouped = abs(author_payout)
+        
+    if mg_recouped == 0:
+        final_payout = 0.0
+
     # Add to consolidated list
     consolidated_rows.append({
         'Show ID': show_id,
@@ -102,8 +110,8 @@ for _, row in data_df.iterrows():
         'Rev Share %': deal['rev_share_str'],
         'Total Plays': total_plays,
         'Total Listeners': total_listeners,
-        'Revenue Generated $': rev_generated,
-        'Net Revenue $ (If Net)': net_revenue if calc_type == 'Net' else None,
+        'Revenue Generated $': revenue_pg_exc,
+        'Net Revenue $ (If Net)': net_revenue_col if calc_type == 'Net' else None,
         'Rev Share Amount $': rev_share_amount,
         'MG Paid $': mg_paid,
         'MG to be recouped $': mg_recouped,
@@ -116,33 +124,41 @@ for _, row in data_df.iterrows():
     
     # Replace the title and metrics
     author_first_name = deal['author_name'].split()[0] if deal['author_name'] else ""
+    
+    # Determine the reporting period based on Slack instructions
+    title_lower = deal['title'].lower()
+    author_lower = deal['author_name'].lower()
+    group_1_keywords = ['blake', 'st. martin', 'st. marin', 'sweet tea witch', 'lattes and levitation', 'psychic seasons']
+    is_group_1 = any(kw in title_lower or kw in author_lower for kw in group_1_keywords)
+    
+    if is_group_1:
+        reporting_period = "April-May-June & July-August-September 2026"
+    else:
+        reporting_period = "July-August-September 2026"
+        
+    show_html = re.sub(r'\[REPORTING_PERIOD\]', reporting_period, show_html)
     show_html = re.sub(r'\[AUTHOR_FIRST_NAME\]', author_first_name, show_html)
     show_html = re.sub(r'\[SHOW_NAME\]', deal['title'], show_html)
     show_html = re.sub(r'\[AUTHOR_NAME\]', deal['author_name'], show_html)
     show_html = re.sub(r'26,647', f"{total_plays:,.0f}", show_html)
     show_html = re.sub(r'5,993', f"{total_listeners:,.0f}", show_html)
     
+    # Remove 'quarterly' from the statement intro text
+    show_html = re.sub(r'quarterly revenue statement', 'revenue statement', show_html, flags=re.IGNORECASE)
+    
     # Construct the dynamic tbody based on deal type
     if calc_type == 'Net':
         tbody_content = f"""
                         <tr>
-                            <td style="text-align: left; font-weight: 700; padding: 10px;">Revenue Generated (Gross Exc Distribution Costs) $</td>
-                            <td style="text-align: right; padding: 10px;">{rev_generated:,.2f}</td>
+                            <td style="text-align: left; font-weight: 700; padding: 10px;">Revenue Generated Gross - Distribution Costs $</td>
+                            <td style="text-align: right; padding: 10px;">{revenue_pg_exc:,.2f}</td>
                         </tr>
                         <tr>
-                            <td style="text-align: left; padding: 10px;">Production Costs $</td>
-                            <td style="text-align: right; padding: 10px;">{production_cost:,.2f}</td>
+                            <td style="text-align: left; padding: 10px;">Net Revenue (Exc Advertising & Marketing Costs) $</td>
+                            <td style="text-align: right; padding: 10px;">{net_revenue_col:,.2f}</td>
                         </tr>
                         <tr>
-                            <td style="text-align: left; padding: 10px;">Advertising & Marketing Costs $</td>
-                            <td style="text-align: right; padding: 10px;">{marketing_cost:,.2f}</td>
-                        </tr>
-                        <tr>
-                            <td style="text-align: left; font-weight: 700; padding: 10px;">Net Revenue $</td>
-                            <td style="text-align: right; font-weight: 700; padding: 10px;">{net_revenue:,.2f}</td>
-                        </tr>
-                        <tr>
-                            <td style="text-align: left; padding: 10px;">Revenue Share at {deal['rev_share_str']} $</td>
+                            <td style="text-align: left; padding: 10px;">Revenue Share (Net) at {deal['rev_share_str']} $</td>
                             <td style="text-align: right; padding: 10px;">{rev_share_amount:,.2f}</td>
                         </tr>
                         <tr>
@@ -150,7 +166,7 @@ for _, row in data_df.iterrows():
                             <td></td>
                         </tr>
                         <tr>
-                            <td style="text-align: left; padding: 10px;">MG Paid $</td>
+                            <td style="text-align: left; padding: 10px;">MG Paid (License Fee) $</td>
                             <td style="text-align: right; padding: 10px;">{mg_paid:,.2f}</td>
                         </tr>
                         <tr>
@@ -165,11 +181,11 @@ for _, row in data_df.iterrows():
     else:
         tbody_content = f"""
                         <tr>
-                            <td style="text-align: left; font-weight: 700; padding: 10px;">Revenue Generated (Gross) $</td>
-                            <td style="text-align: right; padding: 10px;">{rev_generated:,.2f}</td>
+                            <td style="text-align: left; font-weight: 700; padding: 10px;">Revenue Generated Gross - Distribution Costs $</td>
+                            <td style="text-align: right; padding: 10px;">{revenue_pg_exc:,.2f}</td>
                         </tr>
                         <tr>
-                            <td style="text-align: left; padding: 10px;">Revenue Share at {deal['rev_share_str']} $</td>
+                            <td style="text-align: left; padding: 10px;">Revenue Share (Gross) at {deal['rev_share_str']} $</td>
                             <td style="text-align: right; padding: 10px;">{rev_share_amount:,.2f}</td>
                         </tr>
                         <tr>
@@ -177,7 +193,7 @@ for _, row in data_df.iterrows():
                             <td></td>
                         </tr>
                         <tr>
-                            <td style="text-align: left; padding: 10px;">MG Paid $</td>
+                            <td style="text-align: left; padding: 10px;">MG Paid (License Fee) $</td>
                             <td style="text-align: right; padding: 10px;">{mg_paid:,.2f}</td>
                         </tr>
                         <tr>

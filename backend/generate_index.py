@@ -1,18 +1,6 @@
 import os
 
-links = [
-    'Revenue_Statement_Vital_Secrets.html',
-    'Revenue_Statement_Mrs__Lillywhite_Investigates_Mysteries.html',
-    'Revenue_Statement_Liz_Talbot_Mystery_Series.html',
-    'Revenue_Statement_Carolina_Tales.html',
-    'Revenue_Statement_Detective_Emilia_Cruz.html',
-    'Revenue_Statement_Fatal_Series.html',
-    'Revenue_Statement_Fate_Weaver_Series.html',
-    'Revenue_Statement_The_Witches_of_Wheeler_Park.html',
-    'Revenue_Statement_Jackal_Among_Snakes.html',
-    'Revenue_Statement_Redemption_Arc.html',
-    'Revenue_Statement_Gansett_Series.html'
-]
+links = [f for f in os.listdir('e:/Internship/PocketFM/New Revenue Statement Calculation/statements') if f.endswith('.html') and f != 'index.html']
 
 html = '<html><body style="font-family: Arial, sans-serif; padding: 20px;">'
 html += '<h1>Revenue Statements (Filtered)</h1><ul>'

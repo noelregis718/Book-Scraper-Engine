@@ -3,39 +3,35 @@ import math
 import os
 import re
 
-jas_path = "e:/Internship/PocketFM/New Revenue Statement Calculation/JAS Self-Pub Revenue Payouts - New.xlsx"
+jas_path = "e:/Internship/PocketFM/New Revenue Statement Calculation/JAS Self-Pub Revenue Payouts.xlsx"
 html_template_path = "e:/Internship/PocketFM/docs/revenue_statement.html"
 output_dir = "e:/Internship/PocketFM/New Revenue Statement Calculation/statements"
 
 os.makedirs(output_dir, exist_ok=True)
 
-# 1. Read the US Lifecycle Deals
+# 1. Read the US Lifecycle Deals from the NEW file
 deals_df = pd.read_excel(jas_path, sheet_name='US Lifecycle Deals', header=3)
-deals_df.loc[deals_df['Title / IP'].str.contains('Charlie Kingsley', na=False, case=False), 'Show ID (after show creation)'] = 'b3022c6aadf38a7e971eae6e328cf1af4865a725'
 
-target_series = [
-    "Gansett Series"
-]
+target_series = {
+    "Sweet Tea": "892d57319f02a28748d0bc1f442c7e511374b410",
+    "St. Marin": "beaab0a8263b729f62e68e0c5198049b802259f0",
+    "Charlie Kingsley": "b3022c6aadf38a7e971eae6e328cf1af4865a725"
+}
 
 deal_lookup = {}
 for _, row in deals_df.iterrows():
-    show_id = str(row.iloc[7]).strip()
-    title = str(row.iloc[2]).strip()
+    title = str(row['Title / IP']).strip()
     
-    is_target = False
-    for t in target_series:
+    for t, hardcoded_id in target_series.items():
         if t.lower() in title.lower():
-            is_target = True
+            deal_lookup[hardcoded_id] = {
+                'genre': row['Genre'],
+                'author_name': row['Author Name'],
+                'title': row['Title / IP'],
+                'rev_share_str': str(row['Rev share %']).strip(),
+                'deal_type': str(row['Gross / Net Deal']).strip()
+            }
             break
-            
-    if show_id and show_id != 'nan' and is_target:
-        deal_lookup[show_id] = {
-            'genre': row.iloc[0],
-            'author_name': row.iloc[1],
-            'title': row.iloc[2],
-            'rev_share_str': str(row.iloc[4]).strip(),
-            'deal_type': str(row.iloc[5]).strip()
-        }
 
 def parse_rev_share(rs_str):
     if not rs_str or rs_str == 'nan':
@@ -45,8 +41,10 @@ def parse_rev_share(rs_str):
         return float(match.group(1)) / 100.0
     return 0.0
 
-# 2. Read the JAS Consolidated data
-data_df = pd.read_excel(jas_path, sheet_name='JAS All Shows Revenue Statement')
+# 2. Read BOTH JAS data tabs and combine them so no show is missed
+df1 = pd.read_excel(jas_path, sheet_name='JAS Consolidated All Shows Reve')
+df2 = pd.read_excel(jas_path, sheet_name='JAS All Shows Revenue Statement')
+data_df = pd.concat([df1, df2], ignore_index=True)
 
 # Sort by Quarterly descending and drop duplicates by Show Id to keep the most recent quarter
 data_df['Quarterly_DT'] = pd.to_datetime(data_df['Quarterly'], errors='coerce')

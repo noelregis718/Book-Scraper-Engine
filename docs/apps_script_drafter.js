@@ -78,7 +78,7 @@ function processOutreachQueue(isDelayedRun = false) {
   const findCol = (name) => headers.findIndex(h => h.toString().toLowerCase().includes(name.toLowerCase()));
   
   // --- ARGUS DATA PARSING ---
-  const argusSheet = spreadsheet.getSheetByName("Argus Show Data");
+  const argusSheet = spreadsheet.getSheetByName("Noel's Automation : Argus Data ( New Data )");
   let argusData = {};
   if (argusSheet) {
     const aData = argusSheet.getDataRange().getValues();
@@ -97,13 +97,20 @@ function processOutreachQueue(isDelayedRun = false) {
         for (let j = 1; j < aData.length; j++) {
            let sid = aData[j][aShowIdCol];
            if (sid) {
+             let dur = aDurCol > -1 ? aData[j][aDurCol] : "";
+             let ldau = aLdauCol > -1 ? aData[j][aLdauCol] : "";
+             let comments = aCommentsCol > -1 ? aData[j][aCommentsCol] : "";
+             let ratings = aRatingsCol > -1 ? aData[j][aRatingsCol] : "";
+             let reviews = aReviewsCol > -1 ? aData[j][aReviewsCol] : "";
+             let hours = aHoursCol > -1 ? aData[j][aHoursCol] : "";
+
              argusData[sid.toString().trim()] = {
-                duration: aDurCol > -1 && aData[j][aDurCol] ? aData[j][aDurCol] : "${argus.duration}",
-                ldau: aLdauCol > -1 && aData[j][aLdauCol] ? aData[j][aLdauCol] : "${argus.ldau}",
-                comments: aCommentsCol > -1 && aData[j][aCommentsCol] ? aData[j][aCommentsCol] : "${argus.comments}",
-                ratings: aRatingsCol > -1 && aData[j][aRatingsCol] ? aData[j][aRatingsCol] : "${argus.ratings}",
-                reviews: aReviewsCol > -1 && aData[j][aReviewsCol] ? aData[j][aReviewsCol] : "${argus.reviews}",
-                hours: aHoursCol > -1 && aData[j][aHoursCol] ? aData[j][aHoursCol] : "${argus.hours}"
+                duration: (dur !== "" && dur !== null) ? dur + " hours" : "${argus.duration}",
+                ldau: (ldau !== "" && ldau !== null) ? ldau + " listeners" : "${argus.ldau}",
+                comments: (comments !== "" && comments !== null && comments.toString() !== "0") ? comments : "No comments",
+                ratings: (ratings !== "" && ratings !== null && ratings.toString() !== "0") ? ratings : "No ratings",
+                reviews: (reviews !== "" && reviews !== null && reviews.toString() !== "0") ? reviews : "No reviews",
+                hours: (hours !== "" && hours !== null) ? hours : "${argus.hours}"
              };
            }
         }
@@ -119,7 +126,7 @@ function processOutreachQueue(isDelayedRun = false) {
   const titleCol = findCol("Title / IP");
   const showLinkCol = findCol("Show Link"); 
   const ccCol = headers.findIndex(h => h.toString().trim().toLowerCase() === "cc" || h.toString().trim().toLowerCase() === "cc mail"); // Exact match to avoid 'Account'
-  const revLinkCol = findCol("Revenue Statement Drive"); // Revenue Statement Drive Link
+  const revLinkCol = 74; // Column BW - Revenue Statement Drive Link
   
   const contractSignedCol = findCol("Contract Signing date"); 
   const vendorLifecycleExitedCol = findCol("Vendor lifecycle Status") + 2; 
@@ -221,7 +228,14 @@ function processOutreachQueue(isDelayedRun = false) {
     let title = row[titleCol];
     let link = row[showLinkCol];
     let ccMail = ccCol > -1 ? row[ccCol] : "";
-    let revLink = revLinkCol > -1 ? row[revLinkCol] : "";
+    
+    // Safely pull from Column BW (index 74) and ensure it's a valid absolute URL
+    let revLinkRaw = (row.length > 74) ? row[74] : "";
+    let revLink = (revLinkRaw && revLinkRaw.toString().trim() !== "") ? revLinkRaw.toString().trim() : "";
+    if (revLink && !revLink.startsWith("http")) {
+        revLink = "https://" + revLink;
+    }
+    
     let launchStatus = row[launchStatusCol] ? row[launchStatusCol].toString().toLowerCase() : "";
     
     // Graceful fallback: If First Name is missing, use Author Name
@@ -694,12 +708,13 @@ function getBody(type, firstName, title, link, grammar, revLink, argus) {
           </td></tr>
         `;
       case 'revStatement_workedWell_content':
+        const revHrefContent = revLink ? revLink : "#";
         return `
           <tr><td align="left" style="font-size:18px; font-weight:600; color:#121212; padding:30px 35px 10px; line-height:24px;">
           Hi ${firstName},
           </td></tr>
           <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
-          We wanted to share a quick update on how <b>${title}</b> has been performing on Pocket FM. It's always exciting to see a story find its audience, and we thought you'd enjoy a snapshot of how listeners have been engaging with your show so far.
+          We're sharing the latest performance update for your licensed series, <b>${title}</b>, on Pocket FM. (Pocket FM App Name: <b>${title}</b>) Attached, you'll find your revenue statement for this quarter, which provides a breakdown of your earnings for the reporting period, along with a snapshot of how your show has been performing.
           </td></tr>
           <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
           <b>Show Snapshot</b><br>
@@ -713,7 +728,19 @@ function getBody(type, firstName, title, link, grammar, revLink, argus) {
           We'll continue to keep you updated as your show reaches more listeners and share new milestones along the way.
           </td></tr>
           <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
+          <table border="0" cellspacing="0" cellpadding="0" style="margin-top: 10px; margin-bottom: 10px;">
+            <tr>
+              <td align="center" style="border-radius: 6px; background-color: #E51A4D;">
+                <a href="${revHrefContent}" target="_blank" style="font-size: 16px; font-weight: bold; color: #ffffff; text-decoration: none; border-radius: 6px; padding: 12px 24px; border: 1px solid #E51A4D; display: inline-block;">Access Revenue Statement</a>
+              </td>
+            </tr>
+          </table>
+          </td></tr>
+          <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
           If your latest revenue statement reflects an amount payable, we'll send you a separate email with the invoice format and instructions to help you raise your invoice.
+          </td></tr>
+          <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
+          If the statement shows no amount payable (for example, while your Minimum Guarantee is still being recouped), no further action is required from your end, and we won't be sending an invoice request for that period.
           </td></tr>
           <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
           If you have any questions about your show's performance or production, simply reply to this email—we're always happy to help.
