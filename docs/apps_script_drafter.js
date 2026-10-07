@@ -67,6 +67,9 @@ function processOutreachQueue(isDelayedRun = false) {
   
   if (!mainSheet || !psSheet) {
     Logger.log("Could not find required tracking tabs. Main Sheet found: " + (mainSheet !== null) + ", Post-Sales Tracker found: " + (psSheet !== null));
+    let names = [];
+    allSheets.forEach(s => names.push(s.getName()));
+    Logger.log("Available sheets: " + names.join(", "));
     return;
   }
   
