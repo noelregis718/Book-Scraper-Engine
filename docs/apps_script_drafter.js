@@ -267,7 +267,7 @@ function processOutreachQueue(isDelayedRun = false) {
     GmailApp.createDraft(email, subject, "", draftOptions);
     
     // Update main tracker sheet to "Ready" indicating draft is prepared
-    psSheet.getRange(rIdx + 1, cIdx + 1).setValue("Ready");
+    psSheet.getRange(rIdx + 1, cIdx + 1).setValue("Sent");
     Logger.log("SUCCESS: Created draft for " + title + " (Type: " + type + ")");
   }
 
