@@ -18,28 +18,33 @@ function processOutreachQueue(isDelayedRun = false) {
   
   for (let s of allSheets) {
     let sName = s.getName().toLowerCase().trim();
+    sName = sName.replace("–", "-").replace("—", "-"); // Standardize dashes
     
-    // Standardize weird dashes to normal hyphens just in case
-    sName = sName.replace("–", "-").replace("—", "-");
-    
-    // Exact matches take priority
+    // 1. Exact match takes top priority
     if (sName === "lifecycle tracker - master") { mainSheet = s; }
-    else if (sName === "post sale comms tracker") { psSheet = s; }
+    else if (sName === "post-sales tracker" || sName === "post sales tracker") { psSheet = s; }
     else if (sName === "queue") { queueSheet = s; }
   }
   
-  // Partial match fallback ONLY if exact match fails
+  // 2. Fallback to Post Sale Comms Tracker (exact match) if Post-Sales Tracker doesn't exist
   if (!psSheet) {
     for (let s of allSheets) {
       let sName = s.getName().toLowerCase().trim();
-      if (sName.includes("post sale comms tracker")) { psSheet = s; break; }
+      if (sName === "post sale comms tracker") { psSheet = s; break; }
     }
   }
   
+  // 3. Last resort partial matches
   if (!mainSheet) {
     for (let s of allSheets) {
       let sName = s.getName().toLowerCase().trim();
       if (sName.includes("lifecycle tracker - master")) { mainSheet = s; break; }
+    }
+  }
+  if (!psSheet) {
+    for (let s of allSheets) {
+      let sName = s.getName().toLowerCase().trim();
+      if (sName.includes("post-sales tracker") || sName.includes("post sale comms tracker")) { psSheet = s; break; }
     }
   }
   
