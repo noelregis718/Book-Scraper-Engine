@@ -11,71 +11,71 @@
 
 function processOutreachQueue(isDelayedRun = false) {
   const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = spreadsheet.getSheetByName("Lifecycle Tracker - Master");
-  const queueSheet = spreadsheet.getSheetByName("Queue"); // The new database tab for GMass
+  const allSheets = spreadsheet.getSheets();
+  let mainSheet = null;
+  let psSheet = null;
+  let queueSheet = null;
   
-  // Force the 12th column header to be "CC" and style the sheet beautifully
+  // Dynamically find sheets to avoid 'Copy of' or trailing space issues
+  allSheets.forEach(s => {
+    let sName = s.getName().toLowerCase().trim();
+    if (sName.includes("lifecycle tracker - master")) mainSheet = s;
+    else if (sName.includes("post-sales tracker") || sName.includes("post sales tracker") || sName.includes("post sale comms tracker")) psSheet = s;
+    else if (sName === "queue") queueSheet = s;
+  });
+  
+  
   if (queueSheet) {
     queueSheet.getRange(1, 12).setValue("CC");
-    
-    // Apply Romantasy-style Blue Headings
     let headerRange = queueSheet.getRange(1, 1, 1, 12);
     headerRange.setBackground("#1155cc"); 
     headerRange.setFontColor("#ffffff");
     headerRange.setFontWeight("bold");
     headerRange.setHorizontalAlignment("center");
     headerRange.setVerticalAlignment("middle");
-    
-    // Thick header row
     queueSheet.setRowHeight(1, 40); 
-    
-    // Hide messy system columns so the view is clean
-    queueSheet.hideColumns(1); // Hide Queue ID
-    queueSheet.hideColumns(6); // Hide HTML Body
-    
-    // Adjust column widths and text wrapping for readability
-    queueSheet.setColumnWidth(2, 200); // Recipient
-    queueSheet.setColumnWidth(4, 220); // Template
-    queueSheet.setColumnWidth(5, 350); // Subject
+    queueSheet.hideColumns(1);
+    queueSheet.hideColumns(6);
+    queueSheet.setColumnWidth(2, 200);
+    queueSheet.setColumnWidth(4, 220);
+    queueSheet.setColumnWidth(5, 350);
     queueSheet.getRange("B:E").setWrap(true);
-    queueSheet.getRange("G:I").setHorizontalAlignment("center"); // Center-align Dates and Status
+    queueSheet.getRange("G:I").setHorizontalAlignment("center");
   }
   
-  // If sheet isn't found, stop
-  if (!sheet) {
-    Logger.log("Could not find a tab named 'Lifecycle Tracker - Master'");
+  if (!mainSheet || !psSheet) {
+    Logger.log("Could not find required tracking tabs. Main Sheet found: " + (mainSheet !== null) + ", Post-Sales Tracker found: " + (psSheet !== null));
     return;
   }
   
-  const data = sheet.getDataRange().getValues();
+  const mainData = mainSheet.getDataRange().getValues();
+  const psData = psSheet.getDataRange().getValues();
   
-  // A helper function to check if a date is exactly 'days' ago
   function isDaysAgo(dateVal, days) {
-    if (!dateVal || !(dateVal instanceof Date)) return false;
+    if (!dateVal) return false;
+    let targetDate = (dateVal instanceof Date) ? dateVal : new Date(dateVal);
+    if (isNaN(targetDate)) return false;
     const today = new Date();
     today.setHours(0,0,0,0);
-    const targetDate = new Date(dateVal);
     targetDate.setHours(0,0,0,0);
     const diffTime = Math.abs(today - targetDate);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
     return diffDays === days;
   }
   
-  // A helper function to check if a date is exactly today
   function isToday(dateVal) {
-    if (!dateVal || !(dateVal instanceof Date)) return false;
+    if (!dateVal) return false;
+    let target = (dateVal instanceof Date) ? dateVal : new Date(dateVal);
+    if (isNaN(target)) return false;
     const today = new Date();
-    const target = new Date(dateVal);
     return today.getDate() === target.getDate() &&
            today.getMonth() === target.getMonth() &&
            today.getFullYear() === target.getFullYear();
   }
   
-  // Define header row (Row 3, which is index 2)
-  const headerRowIndex = 2; 
-  const headers = data[headerRowIndex];
-  
-  const findCol = (name) => headers.findIndex(h => h.toString().toLowerCase().includes(name.toLowerCase()));
+  // Headers for main sheet (Row 3, index 2)
+  const mainHeaders = mainData[2];
+  const mainFindCol = (name) => mainHeaders.findIndex(h => h.toString().toLowerCase().includes(name.toLowerCase()));
   
   // --- ARGUS DATA PARSING ---
   const argusSheet = spreadsheet.getSheetByName("Noel's Automation : Argus Data ( New Data )");
@@ -83,7 +83,7 @@ function processOutreachQueue(isDelayedRun = false) {
   if (argusSheet) {
     const aData = argusSheet.getDataRange().getValues();
     if (aData.length > 0) {
-      const aHeaders = aData[0]; // Assuming row 1 is headers
+      const aHeaders = aData[0];
       const aFindCol = (name) => aHeaders.findIndex(h => h.toString().toLowerCase().includes(name.toLowerCase()));
       const aShowIdCol = aFindCol("Show ID");
       const aDurCol = aFindCol("Duration");
@@ -119,32 +119,56 @@ function processOutreachQueue(isDelayedRun = false) {
   }
   // --------------------------
   
-  const showIdCol = findCol("Show ID");
-  const emailCol = findCol("Email ID");
-  const authorCol = findCol("Author Name");
-  const firstNameCol = findCol("First Name"); 
-  const titleCol = findCol("Title / IP");
-  const showLinkCol = findCol("Show Link"); 
-  const ccCol = headers.findIndex(h => h.toString().trim().toLowerCase() === "cc" || h.toString().trim().toLowerCase() === "cc mail"); // Exact match to avoid 'Account'
-  const revLinkCol = 74; // Column BW - Revenue Statement Drive Link
+  const showIdCol = mainFindCol("Show ID");
+  const emailCol = mainFindCol("Receiver Email ID");
+  const authorCol = mainFindCol("Author Name");
+  const firstNameCol = mainFindCol("Receiver First Name"); 
+  const mainTitleCol = mainFindCol("Title / IP");
+  const showLinkCol = mainFindCol("Show Link"); 
+  const ccCol = mainFindCol("CC Mail ID"); 
   
-  const contractSignedCol = findCol("Contract Signing date"); 
-  const vendorLifecycleExitedCol = findCol("Vendor lifecycle Status") + 2; 
-  const mgPayoutExitedCol = findCol("Vendor lifecycle Status") + 6; 
-  const revStatementDueCol = findCol("Rev Statement Due Date"); 
+  const contractSignedCol = mainFindCol("Contract Signing date"); 
+  const vendorLifecycleExitedCol = contractSignedCol + 4; 
+  const mgPayoutExitedCol = contractSignedCol + 7; 
+  const launchStatusCol = mainFindCol("Launch Status"); 
+
+  // Build a lookup dictionary for main sheet data based on Title / IP
+  let mainDict = {};
+  for(let i = 3; i < mainData.length; i++) {
+     let row = mainData[i];
+     let t = row[mainTitleCol];
+     if (t) {
+         let safeTitle = t.toString().toLowerCase().trim();
+         mainDict[safeTitle] = {
+             email: row[emailCol],
+             author: row[authorCol],
+             firstName: row[firstNameCol],
+             showLink: row[showLinkCol],
+             ccMail: row[ccCol],
+             showId: showIdCol > -1 ? row[showIdCol] : "",
+             contractSigned: row[contractSignedCol],
+             vendorLifecycleExited: row[vendorLifecycleExitedCol],
+             mgPayoutExited: row[mgPayoutExitedCol],
+             launchStatus: row[launchStatusCol]
+         };
+     }
+  }
+
+  // Headers for Post-Sales Tracker (Row 3, index 2)
+  const psHeaders = psData[2];
+  const psFindCol = (name) => psHeaders.findIndex(h => h.toString().toLowerCase().includes(name.toLowerCase()));
   
-  const welcomeCol = findCol("Welcome Email"); 
-  const vendorCol = findCol("Vendor Onboarding Email"); 
-  const mgPayoutInitiatedCol = findCol("MG Payout Initiated"); 
-  const mgPayoutConfirmationCol = findCol("MG Payout Confirmation"); 
-  const checkIn1Col = findCol("Check-In 1"); 
-  const checkIn2Col = findCol("Check-In 2"); 
-  const launchCol = findCol("Show Launch Announcement"); 
-  const revStatementEmailCol = findCol("Revenue Statement + Insights Email"); 
-  const launchStatusCol = findCol("Launch Status"); 
-
-
-
+  const psTitleCol = psFindCol("Title / IP");
+  const welcomeCol = psFindCol("Welcome Email"); 
+  const vendorCol = psFindCol("Vendor Onboarding Email"); 
+  const mgPayoutInitiatedCol = psFindCol("MG Payout Initiated"); 
+  const mgPayoutConfirmationCol = psFindCol("MG Payout Confirmation"); 
+  const checkIn1Col = psFindCol("15 days"); 
+  const checkIn2Col = psFindCol("30 days"); 
+  const launchCol = psFindCol("Show Launch Announcement"); 
+  const revStatementDueCol = psFindCol("Rev Statement Due Date"); 
+  const revLinkCol = psFindCol("Revenue Statement Drive Link"); 
+  const revStatementEmailCol = psFindCol("Insights Email Status") > -1 ? psFindCol("Insights Email Status") : psFindCol("Insights Email"); 
 
   // -------------------------------------------------------------
   // DRAFTING LOGIC WITH VARIABLE MAPPING & QUEUE INJECTION
@@ -212,132 +236,125 @@ function processOutreachQueue(isDelayedRun = false) {
     GmailApp.createDraft(email, subject, "", draftOptions);
     
     // Update main tracker sheet to "Ready" indicating draft is prepared
-    sheet.getRange(rIdx + 1, cIdx + 1).setValue("Ready");
+    psSheet.getRange(rIdx + 1, cIdx + 1).setValue("Ready");
+    Logger.log("SUCCESS: Created draft for " + title + " (Type: " + type + ")");
   }
 
-  // Iterate over all rows starting from row 4 (index 3)
+  // Iterate over all rows in Post-Sales Tracker (starting from index 3)
   let triggerSet = false;
   
-  for (let i = 3; i < data.length; i++) {
-    let row = data[i];
+  for (let i = 3; i < psData.length; i++) {
+    let psRow = psData[i];
+    let title = psRow[psTitleCol];
+    if (!title) continue;
     
-    let email = row[emailCol];
-    let showId = showIdCol > -1 ? row[showIdCol] : "";
+    let safeTitle = title.toString().toLowerCase().trim();
+    let mainInfo = mainDict[safeTitle];
+    if (!mainInfo) {
+      Logger.log("SKIPPED: Title in Post-Sales Tracker not found in Master tracker: [" + title + "]");
+      continue; 
+    }
+    
+    let email = mainInfo.email;
+    if (!email || email.toString().trim() === "") {
+      Logger.log("SKIPPED: Missing email for title: " + title);
+      continue;
+    }
+    let showId = mainInfo.showId;
     let argus = (showId && argusData[showId.toString().trim()]) ? argusData[showId.toString().trim()] : {duration: "[Insert Duration Produced]", ldau: "[Insert LDAUs]", comments: "[Insert Number of Comments]", ratings: "[Insert Ratings]", reviews: "[Insert Reviews]", hours: "[Insert Listening Hours]"};
-    let author = row[authorCol];
-    let title = row[titleCol];
-    let link = row[showLinkCol];
-    let ccMail = ccCol > -1 ? row[ccCol] : "";
+    let author = mainInfo.author;
+    let link = mainInfo.showLink;
+    let ccMail = mainInfo.ccMail;
     
-    // Safely pull from Column BW (index 74) and ensure it's a valid absolute URL
-    let revLinkRaw = (row.length > 74) ? row[74] : "";
+    // Safely pull from the dynamic Revenue Statement Drive Link column on the PS Tracker
+    let revLinkRaw = (revLinkCol > -1 && psRow.length > revLinkCol) ? psRow[revLinkCol] : "";
     let revLink = (revLinkRaw && revLinkRaw.toString().trim() !== "") ? revLinkRaw.toString().trim() : "";
     if (revLink && !revLink.startsWith("http")) {
         revLink = "https://" + revLink;
     }
     
-    let launchStatus = row[launchStatusCol] ? row[launchStatusCol].toString().toLowerCase() : "";
+    let launchStatus = mainInfo.launchStatus ? mainInfo.launchStatus.toString().toLowerCase() : "";
     
     // Graceful fallback: If First Name is missing, use Author Name
-    let firstName = (firstNameCol > -1 && row[firstNameCol] && row[firstNameCol].toString().trim() !== "") 
-                    ? row[firstNameCol] 
+    let firstName = (mainInfo.firstName && mainInfo.firstName.toString().trim() !== "") 
+                    ? mainInfo.firstName 
                     : author;
     
     if (!email) continue; 
     
-    // We track 'dropped', 'bad', and 'untested' to skip most emails, but allow Revenue Statement emails to fire their specific logic
     const isDropped = launchStatus.includes("dropped") || launchStatus.includes("bad") || launchStatus.includes("untested");
     
     const isReady = (status) => status !== "Scheduled" && status !== "Sent" && status !== "Draft ready" && status !== "Timer Set" && status !== "Timer Set Rev";
     
     // --- 6-HOUR TIMER EXECUTION BLOCK ---
     if (isDelayedRun) {
-      // If this is the background timer running 6 hours later, ONLY process emails waiting for it
-      if (row[vendorCol] === "Timer Set") {
+      if (psRow[vendorCol] === "Timer Set") {
         createDraft(email, `Vendor Onboarding for ${title}`, firstName, 'vendor', title, link, i, vendorCol, null, ccMail, revLink, argus);
       }
-      if (row[revStatementEmailCol] === "Timer Set Rev") {
+      if (psRow[revStatementEmailCol] === "Timer Set Rev") {
         createDraft(email, `Revenue Statement for ${title}`, firstName, 'revStatement_workedWell_payment', title, link, i, revStatementEmailCol, null, ccMail, revLink, argus);
       }
-      continue; // Skip the rest of the triggers during the timer run
+      continue; 
     }
     // ------------------------------------
 
-    // Welcome Email (Today)
-    if (!isDropped && isToday(row[contractSignedCol]) && isReady(row[welcomeCol])) {
-      createDraft(email, `Welcome to Pocket FM – here's what happens next`, firstName, 'welcome', title, link, i, welcomeCol, null, ccMail, revLink, argus);
-      
-      // Automatically set up the 6-hour delay for the Vendor Onboarding email
-      sheet.getRange(i + 1, vendorCol + 1).setValue("Timer Set");
-      
-      if (!triggerSet) {
-        ScriptApp.newTrigger("runDelayedDrafts")
-          .timeBased()
-          .after(6 * 60 * 60 * 1000) // Exactly 6 hours
-          .create();
-        triggerSet = true;
+    // Welcome Email (Today based on Contract Signing Date in Main Sheet)
+    if (!isDropped && isToday(mainInfo.contractSigned)) {
+      if (isReady(psRow[welcomeCol])) {
+        createDraft(email, `Welcome to Pocket FM - here's what happens next`, firstName, 'welcome', title, link, i, welcomeCol, null, ccMail, revLink, argus);
+        psSheet.getRange(i + 1, vendorCol + 1).setValue("Timer Set");
+        if (!triggerSet) {
+          ScriptApp.newTrigger("runDelayedDrafts").timeBased().after(6 * 60 * 60 * 1000).create();
+          triggerSet = true;
+        }
+      } else {
+        Logger.log("SKIPPED (Welcome Email): Status is already processed for " + title + " (Current status: " + psRow[welcomeCol] + ")");
       }
+    } else if (!isDropped && !isToday(mainInfo.contractSigned) && mainInfo.contractSigned) {
+        Logger.log("SKIPPED (Welcome Email): Contract date for " + title + " is " + mainInfo.contractSigned + " which is not today.");
     }
     
-    // (Note: The Vendor Onboarding Email immediate draft logic was removed here so it only fires via the 6-hour timer above)
-    
-    // MG Payout Initiated (Today based on vendor lifecycle exit)
-    if (!isDropped && isToday(row[vendorLifecycleExitedCol]) && isReady(row[mgPayoutInitiatedCol])) {
+    // MG Payout Initiated (Today based on vendor lifecycle exit in Main Sheet)
+    if (!isDropped && isToday(mainInfo.vendorLifecycleExited) && isReady(psRow[mgPayoutInitiatedCol])) {
       createDraft(email, `Payment Initiated: Minimum Guarantee for ${title}`, firstName, 'mgInitiated', title, link, i, mgPayoutInitiatedCol, null, ccMail, revLink, argus);
     }
     
-    // MG Payout Confirmation (Today based on MG payout exit)
-    if (!isDropped && isToday(row[mgPayoutExitedCol]) && isReady(row[mgPayoutConfirmationCol])) {
+    // MG Payout Confirmation (Today based on MG payout exit in Main Sheet)
+    if (!isDropped && isToday(mainInfo.mgPayoutExited) && isReady(psRow[mgPayoutConfirmationCol])) {
       createDraft(email, `Pocket FM: Your Minimum Guarantee Payment Has Been Processed`, firstName, 'mgConfirmed', title, link, i, mgPayoutConfirmationCol, null, ccMail, revLink, argus);
     }
     
-    // 15 Day Check-In (15 Days Ago AND Show Link must be BLANK)
     let isShowLinkBlank = (link === "" || link === null || link === undefined);
-    if (!isDropped && isDaysAgo(row[mgPayoutExitedCol], 15) && isShowLinkBlank && isReady(row[checkIn1Col])) {
+    if (!isDropped && isDaysAgo(mainInfo.mgPayoutExited, 15) && isShowLinkBlank && isReady(psRow[checkIn1Col])) {
       createDraft(email, `We'd love your thoughts on ${title}`, firstName, 'checkIn1', title, link, i, checkIn1Col, null, ccMail, revLink, argus);
     }
     
-    // 30 Day Check-In (30 Days Ago AND Show Link must be BLANK)
-    if (!isDropped && isDaysAgo(row[mgPayoutExitedCol], 30) && isShowLinkBlank && isReady(row[checkIn2Col])) {
+    if (!isDropped && isDaysAgo(mainInfo.mgPayoutExited, 30) && isShowLinkBlank && isReady(psRow[checkIn2Col])) {
       createDraft(email, `Pocket FM: A quick update on your show: ${title}`, firstName, 'checkIn2', title, link, i, checkIn2Col, null, ccMail, revLink, argus);
     }
     
-    // Show Launch Announcement Status
-    if (!isDropped && isReady(row[launchCol])) {
+    if (!isDropped && isReady(psRow[launchCol])) {
       if (link && link !== "") {
-        // AI Allowed - Show is Live (Requires a Show Link)
         createDraft(email, `Your Pocket FM Show Is Now Live`, firstName, 'launch', title, link, i, launchCol, null, ccMail, revLink, argus);
-      } else if (row[launchCol] === "Ready No AI") {
-        // No AI Allowed - In deeper evaluation (No Link)
+      } else if (psRow[launchCol] === "Ready No AI") {
         createDraft(email, `We are working on ${title}`, firstName, 'launch_no_ai', title, link, i, launchCol, null, ccMail, revLink, argus);
       }
     }
     
-    // Revenue Statement Email (Today)
-    if (isToday(row[revStatementDueCol]) && isReady(row[revStatementEmailCol])) {
-      
-      // If launch status is Testing_PGC or Launched
+    if (isToday(psRow[revStatementDueCol]) && isReady(psRow[revStatementEmailCol])) {
       if (launchStatus.includes("testing_pgc") || launchStatus.includes("launched")) {
-         // Trigger 1: Content Update (Immediate)
          createDraft(email, `Content Update for ${title}`, firstName, 'revStatement_workedWell_content', title, link, i, revStatementEmailCol, null, ccMail, revLink, argus);
-         
-         // Trigger 2: Payment-Related (6 hours later)
-         sheet.getRange(i + 1, revStatementEmailCol + 1).setValue("Timer Set Rev");
+         psSheet.getRange(i + 1, revStatementEmailCol + 1).setValue("Timer Set Rev");
          if (!triggerSet) {
-           ScriptApp.newTrigger("runDelayedDrafts")
-             .timeBased()
-             .after(6 * 60 * 60 * 1000)
-             .create();
+           ScriptApp.newTrigger("runDelayedDrafts").timeBased().after(6 * 60 * 60 * 1000).create();
            triggerSet = true;
          }
       }
-      // If launch status is Dropped
       else if (launchStatus.includes("dropped")) {
          createDraft(email, `Pocket FM: An Update on ${title}`, firstName, 'revStatement_didntWorkWell', title, link, i, revStatementEmailCol, null, ccMail, revLink, argus);
       }
-      // If launch status is Bad or Untested
       else if (launchStatus.includes("bad") || launchStatus.includes("untested")) {
-         sheet.getRange(i + 1, revStatementEmailCol + 1).setValue("Review - No email trigger");
+         psSheet.getRange(i + 1, revStatementEmailCol + 1).setValue("Review - No email trigger");
       }
     }
   }
@@ -347,8 +364,6 @@ function processOutreachQueue(isDelayedRun = false) {
 function runDelayedDrafts() {
   processOutreachQueue(true);
 }
-
-
 
 // -------------------------------------------------------------
 // HELPER FUNCTIONS (MOVED TO GLOBAL SCOPE)
@@ -934,8 +949,15 @@ function getBody(type, firstName, title, link, grammar, revLink, argus) {
 // -------------------------------------------------------------
 function syncSentEmails() {
   const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = spreadsheet.getSheetByName("Lifecycle Tracker - Master");
-  const queueSheet = spreadsheet.getSheetByName("Queue");
+  const allSheets = spreadsheet.getSheets();
+  let sheet = null;
+  let queueSheet = null;
+  
+  allSheets.forEach(s => {
+    let sName = s.getName().toLowerCase().trim();
+    if (sName.includes("post-sales tracker") || sName.includes("post sales tracker") || sName.includes("post sale comms tracker")) sheet = s;
+    else if (sName === "queue") queueSheet = s;
+  });
   
   if (!queueSheet || !sheet) return;
 
