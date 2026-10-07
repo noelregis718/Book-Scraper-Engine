@@ -26,15 +26,7 @@ function processOutreachQueue(isDelayedRun = false) {
     else if (sName === "queue") { queueSheet = s; }
   }
   
-  // 2. Fallback to Post Sale Comms Tracker (exact match) if Post-Sales Tracker doesn't exist
-  if (!psSheet) {
-    for (let s of allSheets) {
-      let sName = s.getName().toLowerCase().trim();
-      if (sName === "post sale comms tracker") { psSheet = s; break; }
-    }
-  }
-  
-  // 3. Last resort partial matches
+  // 2. Last resort partial matches
   if (!mainSheet) {
     for (let s of allSheets) {
       let sName = s.getName().toLowerCase().trim();
@@ -44,7 +36,7 @@ function processOutreachQueue(isDelayedRun = false) {
   if (!psSheet) {
     for (let s of allSheets) {
       let sName = s.getName().toLowerCase().trim();
-      if (sName.includes("post-sales tracker") || sName.includes("post sale comms tracker")) { psSheet = s; break; }
+      if (sName.includes("post-sales tracker") || sName.includes("post sales tracker")) { psSheet = s; break; }
     }
   }
   
