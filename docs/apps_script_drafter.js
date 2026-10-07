@@ -9,6 +9,14 @@
  * 5. Click the "Run" button at the top!
  */
 
+function deleteAllTriggers() {
+  var triggers = ScriptApp.getProjectTriggers();
+  for (var i = 0; i < triggers.length; i++) {
+    ScriptApp.deleteTrigger(triggers[i]);
+  }
+  Logger.log("Successfully deleted all " + triggers.length + " triggers!");
+}
+
 function processOutreachQueue(isDelayedRun = false) {
   // Hardcoded to strictly open the exact correct Google Sheet document you linked
   const spreadsheet = SpreadsheetApp.openById("1FozLQd9lqH-6zOJQNe12QgJ2PvRG5wdgjcJEtoW7g1s");
