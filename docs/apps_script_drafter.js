@@ -10,7 +10,8 @@
  */
 
 function processOutreachQueue(isDelayedRun = false) {
-  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  // Hardcoded to strictly open the exact correct Google Sheet document you linked
+  const spreadsheet = SpreadsheetApp.openById("1FozLQd9lqH-6zOJQNe12QgJ2PvRG5wdgjcJEtoW7g1s");
   const allSheets = spreadsheet.getSheets();
   let mainSheet = null;
   let psSheet = null;
@@ -970,7 +971,7 @@ function getBody(type, firstName, title, link, grammar, revLink, argus) {
 // STATUS SYNC FUNCTION (RUNS EVERY HOUR OR MANUALLY)
 // -------------------------------------------------------------
 function syncSentEmails() {
-  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  const spreadsheet = SpreadsheetApp.openById("1FozLQd9lqH-6zOJQNe12QgJ2PvRG5wdgjcJEtoW7g1s");
   const allSheets = spreadsheet.getSheets();
   let sheet = null;
   let queueSheet = null;
