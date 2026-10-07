@@ -16,13 +16,22 @@ function processOutreachQueue(isDelayedRun = false) {
   let psSheet = null;
   let queueSheet = null;
   
-  // Dynamically find sheets to avoid 'Copy of' or trailing space issues
-  allSheets.forEach(s => {
+  for (let s of allSheets) {
     let sName = s.getName().toLowerCase().trim();
-    if (sName.includes("lifecycle tracker - master")) mainSheet = s;
-    else if (sName.includes("post-sales tracker") || sName.includes("post sales tracker") || sName.includes("post sale comms tracker")) psSheet = s;
-    else if (sName === "queue") queueSheet = s;
-  });
+    
+    // Exact matches take priority
+    if (sName === "lifecycle tracker - master") { mainSheet = s; }
+    else if (sName === "post-sales tracker") { psSheet = s; }
+    else if (sName === "queue") { queueSheet = s; }
+    
+    // Partial matches ONLY if we haven't found a match yet
+    if (!mainSheet && sName.includes("lifecycle tracker - master")) mainSheet = s;
+    if (!psSheet && (sName.includes("post-sales tracker") || sName.includes("post sales tracker") || sName.includes("post sale comms tracker"))) psSheet = s;
+    if (!queueSheet && sName === "queue") queueSheet = s;
+  }
+  
+  Logger.log('Selected Main Sheet: ' + (mainSheet ? mainSheet.getName() : 'None'));
+  Logger.log('Selected PS Sheet: ' + (psSheet ? psSheet.getName() : 'None'));
   
   
   if (queueSheet) {
