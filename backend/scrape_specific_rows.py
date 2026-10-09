@@ -222,7 +222,7 @@ async def run_scraper():
         print("No valid target rows found.")
         return
 
-    user_data_dir = os.path.join(r"e:\Internship\PocketFM", "browser_profile")
+    user_data_dir = os.path.join(r"e:\Internship\PocketFM", "browser_profile_master")
     
     async with async_playwright() as p:
         context = await p.chromium.launch_persistent_context(

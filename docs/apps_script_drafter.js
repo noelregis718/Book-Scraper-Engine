@@ -19,7 +19,7 @@ function deleteAllTriggers() {
 
 function processOutreachQueue(isDelayedRun = false) {
   // Hardcoded to strictly open the exact correct Google Sheet document you linked
-  const spreadsheet = SpreadsheetApp.openById("1FozLQd9lqH-6zOJQNe12QgJ2PvRG5wdgjcJEtoW7g1s");
+  const spreadsheet = SpreadsheetApp.openById("1A1vJ0DsmDxtCFZiuyu6vtuQFWqClPyK7e1_lHKddGdQ");
   const allSheets = spreadsheet.getSheets();
   let mainSheet = null;
   let psSheet = null;
@@ -109,7 +109,7 @@ function processOutreachQueue(isDelayedRun = false) {
   const mainFindCol = (name) => mainHeaders.findIndex(h => h.toString().toLowerCase().includes(name.toLowerCase()));
   
   // --- ARGUS DATA PARSING ---
-  const argusSheet = spreadsheet.getSheetByName("Noel's Automation : Argus Data ( New Data )");
+  const argusSheet = allSheets.find(s => s.getName().toString().toLowerCase().includes("argus"));
   let argusData = {};
   if (argusSheet) {
     const aData = argusSheet.getDataRange().getValues();
@@ -197,9 +197,10 @@ function processOutreachQueue(isDelayedRun = false) {
   const checkIn1Col = psFindCol("15 days"); 
   const checkIn2Col = psFindCol("30 days"); 
   const launchCol = psFindCol("Show Launch Announcement"); 
+  const launchSentCol = psFindCol("Show Launch Announcement Email Sent"); 
   const revStatementDueCol = psFindCol("Rev Statement Due Date"); 
   const revLinkCol = psFindCol("Revenue Statement Drive Link"); 
-  const revStatementEmailCol = psFindCol("Insights Email Status") > -1 ? psFindCol("Insights Email Status") : psFindCol("Insights Email"); 
+  const revStatementEmailCol = psFindCol("Insights Email Status"); 
 
   // -------------------------------------------------------------
   // DRAFTING LOGIC WITH VARIABLE MAPPING & QUEUE INJECTION
@@ -266,8 +267,11 @@ function processOutreachQueue(isDelayedRun = false) {
     }
     GmailApp.createDraft(email, subject, "", draftOptions);
     
-    // Update main tracker sheet to "Ready" indicating draft is prepared
+    // Update main tracker sheet to "Sent" indicating draft is prepared
     psSheet.getRange(rIdx + 1, cIdx + 1).setValue("Sent");
+    if ((type === "launch" || type === "launch_no_ai") && typeof launchSentCol !== "undefined" && launchSentCol !== -1) {
+      psSheet.getRange(rIdx + 1, launchSentCol + 1).setValue("Yes");
+    }
     Logger.log("SUCCESS: Created draft for " + title + " (Type: " + type + ")");
   }
 
@@ -303,8 +307,9 @@ function processOutreachQueue(isDelayedRun = false) {
     if (revLink && !revLink.startsWith("http")) {
         revLink = "https://" + revLink;
     }
-    
-    let launchStatus = mainInfo.launchStatus ? mainInfo.launchStatus.toString().toLowerCase() : "";
+    let psLaunchStatusCol = psFindCol("Launch Status");
+    let psLaunchStatus = psLaunchStatusCol !== -1 && psRow[psLaunchStatusCol] ? psRow[psLaunchStatusCol].toString().toLowerCase() : "";
+    let launchStatus = mainInfo.launchStatus ? mainInfo.launchStatus.toString().toLowerCase() : psLaunchStatus;
     
     // Graceful fallback: If First Name is missing, use Author Name
     let firstName = (mainInfo.firstName && mainInfo.firstName.toString().trim() !== "") 
@@ -329,14 +334,15 @@ function processOutreachQueue(isDelayedRun = false) {
     }
     // ------------------------------------
 
-    // Welcome Email (Today based on Contract Signing Date in Main Sheet)
+    // Welcome Email and Instant Vendor Onboarding (Today based on Contract Signing Date in Main Sheet)
     if (!isDropped && isToday(mainInfo.contractSigned)) {
       if (isReady(psRow[welcomeCol])) {
+        // 1. Draft the Welcome Email
         createDraft(email, `Welcome to Pocket FM - here's what happens next`, firstName, 'welcome', title, link, i, welcomeCol, null, ccMail, revLink, argus);
-        psSheet.getRange(i + 1, vendorCol + 1).setValue("Timer Set");
-        if (!triggerSet) {
-          ScriptApp.newTrigger("runDelayedDrafts").timeBased().after(6 * 60 * 60 * 1000).create();
-          triggerSet = true;
+        
+        // 2. Draft the Vendor Onboarding Email INSTANTLY (Removed the 6-hour delay)
+        if (isReady(psRow[vendorCol])) {
+          createDraft(email, `Vendor Onboarding for ${title}`, firstName, 'vendor', title, link, i, vendorCol, null, ccMail, revLink, argus);
         }
       } else {
         Logger.log("SKIPPED (Welcome Email): Status is already processed for " + title + " (Current status: " + psRow[welcomeCol] + ")");
@@ -372,6 +378,7 @@ function processOutreachQueue(isDelayedRun = false) {
       }
     }
     
+    Logger.log(`[DEBUG RevStatement] Title: ${title} | DueDate: ${psRow[revStatementDueCol]} | isToday: ${isToday(psRow[revStatementDueCol])} | Status: ${psRow[revStatementEmailCol]} | isReady: ${isReady(psRow[revStatementEmailCol])} | LaunchStatus: ${launchStatus}`);
     if (isToday(psRow[revStatementDueCol]) && isReady(psRow[revStatementEmailCol])) {
       if (launchStatus.includes("testing_pgc") || launchStatus.includes("launched")) {
          createDraft(email, `Content Update for ${title}`, firstName, 'revStatement_workedWell_content', title, link, i, revStatementEmailCol, null, ccMail, revLink, argus);
@@ -979,7 +986,7 @@ function getBody(type, firstName, title, link, grammar, revLink, argus) {
 // STATUS SYNC FUNCTION (RUNS EVERY HOUR OR MANUALLY)
 // -------------------------------------------------------------
 function syncSentEmails() {
-  const spreadsheet = SpreadsheetApp.openById("1FozLQd9lqH-6zOJQNe12QgJ2PvRG5wdgjcJEtoW7g1s");
+  const spreadsheet = SpreadsheetApp.openById("1A1vJ0DsmDxtCFZiuyu6vtuQFWqClPyK7e1_lHKddGdQ");
   const allSheets = spreadsheet.getSheets();
   let sheet = null;
   let queueSheet = null;

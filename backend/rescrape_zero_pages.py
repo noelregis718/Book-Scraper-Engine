@@ -346,7 +346,7 @@ async def run_scraper():
 
     print(f"Running HYBRID Scraper on FIRST {TARGET_ROWS} ROWS with CONCURRENCY {CONCURRENCY} and BATCH_SIZE {BATCH_SIZE}...")
 
-    user_data_dir = os.path.join(r"e:\Internship\PocketFM", "browser_profile_main")
+    user_data_dir = os.path.join(r"e:\Internship\PocketFM", "browser_profile_master")
     
     total_to_process = min(TARGET_ROWS, len(df))
     

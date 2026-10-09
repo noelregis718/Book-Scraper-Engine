@@ -200,7 +200,7 @@ async def run_scraper():
 
     async with async_playwright() as p:
         context = await p.chromium.launch_persistent_context(
-            user_data_dir=os.path.join(r"e:\Internship\PocketFM", "browser_profile_main"),
+            user_data_dir=os.path.join(r"e:\Internship\PocketFM", "browser_profile_master"),
             headless=False,
             args=['--disable-blink-features=AutomationControlled'],
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",

@@ -32,18 +32,24 @@ def extract_metrics(html):
                         return val_div.get_text(strip=True), div.get_text(strip=True)
         return '', ''
 
+    def clean_val(v):
+        v = v.strip()
+        if not v or "no " in v.lower():
+            return "0"
+        return v
+
     plays, _ = get_metric('Plays')
-    metrics['Plays '] = plays
+    metrics['Plays'] = clean_val(plays)
 
     durations, _ = get_metric('Hours')
-    metrics['Durations'] = durations
+    metrics['Duration'] = clean_val(durations)
 
     comments, _ = get_metric('Comments')
-    metrics['Comments'] = comments
+    metrics['Comments'] = clean_val(comments)
 
     ratings, reviews_label = get_metric('Reviews')
-    metrics['Ratings'] = ratings
-    metrics['Reviews'] = reviews_label.replace('Reviews', '').strip()
+    metrics['Ratings'] = clean_val(ratings)
+    metrics['Reviews'] = clean_val(reviews_label.replace('Reviews', '').strip())
 
     return metrics
 
@@ -53,11 +59,11 @@ def main():
     EMAIL = os.getenv("CMS_EMAIL")
     PASSWORD = os.getenv("CMS_PASSWORD")
 
-    excel_path = "e:/Internship/PocketFM/Internal Copy of US_Licensing_Lifecycle_Tracker .xlsx"
-    sheet_name = "Argus Show data - Noels Automat"
+    excel_path = "e:/Internship/PocketFM/US_Licensing_Lifecycle_Tracker (1).xlsx"
+    sheet_name = "Argus Show Data"
     
     print(f"Loading Excel file: {excel_path}")
-    df = pd.read_excel(excel_path, sheet_name=sheet_name)
+    df = pd.read_excel(excel_path, sheet_name=sheet_name, dtype=str)
     
     auth_file = "e:/Internship/PocketFM/scratch/auth.json"
     
@@ -132,13 +138,19 @@ def main():
                 html = page.content()
                 metrics = extract_metrics(html)
                 
-                print(f"--> Found Name: {metrics['Show Name']}")
-                print(f"--> Plays: {metrics['Plays ']} | Duration: {metrics['Durations']} | Ratings: {metrics['Ratings']} | Reviews: {metrics['Reviews']} | Comments: {metrics['Comments']}")
+                # Check if it threw any blank/no review strings, just to be extremely safe, we re-apply clean_val locally
+                for key in ['Plays', 'Duration', 'Ratings', 'Reviews', 'Comments']:
+                    val = metrics.get(key, "").strip()
+                    if not val or "no " in val.lower():
+                        metrics[key] = "0"
                 
-                # Update dataframe (cast to float if needed later, but strings are safer for formatting like 13.1K)
+                print(f"--> Found Name: {metrics['Show Name']}")
+                print(f"--> Plays: {metrics['Plays']} | Duration: {metrics['Duration']} | Ratings: {metrics['Ratings']} | Reviews: {metrics['Reviews']} | Comments: {metrics['Comments']}")
+                
+                # Update dataframe
                 df.at[index, 'Show Name'] = metrics['Show Name']
-                df.at[index, 'Plays '] = metrics['Plays ']
-                df.at[index, 'Durations'] = metrics['Durations']
+                df.at[index, 'Plays'] = metrics['Plays']
+                df.at[index, 'Duration'] = metrics['Duration']
                 df.at[index, 'Ratings'] = metrics['Ratings']
                 df.at[index, 'Reviews'] = metrics['Reviews']
                 df.at[index, 'Comments'] = metrics['Comments']
@@ -148,8 +160,9 @@ def main():
                 
         print("\n" + "="*60)
         print("FINISHED SCRAPING! Saving all data back to the Excel file...")
-        df.to_excel(excel_path, sheet_name=sheet_name, index=False)
-        print(f"SUCCESS! {excel_path} has been updated!")
+        with pd.ExcelWriter(excel_path, engine='openpyxl', mode='a', if_sheet_exists='replace') as writer:
+            df.to_excel(writer, sheet_name=sheet_name, index=False)
+        print(f"SUCCESS! {excel_path} has been updated safely!")
         
         browser.close()
 

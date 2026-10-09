@@ -26,7 +26,7 @@ async def main():
         print("Could not find required columns!")
         return
 
-    user_data_dir = os.path.join(r"E:\Internship\PocketFM", "browser_profile_main")
+    user_data_dir = os.path.join(r"E:\Internship\PocketFM", "browser_profile_master")
     
     async with async_playwright() as p:
         context = await p.chromium.launch_persistent_context(
