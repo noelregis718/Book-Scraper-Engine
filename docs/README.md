@@ -1,6 +1,6 @@
-# Universal Book Scraper & Agency Intelligence Engine
+# PocketFM Scraper & Automation Engine
 
-A high-performance, industrial-scale data extraction platform designed for comprehensive book metadata harvesting, agency catalog processing, and author intelligence gathering. This platform orchestrates a multi-tiered pipeline to discover, extract, and enrich deep metadata across any genre, keyword, or literary agency.
+The PocketFM Scraper & Automation Engine is an industrial-grade intelligence, classification, and CRM automation suite. It is designed to harvest, validate, classify, upload, and track literary content entirely autonomously.
 
 ## 🚀 Unlimited Scaling & Versatility
 
@@ -11,7 +11,7 @@ Built for **infinite discovery** and adaptability:
 - **Multi-Genre Support**: Seamlessly classifies Romantasy, Paranormal Romance, Werewolves, or any other niche market via AI classification.
 - **Attribute-Level Control**: Fine-tune extraction to target specific data points like price, series info, or author contact details.
 
-## 🌟 Premium Features
+## 💎 Premium Features
 
 - **Industrial Orchestration Engine**: Automated multi-batch processing with state persistence (`_state.json`), auto-saving, and intelligent rate-limiting/block-bypassing to ensure continuous operation.
 - **Multi-Tiered Discovery Intelligence**: 
@@ -20,8 +20,9 @@ Built for **infinite discovery** and adaptability:
     - **Author Contact Tier**: Automated discovery of official websites, social media (FB/IG/X), and professional agent representation via deep web scraping.
 - **Automated AI Subgenre Classification**: Intelligent Romantasy/Subgenre classification analyzing synopses and tags to automatically categorize books.
 - **Standalone Excel Delivery**: Generates dedicated, standalone `.xlsx` workbooks with advanced formatting (Text Wrapping, Top-Alignment, and Professional Header Styling) ready for Google Sheets or CRM integration.
+- **Automated Google Drive Uploads**: Bypasses API limitations utilizing persistent browser automation (`browser_profile_master`) to perform invisible, high-speed bulk uploads straight into enterprise Google Drive folders, seamlessly pulling shareable links back into local Excel trackers.
 
-## 🔄 Scraping & Automation Workflow
+## ⚙️ Scraping & Automation Workflow
 
 The platform orchestrates a seamless end-to-end data extraction and enrichment pipeline, ensuring maximum data fidelity through intelligent fallbacks and cross-validation.
 
@@ -43,7 +44,7 @@ graph TD
     J --> K["Standalone Excel Delivery .xlsx"]
 ```
 
-## 🛠️ System Usage
+## 🖥️ System Usage
 
 ### 1. Web Application Mode (API + UI)
 Launch the full-stack application to run scraping jobs via the frontend UI.
@@ -71,24 +72,33 @@ Compress PDFs and automatically convert them into Microsoft Word (.docx) documen
 ```bash
 python backend/process_pdfs.py
 ```
-*   **Features**: See the [PDF Processing Documentation](pdf_processing_script.md) for full details on usage, libraries, and execution flow.
+*   **Features**: See the `pdf_processing_script.md` for full details on usage, libraries, and execution flow.
 
-## 🏗️ Technical Stack
+### 5. Automated Google Drive Injection
+Automatically map and push hundreds of payload documents into a live Google Drive workspace without OAuth keys.
+```bash
+python backend/upload_and_link.py
+```
+*   **Features**: See the `Google_Drive_Upload_Playbook.md` for complete architecture and execution specifics.
+
+## 🛠️ Technical Stack
 
 - **Backend / Data Pipeline**: Python 3.11+, Flask (REST API), Playwright (Async Chromium), Pandas, OpenPyXL.
 - **Logic Engine**: Multi-tab extraction (Concurrency limiters), Regex-based normalization, Taxonomy-aware classification, and mission-aware state polling.
+- **Persistent Caching Engine**: Relies on a unified, auto-managed `browser_profile_master` cache directory to dramatically reduce disk space waste while guaranteeing permanent Google authentication sessions.
 - **Frontend**: React 19, Vite, TypeScript, Tailwind CSS, Framer Motion.
 - **Execution**: `concurrently` for running the full stack, `venv` for Python package isolation.
 
 ---
 
-## 📁 System Architecture
+## 🏗️ System Architecture
 
 ```text
 PocketFM/
 ├── backend/
 │   ├── app.py                   # Flask REST API & Core Entrypoint
 │   ├── agency_mission_control.py# Universal Agency Catalog Crawler & Orchestrator
+│   ├── upload_and_link.py       # Google Drive Bulk Uploader & Excel Linker
 │   ├── keyword_scraper.py       # Specific Keyword/Search Mission Orchestrator
 │   ├── scraper.py               # Core Multi-Tiered Playwright Scrapers
 │   ├── goodreads_scraper.py     # Dedicated Goodreads Data Enrichment
@@ -97,6 +107,7 @@ PocketFM/
 │   ├── romantasy_analyzer.py    # Specific Romantasy Taxonomy Logic
 │   ├── excel_utility.py         # Professional Excel Sync & Formatting
 │   └── *_state.json             # Real-time Mission Tracking & Persistence
+├── docs/                        # System Documentation & Apps Scripts
 ├── frontend/
 │   ├── src/                     # React UI for Mission Control
 │   ├── package.json             # React Dependencies
@@ -122,15 +133,15 @@ The platform enforces the **"Total Fidelity"** protocol:
 
 ---
 
-## 📬 CRM Lifecycle & Automated Email Bundler Engine
+## 📧 CRM Lifecycle & Automated Email Bundler Engine
 
 In addition to scraping, the platform features a complete **Google Apps Script Automation Engine** (`docs/apps_script_drafter.js`) that sits directly inside the team's central CRM ("Lifecycle Tracker - Master"). It completely automates the lifecycle outreach workflow.
 
-### 🌟 Smart Email Features
+### ✨ Smart Email Features
 - **Intelligent Stage Triggers**: Automatically scans the master tracker daily and instantly generates personalized drafts for 8 distinct lifecycle stages (Welcome, Vendor Onboarding, MG Initiated, MG Confirmed, 15-Day Check-in, 30-Day Check-in, Show Launch, and Revenue Statement).
+- **Simultaneous Action Dispatching**: Generates related documents and templates dynamically?"for example, instantly triggering both the Welcome Email and the Vendor Onboarding email without arbitrary hour-long wait times.
 - **Intelligent Grammar Engine**: Dynamically analyzes the *Title/IP* column. If it detects multiple books, it intelligently flips the template grammar to use plural pronouns and verbs (e.g., swapping "is" to "are" and "it" to "them").
 - **Smart Skip Rules**: 
   - Prevents check-in emails from sending if a show has already launched early (detects non-empty "Show Link" columns).
   - Instantly blocks all outgoing emails for a row if the "Launch Status" is ever marked as *bad* or *dropped*.
-- **GMass Queue Injection**: Instead of just creating raw drafts, it perfectly compiles the email data (including the official Pocket FM red-and-white HTML banners and footer icons) and writes it into a central `Queue` tab database.
-- **Scheduled Delays**: Intelligently staggers emails—for example, automatically stamping the Vendor Onboarding email to send exactly 6 hours (3:30 PM) after the Welcome email (9:30 AM).
+- **GMass Queue Injection**: Instead of just creating raw drafts, it perfectly compiles the email data (including the official Pocket FM red-and-white HTML banners and footer icons) and writes it into a central `Queue` tab database for mass execution.
