@@ -119,6 +119,30 @@ function cleanCcList(rawCc) {
 }
 
 /**
+ * ROW DATA VALIDATION HELPER:
+ * Ensures triggers only run for populated rows with real data, strictly skipping blank rows.
+ * @param {Array} rowVals - Array of row cell values
+ * @param {number} titleCol - Column index for Title / IP (default 2)
+ * @returns {boolean} True if row contains valid Title / IP and actual data, false if blank/empty
+ */
+function isTrackerRowFilled(rowVals, titleCol = 2) {
+  if (!rowVals || rowVals.length === 0) return false;
+  let rawTitle = (titleCol > -1 && rowVals.length > titleCol && rowVals[titleCol]) ? rowVals[titleCol].toString().trim() : "";
+  if (!rawTitle || rawTitle === "" || rawTitle === "-" || rawTitle === "#N/A" || rawTitle.toLowerCase() === "n/a" || rawTitle.startsWith("#")) {
+    return false;
+  }
+  // Check that row has at least one other non-empty cell beside title
+  for (let c = 0; c < rowVals.length; c++) {
+    if (c === titleCol) continue;
+    let val = rowVals[c];
+    if (val !== null && val !== undefined && val.toString().trim() !== "" && val.toString().trim() !== "-") {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
  * Safe multi-format Date Parser supporting:
  * - Date objects
  * - Excel serial dates
@@ -415,6 +439,7 @@ function processOutreachQueue(isDelayedRun = false) {
   let mainDict = {};
   for(let i = 3; i < mainData.length; i++) {
      let row = mainData[i];
+     if (!isTrackerRowFilled(row, mainTitleCol)) continue; // Skip blank rows
      let t = row[mainTitleCol];
      if (t) {
          let safeTitle = t.toString().toLowerCase().trim();
@@ -812,6 +837,7 @@ function processOutreachQueue(isDelayedRun = false) {
   
   for (let i = 3; i < psData.length; i++) {
     let psRow = psData[i];
+    if (!isTrackerRowFilled(psRow, psTitleCol)) continue; // Skip blank rows
     let title = psRow[psTitleCol];
     if (!title) continue;
     
@@ -2028,6 +2054,9 @@ function syncSentEmails() {
     let subject = qData[i][4]; // Column E (Subject)
     let trackerRow = qData[i][9]; // Column J (Tracker Row IDs)
     
+    // Skip blank or unpopulated queue rows
+    if (!queueId || !subject || !qStatus) continue;
+    
     // Only check if it's marked as Draft Ready
     if (qStatus === "Draft Ready" || qStatus === "Ready") {
       let subject = qData[i][4]; // Column E (Subject)
@@ -2261,16 +2290,28 @@ function onEdit(e) {
     if (row < 4) return; // Ignore headers (rows 1-3)
 
     const col = e.range.getColumn();
+    const isLaunchCol = (col === 10 || col === 11 || col === 12 || col === 15 || col === 28);
+    const isCheckInCol = (col === 21 || col === 22 || col === 23 || col === 25 || col === 28);
+
+    if (!isLaunchCol && !isCheckInCol) return;
+
+    // STRICT BLANK ROW GUARD: Do not trigger for blank or unpopulated rows
+    const lastCol = Math.max(sheet.getLastColumn(), 30);
+    const rowVals = sheet.getRange(row, 1, 1, lastCol).getValues()[0];
+    if (!isTrackerRowFilled(rowVals)) {
+      return; // Row is blank or has no valid Title / IP
+    }
+
     // Col J=10 (Launch Date), Col K=11 (Launch Status), Col L=12 (Show Link), Col O=15 (Script Date), Col AB=28 (Status dropdown)
-    if (col === 10 || col === 11 || col === 12 || col === 15 || col === 28) {
-      Logger.log(`[onEdit] Detected edit on Row ${row}, Col ${col}. Re-evaluating row for Show Launch Announcement...`);
-      evaluateSingleRowLaunch(sheet, row);
+    if (isLaunchCol) {
+      Logger.log(`[onEdit] Detected edit on Row ${row}, Col ${col}. Re-evaluating filled row for Show Launch Announcement...`);
+      evaluateSingleRowLaunch(sheet, row, rowVals);
     }
 
     // Col U=21 (MG Payout Confirmation), Col V=22 (Feedback Mail Date), Col W=23 (Check-In 15 Days), Col Y=25 (Check-In 30 Days), Col AB=28 (Launch Sent)
-    if (col === 21 || col === 22 || col === 23 || col === 25 || col === 28) {
-      Logger.log(`[onEdit] Detected edit on Row ${row}, Col ${col}. Re-evaluating row for Author Check-Ins (15/30 Days)...`);
-      evaluateSingleRowCheckIns(sheet, row);
+    if (isCheckInCol) {
+      Logger.log(`[onEdit] Detected edit on Row ${row}, Col ${col}. Re-evaluating filled row for Author Check-Ins (15/30 Days)...`);
+      evaluateSingleRowCheckIns(sheet, row, rowVals);
     }
   } catch (err) {
     Logger.log("[onEdit Error] " + err.message);
@@ -2281,17 +2322,25 @@ function onEdit(e) {
  * EVALUATES A SINGLE ROW FOR SHOW LAUNCH ANNOUNCEMENT DRAFT & STATUS
  * @param {Sheet} psSheet - The Post-Sales Tracker sheet object
  * @param {number} row - The 1-based row index in the sheet (e.g. 4 for Row 4)
+ * @param {Array} preloadedRowVals - Optional preloaded row values to avoid redundant sheet reads
+ * @param {Array} preloadedHeaders - Optional preloaded headers
  */
-function evaluateSingleRowLaunch(psSheet, row) {
+function evaluateSingleRowLaunch(psSheet, row, preloadedRowVals = null, preloadedHeaders = null) {
   if (!psSheet || row < 4) return;
 
   const lastCol = Math.max(psSheet.getLastColumn(), 30);
-  const headers = psSheet.getRange(3, 1, 1, lastCol).getValues()[0];
-  const rowVals = psSheet.getRange(row, 1, 1, lastCol).getValues()[0];
+  const headers = preloadedHeaders || psSheet.getRange(3, 1, 1, lastCol).getValues()[0];
+  const rowVals = preloadedRowVals || psSheet.getRange(row, 1, 1, lastCol).getValues()[0];
 
   const psFindCol = (name) => headers.findIndex(h => h.toString().toLowerCase().includes(name.toLowerCase()));
 
   const titleCol = psFindCol("Title / IP") > -1 ? psFindCol("Title / IP") : 2;
+
+  // STRICT BLANK ROW GUARD: Do not process blank or unpopulated rows
+  if (!isTrackerRowFilled(rowVals, titleCol)) {
+    return;
+  }
+
   const authorCol = psFindCol("Author Name") > -1 ? psFindCol("Author Name") : 1;
   const firstNameCol = psFindCol("Receiver First Name") > -1 ? psFindCol("Receiver First Name") : 7;
   const emailCol = psFindCol("Receiver Email ID") > -1 ? psFindCol("Receiver Email ID") : 5;
@@ -2342,8 +2391,6 @@ function evaluateSingleRowLaunch(psSheet, row) {
   }) : 28;
 
   const title = rowVals[titleCol] ? rowVals[titleCol].toString().trim() : "";
-  if (!title) return;
-
   const author = rowVals[authorCol] ? rowVals[authorCol].toString().trim() : "";
   const rawFirstName = rowVals[firstNameCol] ? rowVals[firstNameCol].toString().trim() : "";
   const firstName = rawFirstName !== "" ? rawFirstName : (author ? author.split(" ")[0] : "Creator");
@@ -2427,7 +2474,7 @@ function evaluateSingleRowLaunch(psSheet, row) {
 /**
  * SCAN AND GENERATE LAUNCH ANNOUNCEMENTS FOR ALL ROWS:
  * Loops through every single row in Post-Sales Tracker (from Row 4 to the end).
- * Not fixed to any particular row — dynamically checks every row that has changes or data!
+ * Strictly evaluates ONLY rows filled with data — skips blank or empty placeholder rows!
  */
 function generateAllLaunchAnnouncements() {
   const spreadsheet = SpreadsheetApp.getActiveSpreadsheet() || SpreadsheetApp.openById("1A1vJ0DsmDxtCFZiuyu6vtuQFWqClPyK7e1_lHKddGdQ");
@@ -2445,18 +2492,31 @@ function generateAllLaunchAnnouncements() {
   }
 
   const lastRow = psSheet.getLastRow();
+  const lastCol = Math.max(psSheet.getLastColumn(), 30);
+  const allData = psSheet.getRange(1, 1, lastRow, lastCol).getValues();
+  const headers = allData[2]; // Row 3
+  const titleCol = headers.findIndex(h => h.toString().toLowerCase().includes("title")) > -1 
+                   ? headers.findIndex(h => h.toString().toLowerCase().includes("title")) : 2;
+
   Logger.log("\n==================================================================");
-  Logger.log(`DYNAMIC BATCH SCAN: Evaluating all rows (Row 4 to Row ${lastRow}) in "${psSheet.getName()}"`);
+  Logger.log(`DYNAMIC BATCH SCAN: Evaluating filled rows in "${psSheet.getName()}" (ignoring blank rows)`);
   Logger.log("==================================================================");
 
   let evaluatedCount = 0;
+  let skippedBlankCount = 0;
+
   for (let r = 4; r <= lastRow; r++) {
-    evaluateSingleRowLaunch(psSheet, r);
+    let rowVals = allData[r - 1];
+    if (!isTrackerRowFilled(rowVals, titleCol)) {
+      skippedBlankCount++;
+      continue;
+    }
+    evaluateSingleRowLaunch(psSheet, r, rowVals, headers);
     evaluatedCount++;
   }
 
   SpreadsheetApp.flush();
-  Logger.log(`\nBATCH SCAN COMPLETED: Evaluated ${evaluatedCount} rows dynamically. All changes flushed to Google Sheets!`);
+  Logger.log(`\nBATCH SCAN COMPLETED: Evaluated ${evaluatedCount} filled rows dynamically (${skippedBlankCount} blank rows skipped).`);
 }
 
 /**
@@ -2678,17 +2738,24 @@ function testShowLaunchAnnouncement() {
  * EVALUATES A SINGLE ROW FOR AUTHOR CHECK-IN (15 & 30 DAYS) DRAFTS AND STATUS
  * @param {Sheet} psSheet - The Post-Sales Tracker sheet object
  * @param {number} row - The 1-based row index in the sheet (e.g. 4 for Row 4)
+ * @param {Array} preloadedRowVals - Optional preloaded row values to avoid redundant sheet reads
+ * @param {Array} preloadedHeaders - Optional preloaded headers
  */
-function evaluateSingleRowCheckIns(psSheet, row) {
+function evaluateSingleRowCheckIns(psSheet, row, preloadedRowVals = null, preloadedHeaders = null) {
   if (!psSheet || row < 4) return;
 
   const lastCol = Math.max(psSheet.getLastColumn(), 30);
-  const headers = psSheet.getRange(3, 1, 1, lastCol).getValues()[0];
-  const rowVals = psSheet.getRange(row, 1, 1, lastCol).getValues()[0];
+  const headers = preloadedHeaders || psSheet.getRange(3, 1, 1, lastCol).getValues()[0];
+  const rowVals = preloadedRowVals || psSheet.getRange(row, 1, 1, lastCol).getValues()[0];
 
   const psFindCol = (name) => headers.findIndex(h => h.toString().toLowerCase().includes(name.toLowerCase()));
 
   const titleCol = psFindCol("Title / IP") > -1 ? psFindCol("Title / IP") : 2;
+
+  // STRICT BLANK ROW GUARD: Do not process blank or unpopulated rows
+  if (!isTrackerRowFilled(rowVals, titleCol)) {
+    return;
+  }
   const authorCol = psFindCol("Author Name") > -1 ? psFindCol("Author Name") : 1;
   const firstNameCol = psFindCol("Receiver First Name") > -1 ? psFindCol("Receiver First Name") : 7;
   const emailCol = psFindCol("Receiver Email ID") > -1 ? psFindCol("Receiver Email ID") : 5;
@@ -2975,7 +3042,7 @@ function evaluateSingleRowCheckIns(psSheet, row) {
 /**
  * SCAN AND GENERATE AUTHOR CHECK-INS (15 & 30 DAYS) FOR ALL ROWS:
  * Loops through every single row in Post-Sales Tracker (from Row 4 to the end).
- * Not fixed to any particular row — dynamically checks every row that has changes or data!
+ * Strictly evaluates ONLY rows filled with data — skips blank or empty placeholder rows!
  * Takes reference from Feedback Mail Date (Col V), sets 15/30-day timers, drafts on Day 15/30,
  * and updates dropdown to "Overdue" once the 15th/30th day is over!
  */
@@ -2995,18 +3062,30 @@ function generateAllAuthorCheckIns() {
   }
 
   const lastRow = psSheet.getLastRow();
+  const lastCol = Math.max(psSheet.getLastColumn(), 30);
+  const allData = psSheet.getRange(1, 1, lastRow, lastCol).getValues();
+  const headers = allData[2]; // Row 3
+  const titleCol = headers.findIndex(h => h.toString().toLowerCase().includes("title")) > -1 
+                   ? headers.findIndex(h => h.toString().toLowerCase().includes("title")) : 2;
+
   Logger.log("\n==================================================================");
-  Logger.log(`DYNAMIC BATCH SCAN: Evaluating Author Check-Ins (Row 4 to Row ${lastRow}) in "${psSheet.getName()}"`);
+  Logger.log(`DYNAMIC BATCH SCAN: Evaluating Author Check-Ins (Row 4 to Row ${lastRow}) in "${psSheet.getName()}" (ignoring blank rows)`);
   Logger.log("==================================================================");
 
   let evaluatedCount = 0;
+  let skippedBlankCount = 0;
   for (let r = 4; r <= lastRow; r++) {
-    evaluateSingleRowCheckIns(psSheet, r);
+    let rowVals = allData[r - 1];
+    if (!isTrackerRowFilled(rowVals, titleCol)) {
+      skippedBlankCount++;
+      continue;
+    }
+    evaluateSingleRowCheckIns(psSheet, r, rowVals, headers);
     evaluatedCount++;
   }
 
   SpreadsheetApp.flush();
-  Logger.log(`\nBATCH SCAN COMPLETED: Evaluated ${evaluatedCount} rows dynamically for 15-Day and 30-Day Check-Ins. All changes flushed to Google Sheets!`);
+  Logger.log(`\nBATCH SCAN COMPLETED: Evaluated ${evaluatedCount} filled rows dynamically (${skippedBlankCount} blank rows skipped) for 15-Day and 30-Day Check-Ins. All changes flushed to Google Sheets!`);
 }
 
 /**
