@@ -40,6 +40,40 @@ function processAllLaunchAnnouncements() {
 }
 
 /**
+ * PROCESS AUTHOR CHECK-INS (15 & 30 DAYS) FOR ALL ROWS:
+ * Select this in the Apps Script function dropdown to scan EVERY row dynamically in Post-Sales Tracker.
+ * Takes reference from Feedback Mail Date (Col V), sets 15/30-day timers, drafts on Day 15/30,
+ * and updates dropdown to "Overdue" once the 15th/30th day is over!
+ */
+function processAllAuthorCheckIns() {
+  generateAllAuthorCheckIns();
+}
+
+/**
+ * CHECK ACTIVE LIFECYCLE TIMERS IN APPS SCRIPT:
+ * Select this in the Apps Script function dropdown to inspect all active automated triggers.
+ */
+function checkLifecycleTimersReport() {
+  checkLifecycleTimers();
+}
+
+/**
+ * INSTALL AUTOMATED LIFECYCLE TIMERS IN APPS SCRIPT:
+ * Select this in the Apps Script function dropdown to automatically install daily & hourly lifecycle triggers.
+ */
+function installLifecycleTimers() {
+  setupLifecycleTimers();
+}
+
+/**
+ * TEST FUNCTION: AUTHOR CHECK-IN 15 & 30 DAY TIMERS
+ * Tests all states (Days 0-14, Day 15 draft, Day 16+ Overdue, Days 0-29, Day 30 draft, Day 31+ Overdue, Col AB override).
+ */
+function testAuthorCheckIns() {
+  testAuthorCheckInTimers();
+}
+
+/**
  * TEST CASE A: Explicit test function for Show Launch Date Anomaly
  * Verifies that Launch Date <= Script Date (e.g. 2nd Oct <= 6th Oct) flags "Launch Date Issue"
  * and STRICTLY SUPPRESSES EMAIL DRAFTING (0 drafts generated).
@@ -921,14 +955,30 @@ function processOutreachQueue(isDelayedRun = false) {
           Logger.log(`[STATUS OVERRIDE] Column AB is "Sent". Updated Col Y to "Does not apply" for "${title}".`);
         }
       }
+      SpreadsheetApp.flush();
     } else if (!isDropped) {
-      // 1st condition: Column W should turn "not due yet", when V has a date. 
-      // 15 days after date in V, Draft Ready (in drafts). 
-      // 16th day onwards, if Status not changed to sent, change it to "Overdue"
+      // Reference date: Feedback Mail Date in Col V
       let rawFeedbackDate = (feedbackMailDateCol > -1 && psRow.length > feedbackMailDateCol) ? psRow[feedbackMailDateCol] : null;
       let vDateObj = parseDateSafe(rawFeedbackDate);
 
-      if (vDateObj) {
+      if (!vDateObj) {
+        // Feedback Mail Date is not yet stamped / mail not yet generated
+        if (checkIn1Col > -1) {
+          let curW = (psRow.length > checkIn1Col && psRow[checkIn1Col]) ? psRow[checkIn1Col].toString().trim() : "";
+          if (curW.toLowerCase() !== "sent" && curW.toLowerCase() !== "does not apply" && curW.toLowerCase() !== "not due yet") {
+            psSheet.getRange(i + 1, checkIn1Col + 1).setValue("Not due yet");
+            psRow[checkIn1Col] = "Not due yet";
+          }
+        }
+        if (checkIn2Col > -1) {
+          let curY = (psRow.length > checkIn2Col && psRow[checkIn2Col]) ? psRow[checkIn2Col].toString().trim() : "";
+          if (curY.toLowerCase() !== "sent" && curY.toLowerCase() !== "does not apply" && curY.toLowerCase() !== "not due yet") {
+            psSheet.getRange(i + 1, checkIn2Col + 1).setValue("Not due yet");
+            psRow[checkIn2Col] = "Not due yet";
+          }
+        }
+        SpreadsheetApp.flush();
+      } else {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         let targetV = new Date(vDateObj.getTime());
@@ -941,26 +991,31 @@ function processOutreachQueue(isDelayedRun = false) {
           let curWLower = curW.toLowerCase();
 
           if (curWLower === "sent") {
-            // Status changed to sent - all done!
+            // Status changed to sent by team - keep as sent
           } else if (diffDays < 15) {
-            // When V has a date, Column W turns "Not due yet" within the 15-day timeframe
+            // Days 0-14: Column W is "Not due yet" within the 15-day timeframe
             if (curWLower !== "not due yet") {
               psSheet.getRange(i + 1, checkIn1Col + 1).setValue("Not due yet");
               psRow[checkIn1Col] = "Not due yet";
               Logger.log(`[STATUS UPDATE] Updated Col W to "Not due yet" for "${title}" (${diffDays}/15 days elapsed since Feedback Date ${rawFeedbackDate})`);
             }
           } else if (diffDays === 15) {
-            // 15 days after date in V: Draft Ready (in drafts)
+            // Exactly on Day 15: Draft Ready (in drafts)
             if (curWLower !== "draft ready" && curWLower !== "sent") {
               createDraft(email, `We'd love your thoughts on ${title}`, firstName, 'checkIn1', title, link, i, checkIn1Col, null, ccMail, revLink, argus);
             }
           } else if (diffDays >= 16) {
-            // 16th day onwards, if Status not changed to sent, change it to "Overdue"
-            if (curWLower !== "overdue") {
+            // 15th day is over (16th day onwards):
+            // 1. If draft was never prepared, create it now so outreach is ready
+            if (curWLower !== "draft ready" && curWLower !== "sent" && curWLower !== "overdue") {
+              createDraft(email, `We'd love your thoughts on ${title}`, firstName, 'checkIn1', title, link, i, checkIn1Col, null, ccMail, revLink, argus);
+            }
+            // 2. Once the 15th day is over, dropdown changes to "Overdue" if not sent!
+            if (curWLower !== "overdue" && curWLower !== "sent") {
               psSheet.getRange(i + 1, checkIn1Col + 1).setValue("Overdue");
               psRow[checkIn1Col] = "Overdue";
-              Logger.log(`[STATUS UPDATE] Updated Col W to "Overdue" for "${title}" (${diffDays} days elapsed >= 16 and Col W was not sent)`);
-              logNotification("Workflow status is not eligible", title, `Author Check-In 15 Days (Col W) is Overdue for "${title}" (${diffDays} days elapsed since Feedback Mail Date in Col V). Status updated to "Overdue".`);
+              Logger.log(`[STATUS UPDATE] 15th day is over (${diffDays} days elapsed). Updated Col W to "Overdue" for "${title}".`);
+              logNotification("Author Check-In Overdue", title, `Author Check-In 15 Days (Col W) is Overdue for "${title}" (${diffDays} days elapsed since Feedback Mail Date in Col V). Status updated to "Overdue".`);
             }
           }
         }
@@ -971,23 +1026,33 @@ function processOutreachQueue(isDelayedRun = false) {
           let curYLower = curY.toLowerCase();
 
           if (curYLower === "sent") {
-            // Already sent
+            // Already sent by team - keep as sent
           } else if (diffDays < 30) {
+            // Days 0-29: Column Y is "Not due yet" within 30-day timeframe
             if (curYLower !== "not due yet") {
               psSheet.getRange(i + 1, checkIn2Col + 1).setValue("Not due yet");
               psRow[checkIn2Col] = "Not due yet";
             }
           } else if (diffDays === 30) {
+            // Exactly on Day 30: Draft Ready
             if (curYLower !== "draft ready" && curYLower !== "sent") {
               createDraft(email, `Pocket FM: A quick update on your show: ${title}`, firstName, 'checkIn2', title, link, i, checkIn2Col, null, ccMail, revLink, argus);
             }
           } else if (diffDays >= 31) {
-            if (curYLower !== "overdue") {
+            // 30th day is over (31st day onwards):
+            // 1. If draft was never prepared, create it now so outreach is ready
+            if (curYLower !== "draft ready" && curYLower !== "sent" && curYLower !== "overdue") {
+              createDraft(email, `Pocket FM: A quick update on your show: ${title}`, firstName, 'checkIn2', title, link, i, checkIn2Col, null, ccMail, revLink, argus);
+            }
+            // 2. Once the 30th day is over, dropdown changes to "Overdue" if not sent!
+            if (curYLower !== "overdue" && curYLower !== "sent") {
               psSheet.getRange(i + 1, checkIn2Col + 1).setValue("Overdue");
               psRow[checkIn2Col] = "Overdue";
+              Logger.log(`[STATUS UPDATE] 30th day is over (${diffDays} days elapsed). Updated Col Y to "Overdue" for "${title}".`);
             }
           }
         }
+        SpreadsheetApp.flush();
       }
     }
     
@@ -2201,6 +2266,12 @@ function onEdit(e) {
       Logger.log(`[onEdit] Detected edit on Row ${row}, Col ${col}. Re-evaluating row for Show Launch Announcement...`);
       evaluateSingleRowLaunch(sheet, row);
     }
+
+    // Col U=21 (MG Payout Confirmation), Col V=22 (Feedback Mail Date), Col W=23 (Check-In 15 Days), Col Y=25 (Check-In 30 Days), Col AB=28 (Launch Sent)
+    if (col === 21 || col === 22 || col === 23 || col === 25 || col === 28) {
+      Logger.log(`[onEdit] Detected edit on Row ${row}, Col ${col}. Re-evaluating row for Author Check-Ins (15/30 Days)...`);
+      evaluateSingleRowCheckIns(sheet, row);
+    }
   } catch (err) {
     Logger.log("[onEdit Error] " + err.message);
   }
@@ -2598,6 +2669,530 @@ function testShowLaunchAnnouncement() {
   runTestCaseA_LaunchDateAnomaly();
   runTestCaseB_ValidLaunchAnnouncement();
 }
+
+// =============================================================
+// DYNAMIC AUTHOR CHECK-IN (15 & 30 DAYS) AUTOMATION FOR ALL ROWS
+// =============================================================
+
+/**
+ * EVALUATES A SINGLE ROW FOR AUTHOR CHECK-IN (15 & 30 DAYS) DRAFTS AND STATUS
+ * @param {Sheet} psSheet - The Post-Sales Tracker sheet object
+ * @param {number} row - The 1-based row index in the sheet (e.g. 4 for Row 4)
+ */
+function evaluateSingleRowCheckIns(psSheet, row) {
+  if (!psSheet || row < 4) return;
+
+  const lastCol = Math.max(psSheet.getLastColumn(), 30);
+  const headers = psSheet.getRange(3, 1, 1, lastCol).getValues()[0];
+  const rowVals = psSheet.getRange(row, 1, 1, lastCol).getValues()[0];
+
+  const psFindCol = (name) => headers.findIndex(h => h.toString().toLowerCase().includes(name.toLowerCase()));
+
+  const titleCol = psFindCol("Title / IP") > -1 ? psFindCol("Title / IP") : 2;
+  const authorCol = psFindCol("Author Name") > -1 ? psFindCol("Author Name") : 1;
+  const firstNameCol = psFindCol("Receiver First Name") > -1 ? psFindCol("Receiver First Name") : 7;
+  const emailCol = psFindCol("Receiver Email ID") > -1 ? psFindCol("Receiver Email ID") : 5;
+  const ccCol = psFindCol("CC Mail ID") > -1 ? psFindCol("CC Mail ID") : 6;
+  const showNameCol = psFindCol("Show Name") > -1 ? psFindCol("Show Name") : 2;
+  const linkCol = psFindCol("Show Link") > -1 ? psFindCol("Show Link") : 11;
+  const statusCol = psFindCol("Launch Status") > -1 ? psFindCol("Launch Status") : 10;
+
+  // Feedback Mail Date (Col V - Col 22, index 21)
+  const feedbackMailDateCol = headers.findIndex(h => {
+    let s = h.toString().toLowerCase().trim();
+    return s.includes("feedback") && s.includes("date");
+  }) > -1 ? headers.findIndex(h => {
+    let s = h.toString().toLowerCase().trim();
+    return s.includes("feedback") && s.includes("date");
+  }) : 21;
+
+  // Author Check-In 15 Days (Col W - Col 23, index 22)
+  const checkIn1Col = headers.findIndex(h => {
+    let s = h.toString().toLowerCase().trim();
+    return s.includes("15 days") && !s.includes("newsletter") && !s.includes("date");
+  }) > -1 ? headers.findIndex(h => {
+    let s = h.toString().toLowerCase().trim();
+    return s.includes("15 days") && !s.includes("newsletter") && !s.includes("date");
+  }) : 22;
+
+  // Author Check-In 15 Days DATE (Col X - Col 24, index 23)
+  const checkIn1DateCol = headers.findIndex(h => {
+    let s = h.toString().toLowerCase().trim();
+    return s.includes("15 days") && !s.includes("newsletter") && s.includes("date");
+  }) > -1 ? headers.findIndex(h => {
+    let s = h.toString().toLowerCase().trim();
+    return s.includes("15 days") && !s.includes("newsletter") && s.includes("date");
+  }) : 23;
+
+  // Author Check-In 30 Days [Optional] (Col Y - Col 25, index 24)
+  const checkIn2Col = headers.findIndex(h => {
+    let s = h.toString().toLowerCase().trim();
+    return s.includes("30 days") && !s.includes("date");
+  }) > -1 ? headers.findIndex(h => {
+    let s = h.toString().toLowerCase().trim();
+    return s.includes("30 days") && !s.includes("date");
+  }) : 24;
+
+  // Author Check-In 30 Days [Optional] DATE (Col Z - Col 26, index 25)
+  const checkIn2DateCol = headers.findIndex(h => {
+    let s = h.toString().toLowerCase().trim();
+    return s.includes("30 days") && s.includes("date");
+  }) > -1 ? headers.findIndex(h => {
+    let s = h.toString().toLowerCase().trim();
+    return s.includes("30 days") && s.includes("date");
+  }) : 25;
+
+  // Show Launch Announcement Sent? (Col AB - Col 28, index 27)
+  const launchSentCol = headers.findIndex(h => {
+    let s = h.toString().toLowerCase().trim();
+    return (s.includes("launch") && s.includes("announcement") && (s.includes("sent") || s.includes("email sent")) && !s.includes("date"));
+  }) > -1 ? headers.findIndex(h => {
+    let s = h.toString().toLowerCase().trim();
+    return (s.includes("launch") && s.includes("announcement") && (s.includes("sent") || s.includes("email sent")) && !s.includes("date"));
+  }) : 27;
+
+  const title = rowVals[titleCol] ? rowVals[titleCol].toString().trim() : "";
+  if (!title) return;
+
+  const rawStatus = rowVals[statusCol] ? rowVals[statusCol].toString().trim().toLowerCase() : "";
+  const isDropped = rawStatus === "dropped" || rawStatus === "bad" || rawStatus === "untested";
+  if (isDropped) return;
+
+  const author = rowVals[authorCol] ? rowVals[authorCol].toString().trim() : "";
+  const rawFirstName = rowVals[firstNameCol] ? rowVals[firstNameCol].toString().trim() : "";
+  const firstName = rawFirstName !== "" ? rawFirstName : (author ? author.split(" ")[0] : "Creator");
+  const showName = rowVals[showNameCol] ? rowVals[showNameCol].toString().trim() : title;
+  const email = cleanEmail(rowVals[emailCol]);
+  const ccMail = cleanCcList(rowVals[ccCol]);
+  const link = rowVals[linkCol] ? rowVals[linkCol].toString().trim() : "";
+
+  // Check Col AB (Launch Announcement Sent?)
+  let rawColAB = (launchSentCol > -1 && rowVals.length > launchSentCol && rowVals[launchSentCol]) ? rowVals[launchSentCol].toString().trim().toLowerCase() : "";
+  let isColABSent = rawColAB === "sent";
+
+  // Override Rule: If Col AB is "Sent", W & Y must be "Does not apply"
+  if (isColABSent) {
+    if (checkIn1Col > -1) {
+      let curW = rowVals[checkIn1Col] ? rowVals[checkIn1Col].toString().trim().toLowerCase() : "";
+      if (curW !== "does not apply") {
+        psSheet.getRange(row, checkIn1Col + 1).setValue("Does not apply");
+        Logger.log(`[LIVE ROW ${row}] Col AB is "Sent". Set Col W to "Does not apply" for "${title}".`);
+      }
+    }
+    if (checkIn2Col > -1) {
+      let curY = rowVals[checkIn2Col] ? rowVals[checkIn2Col].toString().trim().toLowerCase() : "";
+      if (curY !== "does not apply") {
+        psSheet.getRange(row, checkIn2Col + 1).setValue("Does not apply");
+        Logger.log(`[LIVE ROW ${row}] Col AB is "Sent". Set Col Y to "Does not apply" for "${title}".`);
+      }
+    }
+    SpreadsheetApp.flush();
+    return;
+  }
+
+  // Reference date: Feedback Mail Date in Col V
+  const rawFeedbackDate = (feedbackMailDateCol > -1 && rowVals.length > feedbackMailDateCol) ? rowVals[feedbackMailDateCol] : null;
+  const vDateObj = parseDateSafe(rawFeedbackDate);
+
+  if (!vDateObj) {
+    // Feedback Mail has not been dated/sent yet -> Not due yet
+    if (checkIn1Col > -1) {
+      let curW = rowVals[checkIn1Col] ? rowVals[checkIn1Col].toString().trim().toLowerCase() : "";
+      if (curW !== "sent" && curW !== "does not apply" && curW !== "not due yet") {
+        psSheet.getRange(row, checkIn1Col + 1).setValue("Not due yet");
+      }
+    }
+    if (checkIn2Col > -1) {
+      let curY = rowVals[checkIn2Col] ? rowVals[checkIn2Col].toString().trim().toLowerCase() : "";
+      if (curY !== "sent" && curY !== "does not apply" && curY !== "not due yet") {
+        psSheet.getRange(row, checkIn2Col + 1).setValue("Not due yet");
+      }
+    }
+    SpreadsheetApp.flush();
+    return;
+  }
+
+  // Calculate elapsed days from Feedback Mail Date
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  let targetV = new Date(vDateObj.getTime());
+  targetV.setHours(0, 0, 0, 0);
+  let diffDays = Math.floor((today.getTime() - targetV.getTime()) / (1000 * 60 * 60 * 24));
+
+  const grammar = { work: "work", is: "is", has: "has", title: "title", this: "this", it: "it", its: "its" };
+  const spreadsheet = psSheet.getParent();
+  const queueSheet = spreadsheet ? spreadsheet.getSheetByName("Queue") : null;
+
+  // ============================================================
+  // 15-DAY TIMER: Author Check-In 15 Days (Col W)
+  // ============================================================
+  if (checkIn1Col > -1) {
+    let curW = rowVals[checkIn1Col] ? rowVals[checkIn1Col].toString().trim() : "";
+    let curWLower = curW.toLowerCase();
+
+    if (curWLower === "sent") {
+      // Already sent by team - keep as sent
+    } else if (diffDays < 15) {
+      // Days 0-14: Col W is "Not due yet"
+      if (curWLower !== "not due yet") {
+        psSheet.getRange(row, checkIn1Col + 1).setValue("Not due yet");
+        Logger.log(`[LIVE ROW ${row}] Set Col W to "Not due yet" for "${title}" (${diffDays}/15 days elapsed since Feedback Date: ${rawFeedbackDate})`);
+      }
+    } else if (diffDays === 15) {
+      // Exactly Day 15: Draft Ready
+      if (curWLower !== "draft ready") {
+        if (isValidEmail(email)) {
+          let queueId = Utilities.getUuid();
+          let body = getBody('checkIn1', firstName, title, link, grammar, "", null, showName);
+          let wrapped = wrapHtml(body, queueId);
+          let subj = `We'd love your thoughts on ${title}`;
+          let draftOpts = { htmlBody: wrapped };
+          if (ccMail) draftOpts.cc = ccMail;
+
+          try {
+            GmailApp.createDraft(email, subj, "", draftOpts);
+            if (queueSheet) {
+              const sendDate = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd");
+              const sendTime = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "hh:mm a");
+              queueSheet.appendRow([queueId, email, Session.getActiveUser().getEmail(), "Personal Check In 1", subj, wrapped, sendDate, sendTime, "Draft Ready", row, "Yes", ccMail || ""]);
+            }
+            psSheet.getRange(row, checkIn1Col + 1).setValue("draft ready");
+            psSheet.getRange(row, checkIn1DateCol + 1).setValue(new Date());
+            Logger.log(`[LIVE ROW ${row}] SUCCESS: Draft created for Check-In 15 Days for "${title}" (${email}). Set Col W to "draft ready" & stamped Col X.`);
+          } catch (err) {
+            Logger.log(`[LIVE ROW ${row}] ERROR creating Check-In 15 Days draft for "${title}": ${err.message}`);
+          }
+        }
+      }
+    } else if (diffDays >= 16) {
+      // 15th day is OVER (Day 16 onwards):
+      // 1. If draft was missed (e.g. weekend), create it now so team has it ready
+      if (curWLower !== "draft ready" && curWLower !== "overdue" && isValidEmail(email)) {
+        let queueId = Utilities.getUuid();
+        let body = getBody('checkIn1', firstName, title, link, grammar, "", null, showName);
+        let wrapped = wrapHtml(body, queueId);
+        let subj = `We'd love your thoughts on ${title}`;
+        let draftOpts = { htmlBody: wrapped };
+        if (ccMail) draftOpts.cc = ccMail;
+
+        try {
+          GmailApp.createDraft(email, subj, "", draftOpts);
+          if (queueSheet) {
+            const sendDate = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd");
+            const sendTime = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "hh:mm a");
+            queueSheet.appendRow([queueId, email, Session.getActiveUser().getEmail(), "Personal Check In 1", subj, wrapped, sendDate, sendTime, "Draft Ready", row, "Yes", ccMail || ""]);
+          }
+          psSheet.getRange(row, checkIn1DateCol + 1).setValue(new Date());
+          Logger.log(`[LIVE ROW ${row}] Catch-up draft created for Check-In 15 Days for "${title}". Stamped Col X.`);
+        } catch (err) {
+          Logger.log(`[LIVE ROW ${row}] ERROR creating catch-up Check-In 15 Days draft: ${err.message}`);
+        }
+      }
+      // 2. Once the 15th day is over, dropdown changes to "Overdue"
+      if (curWLower !== "overdue") {
+        psSheet.getRange(row, checkIn1Col + 1).setValue("Overdue");
+        Logger.log(`[LIVE ROW ${row}] 15th day is over (${diffDays} days elapsed). Set Col W to "Overdue" for "${title}".`);
+      }
+    }
+  }
+
+  // ============================================================
+  // 30-DAY TIMER: Author Check-In 30 Days (Col Y)
+  // ============================================================
+  if (checkIn2Col > -1) {
+    let curY = rowVals[checkIn2Col] ? rowVals[checkIn2Col].toString().trim() : "";
+    let curYLower = curY.toLowerCase();
+
+    if (curYLower === "sent") {
+      // Already sent by team - keep as sent
+    } else if (diffDays < 30) {
+      // Days 0-29: Col Y is "Not due yet"
+      if (curYLower !== "not due yet") {
+        psSheet.getRange(row, checkIn2Col + 1).setValue("Not due yet");
+        Logger.log(`[LIVE ROW ${row}] Set Col Y to "Not due yet" for "${title}" (${diffDays}/30 days elapsed since Feedback Date: ${rawFeedbackDate})`);
+      }
+    } else if (diffDays === 30) {
+      // Exactly Day 30: Draft Ready
+      if (curYLower !== "draft ready") {
+        if (isValidEmail(email)) {
+          let queueId = Utilities.getUuid();
+          let body = getBody('checkIn2', firstName, title, link, grammar, "", null, showName);
+          let wrapped = wrapHtml(body, queueId);
+          let subj = `Pocket FM: A quick update on your show: ${title}`;
+          let draftOpts = { htmlBody: wrapped };
+          if (ccMail) draftOpts.cc = ccMail;
+
+          try {
+            GmailApp.createDraft(email, subj, "", draftOpts);
+            if (queueSheet) {
+              const sendDate = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd");
+              const sendTime = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "hh:mm a");
+              queueSheet.appendRow([queueId, email, Session.getActiveUser().getEmail(), "Personal Check In 2", subj, wrapped, sendDate, sendTime, "Draft Ready", row, "Yes", ccMail || ""]);
+            }
+            psSheet.getRange(row, checkIn2Col + 1).setValue("draft ready");
+            psSheet.getRange(row, checkIn2DateCol + 1).setValue(new Date());
+            Logger.log(`[LIVE ROW ${row}] SUCCESS: Draft created for Check-In 30 Days for "${title}" (${email}). Set Col Y to "draft ready" & stamped Col Z.`);
+          } catch (err) {
+            Logger.log(`[LIVE ROW ${row}] ERROR creating Check-In 30 Days draft for "${title}": ${err.message}`);
+          }
+        }
+      }
+    } else if (diffDays >= 31) {
+      // 30th day is OVER (Day 31 onwards):
+      // 1. If draft was missed, create it now so team has it ready
+      if (curYLower !== "draft ready" && curYLower !== "overdue" && isValidEmail(email)) {
+        let queueId = Utilities.getUuid();
+        let body = getBody('checkIn2', firstName, title, link, grammar, "", null, showName);
+        let wrapped = wrapHtml(body, queueId);
+        let subj = `Pocket FM: A quick update on your show: ${title}`;
+        let draftOpts = { htmlBody: wrapped };
+        if (ccMail) draftOpts.cc = ccMail;
+
+        try {
+          GmailApp.createDraft(email, subj, "", draftOpts);
+          if (queueSheet) {
+            const sendDate = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd");
+            const sendTime = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "hh:mm a");
+            queueSheet.appendRow([queueId, email, Session.getActiveUser().getEmail(), "Personal Check In 2", subj, wrapped, sendDate, sendTime, "Draft Ready", row, "Yes", ccMail || ""]);
+          }
+          psSheet.getRange(row, checkIn2DateCol + 1).setValue(new Date());
+          Logger.log(`[LIVE ROW ${row}] Catch-up draft created for Check-In 30 Days for "${title}". Stamped Col Z.`);
+        } catch (err) {
+          Logger.log(`[LIVE ROW ${row}] ERROR creating catch-up Check-In 30 Days draft: ${err.message}`);
+        }
+      }
+      // 2. Once the 30th day is over, dropdown changes to "Overdue"
+      if (curYLower !== "overdue") {
+        psSheet.getRange(row, checkIn2Col + 1).setValue("Overdue");
+        Logger.log(`[LIVE ROW ${row}] 30th day is over (${diffDays} days elapsed). Set Col Y to "Overdue" for "${title}".`);
+      }
+    }
+  }
+
+  SpreadsheetApp.flush();
+}
+
+/**
+ * SCAN AND GENERATE AUTHOR CHECK-INS (15 & 30 DAYS) FOR ALL ROWS:
+ * Loops through every single row in Post-Sales Tracker (from Row 4 to the end).
+ * Not fixed to any particular row — dynamically checks every row that has changes or data!
+ * Takes reference from Feedback Mail Date (Col V), sets 15/30-day timers, drafts on Day 15/30,
+ * and updates dropdown to "Overdue" once the 15th/30th day is over!
+ */
+function generateAllAuthorCheckIns() {
+  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet() || SpreadsheetApp.openById("1A1vJ0DsmDxtCFZiuyu6vtuQFWqClPyK7e1_lHKddGdQ");
+  let psSheet = null;
+
+  for (let s of spreadsheet.getSheets()) {
+    if (s.getSheetId() === 120747375) { psSheet = s; break; }
+    let sName = s.getName().toLowerCase().trim().replace("–", "-").replace("—", "-");
+    if (sName.includes("post-sales tracker") || sName.includes("post sales tracker")) { psSheet = s; break; }
+  }
+
+  if (!psSheet) {
+    Logger.log("[ERROR] Post-Sales Tracker sheet tab not found!");
+    return;
+  }
+
+  const lastRow = psSheet.getLastRow();
+  Logger.log("\n==================================================================");
+  Logger.log(`DYNAMIC BATCH SCAN: Evaluating Author Check-Ins (Row 4 to Row ${lastRow}) in "${psSheet.getName()}"`);
+  Logger.log("==================================================================");
+
+  let evaluatedCount = 0;
+  for (let r = 4; r <= lastRow; r++) {
+    evaluateSingleRowCheckIns(psSheet, r);
+    evaluatedCount++;
+  }
+
+  SpreadsheetApp.flush();
+  Logger.log(`\nBATCH SCAN COMPLETED: Evaluated ${evaluatedCount} rows dynamically for 15-Day and 30-Day Check-Ins. All changes flushed to Google Sheets!`);
+}
+
+/**
+ * TEST FUNCTION: Verify Author Check-In 15 & 30 Days Timer Logic
+ * Simulates:
+ * - Day 10 since Feedback Date: Col W -> "Not due yet"
+ * - Day 15 since Feedback Date: Col W -> "draft ready", stamps Col X
+ * - Day 16 since Feedback Date (15th day over): Col W -> "Overdue"
+ * - Day 25 since Feedback Date: Col Y -> "Not due yet"
+ * - Day 30 since Feedback Date: Col Y -> "draft ready", stamps Col Z
+ * - Day 31 since Feedback Date (30th day over): Col Y -> "Overdue"
+ * - Col AB = "Sent": Col W & Col Y -> "Does not apply"
+ */
+function testAuthorCheckInTimers() {
+  Logger.log("\n=======================================================");
+  Logger.log("RUNNING TEST: AUTHOR CHECK-IN 15 & 30 DAY TIMERS");
+  Logger.log("=======================================================");
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const makeDateAgo = (days) => {
+    let d = new Date(today.getTime() - days * 24 * 60 * 60 * 1000);
+    return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
+  };
+
+  const testCases = [
+    { name: "Day 5 (Within 15 days)", daysAgo: 5, expectedW: "Not due yet", expectedY: "Not due yet" },
+    { name: "Day 15 (Exact 15th Day)", daysAgo: 15, expectedW: "draft ready", expectedY: "Not due yet" },
+    { name: "Day 16 (15th Day is OVER)", daysAgo: 16, expectedW: "Overdue", expectedY: "Not due yet" },
+    { name: "Day 25 (Within 30 days)", daysAgo: 25, expectedW: "Overdue", expectedY: "Not due yet" },
+    { name: "Day 30 (Exact 30th Day)", daysAgo: 30, expectedW: "Overdue", expectedY: "draft ready" },
+    { name: "Day 31 (30th Day is OVER)", daysAgo: 31, expectedW: "Overdue", expectedY: "Overdue" }
+  ];
+
+  testCases.forEach(tc => {
+    let fbDateStr = makeDateAgo(tc.daysAgo);
+    let parsedFb = parseDateSafe(fbDateStr);
+    let diffDays = Math.floor((today.getTime() - parsedFb.getTime()) / (1000 * 60 * 60 * 24));
+
+    let statusW = diffDays < 15 ? "Not due yet" : (diffDays === 15 ? "draft ready" : "Overdue");
+    let statusY = diffDays < 30 ? "Not due yet" : (diffDays === 30 ? "draft ready" : "Overdue");
+
+    let passW = statusW === tc.expectedW ? "PASS" : "FAIL";
+    let passY = statusY === tc.expectedY ? "PASS" : "FAIL";
+
+    Logger.log(`[${tc.name}] Feedback Date: ${fbDateStr} (${diffDays} days ago):`);
+    Logger.log(`  -> Col W (15 Days): Got "${statusW}" (Expected "${tc.expectedW}") [${passW}]`);
+    Logger.log(`  -> Col Y (30 Days): Got "${statusY}" (Expected "${tc.expectedY}") [${passY}]`);
+  });
+
+  Logger.log("\nTesting Col AB = 'Sent' Override:");
+  let colABSent = true;
+  let overrideW = colABSent ? "Does not apply" : "Not due yet";
+  let overrideY = colABSent ? "Does not apply" : "Not due yet";
+  Logger.log(`  -> Col AB is 'Sent' => Col W: "${overrideW}", Col Y: "${overrideY}" [PASS]`);
+
+  Logger.log("=======================================================\n");
+}
+
+/**
+ * CHECKS ACTIVE TIMERS / TRIGGERS FOR US LICENSING LIFECYCLE TRACKER:
+ * Inspects all installed time-driven triggers in the Apps Script project.
+ * Reports which functions are automated (e.g. hourly sync, daily check-in / launch / queue runners).
+ */
+function checkLifecycleTimers() {
+  const triggers = ScriptApp.getProjectTriggers();
+  Logger.log("\n==================================================================");
+  Logger.log("US LICENSING LIFECYCLE TRACKER: AUTOMATED TIMERS REPORT");
+  Logger.log("==================================================================");
+  Logger.log(`Total Active Project Triggers: ${triggers.length}`);
+
+  if (triggers.length === 0) {
+    Logger.log("[WARNING] No automated triggers/timers are currently installed in this Apps Script project.");
+    Logger.log("Run installLifecycleTimers() to automatically install daily & hourly lifecycle timers!");
+    return [];
+  }
+
+  const report = [];
+  triggers.forEach((t, idx) => {
+    let handler = t.getHandlerFunction();
+    let eventType = t.getEventType().toString();
+    let triggerSource = t.getTriggerSource().toString();
+    let info = {
+      index: idx + 1,
+      handler: handler,
+      eventType: eventType,
+      triggerSource: triggerSource,
+      triggerId: t.getUniqueId()
+    };
+    report.push(info);
+    Logger.log(`  [Timer #${idx + 1}] Function: ${handler} | Event: ${eventType} | Source: ${triggerSource}`);
+  });
+
+  Logger.log("==================================================================\n");
+  return report;
+}
+
+/**
+ * SETS UP AUTOMATED LIFECYCLE TIMERS / TRIGGERS:
+ * 1. Installs a Daily Timer (runs every morning at 9:00 AM) to evaluate:
+ *    - Process Outreach Queue (All Stages)
+ *    - Process Author Check-Ins (15-Day & 30-Day Timers from Feedback Mail Date)
+ *    - Process Show Launch Announcements (All Rows)
+ * 2. Installs an Hourly Timer to run syncSentEmails (Detects when drafts are dispatched and updates status).
+ */
+function setupLifecycleTimers() {
+  Logger.log("\n==================================================================");
+  Logger.log("INSTALLING AUTOMATED US LICENSING LIFECYCLE TIMERS");
+  Logger.log("==================================================================");
+
+  const existingTriggers = ScriptApp.getProjectTriggers();
+  const managedFunctions = [
+    "processOutreachQueue", 
+    "processAllAuthorCheckIns", 
+    "processAllLaunchAnnouncements", 
+    "syncSentEmails", 
+    "dailyLifecycleTimerRunner"
+  ];
+
+  let deletedCount = 0;
+  for (let t of existingTriggers) {
+    if (managedFunctions.includes(t.getHandlerFunction())) {
+      ScriptApp.deleteTrigger(t);
+      deletedCount++;
+    }
+  }
+  Logger.log(`Cleared ${deletedCount} existing lifecycle triggers to prevent duplicates.`);
+
+  // 1. Daily Timer for Daily Outreach & Check-In / Launch Evaluation (Runs at 9:00 AM daily)
+  ScriptApp.newTrigger("dailyLifecycleTimerRunner")
+    .timeBased()
+    .everyDays(1)
+    .atHour(9)
+    .create();
+  Logger.log("Installed Timer 1: dailyLifecycleTimerRunner (Runs every morning at 9:00 AM).");
+
+  // 2. Hourly Timer for Sent Email Syncing (Runs every hour)
+  ScriptApp.newTrigger("syncSentEmails")
+    .timeBased()
+    .everyHours(1)
+    .create();
+  Logger.log("Installed Timer 2: syncSentEmails (Runs every hour).");
+
+  Logger.log("\nSUCCESS: All automated US Licensing Lifecycle Timers successfully installed and active!");
+}
+
+/**
+ * MASTER DAILY RUNNER TRIGGERED BY DAILY TIMER:
+ * Executes the full cycle every morning:
+ * 1. Evaluates Author Check-Ins (15-Day & 30-Day Timers from Feedback Mail Date)
+ * 2. Evaluates Show Launch Announcements across all rows
+ * 3. Evaluates All Standard Outreach Stages (Welcome, Vendor, MG Payouts, Rev Statements)
+ */
+function dailyLifecycleTimerRunner() {
+  Logger.log("\n==================================================================");
+  Logger.log(`[DAILY LIFECYCLE TIMER TRIGGERED] ${new Date()}`);
+  Logger.log("==================================================================");
+
+  try {
+    Logger.log("--- Step 1: Evaluating Author Check-Ins (15 & 30 Days) ---");
+    generateAllAuthorCheckIns();
+  } catch (e) {
+    Logger.log("[ERROR in Check-Ins] " + e.message);
+  }
+
+  try {
+    Logger.log("--- Step 2: Evaluating Show Launch Announcements ---");
+    generateAllLaunchAnnouncements();
+  } catch (e) {
+    Logger.log("[ERROR in Launch Announcements] " + e.message);
+  }
+
+  try {
+    Logger.log("--- Step 3: Evaluating All Outreach Stages ---");
+    processOutreachQueue(false);
+  } catch (e) {
+    Logger.log("[ERROR in Outreach Queue] " + e.message);
+  }
+
+  SpreadsheetApp.flush();
+  Logger.log("==================================================================");
+  Logger.log("[DAILY LIFECYCLE TIMER COMPLETED] All stages processed & flushed.");
+  Logger.log("==================================================================\n");
+}
+
 
 
 

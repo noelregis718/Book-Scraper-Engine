@@ -108,11 +108,16 @@ Divide the monolithic codebase into **5 logically independent files** inside Goo
   2. `handleMGPayoutInitiated(row, rowData)`: Triggers on Vendor Lifecycle Exit Date.
   3. `handleMGPayoutConfirmed(row, rowData)`: Triggers on MG Payout Exit Date; automatically stamps **Feedback Mail Date (Col V)**.
   4. `handleAuthorCheckIns(row, rowData)`:
-     * Evaluates days elapsed since Col V.
+     * Evaluates elapsed days referencing **Feedback Mail Date (Col V)**.
      * Overrides Col W & Y to `"Does not apply"` if Col AB is marked `"Sent"`.
-     * Day 0–14: `"Not due yet"`.
-     * Day 15+: Creates draft $\rightarrow$ `"draft ready"`.
-     * Day 16+ unmailed: `"Overdue"`.
+     * **15-Day Check-In (Col W):**
+       - Day 0–14: Col W is `"Not due yet"`.
+       - Day 15: Creates Check-In 1 draft $\rightarrow$ Col W turns to `"draft ready"`, Col X stamped with date.
+       - Day 16+ (once 15th day is over): Col W dropdown changes to **`"Overdue"`**. Catch-up draft generated if previously uncreated.
+     * **30-Day Check-In (Col Y):**
+       - Day 0–29: Col Y is `"Not due yet"`.
+       - Day 30: Creates Check-In 2 draft $\rightarrow$ Col Y turns to `"draft ready"`, Col Z stamped with date.
+       - Day 31+ (once 30th day is over): Col Y dropdown changes to **`"Overdue"`**. Catch-up draft generated if previously uncreated.
   5. `handleShowLaunchAnnouncement(row, rowData)`:
      * Validates Mandatory Condition 1 (Show Link, Launch Date, `testing_pgc` status).
      * Compares Launch Date vs. Script Date (Col O):
