@@ -104,7 +104,7 @@ Divide the monolithic codebase into **5 logically independent files** inside Goo
 ### Module 4: `StageHandlers.gs` (Business Logic by Stage)
 **Purpose:** Contains cleanly separated, isolated logic for every outreach stage.
 * **Stage Handlers:**
-  1. `handleWelcomeAndVendor(row, rowData)`: Triggers when Contract Signing Date is today.
+  1. `handleWelcomeAndVendor(row, rowData)`: Triggers when Timestamp (Column A in Lifecycle Master) is today.
   2. `handleMGPayoutInitiated(row, rowData)`: Triggers on Vendor Lifecycle Exit Date.
   3. `handleMGPayoutConfirmed(row, rowData)`: Triggers on MG Payout Exit Date; automatically stamps **Feedback Mail Date (Col V)**.
   4. `handleAuthorCheckIns(row, rowData)`:

@@ -129,8 +129,8 @@ function parseDateSafe(dateVal) {
     if (!isNaN(d.getTime())) return d;
   }
 
-  // Check for DD/MM/YYYY or DD-MM-YYYY
-  let dmyMatch = cleanStr.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+  // Check for DD/MM/YYYY or DD-MM-YYYY (with optional time)
+  let dmyMatch = cleanStr.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})(?:[\sT].*)?$/);
   if (dmyMatch) {
     let p1 = parseInt(dmyMatch[1], 10);
     let p2 = parseInt(dmyMatch[2], 10);
@@ -144,7 +144,7 @@ function parseDateSafe(dateVal) {
     return new Date(year, p2 - 1, p1);
   }
 
-  let ymdMatch = cleanStr.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
+  let ymdMatch = cleanStr.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})(?:[\sT].*)?$/);
   if (ymdMatch) {
     return new Date(parseInt(ymdMatch[1], 10), parseInt(ymdMatch[2], 10) - 1, parseInt(ymdMatch[3], 10));
   }
@@ -365,9 +365,14 @@ function processOutreachQueue(isDelayedRun = false) {
   const showLinkCol = mainFindCol("Show Link"); 
   const ccCol = mainFindCol("CC Mail ID"); 
   
+  const timestampCol = mainFindCol("Timestamp") !== -1 ? mainFindCol("Timestamp") : 0; // Column A (index 0) in Lifecycle Master
   const contractSignedCol = mainFindCol("Contract Signing date"); 
-  const vendorLifecycleExitedCol = contractSignedCol + 4; 
-  const mgPayoutExitedCol = contractSignedCol + 7; 
+  const vendorLifecycleExitedCol = mainFindCol("Vendor Lifecycle Exited") !== -1 
+                                   ? mainFindCol("Vendor Lifecycle Exited") 
+                                   : (contractSignedCol > -1 ? contractSignedCol + 4 : -1); 
+  const mgPayoutExitedCol = mainFindCol("MG Payout Exited") !== -1 
+                            ? mainFindCol("MG Payout Exited") 
+                            : (contractSignedCol > -1 ? contractSignedCol + 7 : -1); 
   const launchStatusCol = mainFindCol("Launch Status"); 
   const mainLaunchDateCol = mainFindCol("Launch Date"); 
   const mainShowNameCol = mainFindCol("Show Name");
@@ -379,6 +384,10 @@ function processOutreachQueue(isDelayedRun = false) {
      let t = row[mainTitleCol];
      if (t) {
          let safeTitle = t.toString().toLowerCase().trim();
+         let rawTimestamp = (timestampCol > -1 && row.length > timestampCol && row[timestampCol]) 
+                            ? row[timestampCol] 
+                            : (contractSignedCol > -1 ? row[contractSignedCol] : "");
+
          mainDict[safeTitle] = {
              email: row[emailCol],
              author: row[authorCol],
@@ -386,9 +395,11 @@ function processOutreachQueue(isDelayedRun = false) {
              showLink: row[showLinkCol],
              ccMail: row[ccCol],
              showId: showIdCol > -1 ? row[showIdCol] : "",
-             contractSigned: row[contractSignedCol],
-             vendorLifecycleExited: row[vendorLifecycleExitedCol],
-             mgPayoutExited: row[mgPayoutExitedCol],
+             timestamp: rawTimestamp, // Column A in Lifecycle Master
+             contractSigned: rawTimestamp, // Welcome & Vendor Onboarding triggered by Timestamp Col A
+             origContractSigned: contractSignedCol > -1 ? row[contractSignedCol] : "",
+             vendorLifecycleExited: vendorLifecycleExitedCol > -1 ? row[vendorLifecycleExitedCol] : "",
+             mgPayoutExited: mgPayoutExitedCol > -1 ? row[mgPayoutExitedCol] : "",
              launchStatus: row[launchStatusCol],
              launchDate: mainLaunchDateCol > -1 ? row[mainLaunchDateCol] : "",
              showName: mainShowNameCol > -1 ? row[mainShowNameCol] : ""
@@ -844,12 +855,13 @@ function processOutreachQueue(isDelayedRun = false) {
     }
     // ------------------------------------
 
-    // Stage 1 & 2: Welcome Email and Instant Vendor Onboarding (Contract Signing Date)
-    if (!mainInfo.contractSigned || mainInfo.contractSigned.toString().trim() === "") {
+    // Stage 1 & 2: Welcome Email and Instant Vendor Onboarding (Timestamp in Column A of Lifecycle Master)
+    let welcomeTriggerDate = mainInfo.timestamp || mainInfo.contractSigned;
+    if (!welcomeTriggerDate || welcomeTriggerDate.toString().trim() === "") {
       if (isReady(psRow[welcomeCol])) {
-        logNotification("Trigger Date is missing", title, `Trigger Date is missing: Contract Signing date (Col Q) is blank for "${title}".`);
+        logNotification("Trigger Date is missing", title, `Trigger Date is missing: Timestamp (Col A in Master) is blank for "${title}".`);
       }
-    } else if (!isDropped && isToday(mainInfo.contractSigned)) {
+    } else if (!isDropped && isToday(welcomeTriggerDate)) {
       if (isReady(psRow[welcomeCol])) {
         // 1. Draft the Welcome Email
         createDraft(email, `Welcome to Pocket FM - here's what happens next`, firstName, 'welcome', title, link, i, welcomeCol, null, ccMail, revLink, argus);
@@ -861,8 +873,8 @@ function processOutreachQueue(isDelayedRun = false) {
       } else {
         Logger.log("SKIPPED (Welcome Email): Status is already processed for " + title + " (Current status: " + psRow[welcomeCol] + ")");
       }
-    } else if (!isDropped && !isToday(mainInfo.contractSigned) && mainInfo.contractSigned) {
-      Logger.log("SKIPPED (Welcome Email): Contract date for " + title + " is " + mainInfo.contractSigned + " which is not today.");
+    } else if (!isDropped && !isToday(welcomeTriggerDate) && welcomeTriggerDate) {
+      Logger.log("SKIPPED (Welcome Email): Timestamp (Col A in Master) for " + title + " is " + welcomeTriggerDate + " which is not today.");
     }
     
     // Stage 3: MG Payout Initiated (Vendor Lifecycle Exit Date)
