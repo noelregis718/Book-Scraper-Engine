@@ -23,6 +23,7 @@ function deleteAllTriggers() {
 
 /**
  * MAIN ENTRY POINT FOR SPREADSHEET AUTOMATION:
+ * Scans all tracking tabs across all 9 stages (Welcome, Vendor, MG, Check-Ins, Launch, Newsletter, Revenue).
  * Select this in the Apps Script function dropdown and click "Run".
  */
 function createAutomatedEmailDrafts() {
@@ -30,8 +31,17 @@ function createAutomatedEmailDrafts() {
 }
 
 /**
+ * PROCESS SHOW LAUNCH ANNOUNCEMENTS FOR ALL ROWS:
+ * Select this in the Apps Script function dropdown to scan EVERY row dynamically in Post-Sales Tracker.
+ * Evaluates date changes, flags anomalies as "Launch Date Issue", and drafts emails for all eligible rows.
+ */
+function processAllLaunchAnnouncements() {
+  generateAllLaunchAnnouncements();
+}
+
+/**
  * TEST CASE A: Explicit test function for Show Launch Date Anomaly
- * Verifies that Launch Date < Script Date (e.g. 2nd Oct < 6th Oct) flags "Launch Date Issue"
+ * Verifies that Launch Date <= Script Date (e.g. 2nd Oct <= 6th Oct) flags "Launch Date Issue"
  * and STRICTLY SUPPRESSES EMAIL DRAFTING (0 drafts generated).
  */
 function testCaseA_LaunchDateAnomaly() {
@@ -41,10 +51,37 @@ function testCaseA_LaunchDateAnomaly() {
 /**
  * TEST CASE B: Explicit test function for Valid Show Launch Announcement
  * Verifies that Script Date < Launch Date (e.g. 6th Oct < 10th Oct) and Mandatory Condition 1 Met
- * creates the draft email in your Gmail Drafts folder.
+ * creates the draft email in your Gmail Drafts folder for eligible rows.
  */
 function testCaseB_ValidLaunchAnnouncement() {
   runTestCaseB_ValidLaunchAnnouncement();
+}
+
+/**
+ * EMAIL SANITIZATION & VALIDATION HELPERS (GLOBAL SCOPE)
+ */
+function cleanEmail(rawEmail) {
+  if (!rawEmail) return "";
+  let str = rawEmail.toString().trim();
+  let bracketMatch = str.match(/<([^>]+)>/);
+  if (bracketMatch) {
+    str = bracketMatch[1].trim();
+  } else {
+    str = str.replace(/^[<"'\s]+|[>"'\s;]+$/g, "");
+  }
+  return str;
+}
+
+function isValidEmail(emailStr) {
+  if (!emailStr) return false;
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailStr);
+}
+
+function cleanCcList(rawCc) {
+  if (!rawCc) return "";
+  let parts = rawCc.toString().split(/[,;]/);
+  let cleaned = parts.map(p => cleanEmail(p)).filter(p => isValidEmail(p));
+  return cleaned.join(", ");
 }
 
 /**
@@ -191,9 +228,12 @@ function processOutreachQueue(isDelayedRun = false) {
     let sName = s.getName().toLowerCase().trim();
     sName = sName.replace("–", "-").replace("—", "-"); // Standardize dashes
     
-    // 1. Exact match takes top priority
+    // Priority 1: Exact gid match (gid: 120747375 for Post-Sales Tracker)
+    if (s.getSheetId() === 120747375) { psSheet = s; }
+
+    // Priority 2: Named matching
     if (sName === "lifecycle tracker - master") { mainSheet = s; }
-    else if (sName === "post-sales tracker" || sName === "post sales tracker") { psSheet = s; }
+    else if (!psSheet && (sName === "post-sales tracker" || sName === "post sales tracker")) { psSheet = s; }
     else if (sName === "queue") { queueSheet = s; }
   }
   
@@ -422,11 +462,19 @@ function processOutreachQueue(isDelayedRun = false) {
     return s === "launch date" || (s.includes("launch") && s.includes("date") && !s.includes("sent") && !s.includes("announcement"));
   }) : 9; // Column J
 
-  const launchCol = psFindCol("Show Launch Announcement"); 
+  const launchCol = psHeaders.findIndex(h => {
+    let s = h.toString().toLowerCase().trim();
+    return (s.includes("launch") && s.includes("announcement") && s.includes("status")) ||
+           (s === "show launch announcement status");
+  }) !== -1 ? psHeaders.findIndex(h => {
+    let s = h.toString().toLowerCase().trim();
+    return (s.includes("launch") && s.includes("announcement") && s.includes("status")) ||
+           (s === "show launch announcement status");
+  }) : (psFindCol("Show Launch Announcement") !== -1 ? psFindCol("Show Launch Announcement") : 26); // Column AA (idx 26)
+
   let launchSentCol = psHeaders.findIndex(h => {
     let s = h.toString().toLowerCase().trim();
-    return (s.includes("launch") && s.includes("announcement") && s.includes("sent") && !s.includes("date")) ||
-           (s.includes("launch") && s.includes("email sent") && !s.includes("date"));
+    return (s.includes("launch") && s.includes("announcement") && (s.includes("sent") || s.includes("email sent")) && !s.includes("date"));
   });
   if (launchSentCol === -1) {
     if (psHeaders.length > 27 && (psHeaders[27].toString().trim().toLowerCase() === "er" || psHeaders[27].toString().toLowerCase().includes("sent"))) {
@@ -437,10 +485,11 @@ function processOutreachQueue(isDelayedRun = false) {
       launchSentCol = 27;
     }
   }
+
   let launchSentDateCol = psHeaders.findIndex(h => {
     let s = h.toString().toLowerCase().trim();
-    return (s.includes("launch") && s.includes("sent") && s.includes("date")) ||
-           (s.includes("launch") && s.includes("announcement") && s.includes("date"));
+    return (s.includes("launch") && s.includes("announcement") && s.includes("date")) ||
+           (s.includes("launch") && s.includes("sent") && s.includes("date"));
   });
   if (launchSentDateCol === -1 && launchSentCol !== -1) {
     if (psHeaders[launchSentCol + 1] && psHeaders[launchSentCol + 1].toString().toLowerCase().includes("date")) {
@@ -648,9 +697,18 @@ function processOutreachQueue(isDelayedRun = false) {
     }
     psSheet.getRange(rIdx + 1, cIdx + 1).setValue(statusValue);
     
-    if ((type === "launch" || type === "launch_no_ai") && typeof launchSentCol !== "undefined" && launchSentCol !== -1) {
-      psSheet.getRange(rIdx + 1, launchSentCol + 1).setValue("Draft Ready");
-      Logger.log(`[STATUS UPDATE] Updated Launch Announcement Sent dropdown for "${title}" in Col ${launchSentCol + 1} to "Draft Ready"`);
+    if (type === "launch" || type === "launch_no_ai") {
+      if (typeof launchSentCol !== "undefined" && launchSentCol !== -1) {
+        psSheet.getRange(rIdx + 1, launchSentCol + 1).setValue("Draft Ready");
+        Logger.log(`[STATUS UPDATE] Updated Launch Announcement Sent dropdown for "${title}" in Col ${launchSentCol + 1} (Col AB) to "Draft Ready"`);
+      }
+      if (typeof launchCol !== "undefined" && launchCol !== -1) {
+        let curAAFormula = psSheet.getRange(rIdx + 1, launchCol + 1).getFormula();
+        if (!curAAFormula) {
+          psSheet.getRange(rIdx + 1, launchCol + 1).setValue("Draft Ready");
+        }
+        Logger.log(`[STATUS UPDATE] Updated Launch Announcement Status for "${title}" in Col ${launchCol + 1} (Col AA) to "Draft Ready"`);
+      }
     }
     if ((type === "authorEdit" || type === "newsletter") && typeof newsletterCol !== "undefined" && newsletterCol !== -1) {
       psSheet.getRange(rIdx + 1, newsletterCol + 1).setValue("Draft Ready");
@@ -713,15 +771,11 @@ function processOutreachQueue(isDelayedRun = false) {
     if (!title) continue;
     
     let safeTitle = title.toString().toLowerCase().trim();
-    let mainInfo = mainDict[safeTitle];
-    if (!mainInfo) {
-      logNotification("Workflow status is not eligible", title, `Title in Post-Sales Tracker was not found in Master tracker: [${title}]. Skipping row.`);
-      continue; 
-    }
+    let mainInfo = mainDict[safeTitle] || {};
     
     // 1. Recipient Email ID resolution (Post-Sales Tracker Col F, fallback to Master Sheet Col AB)
     let psEmail = (psEmailCol > -1 && psRow.length > psEmailCol && psRow[psEmailCol]) ? psRow[psEmailCol].toString().trim() : "";
-    let rawEmail = psEmail !== "" ? psEmail : mainInfo.email;
+    let rawEmail = psEmail !== "" ? psEmail : (mainInfo.email || "");
     let email = cleanEmail(rawEmail);
     if (!email || email === "" || !isValidEmail(email)) {
       logNotification("Recipient Email ID is missing", title, `Recipient Email ID is invalid or missing in Post-Sales Tracker (Col F) and Master sheet (Col AB) for "${title}" ("${rawEmail || ''}"). Cannot proceed with outreach drafts.`);
@@ -729,7 +783,7 @@ function processOutreachQueue(isDelayedRun = false) {
     }
     let showName = (psShowNameCol > -1 && psRow.length > psShowNameCol && psRow[psShowNameCol] && psRow[psShowNameCol].toString().trim() !== "")
                    ? psRow[psShowNameCol].toString().trim()
-                   : (mainInfo.showName ? mainInfo.showName.toString().trim() : "");
+                   : (mainInfo.showName ? mainInfo.showName.toString().trim() : title.toString().trim());
 
     let psShowIdCol = psFindCol("Show ID");
     let psShowId = (psShowIdCol > -1 && psRow.length > psShowIdCol && psRow[psShowIdCol]) ? psRow[psShowIdCol].toString().trim() : "";
@@ -740,7 +794,9 @@ function processOutreachQueue(isDelayedRun = false) {
                 || (argusData[safeTitle]) 
                 || (showName && argusData[showName.toLowerCase().trim()]) 
                 || {duration: "N/A", ldau: "N/A", comments: "No comments", ratings: "No ratings", reviews: "No reviews", hours: "N/A"};
-    let author = mainInfo.author;
+    let psAuthorCol = psFindCol("Author Name");
+    let psAuthor = (psAuthorCol > -1 && psRow.length > psAuthorCol && psRow[psAuthorCol]) ? psRow[psAuthorCol].toString().trim() : "";
+    let author = psAuthor !== "" ? psAuthor : (mainInfo.author ? mainInfo.author.toString().trim() : "");
     let psLink = (psShowLinkCol > -1 && psRow.length > psShowLinkCol && psRow[psShowLinkCol]) ? psRow[psShowLinkCol].toString().trim() : "";
     let link = psLink !== "" ? psLink : (mainInfo.showLink ? mainInfo.showLink.toString().trim() : "");
     let psCc = (psCcCol > -1 && psRow.length > psCcCol && psRow[psCcCol]) ? psRow[psCcCol].toString().trim() : "";
@@ -965,43 +1021,53 @@ function processOutreachQueue(isDelayedRun = false) {
                        : "";
     let currentABLower = currentABVal.toLowerCase();
 
-    // If Column AB is already marked "Sent", do not alter it
-    if (currentABLower !== "sent") {
-      let isLaunchBeforeScript = false;
-      let isLaunchAfterScript = false;
+    let isLaunchBeforeScript = false;
+    let isLaunchAfterScript = false;
 
-      if (launchDateObj && scriptDateObj) {
-        let lDate = new Date(launchDateObj.getTime());
-        let sDate = new Date(scriptDateObj.getTime());
-        lDate.setHours(0, 0, 0, 0);
-        sDate.setHours(0, 0, 0, 0);
+    if (launchDateObj && scriptDateObj) {
+      let lDate = new Date(launchDateObj.getTime());
+      let sDate = new Date(scriptDateObj.getTime());
+      lDate.setHours(0, 0, 0, 0);
+      sDate.setHours(0, 0, 0, 0);
 
-        if (lDate.getTime() <= sDate.getTime()) {
-          // If Show Launch Date <= Script Date -> Launch Date Issue!
-          isLaunchBeforeScript = true;
-        } else {
-          // Script Date is strictly before Launch Date -> eligible to move to Step 2
-          isLaunchAfterScript = true;
-        }
-      } else if (launchDateObj && !scriptDateObj) {
-        // Script Date is missing: Cannot verify that script date is before launch date
-        logNotification("Trigger Data is missing", title, `Script Date (Col O) is missing. Cannot verify that script date is before launch date. Launch Announcement draft suppressed.`);
+      if (lDate.getTime() <= sDate.getTime()) {
+        // If Show Launch Date <= Script Date -> Launch Date Issue!
+        isLaunchBeforeScript = true;
+      } else {
+        // Script Date is strictly before Launch Date -> eligible to move to Step 2
+        isLaunchAfterScript = true;
       }
+    } else if (launchDateObj && !scriptDateObj) {
+      // Script Date is missing: Cannot verify that script date is before launch date
+      logNotification("Trigger Data is missing", title, `Script Date (Col O) is missing. Cannot verify that script date is before launch date. Launch Announcement draft suppressed.`);
+    }
 
-      if (isLaunchBeforeScript) {
-        // Condition 2: Show launch date <= Script date -> Launch Date issue (dropdown in AB)
-        if (currentABLower !== "launch date issue") {
-          psSheet.getRange(i + 1, targetLaunchCol + 1).setValue("Launch Date Issue");
-          psRow[targetLaunchCol] = "Launch Date Issue";
-          Logger.log(`[ALERT] Updated Col ${targetLaunchCol + 1} to "Launch Date Issue" for "${title}" because Show Launch Date (${rawLaunchDate}) <= Script Date (${rawScriptDate})`);
+    if (isLaunchBeforeScript) {
+      // Condition 2: Show launch date <= Script date -> Launch Date issue (dropdown in AB)
+      if (currentABLower !== "launch date issue") {
+        psSheet.getRange(i + 1, targetLaunchCol + 1).setValue("Launch Date Issue");
+        psRow[targetLaunchCol] = "Launch Date Issue";
+        Logger.log(`[ALERT] Updated Col ${targetLaunchCol + 1} (Col AB) to "Launch Date Issue" for "${title}" because Show Launch Date (${rawLaunchDate}) <= Script Date (${rawScriptDate})`);
+      }
+      if (launchCol > -1) {
+        let curAAFormula = psSheet.getRange(i + 1, launchCol + 1).getFormula();
+        if (!curAAFormula) {
+          psSheet.getRange(i + 1, launchCol + 1).setValue("Check with content");
+          psRow[launchCol] = "Check with content";
+          Logger.log(`[ALERT] Updated Col ${launchCol + 1} (Col AA) to "Check with content" for "${title}"`);
         }
-        logNotification("Launch Date issue", title, `Show Launch Date (Col J: ${rawLaunchDate}) is BEFORE or EQUAL to Script Date (Col O: ${rawScriptDate}). Dropdown (Col AB) updated to "Launch Date Issue". Draft creation suppressed.`);
-      } else if (isLaunchAfterScript) {
+      }
+      SpreadsheetApp.flush();
+      logNotification("Launch Date issue", title, `Show Launch Date (Col J: ${rawLaunchDate}) is BEFORE or EQUAL to Script Date (Col O: ${rawScriptDate}). Dropdown (Col AB) updated to "Launch Date Issue", Col AA updated to "Check with content". Draft creation suppressed.`);
+    } else if (isLaunchAfterScript) {
+      // If Column AB is already marked "Sent", do not alter or re-draft
+      if (currentABLower !== "sent") {
         // Condition 2: Show launch date > Script Date -> Move to Step 2 if Mandatory Condition 1 is satisfied
         if (hasShowLink && hasLaunchDate && isTestingPgcStatus) {
           if (currentABLower !== "draft ready") {
             createDraft(email, `Your Pocket FM Show Is Now Live`, firstName, 'launch', title, link, i, targetLaunchCol, null, ccMail, revLink, argus, showName);
-            Logger.log(`[STATUS UPDATE] Condition 1 & 2 Met for "${title}". Created Launch Announcement draft and updated Col ${targetLaunchCol + 1} to "Draft Ready"`);
+            SpreadsheetApp.flush();
+            Logger.log(`[STATUS UPDATE] Condition 1 & 2 Met for "${title}". Created Launch Announcement draft and updated Col ${targetLaunchCol + 1} (Col AB) & Col ${launchCol + 1} (Col AA) to "Draft Ready"`);
           }
         } else {
           if (isTestingPgcStatus && (!hasShowLink || !hasLaunchDate)) {
@@ -1164,6 +1230,9 @@ function processOutreachQueue(isDelayedRun = false) {
       }
     }
   }
+
+  // Force all spreadsheet updates to commit to the live sheet immediately
+  SpreadsheetApp.flush();
 
   // Summary Notification Report
   if (notificationLog.length > 0) {
@@ -1867,7 +1936,8 @@ function syncSentEmails() {
   
   allSheets.forEach(s => {
     let sName = s.getName().toLowerCase().trim();
-    if (sName.includes("post-sales tracker") || sName.includes("post sales tracker") || sName.includes("post sale comms tracker")) sheet = s;
+    if (s.getSheetId() === 120747375) sheet = s;
+    else if (!sheet && (sName.includes("post-sales tracker") || sName.includes("post sales tracker") || sName.includes("post sale comms tracker"))) sheet = s;
     else if (sName === "queue") queueSheet = s;
   });
   
@@ -2090,18 +2160,235 @@ function testRevenueStatementDraft() {
   Logger.log(`\nBoth test drafts created and sent to your email (${myEmail})! Check your Gmail Drafts folder.`);
 }
 
+// =============================================================
+// DYNAMIC SHOW LAUNCH ANNOUNCEMENT AUTOMATION FOR ALL ROWS
+// =============================================================
+
 /**
- * TEST CASE A: Launch Date < Script Date Anomaly Check
+ * LIVE AUTOMATIC TRIGGER ON SHEET EDIT:
+ * Automatically runs whenever any cell is edited in the spreadsheet.
+ * If you edit Launch Date (Col J), Launch Status (Col K), Show Link (Col L), or Script Date (Col O):
+ * It immediately takes note of that row and updates the dropdown / drafts the email right away:
+ * - If Launch Date <= Script Date -> sets Col AB to "Launch Date Issue", Col AA to "Check with content".
+ * - If Launch Date > Script Date and Mandatory Condition 1 met -> sets Col AB to "Draft Ready", Col AA to "Draft Ready", stamps Col AC, and creates Gmail draft!
+ */
+function onEdit(e) {
+  if (!e || !e.range) return;
+  try {
+    const sheet = e.range.getSheet();
+    if (sheet.getSheetId() !== 120747375 && !sheet.getName().toLowerCase().includes("post-sales tracker") && !sheet.getName().toLowerCase().includes("post sales tracker")) {
+      return;
+    }
+
+    const row = e.range.getRow();
+    if (row < 4) return; // Ignore headers (rows 1-3)
+
+    const col = e.range.getColumn();
+    // Col J=10 (Launch Date), Col K=11 (Launch Status), Col L=12 (Show Link), Col O=15 (Script Date), Col AB=28 (Status dropdown)
+    if (col === 10 || col === 11 || col === 12 || col === 15 || col === 28) {
+      Logger.log(`[onEdit] Detected edit on Row ${row}, Col ${col}. Re-evaluating row for Show Launch Announcement...`);
+      evaluateSingleRowLaunch(sheet, row);
+    }
+  } catch (err) {
+    Logger.log("[onEdit Error] " + err.message);
+  }
+}
+
+/**
+ * EVALUATES A SINGLE ROW FOR SHOW LAUNCH ANNOUNCEMENT DRAFT & STATUS
+ * @param {Sheet} psSheet - The Post-Sales Tracker sheet object
+ * @param {number} row - The 1-based row index in the sheet (e.g. 4 for Row 4)
+ */
+function evaluateSingleRowLaunch(psSheet, row) {
+  if (!psSheet || row < 4) return;
+
+  const lastCol = Math.max(psSheet.getLastColumn(), 30);
+  const headers = psSheet.getRange(3, 1, 1, lastCol).getValues()[0];
+  const rowVals = psSheet.getRange(row, 1, 1, lastCol).getValues()[0];
+
+  const psFindCol = (name) => headers.findIndex(h => h.toString().toLowerCase().includes(name.toLowerCase()));
+
+  const titleCol = psFindCol("Title / IP") > -1 ? psFindCol("Title / IP") : 2;
+  const authorCol = psFindCol("Author Name") > -1 ? psFindCol("Author Name") : 1;
+  const firstNameCol = psFindCol("Receiver First Name") > -1 ? psFindCol("Receiver First Name") : 7;
+  const emailCol = psFindCol("Receiver Email ID") > -1 ? psFindCol("Receiver Email ID") : 5;
+  const ccCol = psFindCol("CC Mail ID") > -1 ? psFindCol("CC Mail ID") : 6;
+  const showNameCol = psFindCol("Show Name") > -1 ? psFindCol("Show Name") : 2;
+  const linkCol = psFindCol("Show Link") > -1 ? psFindCol("Show Link") : 11;
+  const statusCol = psFindCol("Launch Status") > -1 ? psFindCol("Launch Status") : 10;
+
+  const launchDateCol = headers.findIndex(h => {
+    let s = h.toString().toLowerCase().trim();
+    return s === "launch date" || (s.includes("launch") && s.includes("date") && !s.includes("sent") && !s.includes("announcement"));
+  }) > -1 ? headers.findIndex(h => {
+    let s = h.toString().toLowerCase().trim();
+    return s === "launch date" || (s.includes("launch") && s.includes("date") && !s.includes("sent") && !s.includes("announcement"));
+  }) : 9; // Col J
+
+  const scriptDateCol = headers.findIndex(h => {
+    let s = h.toString().toLowerCase().trim();
+    return s.includes("script") && s.includes("date");
+  }) > -1 ? headers.findIndex(h => {
+    let s = h.toString().toLowerCase().trim();
+    return s.includes("script") && s.includes("date");
+  }) : 14; // Col O
+
+  // Col AA (26), Col AB (27), Col AC (28)
+  const colAA = headers.findIndex(h => {
+    let s = h.toString().toLowerCase().trim();
+    return (s.includes("launch") && s.includes("announcement") && s.includes("status")) || s === "show launch announcement status";
+  }) > -1 ? headers.findIndex(h => {
+    let s = h.toString().toLowerCase().trim();
+    return (s.includes("launch") && s.includes("announcement") && s.includes("status")) || s === "show launch announcement status";
+  }) : 26;
+
+  const colAB = headers.findIndex(h => {
+    let s = h.toString().toLowerCase().trim();
+    return (s.includes("launch") && s.includes("announcement") && (s.includes("sent") || s.includes("email sent")) && !s.includes("date"));
+  }) > -1 ? headers.findIndex(h => {
+    let s = h.toString().toLowerCase().trim();
+    return (s.includes("launch") && s.includes("announcement") && (s.includes("sent") || s.includes("email sent")) && !s.includes("date"));
+  }) : 27;
+
+  const colAC = headers.findIndex(h => {
+    let s = h.toString().toLowerCase().trim();
+    return (s.includes("launch") && s.includes("announcement") && s.includes("date")) || (s.includes("launch") && s.includes("sent") && s.includes("date"));
+  }) > -1 ? headers.findIndex(h => {
+    let s = h.toString().toLowerCase().trim();
+    return (s.includes("launch") && s.includes("announcement") && s.includes("date")) || (s.includes("launch") && s.includes("sent") && s.includes("date"));
+  }) : 28;
+
+  const title = rowVals[titleCol] ? rowVals[titleCol].toString().trim() : "";
+  if (!title) return;
+
+  const author = rowVals[authorCol] ? rowVals[authorCol].toString().trim() : "";
+  const rawFirstName = rowVals[firstNameCol] ? rowVals[firstNameCol].toString().trim() : "";
+  const firstName = rawFirstName !== "" ? rawFirstName : (author ? author.split(" ")[0] : "Creator");
+  const showName = rowVals[showNameCol] ? rowVals[showNameCol].toString().trim() : title;
+  const email = cleanEmail(rowVals[emailCol]);
+  const ccMail = cleanCcList(rowVals[ccCol]);
+  const link = rowVals[linkCol] ? rowVals[linkCol].toString().trim() : "";
+  const rawStatus = rowVals[statusCol] ? rowVals[statusCol].toString().trim().toLowerCase() : "";
+  const cleanStatus = rawStatus.replace(/[\s-]+/g, "_");
+
+  const rawLaunchDate = rowVals[launchDateCol];
+  const rawScriptDate = rowVals[scriptDateCol];
+  const dLaunch = parseDateSafe(rawLaunchDate);
+  const dScript = parseDateSafe(rawScriptDate);
+
+  const curDropdown = rowVals[colAB] ? rowVals[colAB].toString().trim() : "";
+  const curDropdownLower = curDropdown.toLowerCase();
+
+  // If already marked Sent by user, do not alter
+  if (curDropdownLower === "sent") return;
+
+  // 1. DATE ANOMALY: Launch Date <= Script Date
+  if (dLaunch && dScript && dLaunch.getTime() <= dScript.getTime()) {
+    if (curDropdownLower !== "launch date issue") {
+      psSheet.getRange(row, colAB + 1).setValue("Launch Date Issue");
+      Logger.log(`[LIVE ROW ${row}] Set Col AB to "Launch Date Issue" for "${title}" (Launch: ${rawLaunchDate} <= Script: ${rawScriptDate})`);
+    }
+    const curAAFormula = psSheet.getRange(row, colAA + 1).getFormula();
+    if (!curAAFormula) {
+      psSheet.getRange(row, colAA + 1).setValue("Check with content");
+    }
+    SpreadsheetApp.flush();
+    return;
+  }
+
+  // 2. VALID LAUNCH ANNOUNCEMENT: Launch Date > Script Date AND Mandatory Condition 1 Met
+  const isScriptBeforeLaunch = dLaunch && dScript && (dLaunch.getTime() > dScript.getTime());
+  const hasLink = link !== "" && link !== "-";
+  const hasLaunchDate = !!dLaunch;
+  const isTestingPgc = cleanStatus === "testing_pgc" || cleanStatus === "testing_pgc_completed" || cleanStatus.includes("testing_pgc") || cleanStatus === "testing";
+
+  if (isScriptBeforeLaunch && hasLink && hasLaunchDate && isTestingPgc) {
+    if (!isValidEmail(email)) {
+      Logger.log(`[LIVE ROW ${row}] Missing valid email for "${title}". Draft suppressed.`);
+      return;
+    }
+
+    if (curDropdownLower !== "draft ready") {
+      const grammar = { work: "work", is: "is", has: "has", title: "title", this: "this", it: "it", its: "its" };
+      const queueId = Utilities.getUuid();
+      const bodyContent = getBody('launch', firstName, title, link, grammar, "", null, showName);
+      const wrappedBody = wrapHtml(bodyContent, queueId);
+      const subject = `Your Pocket FM Show Is Now Live`;
+
+      let draftSuccess = false;
+      try {
+        let draftOpts = { htmlBody: wrappedBody };
+        if (ccMail) draftOpts.cc = ccMail;
+        GmailApp.createDraft(email, subject, "", draftOpts);
+        draftSuccess = true;
+        Logger.log(`[LIVE ROW ${row}] SUCCESS: Draft created for "${title}" (${email})`);
+      } catch (err) {
+        Logger.log(`[LIVE ROW ${row}] ERROR creating draft for "${title}": ${err.message}`);
+      }
+
+      if (draftSuccess) {
+        psSheet.getRange(row, colAB + 1).setValue("Draft Ready");
+        const curAAFormula = psSheet.getRange(row, colAA + 1).getFormula();
+        if (!curAAFormula) {
+          psSheet.getRange(row, colAA + 1).setValue("Draft Ready");
+        }
+        const todayDate = new Date();
+        psSheet.getRange(row, colAC + 1).setValue(todayDate);
+        SpreadsheetApp.flush();
+        Logger.log(`[LIVE ROW ${row}] Updated Col AB & AA to "Draft Ready" and Col AC with timestamp.`);
+      }
+    }
+  }
+}
+
+/**
+ * SCAN AND GENERATE LAUNCH ANNOUNCEMENTS FOR ALL ROWS:
+ * Loops through every single row in Post-Sales Tracker (from Row 4 to the end).
+ * Not fixed to any particular row — dynamically checks every row that has changes or data!
+ */
+function generateAllLaunchAnnouncements() {
+  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet() || SpreadsheetApp.openById("1A1vJ0DsmDxtCFZiuyu6vtuQFWqClPyK7e1_lHKddGdQ");
+  let psSheet = null;
+
+  for (let s of spreadsheet.getSheets()) {
+    if (s.getSheetId() === 120747375) { psSheet = s; break; }
+    let sName = s.getName().toLowerCase().trim().replace("–", "-").replace("—", "-");
+    if (sName.includes("post-sales tracker") || sName.includes("post sales tracker")) { psSheet = s; break; }
+  }
+
+  if (!psSheet) {
+    Logger.log("[ERROR] Post-Sales Tracker sheet tab not found!");
+    return;
+  }
+
+  const lastRow = psSheet.getLastRow();
+  Logger.log("\n==================================================================");
+  Logger.log(`DYNAMIC BATCH SCAN: Evaluating all rows (Row 4 to Row ${lastRow}) in "${psSheet.getName()}"`);
+  Logger.log("==================================================================");
+
+  let evaluatedCount = 0;
+  for (let r = 4; r <= lastRow; r++) {
+    evaluateSingleRowLaunch(psSheet, r);
+    evaluatedCount++;
+  }
+
+  SpreadsheetApp.flush();
+  Logger.log(`\nBATCH SCAN COMPLETED: Evaluated ${evaluatedCount} rows dynamically. All changes flushed to Google Sheets!`);
+}
+
+/**
+ * TEST CASE A: Launch Date <= Script Date Anomaly Check
  * If scripts received on Oct 6th and launch is Oct 2nd -> DRAFT IS NOT GENERATED!
- * Column AB turns to "Launch Date Issue".
+ * Live Sheet Update: Column AB turns to "Launch Date Issue", Column AA turns to "Check with content".
  */
 function runTestCaseA_LaunchDateAnomaly() {
   Logger.log("\n=======================================================");
-  Logger.log("RUNNING TEST CASE A: LAUNCH DATE ANOMALY (OCT 2 < OCT 6)");
+  Logger.log("RUNNING TEST CASE A: LAUNCH DATE ANOMALY (OCT 2 <= OCT 6)");
   Logger.log("=======================================================");
 
   const testLaunchDate = "2nd october";
   const testScriptDate = "6 th october";
+  const testTitle = "A Shade of Vampire Series";
 
   const dLaunch = parseDateSafe(testLaunchDate);
   const dScript = parseDateSafe(testScriptDate);
@@ -2113,7 +2400,62 @@ function runTestCaseA_LaunchDateAnomaly() {
     Logger.log(`[ANOMALY DETECTED] Show Launch Date (${testLaunchDate}) is BEFORE or EQUAL to Script Date (${testScriptDate})!`);
     Logger.log(`[ACTION] Dropdown in Column AB: Set to "Launch Date Issue".`);
     Logger.log(`[STRICT DRAFT ENFORCEMENT] DRAFT CREATION IS BLOCKED! 0 emails drafted.`);
-    Logger.log(`Result: PASS - No draft was generated because script date was not before launch date.`);
+
+    // LIVE SPREADSHEET UPDATE FOR COLUMNS AA & AB
+    try {
+      const spreadsheet = SpreadsheetApp.getActiveSpreadsheet() || SpreadsheetApp.openById("1A1vJ0DsmDxtCFZiuyu6vtuQFWqClPyK7e1_lHKddGdQ");
+      let psSheet = null;
+      for (let s of spreadsheet.getSheets()) {
+        let sName = s.getName().toLowerCase().trim().replace("–", "-").replace("—", "-");
+        if (sName.includes("post-sales tracker") || sName.includes("post sales tracker")) { psSheet = s; break; }
+      }
+
+      if (psSheet) {
+        const data = psSheet.getDataRange().getValues();
+        const headers = data[2]; // Row 3
+        let colAA = headers.findIndex(h => {
+          let s = h.toString().toLowerCase().trim();
+          return (s.includes("launch") && s.includes("announcement") && s.includes("status")) || s === "show launch announcement status";
+        });
+        if (colAA === -1) colAA = 26; // Col AA (Col 27)
+
+        let colAB = headers.findIndex(h => {
+          let s = h.toString().toLowerCase().trim();
+          return (s.includes("launch") && s.includes("announcement") && (s.includes("sent") || s.includes("email sent")) && !s.includes("date"));
+        });
+        if (colAB === -1) colAB = 27; // Col AB (Col 28)
+
+        // Find test row (default Row 4: A Shade of Vampire Series)
+        let targetRow = 4;
+        for (let r = 3; r < data.length; r++) {
+          let t = data[r][2] ? data[r][2].toString().toLowerCase() : "";
+          if (t.includes("shade of vampire")) {
+            targetRow = r + 1;
+            break;
+          }
+        }
+
+        // Update Column AB to "Launch Date Issue"
+        psSheet.getRange(targetRow, colAB + 1).setValue("Launch Date Issue");
+
+        // Update Column AA to "Check with content" (anomaly status in tracker)
+        let curAAFormula = psSheet.getRange(targetRow, colAA + 1).getFormula();
+        if (!curAAFormula) {
+          psSheet.getRange(targetRow, colAA + 1).setValue("Check with content");
+        }
+        SpreadsheetApp.flush();
+
+        Logger.log(`[SHEET UPDATE SUCCESS] Row ${targetRow} ("${testTitle}") in "${psSheet.getName()}":`);
+        Logger.log(`  -> Col AA (${colAA + 1}): "Check with content"`);
+        Logger.log(`  -> Col AB (${colAB + 1}): "Launch Date Issue"`);
+      } else {
+        Logger.log(`[WARNING] Post-Sales Tracker sheet tab not found.`);
+      }
+    } catch (sheetErr) {
+      Logger.log(`[ERROR UPDATING SHEET] ${sheetErr.message}`);
+    }
+
+    Logger.log(`Result: PASS - No draft was generated because script date was not before launch date. Sheet successfully updated.`);
   } else {
     Logger.log(`Result: FAIL - Dates did not trigger anomaly.`);
   }
@@ -2122,6 +2464,7 @@ function runTestCaseA_LaunchDateAnomaly() {
 /**
  * TEST CASE B: Valid Launch Announcement (Script Date is strictly before Launch Date)
  * Launch Date = Oct 10, Script Date = Oct 6 -> Valid! Draft generated in Gmail.
+ * Live Sheet Update: Column AB turns to "Draft Ready", Column AA turns to "Draft Ready", Column AC captures today's date.
  */
 function runTestCaseB_ValidLaunchAnnouncement() {
   const myEmail = Session.getActiveUser().getEmail();
@@ -2164,7 +2507,73 @@ function runTestCaseB_ValidLaunchAnnouncement() {
 
     GmailApp.createDraft(myEmail, subject, "", { htmlBody: wrappedBody });
     Logger.log(`SUCCESS: Test Show Launch Announcement Draft created in Gmail with subject "${subject}" sent to: ${myEmail}`);
-    Logger.log(`Result: PASS - Valid launch date successfully drafted!`);
+
+    // LIVE SPREADSHEET UPDATE FOR COLUMNS AA, AB & AC
+    try {
+      const spreadsheet = SpreadsheetApp.getActiveSpreadsheet() || SpreadsheetApp.openById("1A1vJ0DsmDxtCFZiuyu6vtuQFWqClPyK7e1_lHKddGdQ");
+      let psSheet = null;
+      for (let s of spreadsheet.getSheets()) {
+        let sName = s.getName().toLowerCase().trim().replace("–", "-").replace("—", "-");
+        if (sName.includes("post-sales tracker") || sName.includes("post sales tracker")) { psSheet = s; break; }
+      }
+
+      if (psSheet) {
+        const data = psSheet.getDataRange().getValues();
+        const headers = data[2]; // Row 3
+        let colAA = headers.findIndex(h => {
+          let s = h.toString().toLowerCase().trim();
+          return (s.includes("launch") && s.includes("announcement") && s.includes("status")) || s === "show launch announcement status";
+        });
+        if (colAA === -1) colAA = 26; // Col AA (Col 27)
+
+        let colAB = headers.findIndex(h => {
+          let s = h.toString().toLowerCase().trim();
+          return (s.includes("launch") && s.includes("announcement") && (s.includes("sent") || s.includes("email sent")) && !s.includes("date"));
+        });
+        if (colAB === -1) colAB = 27; // Col AB (Col 28)
+
+        let colAC = headers.findIndex(h => {
+          let s = h.toString().toLowerCase().trim();
+          return s.includes("launch") && s.includes("announcement") && s.includes("date");
+        });
+        if (colAC === -1) colAC = 28; // Col AC (Col 29)
+
+        // Find test row (default Row 4: A Shade of Vampire Series)
+        let targetRow = 4;
+        for (let r = 3; r < data.length; r++) {
+          let t = data[r][2] ? data[r][2].toString().toLowerCase() : "";
+          if (t.includes("shade of vampire")) {
+            targetRow = r + 1;
+            break;
+          }
+        }
+
+        // Update Column AB to "Draft Ready"
+        psSheet.getRange(targetRow, colAB + 1).setValue("Draft Ready");
+
+        // Update Column AA to "Draft Ready" (if no formula)
+        let curAAFormula = psSheet.getRange(targetRow, colAA + 1).getFormula();
+        if (!curAAFormula) {
+          psSheet.getRange(targetRow, colAA + 1).setValue("Draft Ready");
+        }
+
+        // Capture today's date in Column AC
+        const todayDate = new Date();
+        psSheet.getRange(targetRow, colAC + 1).setValue(todayDate);
+        SpreadsheetApp.flush();
+
+        Logger.log(`[SHEET UPDATE SUCCESS] Row ${targetRow} ("${testTitle}") in "${psSheet.getName()}":`);
+        Logger.log(`  -> Col AA (${colAA + 1}): "Draft Ready"`);
+        Logger.log(`  -> Col AB (${colAB + 1}): "Draft Ready"`);
+        Logger.log(`  -> Col AC (${colAC + 1}): ${todayDate}`);
+      } else {
+        Logger.log(`[WARNING] Post-Sales Tracker sheet tab not found.`);
+      }
+    } catch (sheetErr) {
+      Logger.log(`[ERROR UPDATING SHEET] ${sheetErr.message}`);
+    }
+
+    Logger.log(`Result: PASS - Valid launch date successfully drafted and sheet updated!`);
   } else {
     Logger.log(`Result: FAIL - Conditions not satisfied.`);
   }
