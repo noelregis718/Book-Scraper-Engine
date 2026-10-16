@@ -22,6 +22,719 @@ function deleteAllTriggers() {
 // =============================================================
 
 /**
+ * GOOGLE SHEETS TOP-BAR MENU BUILDER:
+ * Creates the "Pocket FM Automation" menu directly in the spreadsheet top bar.
+ */
+function onOpen() {
+  SpreadsheetApp.getUi()
+    .createMenu("Pocket FM Automation")
+    .addItem("▶️ 🚀 RUN ALL AUTOMATIONS (Single Click)", "openLiveAutomationConsole")
+    .addItem("📋 View Execution Logs Panel", "openLiveAutomationConsole")
+    .addSeparator()
+    .addItem("✉️ Run Author Check-Ins (15 & 30 Days)", "processAllAuthorCheckIns")
+    .addItem("🚀 Run Show Launch Announcements Only", "processAllLaunchAnnouncements")
+    .addItem("📋 Run Standard Outreach (Welcome, Vendor, MG)", "createAutomatedEmailDrafts")
+    .addSeparator()
+    .addItem("🔄 Sync Sent Emails (Mark Dropdowns 'Sent')", "syncSentEmails")
+    .addSeparator()
+    .addItem("🕒 Install Daily & Hourly Lifecycle Timers", "installLifecycleTimers")
+    .addItem("📊 Check Active Lifecycle Timers Report", "checkLifecycleTimersReport")
+    .addToUi();
+}
+
+/**
+ * OPENS THE LIVE AUTOMATION CONSOLE (REAL-TIME STREAMING):
+ * Opens immediately (<0.3s) in the right sidebar.
+ * Coordinates batch execution in real-time so logs appear line-by-line
+ * as each row is processed, rather than waiting for the entire run to finish!
+ */
+function openLiveAutomationConsole() {
+  const htmlOutput = HtmlService.createHtmlOutput(buildLiveStreamingConsoleHtml())
+    .setTitle("Pocket FM Automation Logs")
+    .setWidth(450);
+  SpreadsheetApp.getUi().showSidebar(htmlOutput);
+}
+
+/**
+ * FINDS THE LAST ACTUALLY FILLED DATA ROW IN THE TRACKER:
+ * Scans titleCol upwards from lastRow to find the last row containing an actual title.
+ * Prevents unnecessary roundtrips over blank formula rows (rows 113 to 996).
+ */
+function findLastFilledTrackerRow(sheet, titleCol) {
+  const sheetLastRow = sheet.getLastRow();
+  if (sheetLastRow <= 3) return 3;
+  const numRows = sheetLastRow - 3;
+  const titleVals = sheet.getRange(4, titleCol + 1, numRows, 1).getValues();
+  let actualLast = 3;
+  for (let i = titleVals.length - 1; i >= 0; i--) {
+    let val = titleVals[i][0];
+    if (val !== null && val !== undefined) {
+      let str = val.toString().trim();
+      if (str !== "" && str !== "-" && str !== "#N/A" && str.toLowerCase() !== "n/a" && !str.startsWith("#")) {
+        actualLast = i + 4;
+        break;
+      }
+    }
+  }
+  return Math.max(actualLast, 4);
+}
+
+/**
+ * REAL-TIME CHUNKED SERVER RPC ENDPOINT:
+ * Evaluates a single chunk of rows (default 20 rows) and returns logs + stats immediately.
+ * Called by client-side JS in the Live Streaming Console.
+ */
+function executeAutomationBatch(startRow, batchSize) {
+  startRow = Number(startRow) || 4;
+  batchSize = Number(batchSize) || 20;
+
+  const ss = SpreadsheetApp.getActiveSpreadsheet() || SpreadsheetApp.openById("1A1vJ0DsmDxtCFZiuyu6vtuQFWqClPyK7e1_lHKddGdQ");
+  let psSheet = null;
+  for (let s of ss.getSheets()) {
+    if (s.getSheetId() === 120747375) { psSheet = s; break; }
+    let sName = s.getName().toLowerCase().trim().replace("–", "-").replace("—", "-");
+    if (sName.includes("post-sales tracker") || sName.includes("post sales tracker")) { psSheet = s; break; }
+  }
+
+  if (!psSheet) {
+    return {
+      error: "[ERROR] Post-Sales Tracker sheet tab not found!",
+      isDone: true,
+      logs: ["[ERROR] Post-Sales Tracker sheet tab not found!"]
+    };
+  }
+
+  const lastCol = Math.max(psSheet.getLastColumn(), 30);
+  const headerVals = psSheet.getRange(3, 1, 1, lastCol).getValues()[0];
+  const titleCol = headerVals.findIndex(h => h.toString().toLowerCase().includes("title")) > -1 
+                   ? headerVals.findIndex(h => h.toString().toLowerCase().includes("title")) : 2;
+
+  const actualLastRow = findLastFilledTrackerRow(psSheet, titleCol);
+  const endRow = Math.min(startRow + batchSize - 1, actualLastRow);
+
+  const logs = [];
+  function log(msg) {
+    let text = typeof msg === 'object' ? JSON.stringify(msg) : String(msg);
+    logs.push(text);
+    if (GLOBAL_SESSION_LOGS.length > 1000) GLOBAL_SESSION_LOGS.shift();
+    GLOBAL_SESSION_LOGS.push(text);
+  }
+
+  if (startRow > actualLastRow) {
+    return {
+      startRow: startRow,
+      endRow: actualLastRow,
+      totalSheetRows: actualLastRow,
+      evaluatedCount: 0,
+      skippedBlankCount: 0,
+      logs: ["[INFO] All populated rows evaluated."],
+      isDone: true,
+      nextRow: actualLastRow + 1
+    };
+  }
+
+  const numRows = endRow - startRow + 1;
+  const chunkVals = psSheet.getRange(startRow, 1, numRows, lastCol).getValues();
+
+  let evaluatedCount = 0;
+  let skippedBlankCount = 0;
+
+  for (let i = 0; i < numRows; i++) {
+    const currentRowNum = startRow + i;
+    const rowVals = chunkVals[i];
+
+    if (!isTrackerRowFilled(rowVals, titleCol)) {
+      skippedBlankCount++;
+      continue;
+    }
+
+    const showTitle = rowVals[titleCol] ? rowVals[titleCol].toString().trim() : ("Row " + currentRowNum);
+
+    try {
+      evaluateSingleRowCheckIns(psSheet, currentRowNum, rowVals, headerVals);
+      log(`[LIVE ROW ${currentRowNum}] Check-Ins (15/30 Days) evaluated for "${showTitle}"`);
+    } catch (errCheckIn) {
+      log(`[ERROR] [Row ${currentRowNum} Check-In] ${errCheckIn.message}`);
+    }
+
+    try {
+      evaluateSingleRowLaunch(psSheet, currentRowNum, rowVals, headerVals);
+      log(`[LIVE ROW ${currentRowNum}] Launch Announcement evaluated for "${showTitle}"`);
+    } catch (errLaunch) {
+      log(`[ERROR] [Row ${currentRowNum} Launch] ${errLaunch.message}`);
+    }
+
+    evaluatedCount++;
+  }
+
+  SpreadsheetApp.flush();
+
+  try {
+    CacheService.getUserCache().put("POCKETFM_LAST_LOGS", JSON.stringify(GLOBAL_SESSION_LOGS.slice(-500)), 21600);
+  } catch (e) {}
+
+  return {
+    startRow: startRow,
+    endRow: endRow,
+    totalSheetRows: actualLastRow,
+    evaluatedCount: evaluatedCount,
+    skippedBlankCount: skippedBlankCount,
+    logs: logs,
+    isDone: endRow >= actualLastRow,
+    nextRow: endRow + 1
+  };
+}
+
+/**
+ * SERVER RPC ENDPOINT: EVALUATES STANDARD OUTREACH QUEUE
+ */
+function executeOutreachQueueStage() {
+  const logs = [];
+  function log(msg) {
+    let text = typeof msg === 'object' ? JSON.stringify(msg) : String(msg);
+    logs.push(text);
+    if (GLOBAL_SESSION_LOGS.length > 1000) GLOBAL_SESSION_LOGS.shift();
+    GLOBAL_SESSION_LOGS.push(text);
+  }
+
+  log("Evaluating Outreach Queue (Welcome, Vendor, MG Payouts, Rev Statements)...");
+  try {
+    processOutreachQueue(false);
+    log("[SUCCESS] Standard Outreach Queue successfully processed.");
+  } catch (errQueue) {
+    log(`[ERROR] [Outreach Queue] ${errQueue.message}`);
+  }
+
+  SpreadsheetApp.flush();
+
+  try {
+    CacheService.getUserCache().put("POCKETFM_LAST_LOGS", JSON.stringify(GLOBAL_SESSION_LOGS.slice(-500)), 21600);
+  } catch (e) {}
+
+  return { logs: logs, success: true };
+}
+
+/**
+ * MASTER SINGLE-CLICK RUNNER (SYNCHRONOUS / HEADLESS):
+ */
+function runAllOutreachAutomations() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet() || SpreadsheetApp.openById("1A1vJ0DsmDxtCFZiuyu6vtuQFWqClPyK7e1_lHKddGdQ");
+  let psSheet = null;
+
+  for (let s of ss.getSheets()) {
+    if (s.getSheetId() === 120747375) { psSheet = s; break; }
+    let sName = s.getName().toLowerCase().trim().replace("–", "-").replace("—", "-");
+    if (sName.includes("post-sales tracker") || sName.includes("post sales tracker")) { psSheet = s; break; }
+  }
+
+  if (!psSheet) {
+    Logger.log("[ERROR] Post-Sales Tracker sheet tab not found!");
+    return;
+  }
+
+  GLOBAL_SESSION_LOGS = [];
+  function recordLog(msg) {
+    Logger.log(msg);
+    if (GLOBAL_SESSION_LOGS.length > 1000) GLOBAL_SESSION_LOGS.shift();
+    GLOBAL_SESSION_LOGS.push(typeof msg === 'object' ? JSON.stringify(msg) : String(msg));
+  }
+
+  const lastCol = Math.max(psSheet.getLastColumn(), 30);
+  const headers = psSheet.getRange(3, 1, 1, lastCol).getValues()[0];
+  const titleCol = headers.findIndex(h => h.toString().toLowerCase().includes("title")) > -1 
+                   ? headers.findIndex(h => h.toString().toLowerCase().includes("title")) : 2;
+
+  const actualLastRow = findLastFilledTrackerRow(psSheet, titleCol);
+
+  recordLog("==================================================================");
+  recordLog(`MASTER RUNNER: Processing all stages in "${psSheet.getName()}" (Row 4 to Row ${actualLastRow})`);
+  recordLog("==================================================================");
+
+  let evaluatedCount = 0;
+  let skippedBlankCount = 0;
+
+  const allData = psSheet.getRange(1, 1, actualLastRow, lastCol).getValues();
+
+  for (let r = 4; r <= actualLastRow; r++) {
+    let rowVals = allData[r - 1];
+
+    if (!isTrackerRowFilled(rowVals, titleCol)) {
+      skippedBlankCount++;
+      continue;
+    }
+
+    let showTitle = rowVals[titleCol] ? rowVals[titleCol].toString().trim() : ("Row " + r);
+
+    try {
+      evaluateSingleRowCheckIns(psSheet, r, rowVals, headers);
+      recordLog(`[LIVE ROW ${r}] Check-Ins (15/30 Days) evaluated for "${showTitle}"`);
+    } catch (errCheckIn) {
+      recordLog(`[ERROR] [Row ${r} Check-In] ${errCheckIn.message}`);
+    }
+
+    try {
+      evaluateSingleRowLaunch(psSheet, r, rowVals, headers);
+      recordLog(`[LIVE ROW ${r}] Launch Announcement evaluated for "${showTitle}"`);
+    } catch (errLaunch) {
+      recordLog(`[ERROR] [Row ${r} Launch] ${errLaunch.message}`);
+    }
+
+    evaluatedCount++;
+  }
+
+  try {
+    recordLog("Evaluating Outreach Queue (Welcome, Vendor, MG Payouts, Rev Statements)...");
+    processOutreachQueue(false);
+    recordLog("[SUCCESS] Standard Outreach Queue successfully processed.");
+  } catch (errQueue) {
+    recordLog(`[ERROR] [Outreach Queue] ${errQueue.message}`);
+  }
+
+  SpreadsheetApp.flush();
+
+  const successMessage = `Evaluated ${evaluatedCount} active rows (${skippedBlankCount} blank rows skipped). All drafts & statuses updated!`;
+  recordLog("==================================================================");
+  recordLog(`[COMPLETE] ${successMessage}`);
+  recordLog("==================================================================");
+
+  try {
+    CacheService.getUserCache().put("POCKETFM_LAST_LOGS", JSON.stringify(GLOBAL_SESSION_LOGS.slice(-500)), 21600);
+  } catch (cacheErr) {}
+
+  openLiveAutomationConsole();
+
+  try {
+    ss.toast(successMessage, "Automation Complete", 6);
+  } catch (toastErr) {}
+}
+
+/**
+ * OPENS THE EXECUTION LOGS PANEL IN THE CORNER OF THE SPREADSHEET
+ */
+function openExecutionLogsSidebar() {
+  openLiveAutomationConsole();
+}
+
+/**
+ * SERVER-SIDE RPC ENDPOINT:
+ */
+function getLatestExecutionLogs() {
+  if (GLOBAL_SESSION_LOGS && GLOBAL_SESSION_LOGS.length > 0) {
+    return GLOBAL_SESSION_LOGS;
+  }
+  try {
+    var cached = CacheService.getUserCache().get("POCKETFM_LAST_LOGS");
+    if (cached) {
+      var parsed = JSON.parse(cached);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch (e) {}
+  return [
+    "[INFO] No execution logs recorded in current session.",
+    "[INFO] Click '▶️ 🚀 RUN ALL AUTOMATIONS' from the top menu to run all checks and stream live logs!"
+  ];
+}
+
+/**
+ * BUILDS AND RENDERS THE LIVE STREAMING CONSOLE HTML
+ */
+function buildLiveStreamingConsoleHtml() {
+  return `<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0f131a;
+      color: #e2e8f0;
+      padding: 14px;
+      font-size: 13px;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #1e293b;
+      margin-bottom: 12px;
+    }
+    .header-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #f8fafc;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .close-btn {
+      background: #e51a4d;
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: background 0.15s ease-in-out;
+    }
+    .close-btn:hover { background: #b9103a; }
+    .progress-section {
+      background: #18202f;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+    }
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      margin-bottom: 6px;
+      color: #94a3b8;
+    }
+    .progress-bar-bg {
+      background: #0a0d14;
+      border-radius: 6px;
+      height: 8px;
+      overflow: hidden;
+      width: 100%;
+    }
+    .progress-bar-fill {
+      background: linear-gradient(90deg, #e51a4d, #38bdf8);
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    .toolbar {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 10px;
+      align-items: center;
+    }
+    .stat-pill {
+      background: #18202f;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      color: #94a3b8;
+    }
+    .stat-pill b { color: #38bdf8; }
+    .restart-btn {
+      background: #1e293b;
+      color: #38bdf8;
+      border: 1px solid #334155;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-left: auto;
+    }
+    .restart-btn:hover { background: #334155; color: #fff; }
+    .search-box {
+      width: 100%;
+      background: #1a202c;
+      border: 1px solid #334155;
+      color: #f1f5f9;
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      margin-bottom: 10px;
+      outline: none;
+    }
+    .search-box:focus { border-color: #e51a4d; }
+    .log-container {
+      background: #07090e;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 10px;
+      height: 440px;
+      max-height: calc(100vh - 270px);
+      overflow-y: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      line-height: 1.55;
+    }
+    .log-line {
+      padding: 3px 6px;
+      border-radius: 3px;
+      margin-bottom: 2px;
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+    .log-line:hover { background: rgba(255,255,255,0.06); }
+    .log-success { color: #4ade80; }
+    .log-warn { color: #fbbf24; }
+    .log-error { color: #f87171; font-weight: 600; }
+    .log-info { color: #60a5fa; }
+    .log-default { color: #cbd5e1; }
+    .actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .btn-action {
+      flex: 1;
+      background: #1e293b;
+      color: #cbd5e1;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      padding: 7px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s ease-in-out;
+    }
+    .btn-action:hover { background: #334155; color: #fff; }
+    .copy-toast {
+      position: fixed;
+      bottom: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #059669;
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      opacity: 0;
+      transition: opacity 0.2s;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-title">⚡ Live Automation Console</div>
+    <button class="close-btn" onclick="closeSidebar()" title="Click to remove/close this logs panel">✕ Close</button>
+  </div>
+
+  <div class="progress-section">
+    <div class="progress-header">
+      <span id="progressLabel">Live Progress</span>
+      <b id="progressText" style="color:#38bdf8;">0%</b>
+    </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progressBar"></div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="stat-pill">Lines: <b id="totalLines">0</b></div>
+    <div class="stat-pill"><span id="statusPill"><b style="color:#38bdf8;">Starting...</b></span></div>
+    <button class="restart-btn" onclick="startLiveRun()" title="Rerun all stages with live logs">▶️ Rerun</button>
+  </div>
+
+  <input type="text" id="filterInput" class="search-box" placeholder="🔍 Filter live logs (e.g. Row 4, Draft, Error)..." oninput="applyFilter()">
+
+  <div class="log-container" id="logViewer">
+    <div style="color:#38bdf8; padding:15px; text-align:center;">⏳ Starting live stream...</div>
+  </div>
+
+  <div class="actions">
+    <button class="btn-action" onclick="copyAllLogs()">📋 Copy All Logs</button>
+    <button class="btn-action" onclick="closeSidebar()">✕ Dismiss</button>
+  </div>
+  <div class="copy-toast" id="copyToast">Copied to clipboard!</div>
+
+  <script>
+    var currentLogs = [];
+    var totalEvaluated = 0;
+    var totalSkipped = 0;
+    var CHUNK_SIZE = 20;
+
+    function closeSidebar() {
+      if (typeof google !== 'undefined' && google.script && google.script.host) {
+        google.script.host.close();
+      }
+    }
+
+    function appendLogLine(line) {
+      currentLogs.push(line);
+      var viewer = document.getElementById("logViewer");
+      var div = document.createElement("div");
+      div.className = "log-line";
+      var lower = line.toLowerCase();
+      if (lower.includes("success") || lower.includes("pass") || lower.includes("completed") || lower.includes("created draft")) {
+        div.classList.add("log-success");
+      } else if (lower.includes("error") || lower.includes("fail") || lower.includes("exception")) {
+        div.classList.add("log-error");
+      } else if (lower.includes("warning") || lower.includes("skipped") || lower.includes("not due") || lower.includes("anomaly") || lower.includes("launch date issue")) {
+        div.classList.add("log-warn");
+      } else if (lower.includes("[live row") || lower.includes("[sync]") || lower.includes("evaluating") || lower.includes("runner:")) {
+        div.classList.add("log-info");
+      } else {
+        div.classList.add("log-default");
+      }
+      div.textContent = line;
+      viewer.appendChild(div);
+      viewer.scrollTop = viewer.scrollHeight;
+      document.getElementById("totalLines").innerText = currentLogs.length;
+    }
+
+    function renderFiltered(lines) {
+      var viewer = document.getElementById("logViewer");
+      viewer.innerHTML = "";
+      if (!lines || lines.length === 0) {
+        viewer.innerHTML = '<div style="color:#64748b; padding:15px; text-align:center;">No matching log entries found.</div>';
+        return;
+      }
+      lines.forEach(function(l) {
+        var div = document.createElement("div");
+        div.className = "log-line";
+        var lower = l.toLowerCase();
+        if (lower.includes("success") || lower.includes("pass") || lower.includes("completed") || lower.includes("created draft")) {
+          div.classList.add("log-success");
+        } else if (lower.includes("error") || lower.includes("fail") || lower.includes("exception")) {
+          div.classList.add("log-error");
+        } else if (lower.includes("warning") || lower.includes("skipped") || lower.includes("not due") || lower.includes("anomaly") || lower.includes("launch date issue")) {
+          div.classList.add("log-warn");
+        } else if (lower.includes("[live row") || lower.includes("[sync]") || lower.includes("evaluating") || lower.includes("runner:")) {
+          div.classList.add("log-info");
+        } else {
+          div.classList.add("log-default");
+        }
+        div.textContent = l;
+        viewer.appendChild(div);
+      });
+      viewer.scrollTop = viewer.scrollHeight;
+    }
+
+    function applyFilter() {
+      var q = document.getElementById("filterInput").value.toLowerCase().trim();
+      if (!q) {
+        renderFiltered(currentLogs);
+        return;
+      }
+      var filtered = currentLogs.filter(function(l) {
+        return l.toLowerCase().indexOf(q) > -1;
+      });
+      renderFiltered(filtered);
+    }
+
+    function copyAllLogs() {
+      var text = currentLogs.join("\\n");
+      navigator.clipboard.writeText(text).then(function() {
+        var t = document.getElementById("copyToast");
+        t.style.opacity = "1";
+        setTimeout(function() { t.style.opacity = "0"; }, 2000);
+      });
+    }
+
+    function startLiveRun() {
+      document.getElementById("progressBar").style.width = "0%";
+      document.getElementById("progressText").innerText = "0%";
+      document.getElementById("statusPill").innerHTML = '<b style="color:#38bdf8;">Running...</b>';
+      document.getElementById("logViewer").innerHTML = "";
+      currentLogs = [];
+      totalEvaluated = 0;
+      totalSkipped = 0;
+
+      appendLogLine("==================================================================");
+      appendLogLine("LIVE STREAMING RUNNER: Starting batch evaluation...");
+      appendLogLine("==================================================================");
+
+      processChunk(4);
+    }
+
+    function processChunk(startRow) {
+      if (typeof google === 'undefined' || !google.script || !google.script.run) {
+        appendLogLine("[SIMULATION] Evaluated Rows " + startRow + " to " + (startRow + CHUNK_SIZE - 1));
+        var simEnd = startRow + CHUNK_SIZE - 1;
+        var simPct = Math.min(Math.round((simEnd / 112) * 90), 90);
+        document.getElementById("progressBar").style.width = simPct + "%";
+        document.getElementById("progressText").innerText = simPct + "% (Row " + simEnd + "/112)";
+        if (startRow + CHUNK_SIZE <= 112) {
+          setTimeout(function() { processChunk(startRow + CHUNK_SIZE); }, 300);
+        } else {
+          runFinalQueueStage();
+        }
+        return;
+      }
+
+      google.script.run
+        .withSuccessHandler(function(res) {
+          if (res.error) {
+            appendLogLine(res.error);
+            finishLiveRun();
+            return;
+          }
+
+          totalEvaluated += res.evaluatedCount || 0;
+          totalSkipped += res.skippedBlankCount || 0;
+
+          if (res.logs && res.logs.length > 0) {
+            res.logs.forEach(function(l) { appendLogLine(l); });
+          }
+
+          var total = res.totalSheetRows || 112;
+          var pct = Math.min(Math.round((res.endRow / total) * 90), 90);
+          document.getElementById("progressBar").style.width = pct + "%";
+          document.getElementById("progressText").innerText = pct + "% (Row " + res.endRow + "/" + total + ")";
+
+          if (!res.isDone && res.nextRow <= total) {
+            processChunk(res.nextRow);
+          } else {
+            document.getElementById("progressText").innerText = "92% (Evaluating Outreach Queue...)";
+            runFinalQueueStage();
+          }
+        })
+        .withFailureHandler(function(err) {
+          appendLogLine("[ERROR] Batch execution error: " + err.message);
+          finishLiveRun();
+        })
+        .executeAutomationBatch(startRow, CHUNK_SIZE);
+    }
+
+    function runFinalQueueStage() {
+      if (typeof google === 'undefined' || !google.script || !google.script.run) {
+        appendLogLine("[SIMULATION] Standard Outreach Queue evaluated!");
+        document.getElementById("progressBar").style.width = "100%";
+        document.getElementById("progressText").innerText = "100% Completed";
+        finishLiveRun();
+        return;
+      }
+
+      google.script.run
+        .withSuccessHandler(function(res) {
+          if (res.logs && res.logs.length > 0) {
+            res.logs.forEach(function(l) { appendLogLine(l); });
+          }
+          document.getElementById("progressBar").style.width = "100%";
+          document.getElementById("progressText").innerText = "100% Completed";
+          finishLiveRun();
+        })
+        .withFailureHandler(function(err) {
+          appendLogLine("[ERROR] Queue stage error: " + err.message);
+          finishLiveRun();
+        })
+        .executeOutreachQueueStage();
+    }
+
+    function finishLiveRun() {
+      document.getElementById("statusPill").innerHTML = '<b style="color:#4ade80;">Completed</b>';
+      var summary = "COMPLETE: Evaluated " + totalEvaluated + " active rows (" + totalSkipped + " blank rows skipped). All drafts & statuses updated!";
+      appendLogLine("==================================================================");
+      appendLogLine(summary);
+      appendLogLine("==================================================================");
+    }
+
+    window.onload = function() {
+      startLiveRun();
+    };
+  </script>
+</body>
+</html>`;
+}
+
+/**
  * MAIN ENTRY POINT FOR SPREADSHEET AUTOMATION:
  * Scans all tracking tabs across all 9 stages (Welcome, Vendor, MG, Check-Ins, Launch, Newsletter, Revenue).
  * Select this in the Apps Script function dropdown and click "Run".

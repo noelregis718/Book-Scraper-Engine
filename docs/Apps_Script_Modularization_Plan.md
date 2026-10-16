@@ -23,7 +23,7 @@ Divide the codebase into **5 logically independent `.gs` files** inside Google A
 ```
                     ┌────────────────────────────────────────────────────────┐
                     │               Google Sheet Top Menu Bar                │
-                    │   [ ⚡ Pocket FM Automation ▾ ]                        │
+                    │   [ Pocket FM Automation ▾ ]                        │
                     │   ├── ▶️ 🚀 RUN ALL AUTOMATIONS (Single Click)         │
                     │   ├── ──────────────────────────────────────────       │
                     │   ├── ✉️ Run Author Check-Ins (15 & 30 Days)           │
@@ -231,7 +231,7 @@ Creates a native dropdown menu directly in the spreadsheet header when the sheet
 ```javascript
 function onOpen() {
   SpreadsheetApp.getUi()
-    .createMenu("⚡ Pocket FM Automation")
+    .createMenu("Pocket FM Automation")
     .addItem("▶️ 🚀 RUN ALL AUTOMATIONS (Single Click)", "runAllOutreachAutomations")
     .addSeparator()
     .addItem("✉️ Run Author Check-Ins (15 & 30 Days)", "runAuthorCheckInBatch")
@@ -283,6 +283,6 @@ function onOpen() {
    * Move the respective sections from the verified `apps_script_drafter.js`.
 4. **Step 4: Verify & Test**
    * Refresh the Google Sheet.
-   * Verify the **⚡ Pocket FM Automation** menu appears at the top.
+   * Verify the **Pocket FM Automation** menu appears at the top.
    * Click **▶️ 🚀 RUN ALL AUTOMATIONS** and confirm execution completes with the toast notification:  
      `"Evaluated 109 active rows (884 blank rows skipped). All drafts & statuses updated!"`
