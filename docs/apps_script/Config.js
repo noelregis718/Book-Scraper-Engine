@@ -60,10 +60,29 @@ function getMainTrackerSheet(ss = null) {
  */
 function getQueueSheet(ss = null) {
   const spreadsheet = ss || getSpreadsheet();
+  if (!spreadsheet) return null;
+  // 1. Exact match 'queue' or common variations
   for (let s of spreadsheet.getSheets()) {
-    if (s.getName().toLowerCase().trim() === "queue") return s;
+    let name = s.getName().toLowerCase().trim();
+    if (name === "queue" || name === "gmass queue" || name === "email queue" || name === "outreach queue") return s;
   }
-  return null;
+  // 2. Fuzzy match containing 'queue'
+  for (let s of spreadsheet.getSheets()) {
+    let name = s.getName().toLowerCase().trim();
+    if (name.includes("queue")) return s;
+  }
+  // 3. Fallback: auto-create 'Queue' sheet if missing
+  try {
+    let newSheet = spreadsheet.insertSheet("Queue");
+    newSheet.appendRow([
+      "Queue ID", "Recipient Email", "Sender Email", "Template Name", "Subject",
+      "Body", "Send Date", "Send Time", "Status", "Tracker Row",
+      "Sheet Name", "CC", "Status Col", "Stage Type"
+    ]);
+    return newSheet;
+  } catch (e) {
+    return null;
+  }
 }
 
 /**

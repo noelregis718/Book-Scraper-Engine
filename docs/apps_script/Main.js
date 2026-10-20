@@ -41,7 +41,8 @@ function onOpen() {
       .addItem("🧪 ✉️ Test Newsletter Draft (Generate Directly to My Gmail)", "triggerTestNewsletterDraft")
       .addItem("9️⃣ 📊 Run Quarterly Revenue Statements Only", "triggerRevenueStatementsOnly")
       .addSeparator()
-      .addItem("🔄 Sync Sent Emails Only", "triggerSyncSentEmailsOnly")
+      .addItem("⚡ Enable Auto-Sync Sent Emails (Every 1 Min)", "installSentMailSyncTrigger")
+      .addItem("🔄 Sync Sent Emails Now", "triggerSyncSentEmailsOnly")
       .addToUi();
   } catch (e) {
     Logger.log("Menu creation skipped (not in spreadsheet UI context): " + e.message);
@@ -211,3 +212,31 @@ function triggerSyncSentEmailsOnly() {
 function showExecutionLogsSidebar() {}
 function openExecutionLogsSidebar() {}
 function openLiveAutomationConsole() {}
+
+
+/**
+ * INSTALLER: AUTO-SYNC SENT EMAILS TRIGGER (EVERY 1 MINUTE)
+ * Installs a time-driven clock trigger in Apps Script to automatically scan Gmail Sent Mail
+ * and update "Draft Ready" to "Sent" in the spreadsheet.
+ */
+function installSentMailSyncTrigger() {
+  if (typeof setupAutoSyncSentTrigger === 'function') {
+    return setupAutoSyncSentTrigger();
+  }
+  const triggers = ScriptApp.getProjectTriggers();
+  for (let t of triggers) {
+    if (t.getHandlerFunction() === 'syncSentEmails') {
+      ScriptApp.deleteTrigger(t);
+    }
+  }
+  ScriptApp.newTrigger('syncSentEmails')
+    .timeBased()
+    .everyMinutes(1)
+    .create();
+  const msg = "⚡ Automated Sent Mail Sync Trigger activated! Runs every 1 minute.";
+  Logger.log("[SUCCESS] " + msg);
+  try {
+    SpreadsheetApp.getActiveSpreadsheet().toast(msg, "Auto-Sync Enabled", 6);
+  } catch(e) {}
+  return msg;
+}
