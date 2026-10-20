@@ -207,6 +207,18 @@ function syncSentEmails() {
   let sTitleCol = sFindCol("title") > -1 ? sFindCol("title") : 2; // Col C
   let sEmailCol = sFindCol("email") > -1 ? sFindCol("email") : (sFindCol("recipient") > -1 ? sFindCol("recipient") : 27); // Col AB or 27
 
+  let sWelcomeCol = sFindCol("welcome email");
+  if (sWelcomeCol === -1) sWelcomeCol = sFindCol("welcome");
+  let sWelcomeDateCol = psHeaders.findIndex(h => h.toString().toLowerCase().includes("welcome") && h.toString().toLowerCase().includes("date"));
+
+  let sVendorCol = sFindCol("vendor onboarding");
+  if (sVendorCol === -1) sVendorCol = sFindCol("vendor");
+  let sVendorDateCol = psHeaders.findIndex(h => h.toString().toLowerCase().includes("vendor") && h.toString().toLowerCase().includes("date"));
+
+  let sMgInitCol = sFindCol("mg payout initiated");
+  if (sMgInitCol === -1) sMgInitCol = sFindCol("mg payment initiated");
+  let sMgInitDateCol = psHeaders.findIndex(h => (h.toString().toLowerCase().includes("mg payout initiated") || h.toString().toLowerCase().includes("mg payment initiated")) && h.toString().toLowerCase().includes("date"));
+
   let sMgConfCol = sFindCol("mg payout confirmation");
   let sFeedbackDateCol = sFindCol("feedback mail date");
   
@@ -284,7 +296,7 @@ function syncSentEmails() {
             let targetSubj = norm(subject);
             let toMatch = msg.getTo().toLowerCase().includes(recipient.toLowerCase());
 
-            if (body.includes(trackingStr) || body.includes(cleanId) || (toMatch && (msgSubj.includes(targetSubj) || targetSubj.includes(msgSubj) || msgSubj.includes("pocket edit") || msgSubj.includes("pocket fm")))) {
+            if (body.includes(trackingStr) || body.includes(cleanId) || (toMatch && (msgSubj.includes(targetSubj) || targetSubj.includes(msgSubj) || msgSubj.includes("pocket edit") || msgSubj.includes("pocket fm") || msgSubj.includes("welcome")))) {
               foundMessage = msg;
               break;
             }
@@ -310,7 +322,16 @@ function syncSentEmails() {
           const tName = norm(templateName);
           const sType = norm(stageType);
 
-          if (tName.includes("mg payment processed") || tName.includes("mg payout confirmation") || sType === "mgconfirmed") {
+          if (tName.includes("welcome") || sType === "welcome") {
+            if (sWelcomeCol !== -1) targetSheet.getRange(trackerRow, sWelcomeCol + 1).setValue("Sent");
+            if (sWelcomeDateCol !== -1) targetSheet.getRange(trackerRow, sWelcomeDateCol + 1).setValue(actualSentDate);
+          } else if (tName.includes("vendor") || sType === "vendor") {
+            if (sVendorCol !== -1) targetSheet.getRange(trackerRow, sVendorCol + 1).setValue("Sent");
+            if (sVendorDateCol !== -1) targetSheet.getRange(trackerRow, sVendorDateCol + 1).setValue(actualSentDate);
+          } else if (tName.includes("mg payment initiated") || tName.includes("mg payout initiated") || sType === "mginitiated") {
+            if (sMgInitCol !== -1) targetSheet.getRange(trackerRow, sMgInitCol + 1).setValue("Sent");
+            if (sMgInitDateCol !== -1) targetSheet.getRange(trackerRow, sMgInitDateCol + 1).setValue(actualSentDate);
+          } else if (tName.includes("mg payment processed") || tName.includes("mg payout confirmation") || sType === "mgconfirmed") {
             if (sMgConfCol !== -1) targetSheet.getRange(trackerRow, sMgConfCol + 1).setValue("Sent");
             if (sFeedbackDateCol !== -1) targetSheet.getRange(trackerRow, sFeedbackDateCol + 1).setValue(actualSentDate);
           } else if (tName.includes("launch") || sType === "launch" || sType === "launch_no_ai") {
@@ -404,6 +425,15 @@ function syncSentEmails() {
             }
           }
         };
+
+        // 0. Welcome Email
+        checkStatusCol(sWelcomeCol, sWelcomeDateCol, "welcome");
+
+        // 0b. Vendor Onboarding Email
+        checkStatusCol(sVendorCol, sVendorDateCol, "vendor");
+
+        // 0c. MG Payout Initiated
+        checkStatusCol(sMgInitCol, sMgInitDateCol, "mg payment initiated");
 
         // 1. Launch Status (Col AB & AA, Date Col AC)
         checkStatusCol(sLaunchSentCol, sLaunchSentDateCol, "launch");
