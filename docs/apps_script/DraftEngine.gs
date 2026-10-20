@@ -96,8 +96,10 @@ function createDraft(rawEmail, subject, firstName, type, title, link, rIdx, cIdx
         sendTime,
         "Draft Ready", 
         rIdx + 1, 
-        "Yes",
-        ccValue
+        optPsSheet ? optPsSheet.getName() : "Post-Sales Tracker",
+        ccValue,
+        cIdx !== undefined && cIdx !== null ? cIdx + 1 : "",
+        type
       ]);
     } catch (errQueue) {
       Logger.log(`[QUEUE SHEET WARNING] Failed to append row to Queue sheet: ${errQueue.message}`);
@@ -135,53 +137,28 @@ function createDraft(rawEmail, subject, firstName, type, title, link, rIdx, cIdx
       psSheet.getRange(rIdx + 1, cIdx + 1).setValue(statusValue);
     }
 
-    // Launch dropdown & status
+    // Launch dropdown & status: ONLY mark "Draft Ready". DO NOT stamp Sent Date until email is actually sent!
     if (type === "launch" || type === "launch_no_ai") {
       let launchSentCol = colMappings.launchSentCol !== undefined ? colMappings.launchSentCol : 27; // Col AB
       let launchCol = colMappings.launchCol !== undefined ? colMappings.launchCol : 26; // Col AA
-      let launchSentDateCol = colMappings.launchSentDateCol !== undefined ? colMappings.launchSentDateCol : 28; // Col AC
 
       psSheet.getRange(rIdx + 1, launchSentCol + 1).setValue("Draft Ready");
       let curAAFormula = psSheet.getRange(rIdx + 1, launchCol + 1).getFormula();
       if (!curAAFormula) {
         psSheet.getRange(rIdx + 1, launchCol + 1).setValue("Draft Ready");
       }
-      psSheet.getRange(rIdx + 1, launchSentDateCol + 1).setValue(new Date());
+      // NOTE: Launch Sent Date (Col AC) is left BLANK. Stamped by syncSentEmails() upon actual dispatch!
     }
 
-    // Newsletter dropdown & date
+    // Newsletter dropdown: ONLY mark "Draft Ready". DO NOT stamp Sent Date until email is actually sent!
     if (type === "authorEdit" || type === "newsletter") {
       let newsletterCol = colMappings.newsletterCol !== undefined ? colMappings.newsletterCol : 29; // Col AD
-      let newsletterSentDateCol = colMappings.newsletterSentDateCol !== undefined ? colMappings.newsletterSentDateCol : 30;
       psSheet.getRange(rIdx + 1, newsletterCol + 1).setValue("Draft Ready");
-      if (newsletterSentDateCol > -1) {
-        psSheet.getRange(rIdx + 1, newsletterSentDateCol + 1).setValue(new Date());
-      }
+      // NOTE: Newsletter Sent Date is left BLANK. Stamped by syncSentEmails() upon actual dispatch!
     }
 
-    // Feedback Mail Date (Col V) for MG Confirmed
-    if (type === "mgConfirmed" || cIdx === colMappings.mgPayoutConfirmationCol) {
-      let feedbackMailDateCol = colMappings.feedbackMailDateCol !== undefined ? colMappings.feedbackMailDateCol : 21;
-      if (feedbackMailDateCol > -1) {
-        psSheet.getRange(rIdx + 1, feedbackMailDateCol + 1).setValue(new Date());
-      }
-    }
-
-    // Check-In 1 Date (Col X)
-    if (type === "checkIn1" || cIdx === colMappings.checkIn1Col) {
-      let checkIn1DateCol = colMappings.checkIn1DateCol !== undefined ? colMappings.checkIn1DateCol : 23;
-      if (checkIn1DateCol > -1) {
-        psSheet.getRange(rIdx + 1, checkIn1DateCol + 1).setValue(new Date());
-      }
-    }
-
-    // Check-In 2 Date (Col Z)
-    if (type === "checkIn2" || cIdx === colMappings.checkIn2Col) {
-      let checkIn2DateCol = colMappings.checkIn2DateCol !== undefined ? colMappings.checkIn2DateCol : 25;
-      if (checkIn2DateCol > -1) {
-        psSheet.getRange(rIdx + 1, checkIn2DateCol + 1).setValue(new Date());
-      }
-    }
+    // NOTE: Feedback Mail Date (Col V), Check-In 1 Date (Col X), and Check-In 2 Date (Col Z) are left BLANK here.
+    // They are stamped strictly by syncSentEmails() with the actual timestamp when the email is sent from Gmail!
   }
 
   Logger.log(`SUCCESS: Created draft for "${title}" (Type: ${type})`);
@@ -189,98 +166,273 @@ function createDraft(rawEmail, subject, firstName, type, title, link, rIdx, cIdx
 }
 
 /**
- * STATUS SYNC FUNCTION (RUNS EVERY HOUR OR MANUALLY):
- * Scans Gmail sent threads, matches Ref tracking IDs, and updates status from "Draft Ready" -> "Sent"
- * Skips blank queue rows.
+ * TARGETED SENT MAIL SYNCHRONIZER (MANUAL OR AUTOMATED TRIGGER):
+ * Scans Gmail sent threads for emails with Ref tracking tokens or matching subjects.
+ * Flips spreadsheet status strictly when the drafted email is actually SENT from Gmail Drafts folder.
+ * Accurately stamps the true send timestamp in the corresponding Date column!
  */
 function syncSentEmails() {
-  const sheet = getPostSalesTrackerSheet();
+  Logger.log("==================================================================");
+  Logger.log("[START] Running Sent Mail Synchronizer (Draft Ready -> Sent)...");
+  Logger.log("==================================================================");
+
+  const psSheet = getPostSalesTrackerSheet();
+  const mainSheet = getMainTrackerSheet();
   const queueSheet = getQueueSheet();
   
-  if (!queueSheet || !sheet) return;
+  if (!queueSheet) {
+    Logger.log("[WARNING] Queue sheet not found. Cannot synchronize sent emails.");
+    return { success: false, syncedCount: 0 };
+  }
 
   const qData = queueSheet.getDataRange().getValues();
-  
+  if (qData.length <= 1) {
+    Logger.log("[INFO] Queue sheet is empty.");
+    return { success: true, syncedCount: 0 };
+  }
+
+  // Preload headers for Post-Sales Tracker to dynamically resolve target columns
+  let psHeaders = [];
+  let sFindCol = () => -1;
+  let sFeedbackDateCol = -1;
+  let sLaunchCol = -1;
+  let sLaunchSentCol = -1;
+  let sLaunchSentDateCol = -1;
+  let sCheckIn1Col = -1;
+  let sCheckIn1DateCol = -1;
+  let sCheckIn2Col = -1;
+  let sCheckIn2DateCol = -1;
+  let sNewsletterCol = -1;
+  let sNewsletterDateCol = -1;
+  let sMgConfCol = -1;
+
+  if (psSheet) {
+    psHeaders = psSheet.getRange(3, 1, 1, Math.max(psSheet.getLastColumn(), 45)).getValues()[0];
+    sFindCol = (name) => psHeaders.findIndex(h => h.toString().toLowerCase().includes(name.toLowerCase()));
+    
+    sMgConfCol = sFindCol("MG Payout Confirmation");
+    sFeedbackDateCol = sFindCol("Feedback Mail Date");
+    
+    sLaunchCol = sFindCol("Show Launch Announcement Status");
+    if (sLaunchCol === -1) sLaunchCol = 26; // Col AA
+    
+    sLaunchSentCol = psHeaders.findIndex(h => {
+      let s = h.toString().toLowerCase().trim();
+      return (s.includes("launch") && s.includes("sent") && !s.includes("date")) ||
+             (s.includes("launch") && s.includes("announcement sent"));
+    });
+    if (sLaunchSentCol === -1) sLaunchSentCol = 27; // Col AB
+    
+    sLaunchSentDateCol = psHeaders.findIndex(h => {
+      let s = h.toString().toLowerCase().trim();
+      return (s.includes("launch") && s.includes("sent") && s.includes("date")) ||
+             (s.includes("launch") && s.includes("announcement") && s.includes("date"));
+    });
+    if (sLaunchSentDateCol === -1) sLaunchSentDateCol = 28; // Col AC
+
+    sCheckIn1Col = psHeaders.findIndex(h => h.toString().toLowerCase().includes("15 days") && !h.toString().toLowerCase().includes("newsletter") && !h.toString().toLowerCase().includes("date"));
+    if (sCheckIn1Col === -1) sCheckIn1Col = 22; // Col W
+    sCheckIn1DateCol = psHeaders.findIndex(h => h.toString().toLowerCase().includes("15 days") && !h.toString().toLowerCase().includes("newsletter") && h.toString().toLowerCase().includes("date"));
+    if (sCheckIn1DateCol === -1) sCheckIn1DateCol = 23; // Col X
+
+    sCheckIn2Col = psHeaders.findIndex(h => h.toString().toLowerCase().includes("30 days") && !h.toString().toLowerCase().includes("date"));
+    if (sCheckIn2Col === -1) sCheckIn2Col = 24; // Col Y
+    sCheckIn2DateCol = psHeaders.findIndex(h => h.toString().toLowerCase().includes("30 days") && h.toString().toLowerCase().includes("date"));
+    if (sCheckIn2DateCol === -1) sCheckIn2DateCol = 25; // Col Z
+
+    sNewsletterCol = psHeaders.findIndex(h => h.toString().toLowerCase().includes("newsletter") && !h.toString().toLowerCase().includes("date"));
+    if (sNewsletterCol === -1) sNewsletterCol = 29; // Col AD
+    sNewsletterDateCol = psHeaders.findIndex(h => h.toString().toLowerCase().includes("newsletter") && h.toString().toLowerCase().includes("date"));
+    if (sNewsletterDateCol === -1) sNewsletterDateCol = 30; // Col AE
+  }
+
+  let syncedCount = 0;
+
   for (let i = 1; i < qData.length; i++) {
-    let qStatus = qData[i][8]; // Column I (Status)
     let queueId = qData[i][0]; // Column A (Queue ID)
+    let recipient = qData[i][1]; // Column B (Recipient Email)
+    let templateName = qData[i][3]; // Column D (Template / Stage)
     let subject = qData[i][4]; // Column E (Subject)
-    let trackerRow = qData[i][9]; // Column J (Tracker Row IDs)
-    
-    // Skip blank or unpopulated queue rows
+    let qStatus = qData[i][8]; // Column I (Status)
+    let trackerRow = parseInt(qData[i][9]); // Column J (Tracker Row Index, 1-based)
+    let targetSheetName = qData[i][10] || "Post-Sales Tracker";
+    let loggedStatusCol = qData[i][12] ? parseInt(qData[i][12]) : null;
+    let stageType = qData[i][13] || "";
+
+    // Skip empty or already sent queue entries
     if (!queueId || !subject || !qStatus) continue;
-    
-    // Only check if it's marked as Draft Ready
-    if (qStatus === "Draft Ready" || qStatus === "Ready") {
-      let threads = GmailApp.search(`in:sent subject:"${subject}"`);
-      let foundMessage = null;
-      let cleanId = queueId.toString().replace(/-/g, "");
-      let trackingStr = "Ref" + cleanId;
-      
+    let curStatus = qStatus.toString().toLowerCase().trim();
+    if (curStatus !== "draft ready" && curStatus !== "ready") {
+      continue;
+    }
+
+    // Search Gmail in:sent for this specific message using Ref tracking token
+    let cleanId = queueId.toString().replace(/-/g, "");
+    let trackingStr = "Ref" + cleanId;
+    let searchQuery = `in:sent "${trackingStr}"`;
+    let threads = GmailApp.search(searchQuery);
+
+    // Fallback search by recipient and exact subject if tracking token search yields nothing
+    if ((!threads || threads.length === 0) && recipient && subject) {
+      let cleanSubject = subject.replace(/["\\]/g, "");
+      threads = GmailApp.search(`in:sent to:${recipient} subject:"${cleanSubject}"`);
+    }
+
+    let foundMessage = null;
+    if (threads && threads.length > 0) {
       for (let t = 0; t < threads.length; t++) {
         let messages = threads[t].getMessages();
         for (let m = 0; m < messages.length; m++) {
           let msg = messages[m];
           let body = msg.getBody();
-          if (body.includes(trackingStr)) {
+          if (body.includes(trackingStr) || (msg.getTo().toLowerCase().includes(recipient.toLowerCase()) && msg.getSubject() === subject)) {
             foundMessage = msg;
             break;
           }
         }
         if (foundMessage) break;
       }
-      
-      if (foundMessage) {
-        let actualTo = foundMessage.getTo();
-        let actualCc = foundMessage.getCc();
-        
-        queueSheet.getRange(i + 1, 2).setValue(actualTo);
-        queueSheet.getRange(i + 1, 12).setValue(actualCc);
-        queueSheet.getRange(i + 1, 9).setValue("Sent");
-        
-        if (trackerRow) {
-           let tRowData = sheet.getRange(trackerRow, 1, 1, sheet.getLastColumn()).getValues()[0];
-           const sHeaders = sheet.getRange(3, 1, 1, sheet.getLastColumn()).getValues()[0];
-           const sFindCol = (name) => sHeaders.findIndex(h => h.toString().toLowerCase().includes(name.toLowerCase()));
-           const sMgConfCol = sFindCol("MG Payout Confirmation");
-           const sFeedbackDateCol = sFindCol("Feedback Mail Date");
-           const sLaunchCol = sFindCol("Show Launch Announcement");
-           const sLaunchSentCol = sHeaders.findIndex(h => {
-             let s = h.toString().toLowerCase().trim();
-             return (s.includes("launch") && s.includes("announcement") && s.includes("sent") && !s.includes("date")) ||
-                    (s.includes("launch") && s.includes("email sent") && !s.includes("date"));
-           });
-           const sLaunchSentDateCol = sHeaders.findIndex(h => {
-             let s = h.toString().toLowerCase().trim();
-             return (s.includes("launch") && s.includes("sent") && s.includes("date")) ||
-                    (s.includes("launch") && s.includes("announcement") && s.includes("date"));
-           });
+    }
 
-           for (let c = 0; c < tRowData.length; c++) {
-             let cellStr = (tRowData[c] || "").toString().toLowerCase().trim();
-             if (cellStr === "ready" || cellStr === "draft ready") {
-               sheet.getRange(trackerRow, c + 1).setValue("Sent");
-               if (c === sMgConfCol && sFeedbackDateCol !== -1) {
-                 const sentDate = new Date();
-                 sheet.getRange(trackerRow, sFeedbackDateCol + 1).setValue(sentDate);
-                 Logger.log(`[SYNC] Captured Feedback Mail Date in Col ${sFeedbackDateCol + 1} for row ${trackerRow}: ${sentDate}`);
-               }
-               if (c === sLaunchCol) {
-                 if (sLaunchSentCol !== -1) {
-                   sheet.getRange(trackerRow, sLaunchSentCol + 1).setValue("Sent");
-                 }
-                 if (sLaunchSentDateCol !== -1) {
-                   const sentDate = new Date();
-                   sheet.getRange(trackerRow, sLaunchSentDateCol + 1).setValue(sentDate);
-                   Logger.log(`[SYNC] Captured Launch Sent Date in Col ${sLaunchSentDateCol + 1} for row ${trackerRow}: ${sentDate}`);
-                 }
-               }
-             }
-           }
+    // IF FOUND IN SENT FOLDER: The user clicked Send in Gmail!
+    if (foundMessage) {
+      const actualSentDate = foundMessage.getDate();
+      const actualTo = foundMessage.getTo();
+      const actualCc = foundMessage.getCc();
+
+      // 1. Mark Queue row as Sent with actual timestamp
+      queueSheet.getRange(i + 1, 2).setValue(actualTo);
+      if (actualCc) queueSheet.getRange(i + 1, 12).setValue(actualCc);
+      queueSheet.getRange(i + 1, 9).setValue("Sent");
+      queueSheet.getRange(i + 1, 7).setValue(actualSentDate); // Record actual sent timestamp in Queue
+
+      // 2. Resolve Target Sheet (Post-Sales Tracker vs Lifecycle Master)
+      let targetSheet = psSheet;
+      if (targetSheetName.toString().toLowerCase().includes("master") || targetSheetName.toString().toLowerCase().includes("lifecycle")) {
+        targetSheet = mainSheet || psSheet;
+      }
+
+      if (targetSheet && trackerRow > 0) {
+        // Update direct logged status column if recorded
+        if (loggedStatusCol && loggedStatusCol > 0) {
+          targetSheet.getRange(trackerRow, loggedStatusCol).setValue("Sent");
+        }
+
+        const tName = (templateName || "").toString().toLowerCase();
+        const sType = (stageType || "").toString().toLowerCase();
+
+        // Stage 4: MG Payout Confirmation -> Mark Sent & Stamp Feedback Mail Date (Col V)
+        if (tName.includes("mg payment processed") || tName.includes("mg payout confirmation") || sType === "mgconfirmed") {
+          if (sMgConfCol !== -1) targetSheet.getRange(trackerRow, sMgConfCol + 1).setValue("Sent");
+          if (sFeedbackDateCol !== -1) {
+            targetSheet.getRange(trackerRow, sFeedbackDateCol + 1).setValue(actualSentDate);
+            Logger.log(`[SYNC SUCCESS] Row ${trackerRow}: Stamped Feedback Mail Date (Col V) as ${actualSentDate}`);
+          }
+        }
+
+        // Stage 7: Show Launch Announcement -> Mark Col AB & AA Sent, Stamp Col AC Date
+        else if (tName.includes("launch") || sType === "launch" || sType === "launch_no_ai") {
+          if (sLaunchSentCol !== -1) targetSheet.getRange(trackerRow, sLaunchSentCol + 1).setValue("Sent");
+          if (sLaunchCol !== -1) {
+            let formula = targetSheet.getRange(trackerRow, sLaunchCol + 1).getFormula();
+            if (!formula) targetSheet.getRange(trackerRow, sLaunchCol + 1).setValue("Sent");
+          }
+          if (sLaunchSentDateCol !== -1) {
+            targetSheet.getRange(trackerRow, sLaunchSentDateCol + 1).setValue(actualSentDate);
+            Logger.log(`[SYNC SUCCESS] Row ${trackerRow}: Stamped Launch Sent Date (Col AC) as ${actualSentDate}`);
+          }
+        }
+
+        // Stage 5: Check-In 1 (15 Days) -> Mark Col W Sent, Stamp Col X Date
+        else if (tName.includes("check in 1") || sType === "checkin1") {
+          if (sCheckIn1Col !== -1) targetSheet.getRange(trackerRow, sCheckIn1Col + 1).setValue("Sent");
+          if (sCheckIn1DateCol !== -1) {
+            targetSheet.getRange(trackerRow, sCheckIn1DateCol + 1).setValue(actualSentDate);
+            Logger.log(`[SYNC SUCCESS] Row ${trackerRow}: Stamped Check-In 1 Date (Col X) as ${actualSentDate}`);
+          }
+        }
+
+        // Stage 6: Check-In 2 (30 Days) -> Mark Col Y Sent, Stamp Col Z Date
+        else if (tName.includes("check in 2") || sType === "checkin2") {
+          if (sCheckIn2Col !== -1) targetSheet.getRange(trackerRow, sCheckIn2Col + 1).setValue("Sent");
+          if (sCheckIn2DateCol !== -1) {
+            targetSheet.getRange(trackerRow, sCheckIn2DateCol + 1).setValue(actualSentDate);
+            Logger.log(`[SYNC SUCCESS] Row ${trackerRow}: Stamped Check-In 2 Date (Col Z) as ${actualSentDate}`);
+          }
+        }
+
+        // Stage 8: Newsletter (The Author Edit) -> Mark Col AD Sent, Stamp Col AE Date
+        else if (tName.includes("author edit") || tName.includes("newsletter") || sType === "newsletter" || sType === "authoredit") {
+          if (sNewsletterCol !== -1) targetSheet.getRange(trackerRow, sNewsletterCol + 1).setValue("Sent");
+          if (sNewsletterDateCol !== -1) {
+            targetSheet.getRange(trackerRow, sNewsletterDateCol + 1).setValue(actualSentDate);
+            Logger.log(`[SYNC SUCCESS] Row ${trackerRow}: Stamped Newsletter Sent Date as ${actualSentDate}`);
+          }
+        }
+
+        // Stage 1 & 2: Welcome & Vendor Onboarding
+        else if (tName.includes("welcome")) {
+          let sWelcomeCol = sFindCol("Welcome Email");
+          if (sWelcomeCol !== -1) targetSheet.getRange(trackerRow, sWelcomeCol + 1).setValue("Sent");
+        }
+        else if (tName.includes("vendor")) {
+          let sVendorCol = sFindCol("Vendor Onboarding");
+          if (sVendorCol !== -1) targetSheet.getRange(trackerRow, sVendorCol + 1).setValue("Sent");
+        }
+
+        // Stage 9: Quarterly Revenue Statements
+        else if (tName.includes("content update") || tName.includes("worked well") || tName.includes("revenue statement") || sType.includes("revstatement")) {
+          let revCols = [38, 33, 42]; // 0-based for AM (39), AH (34), AQ (43)
+          for (let rc of revCols) {
+            if (rc < targetSheet.getLastColumn()) {
+              let val = (targetSheet.getRange(trackerRow, rc + 1).getValue() || "").toString().toLowerCase().trim();
+              if (val === "draft ready" || val === "ready") {
+                targetSheet.getRange(trackerRow, rc + 1).setValue("Sent");
+                Logger.log(`[SYNC SUCCESS] Row ${trackerRow}: Updated Revenue Statement in Col ${rc + 1} to 'Sent'`);
+              }
+            }
+          }
         }
       }
+
+      syncedCount++;
+      Logger.log(`[SYNC SUCCESS] [ROW ${trackerRow}] Marked ${templateName} as "Sent" (Dispatched at: ${actualSentDate})`);
     }
   }
+
+  try { SpreadsheetApp.flush(); } catch (e) {}
+
+  const summaryMsg = `Sent Mail Sync Complete: ${syncedCount} draft(s) detected as sent and updated to "Sent"!`;
+  Logger.log(summaryMsg);
+  Logger.log("==================================================================");
+
+  try {
+    const activeSs = SpreadsheetApp.getActiveSpreadsheet();
+    if (activeSs) activeSs.toast(summaryMsg, "Pocket FM Automation", 5);
+  } catch (e) {}
+
+  return { success: true, syncedCount: syncedCount };
+}
+
+/**
+ * AUTOMATED TIME-DRIVEN TRIGGER INSTALLER:
+ * Installs a background trigger to run syncSentEmails() every 10 minutes automatically.
+ */
+function setupAutoSyncSentTrigger() {
+  const triggers = ScriptApp.getProjectTriggers();
+  for (let t of triggers) {
+    if (t.getHandlerFunction() === 'syncSentEmails') {
+      ScriptApp.deleteTrigger(t);
+    }
+  }
+  ScriptApp.newTrigger('syncSentEmails')
+    .timeBased()
+    .everyMinutes(10)
+    .create();
+  Logger.log("SUCCESS: Automated 10-Minute Sent Mail Sync Trigger successfully configured!");
+  try {
+    SpreadsheetApp.getActiveSpreadsheet().toast("Automated 10-Minute Sent Mail Sync Trigger is active!", "Trigger Installed", 5);
+  } catch (e) {}
 }
 
 /**
@@ -400,10 +552,16 @@ function testNewsletterDraft() {
   const queueId = Utilities.getUuid();
   const bodyContent = getBody('authorEdit', testFirstName, testTitle, testLink, grammar);
   const wrappedBody = wrapHtml(bodyContent, queueId);
-  const subject = "What’s new at Pocket FM + a few things worth knowing";
+  
+  let timeStr = "";
+  try {
+    timeStr = " - " + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "hh:mm a");
+  } catch(e) {}
+  const subject = "What’s new at Pocket FM + a few things worth knowing" + timeStr;
 
   GmailApp.createDraft(myEmail, subject, "", { htmlBody: wrappedBody });
   Logger.log(`SUCCESS: Test Newsletter Draft created with subject "${subject}" sent to: ${myEmail}`);
+  return subject;
 }
 
 /**

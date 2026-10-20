@@ -11,6 +11,9 @@
 // HELPER FUNCTIONS (MOVED TO GLOBAL SCOPE)
 // -------------------------------------------------------------
 function wrapHtml(bodyContent, queueId = "") {
+    if (bodyContent && (bodyContent.includes("<!-- POCKET_EDIT_NEWSLETTER -->") || bodyContent.trim().startsWith("<!DOCTYPE html"))) {
+        return bodyContent.replace("{{QUEUE_ID}}", queueId ? `Ref${queueId.replace(/-/g, "")}` : "");
+    }
     return `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light only"><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet"><title>Pocket FM Email</title></head><body aria-disabled="false" style='margin: 0px; font-family: Poppins, "Noto Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;'>
 
 
@@ -564,84 +567,459 @@ function getBody(type, firstName, title, link, grammar, revLink, argus, showName
 
       case 'authorEdit':
       case 'newsletter':
-        return `
-          <tr><td align="left" style="font-size:18px; font-weight:600; color:#121212; padding:30px 35px 10px; line-height:24px;">
-          Hi ${firstName},
-          </td></tr>
-          <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
-          We wanted to keep you in the loop with a few things happening across Pocket FM: from what listeners are responding to, to what we're learning about stories that work particularly well in audio.
-          </td></tr>
+        return `<!DOCTYPE html><!-- POCKET_EDIT_NEWSLETTER -->
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="light only" name="color-scheme"/>
+<title>The Pocket Edit | Pocket FM Creator Newsletter</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:0;background-color:#e9e5df;color:#191919;font-family:Arial,Helvetica,sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;}
+table{border-collapse:separate;}
+a{color:#c51d47;text-decoration:none;}
+p{font-size:13px;line-height:1.58;margin:10px 0;color:#191919;}
+@media only screen and (max-width: 700px) {
+  .page-padding { padding: 20px 16px !important; }
+  .brand-h1 { font-size: 34px !important; line-height: 1.05 !important; }
+  .listener-h1 { font-size: 30px !important; line-height: 1.05 !important; }
+}
+</style>
+</head>
+<body style="margin:0;padding:0;background-color:#e9e5df;color:#191919;font-family:Arial,Helvetica,sans-serif;">
 
-          <!-- Section 1: What's Happening -->
-          <tr><td align="left" style="font-size:17px; font-weight:700; color:#E51A4D; padding:20px 35px 5px; line-height:24px; text-transform:uppercase; letter-spacing:0.5px;">
-          1. WHAT'S HAPPENING AT POCKET FM
-          </td></tr>
-          <tr><td align="left" style="font-size:16px; color:#121212; padding:5px 35px 10px; line-height:24px;">
-          We had the absolute honour of having the legendary Ruskin Bond spend time exploring Sherpa and share his experience with us. For someone who has spent a lifetime telling stories and inspired generations of people to read, imagine and write, experiencing something we have built is incredibly special.
-          </td></tr>
-          <tr><td align="left" style="padding:5px 35px 15px;">
-            <table border="0" cellspacing="0" cellpadding="0">
-              <tr>
-                <td align="center" style="border-radius: 6px; background-color: #E51A4D;">
-                  <a href="https://lnkd.in/p/g6rd7Zta" target="_blank" style="font-size: 14px; font-weight: bold; color: #ffffff; text-decoration: none; border-radius: 6px; padding: 10px 20px; border: 1px solid #E51A4D; display: inline-block;">See What's New →</a>
-                </td>
-              </tr>
-            </table>
-          </td></tr>
+<table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#e9e5df" style="background-color:#e9e5df;margin:0;padding:24px 0;width:100%;">
+  <tr>
+    <td align="center" bgcolor="#e9e5df" style="background-color:#e9e5df;padding:0 8px;">
 
-          <!-- Section 2: A Story Worth Knowing -->
-          <tr><td align="left" style="font-size:17px; font-weight:700; color:#E51A4D; padding:20px 35px 5px; line-height:24px; text-transform:uppercase; letter-spacing:0.5px;">
-          2. A STORY WORTH KNOWING
-          </td></tr>
-          <tr><td align="left" style="font-size:16px; color:#121212; padding:5px 35px 10px; line-height:24px;">
-          <b>Meet Steven Ade: the writer who kept writing even when writing didn't look like a career.</b><br>
-          For years, Steven worked jobs that paid the bills—supporting children on the spectrum and delivering pizzas—all while carrying a love for storytelling. When he began publishing on Pocket FM, his audience took off. Today, Steven is the writer behind <i>The System Creation: Intergalactic Entry</i>, which has reached nearly <b>8 million plays</b> with a <b>4.6-star rating</b>!
-          </td></tr>
-          <tr><td align="left" style="padding:5px 35px 15px;">
-            <table border="0" cellspacing="0" cellpadding="0">
-              <tr>
-                <td align="center" style="border-radius: 6px; background-color: #121212;">
-                  <a href="https://youtu.be/IO2XWbTNafY?si=dOzc2ZTD0IxZSQpk" target="_blank" style="font-size: 14px; font-weight: bold; color: #ffffff; text-decoration: none; border-radius: 6px; padding: 10px 20px; border: 1px solid #121212; display: inline-block;">Watch Steven's Story →</a>
-                </td>
-              </tr>
-            </table>
-          </td></tr>
+      <!-- CONTAINER TABLE (Up to 1380px for side-by-side spread on wide screens, stacked on email) -->
+      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:1380px;margin:0 auto;">
+        <tr>
+          <td align="center" style="font-size:0;text-align:center;padding:0;">
 
-          <!-- Section 3: What We're Seeing From Listeners -->
-          <tr><td align="left" style="font-size:17px; font-weight:700; color:#E51A4D; padding:20px 35px 5px; line-height:24px; text-transform:uppercase; letter-spacing:0.5px;">
-          3. WHAT WE'RE SEEING FROM LISTENERS
-          </td></tr>
-          <tr><td align="left" style="font-size:16px; color:#121212; padding:5px 35px 5px; line-height:24px;">
-          <b>Genre in Spotlight: Romantasy in Audio</b><br>
-          Across Romantasy titles, three storytelling patterns consistently drive higher listener engagement:
-          <ol style="margin: 8px 0; padding-left: 20px; line-height: 24px;">
-            <li><b>Romance built on choice, not just chemistry:</b> Shared vulnerability and earned trust keep listeners invested beyond instinctual attraction.</li>
-            <li><b>Protagonists with goals beyond romance:</b> Active agency, survival stakes, and independent ambitions make character arcs compelling.</li>
-            <li><b>Fantasy worlds that pressure the relationship:</b> Magic rules and political conflict create obstacles specific to that world.</li>
-          </ol>
-          </td></tr>
+            <!--[if mso]>
+            <table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td width="50%" valign="top" style="padding:0 6px;">
+            <![endif]-->
 
-          <!-- Section 4: Before You Go -->
-          <tr><td align="left" style="font-size:17px; font-weight:700; color:#E51A4D; padding:20px 35px 5px; line-height:24px; text-transform:uppercase; letter-spacing:0.5px;">
-          4. BEFORE YOU GO
-          </td></tr>
-          <tr><td align="left" style="font-size:16px; color:#121212; padding:5px 35px 10px; line-height:24px;">
-          Working on something new? We'd love to hear about it.
-          </td></tr>
-          <tr><td align="left" style="padding:5px 35px 20px;">
-            <table border="0" cellspacing="0" cellpadding="0">
-              <tr>
-                <td align="center" style="border-radius: 6px; background-color: #E51A4D;">
-                  <a href="mailto:us-licensing@pocketfm.com?subject=Story%20Pitch" target="_blank" style="font-size: 14px; font-weight: bold; color: #ffffff; text-decoration: none; border-radius: 6px; padding: 10px 20px; border: 1px solid #E51A4D; display: inline-block;">Share a Story →</a>
-                </td>
-              </tr>
-            </table>
-          </td></tr>
+            <!-- ======================================================== -->
+            <!-- PAGE 1 COLUMN -->
+            <!-- ======================================================== -->
+            <div class="page-col" style="display:inline-block;width:100%;max-width:670px;vertical-align:top;text-align:left;margin:0 6px 20px 6px;">
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#fffefa" style="background-color:#fffefa;border-top:6px solid #e51a4d;border-radius:6px;box-shadow:0 8px 28px rgba(0,0,0,0.08);width:100%;">
+                <tr>
+                  <td class="page-padding" bgcolor="#fffefa" style="padding:30px 34px;background-color:#fffefa;border-radius:6px;vertical-align:top;">
 
-          <tr><td align="left" style="font-size:16px; font-weight:400; color:#121212; padding:10px 35px 30px; line-height:24px;">
-          Until next time,<br>
-          Team Pocket FM
-          </td></tr>
+                    <!-- ISSUE HEADER -->
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-bottom:1px solid #dddddd;padding-bottom:12px;margin-bottom:18px;">
+                      <tr>
+                        <td align="left" style="font-size:9px;letter-spacing:1.1px;font-weight:700;color:#59504e;text-transform:uppercase;font-family:Arial,sans-serif;">
+                          THE POCKET EDIT &nbsp;/&nbsp; CREATOR NEWSLETTER
+                        </td>
+                        <td align="right" style="font-size:9px;letter-spacing:1.1px;font-weight:700;color:#59504e;text-transform:uppercase;font-family:Arial,sans-serif;">
+                          ISSUE 01 · OCT 2026
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- BRAND HERO BANNER -->
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#171717" style="background-color:#171717;color:#ffffff;margin-bottom:20px;border-radius:4px;overflow:hidden;">
+                      <tr>
+                        <td bgcolor="#171717" style="padding:0;background-color:#171717;">
+                          <img src="https://d2p67bdkbtpxn2.cloudfront.net/c8b7ada83f09146d4b2c2ba3a5c3c1b8ea36e459.jpg" alt="Pocket FM" width="100%" style="display:block;width:100%;max-height:115px;object-fit:cover;border:0;" />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td bgcolor="#171717" style="padding:22px 26px 24px;background-color:#171717;">
+                          <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                            <tr>
+                              <td valign="top">
+                                <div style="font-size:10px;font-weight:800;letter-spacing:2px;color:#ff7b9e;text-transform:uppercase;font-family:Arial,sans-serif;">THE POCKET EDIT</div>
+                                <h1 class="brand-h1" style="font-family:Georgia,serif;font-size:44px;line-height:0.98;letter-spacing:-1.5px;margin:12px 0;color:#ffffff;font-weight:normal;">Stories worth<br/><em style="color:#f44e79;font-style:italic;">sharing.</em></h1>
+                                <div style="font-size:13px;color:#e9e9e9;line-height:1.5;font-family:Arial,sans-serif;">What’s new at Pocket FM + a few things worth knowing</div>
+                              </td>
+                              <td align="right" valign="bottom" style="font-size:28px;color:#ffbb56;padding-bottom:6px;font-family:Georgia,serif;">✳</td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- GREETING / INTRO BOX -->
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#fff0f3" style="background-color:#fff0f3;border-left:4px solid #e51a4d;border-radius:0 6px 6px 0;margin:16px 0 22px;">
+                      <tr>
+                        <td bgcolor="#fff0f3" style="padding:16px 18px;font-size:13px;line-height:1.6;color:#191919;background-color:#fff0f3;font-family:Arial,sans-serif;">
+                          Hi <strong>${firstName || "Author"}</strong>,<br/><br/>
+                          We wanted to keep you in the loop with a few things happening across Pocket FM: from what listeners are responding to, to what we’re learning about stories that work particularly well in audio.
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- SECTION 01: WHAT'S HAPPENING AT POCKET FM -->
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-top:2px solid #171717;margin-top:24px;padding-top:12px;margin-bottom:10px;">
+                      <tr>
+                        <td width="34" valign="middle">
+                          <div style="background-color:#e51a4d;color:#ffffff;border-radius:7px;width:25px;height:25px;line-height:25px;text-align:center;font-size:10px;font-weight:900;font-family:Arial,sans-serif;">01</div>
+                        </td>
+                        <td valign="middle" style="font-size:10px;font-weight:800;letter-spacing:1.2px;color:#191919;font-family:Arial,sans-serif;text-transform:uppercase;">
+                          WHAT’S HAPPENING AT POCKET FM
+                        </td>
+                        <td align="right" valign="middle" style="font-size:18px;color:#e51a4d;">✦</td>
+                      </tr>
+                    </table>
+
+                    <h2 style="font-family:Georgia,serif;font-size:26px;line-height:1.12;margin:10px 0 12px;letter-spacing:-0.5px;color:#191919;font-weight:normal;">A legendary storyteller meets Sherpa</h2>
+                    <div style="color:#c5224e;font-size:10px;letter-spacing:1.2px;font-weight:800;text-transform:uppercase;margin-bottom:10px;font-family:Arial,sans-serif;">THE BIG MOMENT <span style="font-size:15px;">✦</span></div>
+
+                    <p style="font-size:13px;line-height:1.58;color:#191919;margin:10px 0;font-family:Arial,sans-serif;"><strong>We had the absolute honour of having the legendary Ruskin Bond spend time exploring Sherpa and share his experience with us.</strong></p>
+                    <p style="font-size:13px;line-height:1.58;color:#191919;margin:10px 0;font-family:Arial,sans-serif;">For someone who has spent a lifetime telling stories and inspired generations of people to read, imagine and write, experiencing something we have built is incredibly special. This is a proud moment for everyone who has worked on Sherpa across product, engineering, content, design, marketing and so many other teams.</p>
+                    <p style="font-size:13px;line-height:1.58;color:#191919;margin:10px 0;font-family:Arial,sans-serif;">Thank you, Mr. Bond. Truly an honour for all of us at Pocket FM.</p>
+
+                    <!-- LINK PANEL (DO WATCH & SHARE) -->
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#f5eafa" style="background-color:#f5eafa;border:1px solid #e6d5ef;border-radius:8px;margin:16px 0 22px;">
+                      <tr>
+                        <td bgcolor="#f5eafa" style="padding:14px 16px;background-color:#f5eafa;border-radius:8px;">
+                          <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:10px;">
+                            <tr>
+                              <td align="left" style="font-size:10px;letter-spacing:1px;font-weight:800;color:#191919;font-family:Arial,sans-serif;text-transform:uppercase;">DO WATCH &amp; SHARE</td>
+                              <td align="right" style="font-size:12px;font-weight:800;color:#191919;">↗</td>
+                            </tr>
+                          </table>
+                          <div>
+                            <a href="https://lnkd.in/p/g6rd7Zta" target="_blank" style="background-color:#ffffff;border:1px solid #decde9;padding:6px 12px;font-size:11px;border-radius:20px;color:#c51d47;font-weight:bold;text-decoration:none;display:inline-block;margin-right:6px;margin-bottom:6px;font-family:Arial,sans-serif;">Founder’s LinkedIn post ↗</a>
+                            <a href="https://www.instagram.com/reel/Dd0vnVwqoML/?stkn=dG1jcTd4YWM3czBu" target="_blank" style="background-color:#ffffff;border:1px solid #decde9;padding:6px 12px;font-size:11px;border-radius:20px;color:#c51d47;font-weight:bold;text-decoration:none;display:inline-block;margin-right:6px;margin-bottom:6px;font-family:Arial,sans-serif;">▶ Instagram Reel</a>
+                            <a href="https://youtube.com/shorts/1IpKrpoAoWs?si=MjKK00iT4JaICsvJ" target="_blank" style="background-color:#ffffff;border:1px solid #decde9;padding:6px 12px;font-size:11px;border-radius:20px;color:#c51d47;font-weight:bold;text-decoration:none;display:inline-block;margin-bottom:6px;font-family:Arial,sans-serif;">▶ YouTube Short</a>
+                          </div>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- SECTION 02: A STORY WORTH KNOWING -->
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-top:2px solid #171717;margin-top:24px;padding-top:12px;margin-bottom:10px;">
+                      <tr>
+                        <td width="34" valign="middle">
+                          <div style="background-color:#e51a4d;color:#ffffff;border-radius:7px;width:25px;height:25px;line-height:25px;text-align:center;font-size:10px;font-weight:900;font-family:Arial,sans-serif;">02</div>
+                        </td>
+                        <td valign="middle" style="font-size:10px;font-weight:800;letter-spacing:1.2px;color:#191919;font-family:Arial,sans-serif;text-transform:uppercase;">
+                          A STORY WORTH KNOWING
+                        </td>
+                        <td align="right" valign="middle" style="font-size:18px;color:#e51a4d;">✦</td>
+                      </tr>
+                    </table>
+
+                    <div style="display:inline-block;font-size:10px;font-weight:800;letter-spacing:.6px;padding:5px 9px;border:1px dashed #b57e9a;border-radius:3px;color:#8f4668;background-color:#fff8fa;margin:3px 0 7px;font-family:Arial,sans-serif;">✎ CREATOR NOTEBOOK</div>
+                    <h2 style="font-family:Georgia,serif;font-size:26px;line-height:1.12;margin:6px 0 6px;letter-spacing:-0.5px;color:#191919;font-weight:normal;">Meet Steven Ade</h2>
+                    <div style="font-size:15px;line-height:1.3;font-family:Georgia,serif;font-style:italic;color:#555555;margin-bottom:12px;">The writer who kept writing even when writing didn’t look like a career.</div>
+
+                    <p style="font-size:13px;line-height:1.58;color:#191919;margin:10px 0;font-family:Arial,sans-serif;">For years, Steven’s creative life existed alongside the jobs that paid the bills. He worked in a youth facility, supported children on the spectrum, and later delivered pizzas - all while carrying a love for storytelling that went back to his school days.</p>
+                    <p style="font-size:13px;line-height:1.58;color:#191919;margin:10px 0;font-family:Arial,sans-serif;">He had once been told that writing wasn’t a practical career. But when he began publishing on Pocket FM, the audience for his stories started growing. What began alongside his day job eventually became the work he could do full-time.</p>
+                    <p style="font-size:13px;line-height:1.58;color:#191919;margin:10px 0;font-family:Arial,sans-serif;">Today, Steven is the writer behind <em>The System Creation: Intergalactic Entry</em>, which has reached nearly <strong>8 million plays, holds a 4.6-star rating</strong>, and has received over a thousand reviews on Pocket FM.</p>
+
+                    <!-- MILESTONE BOX -->
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#fff1e6" style="background-color:#fff1e6;border-left:4px solid #ef9d4e;border-radius:0 9px 9px 0;margin:14px 0;">
+                      <tr>
+                        <td bgcolor="#fff1e6" style="padding:14px 16px;background-color:#fff1e6;border-radius:0 9px 9px 0;">
+                          <table border="0" cellpadding="0" cellspacing="0">
+                            <tr>
+                              <td valign="middle" style="padding-right:12px;">
+                                <div style="border-radius:50%;background-color:#e51a4d;color:#ffffff;width:30px;height:30px;line-height:30px;text-align:center;font-size:11px;font-weight:bold;">▶</div>
+                              </td>
+                              <td valign="middle">
+                                <strong style="font-size:15px;color:#191919;font-family:Arial,sans-serif;display:block;">Nearly 8 million plays</strong>
+                                <small style="font-size:11px;color:#5d5255;margin-top:2px;display:block;font-family:Arial,sans-serif;">★ 4.6 rating &nbsp;·&nbsp; 1,000+ reviews</small>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <p style="font-size:13px;line-height:1.58;color:#191919;margin:10px 0;font-family:Arial,sans-serif;"><strong>For any author who has ever had to fit writing around work, responsibilities, or doubts about whether it could become something more, Steven’s journey may feel familiar.</strong></p>
+
+                    <!-- CTA BUTTONS -->
+                    <table border="0" cellpadding="0" cellspacing="0" style="margin:16px 0 20px;">
+                      <tr>
+                        <td style="padding-right:10px;">
+                          <table border="0" cellpadding="0" cellspacing="0">
+                            <tr>
+                              <td align="center" bgcolor="#e51a4d" style="border-radius:20px;background-color:#e51a4d;">
+                                <a href="https://youtu.be/IO2XWbTNafY?si=dOzc2ZTD0IxZSQpk" target="_blank" style="font-size:12px;font-weight:800;color:#ffffff;text-decoration:none;padding:10px 18px;border-radius:20px;display:inline-block;font-family:Arial,sans-serif;">▶ Watch Steven’s Story</a>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                        <td>
+                          <table border="0" cellpadding="0" cellspacing="0">
+                            <tr>
+                              <td align="center" bgcolor="#34283b" style="border-radius:20px;background-color:#34283b;">
+                                <a href="https://pocketfm.com/show/a6268ee1800866a09bab6b47c61f885556992b45" target="_blank" style="font-size:12px;font-weight:800;color:#ffffff;text-decoration:none;padding:10px 18px;border-radius:20px;display:inline-block;font-family:Arial,sans-serif;">Explore the show ↗</a>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- PAGE 1 FOOTER -->
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top:32px;border-top:1px solid #bbbbbb;padding-top:8px;">
+                      <tr>
+                        <td align="left" style="font-size:9px;letter-spacing:1.3px;color:#888888;font-weight:800;font-family:Arial,sans-serif;">POCKET FM</td>
+                        <td align="right" style="font-size:9px;letter-spacing:1.3px;color:#888888;font-weight:800;font-family:Arial,sans-serif;">01 / 02</td>
+                      </tr>
+                    </table>
+
+                  </td>
+                </tr>
+              </table>
+            </div>
+
+            <!--[if mso]>
+            </td><td width="50%" valign="top" style="padding:0 6px;">
+            <![endif]-->
+
+            <!-- ======================================================== -->
+            <!-- PAGE 2 COLUMN (WITH 100% INLINED MINT, PEACH & LAVENDER CARDS) -->
+            <!-- ======================================================== -->
+            <div class="page-col" style="display:inline-block;width:100%;max-width:670px;vertical-align:top;text-align:left;margin:0 6px 20px 6px;">
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#fffefa" style="background-color:#fffefa;border-top:6px solid #252525;border-radius:6px;box-shadow:0 8px 28px rgba(0,0,0,0.08);width:100%;">
+                <tr>
+                  <td class="page-padding" bgcolor="#fffefa" style="padding:30px 34px;background-color:#fffefa;border-radius:6px;vertical-align:top;">
+
+                    <!-- ISSUE HEADER -->
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-bottom:1px solid #dddddd;padding-bottom:12px;margin-bottom:18px;">
+                      <tr>
+                        <td align="left" style="font-size:9px;letter-spacing:1.1px;font-weight:700;color:#59504e;text-transform:uppercase;font-family:Arial,sans-serif;">
+                          THE POCKET EDIT &nbsp;/&nbsp; STORYTELLING NOTES
+                        </td>
+                        <td align="right" style="font-size:9px;letter-spacing:1.1px;font-weight:700;color:#59504e;text-transform:uppercase;font-family:Arial,sans-serif;">
+                          ISSUE 01 · OCT 2026
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- PAGE TWO HEADER BANNER -->
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#251e2b" style="background-color:#251e2b;color:#ffffff;margin-bottom:20px;border-radius:4px;overflow:hidden;">
+                      <tr>
+                        <td bgcolor="#251e2b" style="padding:26px 28px;background-color:#251e2b;">
+                          <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                            <tr>
+                              <td valign="top">
+                                <div style="font-size:10px;font-weight:800;letter-spacing:2px;color:#ff7b9e;text-transform:uppercase;font-family:Arial,sans-serif;">THE LISTENER EDIT</div>
+                                <h1 class="listener-h1" style="font-family:Georgia,serif;font-size:39px;line-height:0.98;letter-spacing:-1.5px;margin:12px 0;color:#ffffff;font-weight:normal;">Romance.<br/>Magic. <em style="color:#f44e79;font-style:italic;">Momentum.</em></h1>
+                                <div style="font-size:12px;color:#f0f0f0;font-family:Arial,sans-serif;">Genre in Spotlight: Romantasy</div>
+                              </td>
+                              <td align="right" valign="top" style="font-size:32px;color:#f7bd68;padding-top:4px;font-family:Georgia,serif;">✧</td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- SECTION 03: WHAT WE'RE SEEING FROM LISTENERS -->
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-top:2px solid #171717;margin-top:24px;padding-top:12px;margin-bottom:10px;">
+                      <tr>
+                        <td width="34" valign="middle">
+                          <div style="background-color:#e51a4d;color:#ffffff;border-radius:7px;width:25px;height:25px;line-height:25px;text-align:center;font-size:10px;font-weight:900;font-family:Arial,sans-serif;">03</div>
+                        </td>
+                        <td valign="middle" style="font-size:10px;font-weight:800;letter-spacing:1.2px;color:#191919;font-family:Arial,sans-serif;text-transform:uppercase;">
+                          WHAT WE’RE SEEING FROM LISTENERS
+                        </td>
+                        <td align="right" valign="middle" style="font-size:18px;color:#e51a4d;">✦</td>
+                      </tr>
+                    </table>
+
+                    <div style="display:inline-block;font-size:10px;font-weight:800;letter-spacing:.6px;padding:5px 9px;border:1px dashed #b57e9a;border-radius:3px;color:#8f4668;background-color:#fff8fa;margin:3px 0 7px;font-family:Arial,sans-serif;">✧ THE AUDIO STORYTELLING PLAYBOOK</div>
+                    <h2 style="font-family:Georgia,serif;font-size:26px;line-height:1.12;margin:6px 0 10px;letter-spacing:-.5px;color:#191919;font-weight:normal;">What makes Romantasy stronger in audio?</h2>
+                    <p style="font-size:13px;line-height:1.58;color:#191919;margin:8px 0 14px;font-family:Arial,sans-serif;">Across the Romantasy titles we’ve been reviewing, a few patterns come up repeatedly:</p>
+
+                    <!-- ============================================== -->
+                    <!-- TIP 01: CHOICE OVER CHEMISTRY (PURPLE / LAVENDER CARD) -->
+                    <!-- ============================================== -->
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-top:1px dashed #cfc9c2;padding-top:14px;margin-top:14px;">
+                      <tr>
+                        <td width="42" valign="top">
+                          <span style="font-family:Georgia,serif;color:#9c61b8;font-size:28px;line-height:1;font-weight:bold;display:block;">01</span>
+                        </td>
+                        <td valign="top">
+                          <h3 style="font-family:Georgia,serif;font-size:19px;line-height:1.2;margin:0;color:#191919;display:inline;font-weight:bold;">Let the romance build through choice, not just chemistry.</h3>
+                          <span style="font-family:Georgia,serif;font-weight:bold;display:inline-block;color:#b34f7d;font-size:16px;margin-left:6px;">♡</span>
+                        </td>
+                      </tr>
+                    </table>
+                    <p style="font-size:13px;line-height:1.58;color:#191919;margin:10px 0;font-family:Arial,sans-serif;">Supernatural bonds, instant attraction, and physical pull can create intrigue, but they shouldn’t do all the emotional work. Give the leads shared experiences, moments of vulnerability, conflict, and trust-building so the relationship feels earned rather than predetermined.</p>
+
+                    <!-- CARD 1: LAVENDER (#f0ecfa) WITH PURPLE BORDER (#9c78c8) -->
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#f0ecfa" style="background-color:#f0ecfa;border-left:4px solid #9c78c8;border-radius:0 9px 9px 0;margin:14px 0;">
+                      <tr>
+                        <td bgcolor="#f0ecfa" style="padding:14px 18px;background-color:#f0ecfa;border-radius:0 9px 9px 0;">
+                          <div style="font-size:10px;color:#7a4d8f;letter-spacing:1.2px;font-weight:800;text-transform:uppercase;margin-bottom:6px;font-family:Arial,sans-serif;">✦ SEE IT IN ACTION</div>
+                          <strong style="font-size:15px;color:#191919;font-family:Arial,sans-serif;display:block;margin-bottom:6px;">The Alpha She Chose</strong>
+                          <p style="font-size:13px;line-height:1.55;color:#191919;margin:6px 0 10px;font-family:Arial,sans-serif;">What makes this premise interesting is the emphasis on <strong>choice rather than predestination</strong>. In a genre where fated-mate bonds can bring two characters together automatically, the heroine’s decision becomes part of the relationship itself. The supernatural connection may create the pull, but choosing what to do with that connection gives the romance its emotional stakes.</p>
+                          <a href="https://pocketfm.com/show/the-alpha-she-chose/69e2eb3772b49e749fed57ae96a86147dde154cb" target="_blank" style="font-size:13px;font-weight:bold;color:#c51d47;text-decoration:none;display:inline-block;font-family:Arial,sans-serif;">▶ Explore The Alpha She Chose</a>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- ============================================== -->
+                    <!-- TIP 02: GOAL BEYOND RELATIONSHIP (EXACTLY MATCHING IMAGE 2!) -->
+                    <!-- ============================================== -->
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-top:1px dashed #cfc9c2;padding-top:16px;margin-top:16px;">
+                      <tr>
+                        <td width="42" valign="top">
+                          <span style="font-family:Georgia,serif;color:#e51a4d;font-size:28px;line-height:1;font-weight:bold;display:block;">02</span>
+                        </td>
+                        <td valign="top">
+                          <h3 style="font-family:Georgia,serif;font-size:19px;line-height:1.2;margin:0;color:#191919;display:inline;font-weight:bold;">Give the protagonist a goal beyond the relationship.</h3>
+                          <span style="font-family:Georgia,serif;font-weight:bold;display:inline-block;color:#66a28a;font-size:18px;margin-left:6px;">✳</span>
+                        </td>
+                      </tr>
+                    </table>
+                    <p style="font-size:13px;line-height:1.58;color:#191919;margin:10px 0;font-family:Arial,sans-serif;">A strong Romantasy lead should actively shape the plot. Give her something she wants, investigate, protect, or fight for outside the romance, so the love story complicates her journey rather than becoming the whole journey.</p>
+
+                    <!-- CARD 2: MINT GREEN (#eaf4ef) WITH FOREST GREEN BORDER (#66a28a) -->
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#eaf4ef" style="background-color:#eaf4ef;border-left:4px solid #66a28a;border-radius:0 9px 9px 0;margin:14px 0;">
+                      <tr>
+                        <td bgcolor="#eaf4ef" style="padding:14px 18px;background-color:#eaf4ef;border-radius:0 9px 9px 0;">
+                          <div style="font-size:10px;color:#437d68;letter-spacing:1.2px;font-weight:800;text-transform:uppercase;margin-bottom:6px;font-family:Arial,sans-serif;">✦ SEE IT IN ACTION</div>
+                          <strong style="font-size:15px;color:#191919;font-family:Arial,sans-serif;display:block;margin-bottom:6px;">Last Witch of Swendel</strong>
+                          <p style="font-size:13px;line-height:1.55;color:#191919;margin:6px 0 10px;font-family:Arial,sans-serif;">The protagonist is defined first by <strong>who she is and what is at stake for her</strong>, rather than by her relationship to a romantic partner. Being the “last witch” creates a larger story around survival, identity, power, and what she stands to protect. That gives the romance another narrative arc to intersect with and complicate.</p>
+                          <a href="https://pocketfm.com/show/96f6721dc499b730f42b02d86e640d682f4f665d" target="_blank" style="font-size:13px;font-weight:bold;color:#c51d47;text-decoration:none;display:inline-block;font-family:Arial,sans-serif;">▶ Explore Last Witch of Swendel</a>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- ============================================== -->
+                    <!-- TIP 03: FANTASY WORLD PRESSURE (PURPLE NUMBER & PEACH/GOLD CARD) -->
+                    <!-- ============================================== -->
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-top:1px dashed #cfc9c2;padding-top:16px;margin-top:16px;">
+                      <tr>
+                        <td width="42" valign="top">
+                          <span style="font-family:Georgia,serif;color:#7a4d8f;font-size:28px;line-height:1;font-weight:bold;display:block;">03</span>
+                        </td>
+                        <td valign="top">
+                          <h3 style="font-family:Georgia,serif;font-size:19px;line-height:1.2;margin:0;color:#191919;display:inline;font-weight:bold;">Make the fantasy world put pressure on the romance.</h3>
+                          <span style="font-family:Georgia,serif;font-weight:bold;display:inline-block;color:#e8a351;font-size:18px;margin-left:6px;">✦</span>
+                        </td>
+                      </tr>
+                    </table>
+                    <p style="font-size:13px;line-height:1.58;color:#191919;margin:10px 0;font-family:Arial,sans-serif;">The magic, politics, rules, and antagonists should create real obstacles for the couple. A forbidden bond, dangerous power, faction conflict, or recurring antagonist can make the relationship harder in a way that is specific to that world, which is what makes the fantasy feel essential rather than decorative.</p>
+
+                    <!-- CARD 3: WARM PEACH (#fff3e4) WITH GOLD BORDER (#e8a351) -->
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#fff3e4" style="background-color:#fff3e4;border-left:4px solid #e8a351;border-radius:0 9px 9px 0;margin:14px 0;">
+                      <tr>
+                        <td bgcolor="#fff3e4" style="padding:14px 18px;background-color:#fff3e4;border-radius:0 9px 9px 0;">
+                          <div style="font-size:10px;color:#a46927;letter-spacing:1.2px;font-weight:800;text-transform:uppercase;margin-bottom:6px;font-family:Arial,sans-serif;">✦ SEE IT IN ACTION</div>
+                          <strong style="font-size:15px;color:#191919;font-family:Arial,sans-serif;display:block;margin-bottom:6px;">Bride of a Dragon</strong>
+                          <p style="font-size:13px;line-height:1.55;color:#191919;margin:6px 0 10px;font-family:Arial,sans-serif;">Here, the fantasy premise itself shapes the relationship. The heroine isn’t simply falling for someone who happens to exist in a magical world — becoming the bride of a dragon brings questions of power, obligation, and danger directly into the romantic dynamic. Remove the fantasy setup, and you fundamentally change the relationship and its conflict.</p>
+                          <a href="https://pocketfm.com/show/bride-of-a-dragon/514efd834428337923e640a1254ea9d7477b18b3" target="_blank" style="font-size:13px;font-weight:bold;color:#c51d47;text-decoration:none;display:inline-block;font-family:Arial,sans-serif;">▶ Explore Bride of a Dragon</a>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- SECTION 04: BEFORE YOU GO -->
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-top:2px solid #171717;margin-top:24px;padding-top:12px;margin-bottom:10px;">
+                      <tr>
+                        <td width="34" valign="middle">
+                          <div style="background-color:#e51a4d;color:#ffffff;border-radius:7px;width:25px;height:25px;line-height:25px;text-align:center;font-size:10px;font-weight:900;font-family:Arial,sans-serif;">04</div>
+                        </td>
+                        <td valign="middle" style="font-size:10px;font-weight:800;letter-spacing:1.2px;color:#191919;font-family:Arial,sans-serif;text-transform:uppercase;">
+                          BEFORE YOU GO
+                        </td>
+                        <td align="right" valign="middle" style="font-size:18px;color:#e51a4d;">✦</td>
+                      </tr>
+                    </table>
+
+                    <h2 style="font-family:Georgia,serif;font-size:26px;line-height:1.12;margin:6px 0 12px;letter-spacing:-.5px;color:#191919;font-weight:normal;">Over to you</h2>
+
+                    <!-- FEEDBACK CARD (MINT GREEN #eaf4ef) -->
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#eaf4ef" style="background-color:#eaf4ef;border-left:4px solid #66a28a;border-radius:0 8px 8px 0;margin:14px 0 18px;">
+                      <tr>
+                        <td bgcolor="#eaf4ef" style="padding:16px 20px;background-color:#eaf4ef;border-radius:0 8px 8px 0;">
+                          <strong style="font-size:14px;color:#191919;font-family:Arial,sans-serif;display:block;margin-bottom:8px;">What would help you most as an author working in audio?</strong>
+                          <ul style="padding-left:18px;margin:8px 0 0;font-size:13px;line-height:1.6;color:#191919;font-family:Arial,sans-serif;">
+                            <li style="margin:4px 0;">Understanding what listeners respond to</li>
+                            <li style="margin:4px 0;">Learning how stories translate to audio</li>
+                            <li style="margin:4px 0;">Seeing examples of stories that performed well</li>
+                            <li style="margin:4px 0;">Understanding new opportunities at Pocket FM</li>
+                          </ul>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <p style="font-size:13px;line-height:1.58;color:#191919;margin:10px 0;font-family:Arial,sans-serif;">Lastly…working on something new?<br/>We’d love to hear about it.</p>
+
+                    <!-- CTA BUTTON ROW -->
+                    <table border="0" cellpadding="0" cellspacing="0" style="margin:16px 0 20px;">
+                      <tr>
+                        <td style="padding-right:12px;">
+                          <table border="0" cellpadding="0" cellspacing="0">
+                            <tr>
+                              <td align="center" bgcolor="#e51a4d" style="border-radius:20px;background-color:#e51a4d;">
+                                <a href="mailto:us-licensing@pocketfm.com?subject=Sharing%20a%20Story" target="_blank" style="font-size:12px;font-weight:800;color:#ffffff;text-decoration:none;padding:10px 18px;border-radius:20px;display:inline-block;font-family:Arial,sans-serif;">Share a Story →</a>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                        <td valign="middle">
+                          <span style="font-size:12px;color:#555555;font-family:Arial,sans-serif;">us-licensing@pocketfm.com</span>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <p style="font-size:13px;line-height:1.58;color:#191919;margin:12px 0 22px;font-family:Arial,sans-serif;">Until next time,<br/><strong>Team Pocket FM</strong></p>
+
+                    <!-- FOOTER BLOCK -->
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#171717" style="background-color:#171717;color:#aaaaaa;border-radius:8px;padding:24px 20px;text-align:center;margin-top:20px;">
+                      <tr>
+                        <td align="center" bgcolor="#171717" style="padding:24px 20px;background-color:#171717;border-radius:8px;">
+                          <img src="https://d2p67bdkbtpxn2.cloudfront.net/dd1600b8e1bde867061ac29dcf9078c72bc533bd.jpg" alt="Pocket FM" height="42" style="display:block;margin:0 auto 16px;max-width:180px;border:0;" />
+                          <table border="0" cellpadding="0" cellspacing="0" align="center" style="margin:12px auto;">
+                            <tr>
+                              <td style="padding:0 8px;"><a href="https://twitter.com/PocketFM_App" target="_blank"><img src="https://d2p67bdkbtpxn2.cloudfront.net/2ef29b0580cbc86db3effe6847cbf3c92024b814.png" width="26" height="26" style="display:block;border:0;" alt="X" /></a></td>
+                              <td style="padding:0 8px;"><a href="https://www.linkedin.com/company/14522609" target="_blank"><img src="https://d2p67bdkbtpxn2.cloudfront.net/fc05471fbe97d71f1b8037897029df3759916d7c.png" width="26" height="26" style="display:block;border:0;" alt="LinkedIn" /></a></td>
+                              <td style="padding:0 8px;"><a href="https://www.facebook.com/pocketfmusa" target="_blank"><img src="https://d2p67bdkbtpxn2.cloudfront.net/bbba48b905fdc913ca50e2014cd43130eb2a6190.png" width="26" height="26" style="display:block;border:0;" alt="Facebook" /></a></td>
+                              <td style="padding:0 8px;"><a href="https://www.instagram.com/pocketcreators_usa/" target="_blank"><img src="https://d2p67bdkbtpxn2.cloudfront.net/7f5a11ba1d1e0430dc41bc2679fec746478b9dba.png" width="26" height="26" style="display:block;border:0;" alt="Instagram" /></a></td>
+                              <td style="padding:0 8px;"><a href="https://www.youtube.com/@pocket_creators/" target="_blank"><img src="https://d2p67bdkbtpxn2.cloudfront.net/64ac0d2350428f01ae6611b89c7b9c187542e8cd.png" width="26" height="26" style="display:block;border:0;" alt="YouTube" /></a></td>
+                            </tr>
+                          </table>
+                          <div style="font-size:10px;color:#888888;margin-top:12px;font-family:Arial,sans-serif;">
+                            © 2026 Pocket FM · Creator Newsletter<br/>
+                            <span style="font-size:8px;color:#555555;">{{QUEUE_ID}}</span>
+                          </div>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- PAGE 2 FOOTER -->
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top:32px;border-top:1px solid #bbbbbb;padding-top:8px;">
+                      <tr>
+                        <td align="left" style="font-size:9px;letter-spacing:1.3px;color:#888888;font-weight:800;font-family:Arial,sans-serif;">POCKET FM</td>
+                        <td align="right" style="font-size:9px;letter-spacing:1.3px;color:#888888;font-weight:800;font-family:Arial,sans-serif;">02 / 02</td>
+                      </tr>
+                    </table>
+
+                  </td>
+                </tr>
+              </table>
+            </div>
+
+            <!--[if mso]>
+            </td></tr></table>
+            <![endif]-->
+
+          </td>
+        </tr>
+      </table>
+
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>
+
+
+
         `;
 
       case 'publicNews':

@@ -38,6 +38,7 @@ function onOpen() {
       .addItem("6️⃣ 📆 Run Author Check-In 2 (30 Days) Only", "triggerCheckIn2Only")
       .addItem("7️⃣ 🚀 Run Show Launch Announcements Only", "triggerLaunchAnnouncementsOnly")
       .addItem("8️⃣ 📰 Run Newsletter (The Author Edit) Only", "triggerNewsletterOnly")
+      .addItem("🧪 ✉️ Test Newsletter Draft (Generate Directly to My Gmail)", "triggerTestNewsletterDraft")
       .addItem("9️⃣ 📊 Run Quarterly Revenue Statements Only", "triggerRevenueStatementsOnly")
       .addSeparator()
       .addItem("🔄 Sync Sent Emails Only", "triggerSyncSentEmailsOnly")
@@ -162,6 +163,32 @@ function triggerLaunchAnnouncementsOnly() {
  */
 function triggerNewsletterOnly() {
   return runSingleStage('newsletter', '8. Newsletter (The Author Edit)');
+}
+
+/**
+ * TEST TRIGGER: IMMEDIATE NEWSLETTER DRAFT GENERATOR
+ * Generates a fresh, styled newsletter draft directly into the active user's Gmail drafts.
+ */
+function triggerTestNewsletterDraft() {
+  try {
+    if (typeof testNewsletterDraft === 'function') {
+      const subject = testNewsletterDraft();
+      let myEmail = "";
+      try { myEmail = Session.getActiveUser().getEmail(); } catch (e) {}
+      const msg = "✅ Fresh Newsletter Draft generated in your Gmail drafts folder! (" + (myEmail || "your email") + ")";
+      Logger.log("[SUCCESS] " + msg);
+      try {
+        SpreadsheetApp.getActiveSpreadsheet().toast(msg, "The Pocket Edit", 8);
+      } catch(e) {}
+      return { success: true, message: msg };
+    } else {
+      Logger.log("[ERROR] testNewsletterDraft function not found. Ensure DraftEngine.gs is saved.");
+      return { success: false, error: "testNewsletterDraft not found" };
+    }
+  } catch (err) {
+    Logger.log("[ERROR] Failed to generate test newsletter: " + err.message);
+    return { success: false, error: err.message };
+  }
 }
 
 /**

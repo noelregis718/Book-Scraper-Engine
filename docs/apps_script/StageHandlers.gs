@@ -561,8 +561,10 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
           sendTime,
           "Draft Ready", 
           rIdx + 1, 
-          "Yes",
-          ccValue // Appended CC to queue for GMass
+          "Post-Sales Tracker",
+          ccValue,
+          cIdx !== undefined && cIdx !== null ? cIdx + 1 : "",
+          type
         ]);
       } catch (errQueue) {
         Logger.log(`[ROW ${rIdx + 1}] [WARNING] Could not append row to Queue sheet: ${errQueue.message}`);
@@ -615,50 +617,9 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
       Logger.log(`[ROW ${rIdx + 1}] [STATUS UPDATE] Updated Newsletter Edit dropdown for "${title}" in Col ${newsletterCol + 1} to "Draft Ready"`);
     }
 
-    // Capture today's date in Column R (Feedback Mail Date) ONLY for rows where MG Payout Confirmation draft got generated
-    if (type === "mgConfirmed" || cIdx === mgPayoutConfirmationCol) {
-      if (typeof feedbackMailDateCol !== "undefined" && feedbackMailDateCol !== -1) {
-        const todayDate = new Date();
-        psSheet.getRange(rIdx + 1, feedbackMailDateCol + 1).setValue(todayDate);
-        Logger.log(`[ROW ${rIdx + 1}] [DATE CAPTURE] Captured Feedback Mail Date for "${title}" in Col ${feedbackMailDateCol + 1}: ${todayDate}`);
-      }
-    }
-
-    // Capture today's date in Column X (Check-In 1 Date) ONLY for rows where Check-In 1 draft got generated
-    if (type === "checkIn1" || cIdx === checkIn1Col) {
-      if (typeof checkIn1DateCol !== "undefined" && checkIn1DateCol !== -1) {
-        const todayDate = new Date();
-        psSheet.getRange(rIdx + 1, checkIn1DateCol + 1).setValue(todayDate);
-        Logger.log(`[ROW ${rIdx + 1}] [DATE CAPTURE] Captured Check-In 1 Date for "${title}" in Col ${checkIn1DateCol + 1}: ${todayDate}`);
-      }
-    }
-
-    // Capture today's date in Column Z (Check-In 2 Date) ONLY for rows where Check-In 2 draft got generated
-    if (type === "checkIn2" || cIdx === checkIn2Col) {
-      if (typeof checkIn2DateCol !== "undefined" && checkIn2DateCol !== -1) {
-        const todayDate = new Date();
-        psSheet.getRange(rIdx + 1, checkIn2DateCol + 1).setValue(todayDate);
-        Logger.log(`[ROW ${rIdx + 1}] [DATE CAPTURE] Captured Check-In 2 Date for "${title}" in Col ${checkIn2DateCol + 1}: ${todayDate}`);
-      }
-    }
-
-    // Capture today's date in Show Launch Announcement Email Sent Date ONLY for rows where Launch Email draft got generated
-    if (type === "launch" || type === "launch_no_ai" || cIdx === launchCol || (typeof launchSentCol !== "undefined" && cIdx === launchSentCol)) {
-      if (typeof launchSentDateCol !== "undefined" && launchSentDateCol !== -1) {
-        const todayDate = new Date();
-        psSheet.getRange(rIdx + 1, launchSentDateCol + 1).setValue(todayDate);
-        Logger.log(`[ROW ${rIdx + 1}] [DATE CAPTURE] Captured Launch Announcement Email Sent Date for "${title}" in Col ${launchSentDateCol + 1}: ${todayDate}`);
-      }
-    }
-
-    // Capture today's date in Newsletter Sent Date ONLY for rows where Newsletter draft got generated
-    if (type === "authorEdit" || type === "newsletter" || cIdx === newsletterCol) {
-      if (typeof newsletterSentDateCol !== "undefined" && newsletterSentDateCol !== -1) {
-        const todayDate = new Date();
-        psSheet.getRange(rIdx + 1, newsletterSentDateCol + 1).setValue(todayDate);
-        Logger.log(`[ROW ${rIdx + 1}] [DATE CAPTURE] Captured Newsletter Sent Date for "${title}" in Col ${newsletterSentDateCol + 1}: ${todayDate}`);
-      }
-    }
+    // NOTE: Removed premature date stamping!
+    // Feedback Mail Date (Col V), Check-In Dates (Col X/Z), Launch Sent Date (Col AC), and Newsletter Sent Date
+    // are left BLANK upon draft creation. They are stamped strictly by syncSentEmails() when the email is actually dispatched from Gmail!
     Logger.log(`[ROW ${rIdx + 1}] [DRAFT CREATED] Successfully created ${type} draft for "${title}" (Recipient: ${email})`);
   }
 
@@ -1068,12 +1029,15 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
       if (newsletterCol !== -1) {
         let curNews = (psRow.length > newsletterCol && psRow[newsletterCol]) ? psRow[newsletterCol].toString().trim() : "";
         let curNewsLower = curNews.toLowerCase();
+        let isExplicitStage = targetStage === "newsletter";
+        let isManuallyMarked = curNewsLower === "newsletter" || curNewsLower === "author edit" || curNewsLower === "draft";
+
         if (curNewsLower === "sent") {
           Logger.log(`[ROW ${rowNum}] [Newsletter / Author Edit] Evaluated for "${title}" - Status: "Sent" (Already processed)`);
-        } else if (isLiveUrl && isLaunchDate15DaysAgo) {
-          if (curNewsLower !== "draft ready") {
+        } else if ((isLiveUrl && isLaunchDate15DaysAgo) || isManuallyMarked) {
+          if (curNewsLower !== "draft ready" || isExplicitStage) {
             createDraft(email, `What’s new at Pocket FM + a few things worth knowing`, firstName, 'authorEdit', title, link, i, newsletterCol, null, ccMail, revLink, argus);
-            Logger.log(`[ROW ${rowNum}] [Newsletter / Author Edit] [DRAFT CREATED] Col Z Launch Date was 15 days ago (${rawLaunchDate}) & Col AG Show Link is live. Created draft for "${title}".`);
+            Logger.log(`[ROW ${rowNum}] [Newsletter / Author Edit] [DRAFT CREATED] Created draft for "${title}".`);
           } else {
             Logger.log(`[ROW ${rowNum}] [Newsletter / Author Edit] Evaluated for "${title}" - Status: "Draft Ready"`);
           }
