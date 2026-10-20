@@ -277,15 +277,8 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
   const psTitleCol = psFindCol("Title / IP");
   const psShowNameCol = psFindCol("Show Name");
   const psShowLinkCol = psFindCol("Show Link");
-  let welcomeCol = psHeaders.findIndex(h => h.toString().toLowerCase().trim().includes("welcome")); 
-  if (welcomeCol === -1) welcomeCol = psFindCol("Welcome Email");
-
-  let vendorCol = psHeaders.findIndex(h => {
-    let s = h.toString().toLowerCase().trim();
-    return s.includes("vendor") && (s.includes("onboard") || s.includes("email") || s.includes("mail") || s.includes("status") || s.includes("form"));
-  });
-  if (vendorCol === -1) vendorCol = psHeaders.findIndex(h => h.toString().toLowerCase().trim().includes("vendor"));
-  if (vendorCol === -1) vendorCol = psFindCol("Vendor Onboarding Email"); 
+  const welcomeCol = psFindCol("Welcome Email"); 
+  const vendorCol = psFindCol("Vendor Onboarding Email"); 
   const mgPayoutInitiatedCol = psFindCol("MG Payout Initiated"); 
   const mgPayoutConfirmationCol = psFindCol("MG Payout Confirmation"); 
   const feedbackMailDateCol = psHeaders.findIndex(h => {
@@ -604,9 +597,7 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
     } else if (type === "checkIn1" || type === "checkIn2" || cIdx === checkIn1Col || cIdx === checkIn2Col) {
       statusValue = "draft ready";
     }
-    if (cIdx !== undefined && cIdx !== null && cIdx >= 0) {
-      psSheet.getRange(rIdx + 1, cIdx + 1).setValue(statusValue);
-    }
+    psSheet.getRange(rIdx + 1, cIdx + 1).setValue(statusValue);
     
     if (type === "launch" || type === "launch_no_ai") {
       if (typeof launchSentCol !== "undefined" && launchSentCol !== -1) {
@@ -775,13 +766,6 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
         } else {
           Logger.log(`[ROW ${rowNum}] [Welcome Email] Evaluated for "${title}" - Status: "${psRow[welcomeCol]}" (Already processed)`);
         }
-
-        // Simultaneously draft Vendor Onboarding Email on Day 1
-        let isVendorReady = vendorCol !== -1 ? isReady(psRow[vendorCol]) : true;
-        if (isVendorReady) {
-          createDraft(email, `Vendor Onboarding for ${title}`, firstName, 'vendor', title, link, i, vendorCol, null, ccMail, revLink, argus);
-          Logger.log(`[ROW ${rowNum}] [Vendor Onboarding] [DRAFT CREATED] Simultaneously created Vendor Onboarding draft for "${title}" (${email})`);
-        }
       } else if (isNotDropBad && !isToday(contractDate) && contractDate) {
         Logger.log(`[ROW ${rowNum}] [Welcome Email] Evaluated for "${title}" - Status: "${psRow[welcomeCol] || 'Pending'}" | Contract Date (${contractDate}) is not today`);
       } else if (!isNotDropBad) {
@@ -796,23 +780,22 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
     if (!targetStage || targetStage === 'vendor') {
       let contractDate = mainInfo.contractSigned;
       let isNotDropBad = !launchStatus.includes("drop") && !launchStatus.includes("bad") && !launchStatus.includes("untested");
-      let isVendorReady = vendorCol !== -1 ? isReady(psRow[vendorCol]) : true;
 
       if (!contractDate || contractDate.toString().trim() === "") {
-        if (isVendorReady) {
+        if (isReady(psRow[vendorCol])) {
           logNotification("Trigger Date is missing", title, `Contract Signing Date (Col Q in Master) is blank for "${title}".`, rowNum);
         } else {
-          Logger.log(`[ROW ${rowNum}] [Vendor Onboarding] Evaluated for "${title}" - Status: "${(vendorCol !== -1 ? psRow[vendorCol] : 'N/A') || 'Empty'}" (Contract Date blank, already processed)`);
+          Logger.log(`[ROW ${rowNum}] [Vendor Onboarding] Evaluated for "${title}" - Status: "${psRow[vendorCol] || 'Empty'}" (Contract Date blank, already processed)`);
         }
       } else if (isNotDropBad && isToday(contractDate)) {
-        if (isVendorReady) {
+        if (isReady(psRow[vendorCol])) {
           createDraft(email, `Vendor Onboarding for ${title}`, firstName, 'vendor', title, link, i, vendorCol, null, ccMail, revLink, argus);
           Logger.log(`[ROW ${rowNum}] [Vendor Onboarding] [DRAFT CREATED] Col Q Contract is today (${contractDate}) & Status != Drop/Bad. Created Vendor Onboarding draft for "${title}" (${email})`);
         } else {
-          Logger.log(`[ROW ${rowNum}] [Vendor Onboarding] Evaluated for "${title}" - Status: "${vendorCol !== -1 ? psRow[vendorCol] : 'Ready'}" (Already processed)`);
+          Logger.log(`[ROW ${rowNum}] [Vendor Onboarding] Evaluated for "${title}" - Status: "${psRow[vendorCol]}" (Already processed)`);
         }
       } else if (isNotDropBad && !isToday(contractDate) && contractDate) {
-        Logger.log(`[ROW ${rowNum}] [Vendor Onboarding] Evaluated for "${title}" - Status: "${(vendorCol !== -1 ? psRow[vendorCol] : 'Pending') || 'Pending'}" | Contract Date (${contractDate}) is not today`);
+        Logger.log(`[ROW ${rowNum}] [Vendor Onboarding] Evaluated for "${title}" - Status: "${psRow[vendorCol] || 'Pending'}" | Contract Date (${contractDate}) is not today`);
       } else if (!isNotDropBad) {
         Logger.log(`[ROW ${rowNum}] [Vendor Onboarding] Evaluated for "${title}" - Launch Status: "${launchStatus}" (Suppressed - Drop/Bad)`);
       }
