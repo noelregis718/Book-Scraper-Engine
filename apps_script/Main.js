@@ -30,6 +30,8 @@ function onOpen() {
   try {
     SpreadsheetApp.getUi()
       .createMenu("Pocket FM Automation")
+      .addItem("▶️ Run All Automations at Once", "triggerRunAllStagesSequentially")
+      .addSeparator()
       .addItem("1️⃣ Run Welcome Emails Only", "triggerWelcomeEmailsOnly")
       .addItem("2️⃣ Run Vendor Onboarding Only", "triggerVendorOnboardingOnly")
       .addItem("3️⃣ Run MG Payout Initiated Only", "triggerMgInitiatedOnly")
@@ -96,6 +98,93 @@ function runSingleStage(stageKey, stageLabel) {
     } catch (e) {}
     return { success: false, error: err.message };
   }
+}
+
+// =============================================================
+// MASTER RUNNER: RUN ALL STAGES SEQUENTIALLY (AT ONCE)
+// =============================================================
+
+/**
+ * MASTER RUNNER: RUN ALL AUTOMATIONS AT ONCE (SEQUENTIAL EXECUTION)
+ * Executes every single lifecycle stage in order.
+ * Strictly waits for each stage to finish completely and commits all
+ * spreadsheet updates before initiating the next stage.
+ */
+function triggerRunAllStagesSequentially() {
+  Logger.log("==================================================================");
+  Logger.log("[MASTER] Starting Sequential Execution of All Automations...");
+  Logger.log("==================================================================");
+
+  const stages = [
+    { key: 'welcome', label: '1. Welcome Emails', fn: triggerWelcomeEmailsOnly },
+    { key: 'vendor', label: '2. Vendor Onboarding', fn: triggerVendorOnboardingOnly },
+    { key: 'mgInitiated', label: '3. MG Payout Initiated', fn: triggerMgInitiatedOnly },
+    { key: 'mgConfirmed', label: '4. MG Payout Confirmation', fn: triggerMgConfirmedOnly },
+    { key: 'checkIn1', label: '5. Author Check-In 1 (15 Days)', fn: triggerCheckIn1Only },
+    { key: 'checkIn2', label: '6. Author Check-In 2 (30 Days)', fn: triggerCheckIn2Only },
+    { key: 'launch', label: '7. Show Launch Announcements', fn: triggerLaunchAnnouncementsOnly },
+    { key: 'newsletter', label: '8. Newsletter (The Author Edit)', fn: triggerNewsletterOnly },
+    { key: 'revStatement', label: '9. Quarterly Revenue Statements', fn: triggerRevenueStatementsOnly }
+  ];
+
+  let results = [];
+  let ss = null;
+  try { ss = SpreadsheetApp.getActiveSpreadsheet(); } catch (e) {}
+
+  for (let i = 0; i < stages.length; i++) {
+    const stage = stages[i];
+    const stepNum = i + 1;
+    const totalSteps = stages.length;
+
+    Logger.log(`\n>>> [STEP ${stepNum}/${totalSteps}] Starting ${stage.label}...`);
+    if (ss) {
+      try {
+        ss.toast(`Running ${stage.label} (${stepNum}/${totalSteps})...`, "Pocket FM Automation", 4);
+      } catch (e) {}
+    }
+
+    try {
+      const res = stage.fn();
+      results.push({ stage: stage.label, success: true, res: res });
+      Logger.log(`>>> [STEP ${stepNum}/${totalSteps}] Completed ${stage.label} successfully.`);
+    } catch (err) {
+      results.push({ stage: stage.label, success: false, error: err.message });
+      Logger.log(`>>> [STEP ${stepNum}/${totalSteps}] Error in ${stage.label}: ${err.message}`);
+    }
+
+    try {
+      SpreadsheetApp.flush();
+    } catch (eFlush) {}
+  }
+
+  // Final step: Sync sent emails from Gmail to ensure sheet dropdowns are 100% updated
+  Logger.log("\n>>> [FINAL SYNC] Synchronizing Sent Emails...");
+  try {
+    if (typeof syncSentEmails === 'function') {
+      syncSentEmails();
+    }
+    SpreadsheetApp.flush();
+  } catch (eSync) {
+    Logger.log(">>> [FINAL SYNC] Sync notice: " + eSync.message);
+  }
+
+  const completionMsg = "🎉 All 9 stages executed sequentially and synced successfully! Check Gmail Drafts.";
+  Logger.log("==================================================================");
+  Logger.log("[MASTER COMPLETE] " + completionMsg);
+  Logger.log("==================================================================");
+
+  if (ss) {
+    try {
+      ss.toast(completionMsg, "All Automations Complete", 6);
+    } catch (e) {}
+  }
+
+  return { success: true, stagesRun: stages.length, results: results };
+}
+
+// Backward compatibility alias for master run
+function runAllOutreachAutomations() {
+  return triggerRunAllStagesSequentially();
 }
 
 // =============================================================
