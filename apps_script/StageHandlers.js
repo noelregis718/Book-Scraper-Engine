@@ -274,13 +274,16 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
   const psHeaders = psData[2];
   const psFindCol = (name) => psHeaders.findIndex(h => h.toString().toLowerCase().includes(name.toLowerCase()));
   
-  const psTitleCol = psFindCol("Title / IP");
-  const psShowNameCol = psFindCol("Show Name");
-  const psShowLinkCol = psFindCol("Show Link");
-  const welcomeCol = psFindCol("Welcome Email"); 
-  const vendorCol = psFindCol("Vendor Onboarding Email"); 
-  const mgPayoutInitiatedCol = psFindCol("MG Payout Initiated"); 
-  const mgPayoutConfirmationCol = psFindCol("MG Payout Confirmation"); 
+  const psTitleCol = psFindCol("Title / IP") !== -1 ? psFindCol("Title / IP") : 2;
+  const psContractDateCol = psFindCol("Contract Signing date") !== -1 
+                            ? psFindCol("Contract Signing date") 
+                            : (psFindCol("Contract") !== -1 ? psFindCol("Contract") : 3); // Column D
+  const psShowNameCol = psFindCol("Show Name") !== -1 ? psFindCol("Show Name") : 12;
+  const psShowLinkCol = psFindCol("Show Link") !== -1 ? psFindCol("Show Link") : 11;
+  const welcomeCol = psFindCol("Welcome Email") !== -1 ? psFindCol("Welcome Email") : 17; 
+  const vendorCol = psFindCol("Vendor Onboarding Email") !== -1 ? psFindCol("Vendor Onboarding Email") : 18; 
+  const mgPayoutInitiatedCol = psFindCol("MG Payout Initiated") !== -1 ? psFindCol("MG Payout Initiated") : 19; 
+  const mgPayoutConfirmationCol = psFindCol("MG Payout Confirmation") !== -1 ? psFindCol("MG Payout Confirmation") : 20; 
   const feedbackMailDateCol = psHeaders.findIndex(h => {
     let s = h.toString().toLowerCase().trim();
     return s.includes("feedback") && s.includes("date");
@@ -869,14 +872,32 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
 
     // =============================================================
     // Stage 5 & 6: Personal Check-Ins (15 Days & 30 Days)
-    // Image Condition: Col X: MG Exit == TODAY-15d/30d | Col AG: Show Link IS BLANK | Col AA: Status != Drop
+    // Conditions for "Does not apply" in Col W & Col Y:
+    // 1. Deals signed before 1st September 2026 -> "Does not apply"
+    // 2. Col AB (Show Launch Announcement Sent?) shows "Sent" -> "Does not apply"
+    // 3. Col AG/L (Show Link) is live URL -> "Does not apply"
+    // Otherwise: MG Exit == TODAY-15d/30d | Col AG: Show Link IS BLANK | Col AA: Status != Drop
     // =============================================================
     let isLiveLink = link && (link.toString().trim().startsWith("http") || link.toString().trim().includes("pocketfm"));
     let isCheckInDropped = launchStatus.includes("drop");
     let checkInRefDate = mainInfo.mgPayoutExited || psRow[feedbackMailDateCol];
     let vDateObj = parseDateSafe(checkInRefDate);
 
-    if (isLiveLink) {
+    // Deal signing date check (deals signed before 1st September)
+    let rawContractDate = (psContractDateCol > -1 && psRow.length > psContractDateCol && psRow[psContractDateCol]) 
+                          ? psRow[psContractDateCol] 
+                          : (mainInfo ? mainInfo.contractSigned : "");
+    let isBeforeSept1 = isDealSignedBeforeSept1(rawContractDate);
+
+    // Show Launch Announcement status check (Col AB or Col AA == 'sent')
+    let rawColAB = (launchSentCol > -1 && psRow.length > launchSentCol && psRow[launchSentCol]) ? psRow[launchSentCol].toString().trim().toLowerCase() : "";
+    let rawColAA = (launchCol > -1 && psRow.length > launchCol && psRow[launchCol]) ? psRow[launchCol].toString().trim().toLowerCase() : "";
+    let isLaunchSent = rawColAB === "sent" || rawColAB.includes("sent") || rawColAA === "sent";
+
+    if (isLiveLink || isLaunchSent || isBeforeSept1) {
+      let notApplyReason = isBeforeSept1 ? `Deal signed before 1st September (${rawContractDate})`
+                          : (isLaunchSent ? "Col AB (Show Launch Announcement) is 'Sent'" : "Col AG/L (Show Link) is live URL");
+
       if (checkIn1Col > -1) {
         let curW = (psRow.length > checkIn1Col && psRow[checkIn1Col]) ? psRow[checkIn1Col].toString().trim() : "";
         if (curW.toLowerCase() !== "does not apply" && curW.toLowerCase() !== "sent") {
@@ -893,10 +914,10 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
       }
       SpreadsheetApp.flush();
       if (!targetStage || targetStage === "checkIn1") {
-        Logger.log(`[ROW ${rowNum}] [Check-In 1 (15 Days)] Evaluated for "${title}" - Col AG (Show Link) is live URL. Status: "Does not apply"`);
+        Logger.log(`[ROW ${rowNum}] [Check-In 1 (15 Days)] Evaluated for "${title}" - ${notApplyReason}. Status: "Does not apply"`);
       }
       if (!targetStage || targetStage === "checkIn2") {
-        Logger.log(`[ROW ${rowNum}] [Check-In 2 (30 Days)] Evaluated for "${title}" - Col AG (Show Link) is live URL. Status: "Does not apply"`);
+        Logger.log(`[ROW ${rowNum}] [Check-In 2 (30 Days)] Evaluated for "${title}" - ${notApplyReason}. Status: "Does not apply"`);
       }
     } else if (isCheckInDropped) {
       if (!targetStage || targetStage === "checkIn1") {
@@ -1361,6 +1382,30 @@ function evaluateSingleRowCheckIns(psSheet, row, preloadedRowVals = null, preloa
   const showNameCol = psFindCol("Show Name") > -1 ? psFindCol("Show Name") : 12; // Col M (index 12)
   const linkCol = psFindCol("Show Link") > -1 ? psFindCol("Show Link") : 11; // Col L (index 11)
   const statusCol = psFindCol("Launch Status") > -1 ? psFindCol("Launch Status") : 10; // Col K (index 10)
+  const contractDateCol = psFindCol("Contract Signing date") > -1 
+                          ? psFindCol("Contract Signing date") 
+                          : (psFindCol("Contract") > -1 ? psFindCol("Contract") : 3); // Col D (idx 3)
+
+  let launchCol = headers.findIndex(h => {
+    let s = h.toString().toLowerCase().trim();
+    return (s.includes("launch") && s.includes("announcement") && s.includes("status")) ||
+           (s === "show launch announcement status");
+  });
+  if (launchCol === -1) launchCol = psFindCol("Show Launch Announcement") > -1 ? psFindCol("Show Launch Announcement") : 26; // Col AA (idx 26)
+
+  let launchSentCol = headers.findIndex(h => {
+    let s = h.toString().toLowerCase().trim();
+    return (s.includes("launch") && s.includes("announcement") && (s.includes("sent") || s.includes("email sent")) && !s.includes("date"));
+  });
+  if (launchSentCol === -1) {
+    if (headers.length > 27 && (headers[27].toString().trim().toLowerCase() === "er" || headers[27].toString().toLowerCase().includes("sent"))) {
+      launchSentCol = 27; // Column AB (idx 27)
+    } else if (launchCol !== -1 && launchCol + 1 < headers.length) {
+      launchSentCol = launchCol + 1;
+    } else {
+      launchSentCol = 27;
+    }
+  }
 
   // Feedback Mail Date (Col V)
   const feedbackMailDateCol = headers.findIndex(h => {
@@ -1442,21 +1487,52 @@ function evaluateSingleRowCheckIns(psSheet, row, preloadedRowVals = null, preloa
     } catch (eM) {}
   }
 
-  // Check Col AG / Col L (Show Link IS LIVE URL -> Does not apply)
+  // Deal signing date check (deals signed before 1st September)
+  let rawContractDate = (contractDateCol > -1 && rowVals.length > contractDateCol && rowVals[contractDateCol]) 
+                        ? rowVals[contractDateCol] 
+                        : null;
+  if (!rawContractDate && psSheet.getParent()) {
+    try {
+      const master = psSheet.getParent().getSheetByName("Lifecycle Tracker - Master");
+      if (master) {
+        const mData = master.getDataRange().getValues();
+        const mMatch = mData.find(r => r[5] && r[5].toString().toLowerCase().trim() === title.toLowerCase());
+        if (mMatch && mMatch.length > 16 && mMatch[16]) {
+          rawContractDate = mMatch[16];
+        }
+      }
+    } catch (eM) {}
+  }
+  let isBeforeSept1 = isDealSignedBeforeSept1(rawContractDate);
+
+  // Show Launch Announcement status check (Col AB or Col AA == 'sent')
+  let rawColAB = (launchSentCol > -1 && rowVals.length > launchSentCol && rowVals[launchSentCol]) ? rowVals[launchSentCol].toString().trim().toLowerCase() : "";
+  let rawColAA = (launchCol > -1 && rowVals.length > launchCol && rowVals[launchCol]) ? rowVals[launchCol].toString().trim().toLowerCase() : "";
+  let isLaunchSent = rawColAB === "sent" || rawColAB.includes("sent") || rawColAA === "sent";
+
+  // Check 1: Show Link IS LIVE URL -> Does not apply
+  // Check 2: Col AB Show Launch Announcement is 'Sent' -> Does not apply
+  // Check 3: Deal signed before 1st September -> Does not apply
   let isLiveLink = link && (link.toString().trim().startsWith("http") || link.toString().trim().includes("pocketfm"));
-  if (isLiveLink) {
+  if (isLiveLink || isLaunchSent || isBeforeSept1) {
+    let notApplyReason = isBeforeSept1 ? `Deal signed before 1st September (${rawContractDate})`
+                        : (isLaunchSent ? "Col AB (Show Launch Announcement) is 'Sent'" : "Col L/AG (Show Link) is live URL");
+
     if (checkIn1Col > -1) {
       let curW = rowVals[checkIn1Col] ? rowVals[checkIn1Col].toString().trim().toLowerCase() : "";
-      if (curW !== "does not apply") {
+      if (curW !== "does not apply" && curW !== "sent") {
         psSheet.getRange(row, checkIn1Col + 1).setValue("Does not apply");
+        rowVals[checkIn1Col] = "Does not apply";
       }
     }
     if (checkIn2Col > -1) {
       let curY = rowVals[checkIn2Col] ? rowVals[checkIn2Col].toString().trim().toLowerCase() : "";
-      if (curY !== "does not apply") {
+      if (curY !== "does not apply" && curY !== "sent") {
         psSheet.getRange(row, checkIn2Col + 1).setValue("Does not apply");
+        rowVals[checkIn2Col] = "Does not apply";
       }
     }
+    Logger.log(`[LIVE ROW ${row}] [Check-Ins (15 & 30 Days)] ${notApplyReason} for "${title}". Set Col W & Col Y to "Does not apply".`);
     SpreadsheetApp.flush();
     return;
   }
@@ -1689,6 +1765,19 @@ function testAuthorCheckInTimers() {
   let overrideW = colABSent ? "Does not apply" : "Not due yet";
   let overrideY = colABSent ? "Does not apply" : "Not due yet";
   Logger.log(`  -> Col AB is 'Sent' => Col W: "${overrideW}", Col Y: "${overrideY}" [PASS]`);
+
+  Logger.log("\nTesting Deals Signed Before 1st September Override:");
+  let testDates = [
+    { date: "2026-08-15", expected: true, desc: "August 15, 2026 (< Sept 1)" },
+    { date: "2026-04-16", expected: true, desc: "April 16, 2026 (< Sept 1)" },
+    { date: "2026-09-01", expected: true, desc: "September 1, 2026 (== Sept 1, inclusive)" },
+    { date: "2026-09-16", expected: false, desc: "September 16, 2026 (> Sept 1)" }
+  ];
+  testDates.forEach(td => {
+    let res = isDealSignedBeforeSept1(td.date);
+    let pass = res === td.expected ? "PASS" : "FAIL";
+    Logger.log(`  -> ${td.desc}: Got ${res} (Expected ${td.expected}) [${pass}]`);
+  });
 
   Logger.log("=======================================================\n");
 }

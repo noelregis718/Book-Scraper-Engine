@@ -282,6 +282,22 @@ function isToday(dateVal) {
 }
 
 /**
+ * Checks if a contract / deal was signed before 1st September 2026.
+ * @param {*} dateVal - Date object, date string, or serial date
+ * @returns {boolean} True if deal was signed before 1st September 2026
+ */
+function isDealSignedBeforeSept1(dateVal) {
+  if (!dateVal) return false;
+  let target = parseDateSafe(dateVal);
+  if (!target) return false;
+  let cmp = new Date(target.getTime());
+  cmp.setHours(0, 0, 0, 0);
+  let cutoff = new Date(2026, 8, 1, 0, 0, 0, 0); // September 1, 2026 (Month index 8 = September)
+  return cmp.getTime() <= cutoff.getTime(); // Inclusive: deals signed on or before 1st September
+}
+
+
+/**
  * DYNAMIC COLUMN RESOLVER FOR POST-SALES TRACKER HEADERS (Row 3)
  */
 function resolveTrackerColumns(headers) {
@@ -290,12 +306,12 @@ function resolveTrackerColumns(headers) {
   return {
     titleCol: findCol("Title / IP") > -1 ? findCol("Title / IP") : 2,
     authorCol: findCol("Author Name") > -1 ? findCol("Author Name") : 1,
-    firstNameCol: findCol("Receiver First Name") > -1 ? findCol("Receiver First Name") : 7,
+    contractDateCol: findCol("Contract Signing date") > -1 ? findCol("Contract Signing date") : 3,
+    mgPayoutDueCol: findCol("MG payout due") > -1 ? findCol("MG payout due") : 4,
     emailCol: findCol("Receiver Email ID") > -1 ? findCol("Receiver Email ID") : 5,
     ccCol: findCol("CC Mail ID") > -1 ? findCol("CC Mail ID") : 6,
-    showNameCol: findCol("Show Name") > -1 ? findCol("Show Name") : 2,
-    linkCol: findCol("Show Link") > -1 ? findCol("Show Link") : 11,
-    statusCol: findCol("Launch Status") > -1 ? findCol("Launch Status") : 10,
+    firstNameCol: findCol("Receiver First Name") > -1 ? findCol("Receiver First Name") : 7,
+    showIdCol: findCol("Show ID") > -1 ? findCol("Show ID") : 8,
     launchDateCol: headers.findIndex(h => {
       let s = h.toString().toLowerCase().trim();
       return s === "launch date" || (s.includes("launch") && s.includes("date") && !s.includes("sent") && !s.includes("announcement"));
@@ -303,6 +319,9 @@ function resolveTrackerColumns(headers) {
       let s = h.toString().toLowerCase().trim();
       return s === "launch date" || (s.includes("launch") && s.includes("date") && !s.includes("sent") && !s.includes("announcement"));
     }) : 9,
+    statusCol: findCol("Launch Status") > -1 ? findCol("Launch Status") : 10,
+    linkCol: findCol("Show Link") > -1 ? findCol("Show Link") : 11,
+    showNameCol: findCol("Show Name") > -1 ? findCol("Show Name") : 12,
     scriptDateCol: headers.findIndex(h => {
       let s = h.toString().toLowerCase().trim();
       return s.includes("script") && s.includes("date");
@@ -310,6 +329,12 @@ function resolveTrackerColumns(headers) {
       let s = h.toString().toLowerCase().trim();
       return s.includes("script") && s.includes("date");
     }) : 14,
+    postSalesEligibleCol: findCol("Post Sales Eligible") > -1 ? findCol("Post Sales Eligible") : 15,
+    nextActionDueCol: findCol("Next Action Due") > -1 ? findCol("Next Action Due") : 16,
+    welcomeCol: findCol("Welcome Email") > -1 ? findCol("Welcome Email") : 17,
+    vendorCol: findCol("Vendor Onboarding Email") > -1 ? findCol("Vendor Onboarding Email") : 18,
+    mgPayoutInitiatedCol: findCol("MG Payout Initiated") > -1 ? findCol("MG Payout Initiated") : 19,
+    mgPayoutConfirmationCol: findCol("MG Payout Confirmation") > -1 ? findCol("MG Payout Confirmation") : 20,
     feedbackMailDateCol: headers.findIndex(h => {
       let s = h.toString().toLowerCase().trim();
       return s.includes("feedback") && s.includes("date");
@@ -365,7 +390,14 @@ function resolveTrackerColumns(headers) {
     }) > -1 ? headers.findIndex(h => {
       let s = h.toString().toLowerCase().trim();
       return (s.includes("launch") && s.includes("announcement") && s.includes("date")) || (s.includes("launch") && s.includes("sent") && s.includes("date"));
-    }) : 28
+    }) : 28,
+    newsletterCol: headers.findIndex(h => {
+      let s = h.toString().toLowerCase().trim();
+      return s.includes("newsletter") && !s.includes("date");
+    }) > -1 ? headers.findIndex(h => {
+      let s = h.toString().toLowerCase().trim();
+      return s.includes("newsletter") && !s.includes("date");
+    }) : 29
   };
 }
 

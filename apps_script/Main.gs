@@ -157,18 +157,12 @@ function triggerRunAllStagesSequentially() {
     } catch (eFlush) {}
   }
 
-  // Final step: Sync sent emails from Gmail to ensure sheet dropdowns are 100% updated
-  Logger.log("\n>>> [FINAL SYNC] Synchronizing Sent Emails...");
-  try {
-    if (typeof syncSentEmails === 'function') {
-      syncSentEmails();
-    }
-    SpreadsheetApp.flush();
-  } catch (eSync) {
-    Logger.log(">>> [FINAL SYNC] Sync notice: " + eSync.message);
-  }
+  // Draft generation complete.
+  // Note: We do NOT auto-sync sent emails here because drafts were just created and have not been dispatched by the user yet.
+  // When drafts are dispatched from Gmail, syncSentEmails will update dropdowns from 'Draft Ready' to 'Sent'.
+  Logger.log("\n>>> [RUN COMPLETE] All eligible drafts have been generated and marked 'Draft Ready' in the spreadsheet.");
 
-  const completionMsg = "🎉 All 9 stages executed sequentially and synced successfully! Check Gmail Drafts.";
+  const completionMsg = "🎉 All 9 stages executed! Drafts generated and marked 'Draft Ready'. Review in Gmail Drafts.";
   Logger.log("==================================================================");
   Logger.log("[MASTER COMPLETE] " + completionMsg);
   Logger.log("==================================================================");

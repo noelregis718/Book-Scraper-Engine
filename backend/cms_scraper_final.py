@@ -65,6 +65,9 @@ def extract_metrics(html):
 
 def get_tracker_path():
     root = "e:/Internship/PocketFM"
+    preferred = os.path.join(root, "US_Licensing_Lifecycle_Tracker (3).xlsx")
+    if os.path.exists(preferred):
+        return preferred
     candidates = [
         f for f in os.listdir(root)
         if f.startswith("US_Licensing_Lifecycle_Tracker") and f.endswith(".xlsx") and not f.startswith("~$") and "backup" not in f.lower()
@@ -72,7 +75,7 @@ def get_tracker_path():
     if candidates:
         candidates.sort(key=lambda x: [int(s) if s.isdigit() else s for s in re.findall(r'\d+|\D+', x)], reverse=True)
         return os.path.join(root, candidates[0])
-    return os.path.join(root, "US_Licensing_Lifecycle_Tracker (3).xlsx")
+    return preferred
 
 
 def main():
@@ -87,12 +90,6 @@ def main():
     print(f" TARGET WORKBOOK: {excel_path}")
     print(f" TARGET TAB:      {sheet_name} (ONLY)")
     print("=" * 60)
-    
-    df = pd.read_excel(excel_path, sheet_name=sheet_name, dtype=str)
-    
-    # Locate Show ID column dynamically
-    show_id_col = next((c for c in df.columns if 'show id' in str(c).lower()), df.columns[0])
-    print(f"Using Show ID column: '{show_id_col}'")
     
     auth_file = "e:/Internship/PocketFM/scratch/auth.json"
     os.makedirs("e:/Internship/PocketFM/scratch", exist_ok=True)
@@ -174,7 +171,7 @@ def main():
             print("Login session saved successfully to scratch/auth.json!")
             
         import openpyxl
-        wb = openpyxl.load_workbook(excel_path)
+        wb = openpyxl.load_workbook(excel_path, data_only=False)
         ws = wb.active if sheet_name not in wb.sheetnames else wb[sheet_name]
         header_row = [cell.value for cell in ws[1]]
         col_map = {str(val).strip(): idx + 1 for idx, val in enumerate(header_row) if val is not None}
@@ -184,7 +181,7 @@ def main():
         for r in range(2, ws.max_row + 1):
             raw_val = str(ws.cell(r, show_id_col_idx).value or '').strip()
             match = re.search(r'[a-f0-9]{40}', raw_val, re.I)
-            clean_id = match.group(0).lower() if match else raw_val.lower()
+            clean_id = match.group(0).lower() if match else ''
             if clean_id:
                 excel_row_by_show_id[clean_id] = r
                 
@@ -193,13 +190,10 @@ def main():
         print(" STARTING THE SCRAPER LOOP (ARGUS SHOW DATA ONLY)")
         print("="*60)
         
-        for index, row in df.iterrows():
-            show_id = str(row[show_id_col]).strip()
-            if not show_id or show_id.lower() == 'nan' or show_id.lower() == 'none':
-                continue
-                
+        total_shows = len(excel_row_by_show_id)
+        for i, (show_id, r_idx) in enumerate(excel_row_by_show_id.items(), 1):
             url = f"https://cms.pocketfm.com/shows/audiobooks?tab=published&id={show_id}"
-            print(f"\nScraping Show ID: {show_id}")
+            print(f"\n[{i}/{total_shows}] Scraping Show ID: {show_id} (Row {r_idx})")
             
             try:
                 page.goto(url, wait_until="domcontentloaded", timeout=25000)
@@ -234,17 +228,23 @@ def main():
                 print(f"--> Plays: {metrics['Plays']} | Duration: {metrics['Duration']} | Ratings: {metrics['Ratings']} | Reviews: {metrics['Reviews']} | Comments: {metrics['Comments']}")
                 
                 # Save immediately to Excel row
-                match = re.search(r'[a-f0-9]{40}', show_id, re.I)
-                clean_id = match.group(0).lower() if match else show_id.lower()
-                if clean_id in excel_row_by_show_id:
-                    r_idx = excel_row_by_show_id[clean_id]
-                    for field in ['Show Name', 'Plays', 'Duration', 'Ratings', 'Reviews', 'Comments']:
-                        if field in col_map:
-                            ws.cell(r_idx, col_map[field]).value = str(metrics[field])
-                    wb.save(excel_path)
-                    print(f"--> [SAVED] Successfully written to row {r_idx} in '{ws.title}'!")
-                else:
-                    print(f"--> [NOTICE] Show ID not found in sheet row map, skipping Excel write.")
+                for field in ['Show Name', 'Plays', 'Duration', 'Ratings', 'Reviews', 'Comments']:
+                    if field in col_map:
+                        val = metrics[field]
+                        if field in ['Duration', 'Ratings']:
+                            try:
+                                ws.cell(r_idx, col_map[field]).value = float(val)
+                            except Exception:
+                                ws.cell(r_idx, col_map[field]).value = str(val)
+                        elif field in ['Reviews', 'Comments']:
+                            try:
+                                ws.cell(r_idx, col_map[field]).value = float(val) if '.' in str(val) else int(val)
+                            except Exception:
+                                ws.cell(r_idx, col_map[field]).value = str(val)
+                        else:
+                            ws.cell(r_idx, col_map[field]).value = str(val)
+                wb.save(excel_path)
+                print(f"--> [SAVED] Successfully written to row {r_idx} in '{ws.title}'!")
                 
             except Exception as e:
                 print(f"--> Timeout or error loading {show_id}: {e}")
