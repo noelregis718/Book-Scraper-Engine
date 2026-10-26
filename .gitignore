@@ -37,6 +37,9 @@ Downloaded_SRTs.zip
 *.xlsx
 *.xls
 *_BACKUP.*
+!Close Calls - 2610.xlsx
+!Romantasy - Close Calls.xlsx
+!Romantasy - Subjective Reviews - 9.9.26 - New Sheet.xlsx
 
 # Python & Executables
 backend/venv/
