@@ -29,14 +29,23 @@ This folder contains the complete, verified 5-part modular division of the Pocke
 
 ---
 
-## How to Use the Single Master Run Button
+## How to Use the Pocket FM Automation Menu
 
 1. Reload the Google Spreadsheet tab.
-2. In the top menu bar, you will see a new menu: **`Pocket FM Automation`**.
-3. Click **`▶️ 🚀 RUN ALL AUTOMATIONS (Single Click)`**.
-4. The script will:
-   - Make 1 batch read of the entire sheet.
-   - Filter and evaluate **only the 109 active rows (Rows 4 to 112)**.
-   - Skip all **884 blank formula rows (Rows 113 to 996)**.
-   - Display a toast notification:  
-     `"Evaluated 109 active rows (884 blank rows skipped). All drafts & statuses updated!"`
+2. In the top menu bar, you will see the menu: **`Pocket FM Automation`**.
+3. You can run all stages at once or each stage individually in complete isolation:
+   - **`▶️ Run All Automations at Once`**: Runs all 10 stages sequentially.
+   - **`1️⃣ Run Welcome Emails Only`**: Contract signed today.
+   - **`2️⃣ Run Vendor Onboarding Only`**: Onboarding docs dispatch.
+   - **`3️⃣ Run MG Payout Initiated Only`**: Vendor exited today.
+   - **`4️⃣ Run MG Payout Confirmation Only`**: MG payout processed.
+   - **`5️⃣ Run Author Check-In 1 (15 Days) Only`**: 15 days from feedback mail.
+   - **`6️⃣ Run Author Check-In 2 (30 Days) Only`**: 30 days from feedback mail.
+   - **`7️⃣ Run Show Launch Announcements Only`**: Live show launch.
+   - **`8️⃣ Run Newsletter (The Author Edit) Only`**: 15 days from launch.
+   - **`9️⃣ Run Quarterly Revenue Statements (Worked Well) Only`**: Testing_PGC / Launched shows (Content Update & Payment Ready drafts).
+   - **`🔟 Run Content Didn't Work Well Statements Only`**: Condition is Bad / Dropped / Sunset (Didn't work well - Content + Payment Related Update draft).
+   - **`🧪 Test Content Didn't Work Well Draft`**: Generates a test "Didn't work well - Content + Payment Related Update" draft directly to your Gmail.
+   - **`🧪 Test Newsletter Draft`**: Generates a test newsletter directly to your Gmail.
+   - **`⚡ Enable Auto-Sync Sent Emails` / `🔄 Sync Sent Emails Now`**: Syncs sent drafts back to sheet status dropdowns.
+

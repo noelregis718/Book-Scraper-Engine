@@ -3,7 +3,7 @@
  * POCKET FM LIFECYCLE CRM AUTOMATION - MODULE 5: MAIN & TRIGGERS
  * File: Main.gs (or Main.js)
  * =============================================================
- * 9 INDIVIDUAL ISOLATED STAGE TRIGGERS:
+ * 10 INDIVIDUAL ISOLATED STAGE TRIGGERS:
  * 1. Welcome Emails Only
  * 2. Vendor Onboarding Only
  * 3. MG Payout Initiated Only
@@ -12,8 +12,9 @@
  * 6. Author Check-In 2 (30 Days) Only
  * 7. Show Launch Announcements Only
  * 8. Newsletter (The Author Edit) Only
- * 9. Quarterly Revenue Statements Only
- * Bonus: Sync Sent Emails Only
+ * 9. Quarterly Revenue Statements (Worked Well) Only
+ * 10. Content Didn't Work Well Statements Only
+ * Bonus: Test Newsletter Draft & Sync Sent Emails Only
  *
  * ZERO COMMOTION: Each button evaluates and runs ONLY its specific condition!
  * No master "all running together" button.
@@ -24,7 +25,7 @@ var GLOBAL_SESSION_LOGS = [];
 
 /**
  * GOOGLE SHEETS TOP-BAR MENU BUILDER:
- * Creates the "Pocket FM Automation" menu with 9 INDIVIDUAL STAGE TRIGGERS.
+ * Creates the "Pocket FM Automation" menu with 10 INDIVIDUAL STAGE TRIGGERS.
  */
 function onOpen() {
   try {
@@ -40,9 +41,11 @@ function onOpen() {
       .addItem("6️⃣ Run Author Check-In 2 (30 Days) Only", "triggerCheckIn2Only")
       .addItem("7️⃣ Run Show Launch Announcements Only", "triggerLaunchAnnouncementsOnly")
       .addItem("8️⃣ Run Newsletter (The Author Edit) Only", "triggerNewsletterOnly")
-      .addItem("9️⃣ Test Newsletter Draft (Generate Directly to My Gmail)", "triggerTestNewsletterDraft")
-      .addItem("🔟 Run Quarterly Revenue Statements Only", "triggerRevenueStatementsOnly")
+      .addItem("9️⃣ Run Quarterly Revenue Statements (Worked Well) Only", "triggerRevenueStatementsOnly")
+      .addItem("🔟 Run Content Didn't Work Well Statements Only", "triggerRevStatementContentBadOnly")
       .addSeparator()
+      .addItem("🧪 Test Newsletter Draft (Generate Directly to My Gmail)", "triggerTestNewsletterDraft")
+      .addItem("🧪 Test Content Didn't Work Well Draft (Generate Directly to My Gmail)", "triggerTestContentBadDraft")
       .addItem("⚡ Enable Auto-Sync Sent Emails (Every 1 Min)", "installSentMailSyncTrigger")
       .addItem("🔄 Sync Sent Emails Now", "triggerSyncSentEmailsOnly")
       .addToUi();
@@ -124,7 +127,8 @@ function triggerRunAllStagesSequentially() {
     { key: 'checkIn2', label: '6. Author Check-In 2 (30 Days)', fn: triggerCheckIn2Only },
     { key: 'launch', label: '7. Show Launch Announcements', fn: triggerLaunchAnnouncementsOnly },
     { key: 'newsletter', label: '8. Newsletter (The Author Edit)', fn: triggerNewsletterOnly },
-    { key: 'revStatement', label: '9. Quarterly Revenue Statements', fn: triggerRevenueStatementsOnly }
+    { key: 'revStatement_workedWell', label: '9. Quarterly Revenue Statements (Worked Well)', fn: triggerRevenueStatementsOnly },
+    { key: 'revStatement_didntWorkWell', label: '10. Content Didn\'t Work Well Statements', fn: triggerRevStatementContentBadOnly }
   ];
 
   let results = [];
@@ -276,11 +280,27 @@ function triggerTestNewsletterDraft() {
 }
 
 /**
- * 9. TRIGGER: QUARTERLY REVENUE STATEMENTS ONLY
- * Condition: Evaluates AMJ, JAS, OND quarterly statement due dates & links.
+ * 9. TRIGGER: QUARTERLY REVENUE STATEMENTS (WORKED WELL) ONLY
+ * Condition: Evaluates AMJ, JAS, OND quarterly statement due dates & links for Testing_PGC / Launched shows.
  */
 function triggerRevenueStatementsOnly() {
-  return runSingleStage('revStatement', '9. Quarterly Revenue Statements');
+  return runSingleStage('revStatement_workedWell', '9. Quarterly Revenue Statements (Worked Well)');
+}
+
+/**
+ * 10. TRIGGER: CONTENT DIDN'T WORK WELL REVENUE STATEMENTS ONLY
+ * Condition: Evaluates shows where Launch Status is Bad / Dropped / Sunset (Stage 9C), drafts 'Didnt work well - Content Related Update'.
+ */
+function triggerRevStatementContentBadOnly() {
+  return runSingleStage('revStatement_didntWorkWell', '10. Content Didn\'t Work Well Statements');
+}
+
+// Backward compatibility aliases for Content Didn't Work Well trigger
+function triggerContentBadOnly() {
+  return triggerRevStatementContentBadOnly();
+}
+function triggerContentDidntWorkWellOnly() {
+  return triggerRevStatementContentBadOnly();
 }
 
 /**
@@ -322,4 +342,16 @@ function installSentMailSyncTrigger() {
     SpreadsheetApp.getActiveSpreadsheet().toast(msg, "Auto-Sync Enabled", 6);
   } catch(e) {}
   return msg;
+}
+
+/**
+ * TEST TRIGGER: CONTENT DIDN'T WORK WELL DRAFT
+ * Generates a test draft directly to the user's Gmail using the updated template.
+ */
+function triggerTestContentBadDraft() {
+  if (typeof testContentBadDraft === 'function') {
+    return testContentBadDraft();
+  } else {
+    Logger.log("testContentBadDraft function is not found in DraftEngine.gs.");
+  }
 }

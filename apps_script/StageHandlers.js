@@ -128,8 +128,8 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
         let hours = aHoursCol > -1 ? aData[j][aHoursCol] : "";
 
         let formattedDur = (dur !== "" && dur !== null && dur !== undefined) ? dur + " hours" : "N/A";
-        let formattedLdau = (ldau !== "" && ldau !== null && ldau !== undefined) 
-                            ? (ldau.toString().toLowerCase().includes("listener") || ldau.toString().toLowerCase().includes("play") ? ldau.toString() : ldau + " listeners") 
+        let formattedPlays = (ldau !== "" && ldau !== null && ldau !== undefined) 
+                            ? (ldau.toString().toLowerCase().includes("play") ? ldau.toString() : ldau.toString().replace(/\s*listeners\s*/i, "").trim() + " plays") 
                             : "N/A";
         let formattedComments = (comments !== "" && comments !== null && comments.toString() !== "0" && comments.toString() !== "0.0") 
                                 ? (!isNaN(comments) ? Math.round(Number(comments)).toString() : comments.toString()) 
@@ -144,7 +144,8 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
 
         let metrics = {
           duration: formattedDur,
-          ldau: formattedLdau,
+          ldau: formattedPlays,
+          plays: formattedPlays,
           comments: formattedComments,
           ratings: formattedRatings,
           reviews: formattedReviews,
@@ -496,7 +497,7 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
       'checkIn1', 'checkIn2', 'launch', 'launch_no_ai', 
       'authorEdit', 'newsletter',
       'revStatement_workedWell_content', 'revStatement_workedWell_payment', 
-      'revStatement_didntWorkWell'
+      'revStatement_didntWorkWell', 'contentBad'
     ];
     if (!type || !validTemplates.includes(type)) {
       logNotification("Email template not selected", title, `Email template not selected or unrecognized for stage type: "${type}". Draft creation skipped.`, draftRowNum);
@@ -527,7 +528,7 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
     if (type === "authorEdit" || type === "newsletter") templateName = "The Author Edit";
     if (type === "revStatement_workedWell_content") templateName = "Content Update - worked well";
     if (type === "revStatement_workedWell_payment") templateName = "Worked Well - Payment-Related Update";
-    if (type === "revStatement_didntWorkWell") templateName = "Didnt work well - Content Related Update";
+    if (type === "revStatement_didntWorkWell" || type === "contentBad") templateName = "Didn't work well - Content + Payment Related Update";
 
     // 5. Generate Data for Queue
     const queueId = Utilities.getUuid();
@@ -536,7 +537,8 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
       throw new Error("Templates.gs is missing from this Google Apps Script project. Please create a script file named 'Templates' in Extensions > Apps Script and paste the contents of Templates.gs into it.");
     }
 
-    const body = getBody(type, firstName, title, link, grammar, revLink, argus, showName);
+    const templateType = (type === "contentBad") ? "revStatement_didntWorkWell" : type;
+    const body = getBody(templateType, firstName, title, link, grammar, revLink, argus, showName);
     if (!body || body.trim() === "") {
       logNotification("Email template not selected", title, `Email template body is empty or not defined for stage type: "${type}".`, draftRowNum);
       return;
@@ -665,7 +667,7 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
     let argus = (safeSid && argusData[safeSid]) 
                 || (argusData[safeTitle]) 
                 || (showName && argusData[showName.toLowerCase().trim()]) 
-                || {duration: "N/A", ldau: "N/A", comments: "No comments", ratings: "No ratings", reviews: "No reviews", hours: "N/A"};
+                || {duration: "N/A", ldau: "N/A", plays: "N/A", comments: "No comments", ratings: "No ratings", reviews: "No reviews", hours: "N/A"};
     let psAuthorCol = psFindCol("Author Name");
     let psAuthor = (psAuthorCol > -1 && psRow.length > psAuthorCol && psRow[psAuthorCol]) ? psRow[psAuthorCol].toString().trim() : "";
     let author = (psAuthor !== "" && !psAuthor.includes("#REF")) ? psAuthor : (mainInfo.author ? mainInfo.author.toString().trim() : "");
@@ -705,12 +707,14 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
                       : "";
     let masterStage = (mainInfo.stage ? mainInfo.stage.toString().trim().toLowerCase() : "");
 
-    // Robust Dropped Detection: If "drop" appears in ANY status location for this show, it is unequivocally DROPPED!
+    // Robust Dropped / Condition Bad Detection: If "drop", "bad", or "sunset" appears in ANY status location for this show, it is marked!
     let isRowDropped = masterLaunchStatus.includes("drop") || 
                        psLaunchStatus.includes("drop") || 
                        psLaunchAnnouncementStatus.includes("drop") || 
                        psRevStatus.includes("drop") ||
-                       masterStage.includes("drop");
+                       masterStage.includes("drop") ||
+                       masterLaunchStatus.includes("bad") ||
+                       psLaunchStatus.includes("bad");
 
     let launchStatus = isRowDropped 
                        ? "dropped" 
@@ -1074,11 +1078,15 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
     // Stages 9A, 9B, 9C: Revenue Statements (Approved Columns AI to AM)
     // 9A: Rev Statement (Content Review): Col AA Status == 'Testing_PGC' / 'Launched (ROW)' | Col Y Show ID in Argus
     // 9B: Rev Statement (Payment Ready):  Col AA Status == 'Testing_PGC' / 'Launched (ROW)'
-    // 9C: Rev Statement (Sunset / Dropped): Col AA Status == 'Dropped' | Col Y Show ID in Argus
+    // 9C: Rev Statement (Sunset / Dropped / Content Bad): Col AA Status == 'Dropped' / 'Bad' | Col Y Show ID in Argus
     // Approved Progress Columns: Col AL (Drive Link), Col AM (Sent Progress Dropdown), Col AJ (Status)
     // =============================================================
-    if (!targetStage || targetStage === "revStatement" || targetStage.startsWith("revStatement_")) {
-      let isShowDropped = isRowDropped || launchStatus.includes("dropped") || launchStatus.includes("drop");
+    if (!targetStage || targetStage === "revStatement" || targetStage.startsWith("revStatement_") || targetStage === "contentBad") {
+      let isShowDropped = isRowDropped || 
+                          launchStatus.includes("dropped") || 
+                          launchStatus.includes("drop") || 
+                          launchStatus.includes("bad") || 
+                          launchStatus.includes("sunset");
       let isTestingPgcOrLaunched = !isShowDropped && (launchStatus.includes("testing_pgc") || launchStatus === "testing" || launchStatus.includes("launched (row)") || launchStatus.includes("launched"));
       let hasArgusData = showId && (
         (argusData && argusData[showId.toLowerCase().trim()]) || 
@@ -1102,18 +1110,18 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
         Logger.log(`[ROW ${rowNum}] [Rev Statement] Evaluated for "${title}" - Col AM Status: "${curRevStatus || curRevEmailStatus}" (Already processed / Draft Ready - Skipped duplicate creation)`);
       } else {
         if (isShowDropped) {
-          // Stage 9C: Sunset / Dropped ONLY (Mutually exclusive from 9A & 9B)
-          if (!targetStage || targetStage === "revStatement" || targetStage === "revStatement_didntWorkWell") {
+          // Stage 9C: Sunset / Dropped / Content Bad ONLY (Mutually exclusive from 9A & 9B)
+          if (!targetStage || targetStage === "revStatement" || targetStage === "revStatement_didntWorkWell" || targetStage === "contentBad") {
             if (hasArgusData || (showId && !argusSheet)) {
               createDraft(email, `Pocket FM: An Update on ${title}`, firstName, 'revStatement_didntWorkWell', title, link, i, targetRevCol, null, ccMail, revLink, argus, showName);
-              Logger.log(`[ROW ${rowNum}] [Stage 9C: Sunset/Dropped] [DRAFT CREATED] Status == Dropped & Show ID in Argus for "${title}". Progress stored in Col AM.`);
+              Logger.log(`[ROW ${rowNum}] [Stage 9C: Content Bad / Sunset / Dropped] [DRAFT CREATED] Status == Dropped/Bad & Show ID in Argus for "${title}". Progress stored in Col AM.`);
             } else {
-              Logger.log(`[ROW ${rowNum}] [Stage 9C: Sunset/Dropped] [SKIPPED] Show "${title}" is Dropped but Show ID ("${showId || 'Blank'}") is not found in Argus Data.`);
+              Logger.log(`[ROW ${rowNum}] [Stage 9C: Content Bad / Sunset / Dropped] [SKIPPED] Show "${title}" is Dropped/Bad but Show ID ("${showId || 'Blank'}") is not found in Argus Data.`);
             }
           }
         } else if (isTestingPgcOrLaunched) {
           // Stage 9A: Content Review
-          if (!targetStage || targetStage === "revStatement" || targetStage === "revStatement_workedWell_content") {
+          if (!targetStage || targetStage === "revStatement" || targetStage === "revStatement_workedWell" || targetStage === "revStatement_workedWell_content") {
             if (hasArgusData || (showId && !argusSheet)) {
               createDraft(email, `Content Update for ${title}`, firstName, 'revStatement_workedWell_content', title, link, i, targetRevCol, null, ccMail, revLink, argus, showName);
               Logger.log(`[ROW ${rowNum}] [Stage 9A: Content Review] [DRAFT CREATED] Status == Testing_PGC / Launched (ROW) & Show ID in Argus for "${title}". Progress stored in Col AM.`);
@@ -1121,7 +1129,7 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
           }
 
           // Stage 9B: Payment Ready
-          if (!targetStage || targetStage === "revStatement" || targetStage === "revStatement_workedWell_payment") {
+          if (!targetStage || targetStage === "revStatement" || targetStage === "revStatement_workedWell" || targetStage === "revStatement_workedWell_payment") {
             createDraft(email, "Pocket FM: Your earnings are waiting for you!", firstName, 'revStatement_workedWell_payment', title, link, i, targetRevCol, null, ccMail, revLink, argus, showName);
             Logger.log(`[ROW ${rowNum}] [Stage 9B: Payment Ready] [DRAFT CREATED] Status == Testing_PGC / Launched (ROW) for "${title}". Progress stored in Col AM.`);
           }
@@ -1843,8 +1851,22 @@ function runNewsletter() {
 }
 
 /**
- * Directly runs Stage 9: Quarterly Revenue Statements Only
+ * Directly runs Stage 9: Quarterly Revenue Statements (Worked Well) Only
  */
 function runRevenueStatements() {
-  return processOutreachQueue(false, 'revStatement');
+  return processOutreachQueue(false, 'revStatement_workedWell');
+}
+
+/**
+ * Directly runs Content Bad / Didn't Work Well Revenue Statements Only
+ */
+function runRevStatementContentBad() {
+  return processOutreachQueue(false, 'revStatement_didntWorkWell');
+}
+
+/**
+ * Backward compatibility alias for Content Bad runner
+ */
+function runContentBad() {
+  return runRevStatementContentBad();
 }

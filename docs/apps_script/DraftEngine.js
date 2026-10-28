@@ -33,7 +33,7 @@ function createDraft(rawEmail, subject, firstName, type, title, link, rIdx, cIdx
     'checkIn1', 'checkIn2', 'launch', 'launch_no_ai', 
     'authorEdit', 'newsletter',
     'revStatement_workedWell_content', 'revStatement_workedWell_payment', 
-    'revStatement_didntWorkWell'
+    'revStatement_didntWorkWell', 'contentBad'
   ];
   if (!type || !validTemplates.includes(type)) {
     Logger.log(`${rowPrefix}[RECOMMENDED NOTIFICATION] Email template not selected: Email template not selected or unrecognized for stage type: "${type}" (Title: "${title}"). Draft creation skipped.`);
@@ -64,11 +64,12 @@ function createDraft(rawEmail, subject, firstName, type, title, link, rIdx, cIdx
   if (type === "authorEdit" || type === "newsletter") templateName = "The Author Edit";
   if (type === "revStatement_workedWell_content") templateName = "Content Update - worked well";
   if (type === "revStatement_workedWell_payment") templateName = "Worked Well - Payment-Related Update";
-  if (type === "revStatement_didntWorkWell") templateName = "Didnt work well - Content Related Update";
+  if (type === "revStatement_didntWorkWell" || type === "contentBad") templateName = "Didn't work well - Content + Payment Related Update";
 
   // 5. Generate Data for Queue
   const queueId = Utilities.getUuid();
-  const body = getBody(type, firstName, title, link, grammar, revLink, argus, showName);
+  const templateType = (type === "contentBad") ? "revStatement_didntWorkWell" : type;
+  const body = getBody(templateType, firstName, title, link, grammar, revLink, argus, showName);
   if (!body || body.trim() === "") {
     Logger.log(`${rowPrefix}[RECOMMENDED NOTIFICATION] Email template not selected: Email template body is empty or not defined for stage type: "${type}" (Title: "${title}").`);
     return false;
@@ -712,7 +713,8 @@ function testRevenueStatementDraft() {
   const argusSheet = getArgusSheet(ss);
   let sampleMetrics = {
     duration: "56.8 hours",
-    ldau: "159.2K listeners",
+    plays: "159.2K plays",
+    ldau: "159.2K plays",
     comments: "164",
     ratings: "4.6",
     reviews: "28",
@@ -749,7 +751,8 @@ function testRevenueStatementDraft() {
 
           sampleMetrics = {
             duration: (dur !== "" && dur !== null && dur !== undefined) ? dur + " hours" : "N/A",
-            ldau: (ldau !== "" && ldau !== null && ldau !== undefined) ? (ldau.toString().toLowerCase().includes("listener") || ldau.toString().toLowerCase().includes("play") ? ldau.toString() : ldau + " listeners") : "N/A",
+            plays: (ldau !== "" && ldau !== null && ldau !== undefined) ? (ldau.toString().toLowerCase().includes("play") ? ldau.toString() : ldau.toString().replace(/\s*listeners\s*/i, "").trim() + " plays") : "N/A",
+            ldau: (ldau !== "" && ldau !== null && ldau !== undefined) ? (ldau.toString().toLowerCase().includes("play") ? ldau.toString() : ldau.toString().replace(/\s*listeners\s*/i, "").trim() + " plays") : "N/A",
             comments: (comments !== "" && comments !== null && comments.toString() !== "0") ? (!isNaN(comments) ? Math.round(Number(comments)).toString() : comments.toString()) : "No comments",
             ratings: (ratings !== "" && ratings !== null && ratings.toString() !== "0") ? ratings.toString() : "No ratings",
             reviews: (reviews !== "" && reviews !== null && reviews.toString() !== "0") ? (!isNaN(reviews) ? Math.round(Number(reviews)).toString() : reviews.toString()) : "No reviews",
@@ -779,3 +782,69 @@ function testRevenueStatementDraft() {
   GmailApp.createDraft(myEmail, subject2, "", { htmlBody: wrappedBody2 });
   Logger.log(`SUCCESS [Draft 2]: Created "${subject2}" with invoice template table`);
 }
+
+/**
+ * TEST TRIGGER: IMMEDIATE CONTENT BAD DRAFT GENERATOR
+ * Generates a sample "Didn't work well - Content + Payment Related Update" draft directly into active user's Gmail.
+ */
+function testContentBadDraft() {
+  let myEmail = "";
+  try { myEmail = Session.getActiveUser().getEmail(); } catch (e) {}
+  if (!myEmail) myEmail = "author@example.com";
+
+  let argusSheet = getArgusSheet();
+  let sampleMetrics = { duration: "10 hours", plays: "500 plays", ldau: "500 plays", comments: "12", ratings: "4.2", reviews: "5", hours: "N/A" };
+  let testTitle = "A Shade of Vampire Series";
+  let testShowName = "A Shade of Vampire";
+  let testFirstName = "Bella";
+  let testRevLink = "https://drive.google.com/drive/folders/sample-revenue-statement";
+
+  if (argusSheet) {
+    const aData = argusSheet.getDataRange().getValues();
+    if (aData.length > 1) {
+      const aHeaders = aData[0];
+      const aFindCol = (name) => aHeaders.findIndex(h => h.toString().toLowerCase().includes(name.toLowerCase()));
+      const aTitleCol = aFindCol("Title");
+      const aShowNameCol = aFindCol("Show Name");
+      const aDurCol = aFindCol("Duration");
+      const aLdauCol = aFindCol("Plays") > -1 ? aFindCol("Plays") : aFindCol("LDAU");
+      const aCommentsCol = aFindCol("Comment");
+      const aRatingsCol = aFindCol("Rating");
+      const aReviewsCol = aFindCol("Review");
+
+      for (let j = 1; j < aData.length; j++) {
+        let rowTitle = aTitleCol > -1 ? aData[j][aTitleCol] : "";
+        if (rowTitle && rowTitle.toString().trim() !== "") {
+          testTitle = rowTitle.toString().trim();
+          testShowName = (aShowNameCol > -1 && aData[j][aShowNameCol]) ? aData[j][aShowNameCol].toString().trim() : testTitle;
+          let dur = aDurCol > -1 ? aData[j][aDurCol] : "";
+          let ldau = aLdauCol > -1 ? aData[j][aLdauCol] : "";
+          let comments = aCommentsCol > -1 ? aData[j][aCommentsCol] : "";
+          let ratings = aRatingsCol > -1 ? aData[j][aRatingsCol] : "";
+          let reviews = aReviewsCol > -1 ? aData[j][aReviewsCol] : "";
+
+          sampleMetrics = {
+            duration: (dur !== "" && dur !== null && dur !== undefined) ? dur + " hours" : "N/A",
+            plays: (ldau !== "" && ldau !== null && ldau !== undefined) ? (ldau.toString().toLowerCase().includes("play") ? ldau.toString() : ldau.toString().replace(/\s*listeners\s*/i, "").trim() + " plays") : "N/A",
+            ldau: (ldau !== "" && ldau !== null && ldau !== undefined) ? (ldau.toString().toLowerCase().includes("play") ? ldau.toString() : ldau.toString().replace(/\s*listeners\s*/i, "").trim() + " plays") : "N/A",
+            comments: (comments !== "" && comments !== null && comments.toString() !== "0") ? (!isNaN(comments) ? Math.round(Number(comments)).toString() : comments.toString()) : "No comments",
+            ratings: (ratings !== "" && ratings !== null && ratings.toString() !== "0") ? ratings.toString() : "No ratings",
+            reviews: (reviews !== "" && reviews !== null && reviews.toString() !== "0") ? (!isNaN(reviews) ? Math.round(Number(reviews)).toString() : reviews.toString()) : "No reviews",
+            hours: "N/A"
+          };
+          break;
+        }
+      }
+    }
+  }
+
+  const grammar = { work: "work", is: "is", has: "has", title: "title", this: "this", it: "it", its: "its" };
+  const queueId = Utilities.getUuid();
+  const bodyContent = getBody('revStatement_didntWorkWell', testFirstName, testTitle, "", grammar, testRevLink, sampleMetrics, testShowName);
+  const wrappedBody = wrapHtml(bodyContent, queueId);
+  const subject = `Pocket FM: An Update on ${testTitle}`;
+  GmailApp.createDraft(myEmail, subject, "", { htmlBody: wrappedBody });
+  Logger.log(`SUCCESS [Content Bad Draft]: Created "${subject}" with sunset performance review for "${testTitle}"`);
+  return subject;
+}
+

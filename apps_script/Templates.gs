@@ -371,7 +371,7 @@ function getBody(type, firstName, title, link, grammar, revLink, argus, showName
           <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
           <b>Show Snapshot</b><br>
           • Duration Produced: ${argus.duration}<br>
-          • Plays / Daily Active Listeners (LDAUs): ${argus.ldau}<br>
+          • Plays: ${argus.plays || argus.ldau}<br>
           • Comments: ${argus.comments}<br>
           • Ratings: ${argus.ratings}<br>
           • Reviews: ${argus.reviews}
@@ -454,45 +454,65 @@ function getBody(type, firstName, title, link, grammar, revLink, argus, showName
           Pocket FM
           </td></tr>
         `;
+      case 'contentBad':
       case 'revStatement_didntWorkWell':
         const revHrefDidntWork = revLink ? revLink : "#";
+        const durRaw = (argus && argus.duration) ? argus.duration.toString().trim() : "";
+        const durText = (durRaw && durRaw !== "N/A")
+          ? (durRaw.toLowerCase().includes("hour") ? durRaw : `${durRaw} hours`)
+          : "N/A";
+        const playsRaw = (argus && (argus.plays || argus.ldau)) ? (argus.plays || argus.ldau).toString().trim() : "";
+        const playsText = (playsRaw && playsRaw !== "N/A")
+          ? (playsRaw.toLowerCase().includes("play") ? playsRaw : `${playsRaw} plays`)
+          : "N/A";
+        const commentsText = (argus && argus.comments && argus.comments.toString().trim() !== "")
+          ? argus.comments.toString().trim()
+          : "No comments";
+        const ratingsText = (argus && argus.ratings && argus.ratings.toString().trim() !== "")
+          ? argus.ratings.toString().trim()
+          : "No ratings";
+        const reviewsText = (argus && argus.reviews && argus.reviews.toString().trim() !== "")
+          ? argus.reviews.toString().trim()
+          : "No reviews";
+
         return `
           <tr><td align="left" style="font-size:18px; font-weight:600; color:#121212; padding:30px 35px 10px; line-height:24px;">
-          Hi ${firstName},
+          ${firstName ? `Hi ${firstName},` : `Hi,`}
           </td></tr>
           <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
-          We're sharing the latest performance update for <b>${title}</b> on Pocket FM. Attached, you'll find your revenue statement for this quarter, which provides a breakdown of your earnings for the reporting period, along with a snapshot of how your show has been performing.
+          We're sharing the latest performance update for <b>${title}</b> on Pocket FM. Attached, you'll find your <b>revenue statement for this quarter</b>, which provides a breakdown of your earnings for the reporting period, along with a snapshot of how your show has been performing.
           </td></tr>
           <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
-          <b>Show Snapshot</b><br>
-          • Duration Produced: ${argus.duration}<br>
-          • Plays / Daily Active Listeners (LDAUs): ${argus.ldau}<br>
-          • Comments: ${argus.comments}<br>
-          • Ratings: ${argus.ratings}<br>
-          • Reviews: ${argus.reviews}
-          </td></tr>
-          <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
-          Based on the show's performance and our internal benchmarks, we've decided not to produce additional episodes for <b>${title}</b> at this time. This is purely dependent on how our audience has been responding to this show and doesn't take away from the value of your story at all. We'll continue to share quarterly revenue statements for the episodes already live on Pocket FM.
-          </td></tr>
-          <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
-          If you know other authors who may be a good fit for Pocket FM, we'd love an introduction. Our referral program offers meaningful incentives for every author you refer who signs with us. Please watch out for a separate email about the referral program.
-          </td></tr>
-          <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
-          If you have any questions about your revenue statement or your show's performance, simply reply to this email—we're happy to help.
-          </td></tr>
-          <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
-          Click here to check your revenue statement: <br>
-          <table border="0" cellspacing="0" cellpadding="0" style="margin-top: 10px; margin-bottom: 10px;">
+          <b>Show Snapshot</b>
+          <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-top: 8px; margin-bottom: 8px;">
+            <tr><td style="border-top: 1px solid #d3d3d3; padding-top: 8px;"></td></tr>
             <tr>
-              <td align="center" style="border-radius: 6px; background-color: #E51A4D;">
-                <a href="${revHrefDidntWork}" target="_blank" style="font-size: 16px; font-weight: bold; color: #ffffff; text-decoration: none; border-radius: 6px; padding: 12px 24px; border: 1px solid #E51A4D; display: inline-block;">Access Revenue Statements</a>
+              <td style="font-size:15px; color:#121212; line-height:26px; padding-left: 15px;">
+                • &nbsp;<b>Duration Produced:</b> ${durText}<br>
+                • &nbsp;<b>Plays:</b> ${playsText}<br>
+                • &nbsp;<b>Comments:</b> ${commentsText}<br>
+                • &nbsp;<b>Ratings:</b> ${ratingsText}<br>
+                • &nbsp;<b>Reviews:</b> ${reviewsText}
               </td>
             </tr>
+            <tr><td style="border-bottom: 1px solid #d3d3d3; padding-bottom: 8px;"></td></tr>
           </table>
           </td></tr>
-          <tr><td align="left" style="font-size:16px; font-weight:400; color:#121212; padding:10px 35px 30px; line-height:24px;">
+          <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
+          As part of our content evaluation process, we initially tested <b>${title}</b> with a small group of listeners to understand audience engagement and response. Based on the feedback and performance observed during this testing phase, along with our internal benchmarks, we've decided not to move forward with producing additional episodes at this time.
+          </td></tr>
+          <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
+          This decision is based solely on the show's performance with the test audience and does not take away from the value of your story. We truly appreciate the opportunity to bring your work to Pocket FM and will continue sharing quarterly revenue statements for the episodes already available on the platform.
+          </td></tr>
+          <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
+          If you have any questions about your revenue statement or your show's performance, simply reply to this email; we're always happy to help.
+          </td></tr>
+          <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
+          <b>Click here to view your revenue statement:</b> ${revLink && revLink !== '#' ? `<a href="${revHrefDidntWork}" target="_blank" style="color: #1a73e8; text-decoration: underline; word-break: break-all;">${revLink}</a>` : `<span style="color: #666666;">{{Revenue Statement Drive}}</span>`}
+          </td></tr>
+          <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px 30px; line-height:24px;">
           Best,<br>
-          US Licensing & Commissioning Team<br>
+          <b>US Licensing & Commissioning Team</b><br>
           Pocket FM
           </td></tr>
         `;
@@ -508,7 +528,7 @@ function getBody(type, firstName, title, link, grammar, revLink, argus, showName
           <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
           <b>Show Snapshot</b><br>
           • Listening Hours: ${argus.hours}<br>
-          • Daily Active Listeners (LDAUs): ${argus.ldau}<br>
+          • Plays: ${argus.plays || argus.ldau}<br>
           • Duration Produced: ${argus.duration}<br>
           • Comments: ${argus.comments}
           </td></tr>
