@@ -508,7 +508,14 @@ function getBody(type, firstName, title, link, grammar, revLink, argus, showName
           If you have any questions about your revenue statement or your show's performance, simply reply to this email; we're always happy to help.
           </td></tr>
           <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
-          <b>Click here to view your revenue statement:</b> ${revLink && revLink !== '#' ? `<a href="${revHrefDidntWork}" target="_blank" style="color: #1a73e8; text-decoration: underline; word-break: break-all;">${revLink}</a>` : `<span style="color: #666666;">{{Revenue Statement Drive}}</span>`}
+          <b>Click here to view your revenue statement:</b><br>
+          <table border="0" cellspacing="0" cellpadding="0" style="margin-top: 12px; margin-bottom: 10px;">
+            <tr>
+              <td align="center" style="border-radius: 6px; background-color: #1a73e8;">
+                <a href="${revHrefDidntWork}" target="_blank" style="font-size: 16px; font-weight: bold; color: #ffffff; text-decoration: none; border-radius: 6px; padding: 12px 26px; border: 1px solid #1a73e8; display: inline-block;">Revenue Statement Drive</a>
+              </td>
+            </tr>
+          </table>
           </td></tr>
           <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px 30px; line-height:24px;">
           Best,<br>
