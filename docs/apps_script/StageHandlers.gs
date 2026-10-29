@@ -773,7 +773,11 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
         createDraft(email, `Vendor Onboarding for ${title}`, firstName, 'vendor', title, link, i, vendorCol, null, ccMail, revLink, argus);
       }
       if (psRow[revStatementEmailCol] === "Timer Set Rev") {
-        createDraft(email, "Pocket FM: Your earnings are waiting for you!", firstName, 'revStatement_workedWell_payment', title, link, i, revStatementEmailCol, null, ccMail, revLink, argus);
+        if (revLink && revLink.toString().trim() !== "" && revLink.toString().trim() !== "#" && !revLink.toString().includes("#REF")) {
+          createDraft(email, "Pocket FM: Your earnings are waiting for you!", firstName, 'revStatement_workedWell_payment', title, link, i, revStatementEmailCol, null, ccMail, revLink, argus);
+        } else {
+          Logger.log(`[ROW ${rowNum}] [Rev Statement Timer] [SKIPPED] Missing Revenue Statement link in Col AL for "${title}".`);
+        }
       }
       continue; 
     }
@@ -1259,8 +1263,15 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
                              curRevEmailStatus === "sent" || 
                              curRevEmailStatus === "draft ready";
 
+      // Strict Revenue Statement Link Validation (Col AL):
+      // If Revenue Statement Link is missing, blank, or placeholder (#, #REF), DO NOT create drafts and DO NOT mark Draft Ready in Col AM!
+      const hasValidRevLink = revLink && revLink.toString().trim() !== "" && revLink.toString().trim() !== "#" && !revLink.toString().includes("#REF");
+
       if (isRevProcessed) {
         Logger.log(`[ROW ${rowNum}] [Rev Statement] Evaluated for "${title}" - Col AM Status: "${curRevStatus || curRevEmailStatus}" (Already processed / Draft Ready - Skipped duplicate creation)`);
+      } else if (!hasValidRevLink) {
+        Logger.log(`[ROW ${rowNum}] [Rev Statement] [SKIPPED] Missing Revenue Statement link in Col AL for "${title}". Draft creation suppressed; Col AM untouched.`);
+        logNotification("Missing Revenue Statement Link", title, `Revenue Statement draft suppressed for "${title}" because the statement link in Column AL is missing or blank.`, rowNum);
       } else {
         if (isShowDropped) {
           // Stage 9C: Sunset / Dropped / Content Bad ONLY (Mutually exclusive from 9A & 9B)

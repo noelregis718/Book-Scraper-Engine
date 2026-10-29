@@ -2023,6 +2023,13 @@ function processOutreachQueue(isDelayedRun = false) {
 
       Logger.log(`[DEBUG RevStatement ${qc.code}] Title: ${title} | Status: "${qStatusStr}" | DriveLink: "${qRawLink}" | LaunchStatus: ${launchStatus}`);
 
+      // Strict check: Revenue Statement Link must be present
+      const hasValidRevLink = qRevLink && qRevLink.toString().trim() !== "" && qRevLink.toString().trim() !== "#" && !qRevLink.toString().includes("#REF");
+      if (!hasValidRevLink) {
+        Logger.log(`[Rev Statement ${qc.code}] [SKIPPED] Missing Revenue Statement link for "${title}". Draft creation suppressed.`);
+        continue;
+      }
+
       if (isReady(qSentStr)) {
         let targetSentCol = qc.sentCol > -1 ? qc.sentCol : qc.statusCol;
 
