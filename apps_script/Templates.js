@@ -511,8 +511,8 @@ function getBody(type, firstName, title, link, grammar, revLink, argus, showName
           <b>Click here to view your revenue statement:</b><br>
           <table border="0" cellspacing="0" cellpadding="0" style="margin-top: 12px; margin-bottom: 10px;">
             <tr>
-              <td align="center" style="border-radius: 6px; background-color: #1a73e8;">
-                <a href="${revHrefDidntWork}" target="_blank" style="font-size: 16px; font-weight: bold; color: #ffffff; text-decoration: none; border-radius: 6px; padding: 12px 26px; border: 1px solid #1a73e8; display: inline-block;">Revenue Statement Drive</a>
+              <td align="center" style="border-radius: 6px; background-color: #E51A4D;">
+                <a href="${revHrefDidntWork}" target="_blank" style="font-size: 16px; font-weight: bold; color: #ffffff; text-decoration: none; border-radius: 6px; padding: 12px 26px; border: 1px solid #E51A4D; display: inline-block;">Revenue Statement Drive</a>
               </td>
             </tr>
           </table>

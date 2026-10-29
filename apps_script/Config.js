@@ -282,6 +282,21 @@ function isToday(dateVal) {
 }
 
 /**
+ * Returns a standardized YYYY-MM-DD date key for same-date comparisons across timezones and formats.
+ * @param {*} dateVal - Date object, date string, or serial date
+ * @returns {string} Standardized YYYY-MM-DD string
+ */
+function getStandardDateKey(dateVal) {
+  if (!dateVal) return "";
+  let target = parseDateSafe(dateVal);
+  if (!target) return dateVal.toString().trim().toLowerCase();
+  let yr = target.getFullYear();
+  let mo = String(target.getMonth() + 1).padStart(2, "0");
+  let da = String(target.getDate()).padStart(2, "0");
+  return yr + "-" + mo + "-" + da;
+}
+
+/**
  * Checks if a contract / deal was signed before 1st September 2026.
  * @param {*} dateVal - Date object, date string, or serial date
  * @returns {boolean} True if deal was signed before 1st September 2026

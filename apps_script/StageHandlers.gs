@@ -477,13 +477,27 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
     return cleaned.join(", ");
   }
 
+  // Standardized YYYY-MM-DD date key helper for same date check
+  function getStandardDateKey(dateVal) {
+    if (!dateVal) return "";
+    let target = parseDateSafe(dateVal);
+    if (!target) return dateVal.toString().trim().toLowerCase();
+    let yr = target.getFullYear();
+    let mo = String(target.getMonth() + 1).padStart(2, "0");
+    let da = String(target.getDate()).padStart(2, "0");
+    return `${yr}-${mo}-${da}`;
+  }
+
   // -------------------------------------------------------------
   // DRAFTING LOGIC WITH VARIABLE MAPPING & QUEUE INJECTION
   // -------------------------------------------------------------
   function createDraft(rawEmail, subject, firstName, type, title, link, rIdx, cIdx, customSendTime, rawCcMail, revLink, argus, showName = "") {
     const email = cleanEmail(rawEmail);
     const ccMail = cleanCcList(rawCcMail);
-    const draftRowNum = (rIdx !== null && rIdx !== undefined) ? rIdx + 1 : null;
+    const rowIndices = Array.isArray(rIdx) ? rIdx : (rIdx !== null && rIdx !== undefined ? [rIdx] : []);
+    const rowNumbersDisplay = rowIndices.length > 0 ? rowIndices.map(idx => idx + 1).join(", ") : "";
+    const rowPrefix = rowNumbersDisplay ? (rowIndices.length > 1 ? `[ROWS ${rowNumbersDisplay}] ` : `[ROW ${rowNumbersDisplay}] `) : "";
+    const draftRowNum = rowIndices.length > 0 ? rowIndices[0] + 1 : null;
 
     // 1. Notification Check: Recipient Email ID
     if (!email || email === "" || !isValidEmail(email)) {
@@ -565,14 +579,14 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
           sendDate,
           sendTime,
           "Draft Ready", 
-          rIdx + 1, 
+          rowNumbersDisplay, 
           "Post-Sales Tracker",
           ccValue,
           cIdx !== undefined && cIdx !== null ? cIdx + 1 : "",
           type
         ]);
       } catch (errQueue) {
-        Logger.log(`[ROW ${rIdx + 1}] [WARNING] Could not append row to Queue sheet: ${errQueue.message}`);
+        Logger.log(`${rowPrefix}[WARNING] Could not append row to Queue sheet: ${errQueue.message}`);
       }
     }
 
@@ -586,12 +600,12 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
       GmailApp.createDraft(email, subject, "", draftOptions);
       draftSuccess = true;
     } catch (err) {
-      Logger.log(`[ROW ${rIdx + 1}] [WARNING] Gmail draft creation failed for "${title}" (${email}): ${err.message}`);
+      Logger.log(`${rowPrefix}[WARNING] Gmail draft creation failed for "${title}" (${email}): ${err.message}`);
     }
 
     // Only update sheet statuses and dates if the mail actually got generated and drafted in the mailbox!
     if (!draftSuccess) {
-      Logger.log(`[ROW ${rIdx + 1}] [SKIPPED] Draft was NOT created in mailbox for "${title}". Dates and statuses will not be updated.`);
+      Logger.log(`${rowPrefix}[SKIPPED] Draft was NOT created in mailbox for "${title}". Dates and statuses will not be updated.`);
       return;
     }
     
@@ -602,31 +616,44 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
     } else if (type === "checkIn1" || type === "checkIn2" || cIdx === checkIn1Col || cIdx === checkIn2Col) {
       statusValue = "draft ready";
     }
-    psSheet.getRange(rIdx + 1, cIdx + 1).setValue(statusValue);
-    
-    if (type === "launch" || type === "launch_no_ai") {
-      if (typeof launchSentCol !== "undefined" && launchSentCol !== -1) {
-        psSheet.getRange(rIdx + 1, launchSentCol + 1).setValue("Draft Ready");
-        Logger.log(`[ROW ${rIdx + 1}] [STATUS UPDATE] Updated Launch Announcement Sent dropdown for "${title}" in Col ${launchSentCol + 1} (Col AB) to "Draft Ready"`);
+
+    rowIndices.forEach(idx => {
+      if (idx >= 0 && cIdx >= 0) {
+        psSheet.getRange(idx + 1, cIdx + 1).setValue(statusValue);
       }
-      if (typeof launchCol !== "undefined" && launchCol !== -1) {
-        let curAAFormula = psSheet.getRange(rIdx + 1, launchCol + 1).getFormula();
-        if (!curAAFormula) {
-          psSheet.getRange(rIdx + 1, launchCol + 1).setValue("Draft Ready");
+      
+      if (type === "launch" || type === "launch_no_ai") {
+        if (typeof launchSentCol !== "undefined" && launchSentCol !== -1) {
+          psSheet.getRange(idx + 1, launchSentCol + 1).setValue("Draft Ready");
+          Logger.log(`[ROW ${idx + 1}] [STATUS UPDATE] Updated Launch Announcement Sent dropdown for "${title}" in Col ${launchSentCol + 1} (Col AB) to "Draft Ready"`);
         }
-        Logger.log(`[ROW ${rIdx + 1}] [STATUS UPDATE] Updated Launch Announcement Status for "${title}" in Col ${launchCol + 1} (Col AA) to "Draft Ready"`);
+        if (typeof launchCol !== "undefined" && launchCol !== -1) {
+          let curAAFormula = psSheet.getRange(idx + 1, launchCol + 1).getFormula();
+          if (!curAAFormula) {
+            psSheet.getRange(idx + 1, launchCol + 1).setValue("Draft Ready");
+          }
+          Logger.log(`[ROW ${idx + 1}] [STATUS UPDATE] Updated Launch Announcement Status for "${title}" in Col ${launchCol + 1} (Col AA) to "Draft Ready"`);
+        }
       }
-    }
-    if ((type === "authorEdit" || type === "newsletter") && typeof newsletterCol !== "undefined" && newsletterCol !== -1) {
-      psSheet.getRange(rIdx + 1, newsletterCol + 1).setValue("Draft Ready");
-      Logger.log(`[ROW ${rIdx + 1}] [STATUS UPDATE] Updated Newsletter Edit dropdown for "${title}" in Col ${newsletterCol + 1} to "Draft Ready"`);
-    }
+      if ((type === "authorEdit" || type === "newsletter") && typeof newsletterCol !== "undefined" && newsletterCol !== -1) {
+        psSheet.getRange(idx + 1, newsletterCol + 1).setValue("Draft Ready");
+        Logger.log(`[ROW ${idx + 1}] [STATUS UPDATE] Updated Newsletter Edit dropdown for "${title}" in Col ${newsletterCol + 1} to "Draft Ready"`);
+      }
+    });
 
     // NOTE: Removed premature date stamping!
     // Feedback Mail Date (Col V), Check-In Dates (Col X/Z), Launch Sent Date (Col AC), and Newsletter Sent Date
     // are left BLANK upon draft creation. They are stamped strictly by syncSentEmails() when the email is actually dispatched from Gmail!
-    Logger.log(`[ROW ${rIdx + 1}] [DRAFT CREATED] Successfully created ${type} draft for "${title}" (Recipient: ${email})`);
+    Logger.log(`${rowPrefix}[DRAFT CREATED] Successfully created ${type} draft for "${title}" (Recipient: ${email})`);
   }
+
+  // Candidate queues for multi-title same-date consolidation (Stages 1-6)
+  let stage1Candidates = [];
+  let stage2Candidates = [];
+  let stage3Candidates = [];
+  let stage4Candidates = [];
+  let stage5Candidates = [];
+  let stage6Candidates = [];
 
   // Iterate over all rows in Post-Sales Tracker (starting from index 3)
   let triggerSet = false;
@@ -768,8 +795,21 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
         }
       } else if (isNotDropBad && isToday(contractDate)) {
         if (isReady(psRow[welcomeCol])) {
-          createDraft(email, `Welcome to Pocket FM - here's what happens next`, firstName, 'welcome', title, link, i, welcomeCol, null, ccMail, revLink, argus);
-          Logger.log(`[ROW ${rowNum}] [Welcome Email] [DRAFT CREATED] Col Q Contract is today (${contractDate}) & Status != Drop/Bad. Created Welcome draft for "${title}" (${email})`);
+          stage1Candidates.push({
+            rowIdx: i,
+            rowNum: rowNum,
+            email: email,
+            firstName: firstName,
+            title: title.toString().trim(),
+            dateKey: getStandardDateKey(contractDate),
+            rawDate: contractDate,
+            link: link,
+            ccMail: ccMail,
+            revLink: revLink,
+            argus: argus,
+            showName: showName,
+            colIdx: welcomeCol
+          });
         } else {
           Logger.log(`[ROW ${rowNum}] [Welcome Email] Evaluated for "${title}" - Status: "${psRow[welcomeCol]}" (Already processed)`);
         }
@@ -796,8 +836,21 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
         }
       } else if (isNotDropBad && isToday(contractDate)) {
         if (isReady(psRow[vendorCol])) {
-          createDraft(email, `Vendor Onboarding for ${title}`, firstName, 'vendor', title, link, i, vendorCol, null, ccMail, revLink, argus);
-          Logger.log(`[ROW ${rowNum}] [Vendor Onboarding] [DRAFT CREATED] Col Q Contract is today (${contractDate}) & Status != Drop/Bad. Created Vendor Onboarding draft for "${title}" (${email})`);
+          stage2Candidates.push({
+            rowIdx: i,
+            rowNum: rowNum,
+            email: email,
+            firstName: firstName,
+            title: title.toString().trim(),
+            dateKey: getStandardDateKey(contractDate),
+            rawDate: contractDate,
+            link: link,
+            ccMail: ccMail,
+            revLink: revLink,
+            argus: argus,
+            showName: showName,
+            colIdx: vendorCol
+          });
         } else {
           Logger.log(`[ROW ${rowNum}] [Vendor Onboarding] Evaluated for "${title}" - Status: "${psRow[vendorCol]}" (Already processed)`);
         }
@@ -825,8 +878,21 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
         }
       } else if (isNotDropped && isToday(mainInfo.vendorLifecycleExited) && isVendorDone) {
         if (isReady(psRow[mgPayoutInitiatedCol])) {
-          createDraft(email, `Payment Initiated: Minimum Guarantee for ${title}`, firstName, 'mgInitiated', title, link, i, mgPayoutInitiatedCol, null, ccMail, revLink, argus);
-          Logger.log(`[ROW ${rowNum}] [MG Payment Initiated] [DRAFT CREATED] Col U Vendor Exit is today (${mainInfo.vendorLifecycleExited}), Col S Vendor Status is Done, Col AA != Drop. Created draft for "${title}" (${email})`);
+          stage3Candidates.push({
+            rowIdx: i,
+            rowNum: rowNum,
+            email: email,
+            firstName: firstName,
+            title: title.toString().trim(),
+            dateKey: getStandardDateKey(mainInfo.vendorLifecycleExited),
+            rawDate: mainInfo.vendorLifecycleExited,
+            link: link,
+            ccMail: ccMail,
+            revLink: revLink,
+            argus: argus,
+            showName: showName,
+            colIdx: mgPayoutInitiatedCol
+          });
         } else {
           Logger.log(`[ROW ${rowNum}] [MG Payment Initiated] Evaluated for "${title}" - Status: "${psRow[mgPayoutInitiatedCol]}" (Already processed)`);
         }
@@ -858,8 +924,21 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
         }
       } else if (isNotDropped && isToday(mainInfo.mgPayoutExited) && isMgDone) {
         if (isReady(psRow[mgPayoutConfirmationCol])) {
-          createDraft(email, `Pocket FM: Your Minimum Guarantee Payment Has Been Processed`, firstName, 'mgConfirmed', title, link, i, mgPayoutConfirmationCol, null, ccMail, revLink, argus);
-          Logger.log(`[ROW ${rowNum}] [MG Payment Processed] [DRAFT CREATED] Col X MG Exit is today (${mainInfo.mgPayoutExited}), Col V MG Status is Done, Col AA != Drop. Created draft for "${title}" (${email}) - Stamped Feedback Mail Date in Col R`);
+          stage4Candidates.push({
+            rowIdx: i,
+            rowNum: rowNum,
+            email: email,
+            firstName: firstName,
+            title: title.toString().trim(),
+            dateKey: getStandardDateKey(mainInfo.mgPayoutExited),
+            rawDate: mainInfo.mgPayoutExited,
+            link: link,
+            ccMail: ccMail,
+            revLink: revLink,
+            argus: argus,
+            showName: showName,
+            colIdx: mgPayoutConfirmationCol
+          });
         } else {
           Logger.log(`[ROW ${rowNum}] [MG Payment Processed] Evaluated for "${title}" - Status: "${psRow[mgPayoutConfirmationCol]}" (Already processed)`);
         }
@@ -954,8 +1033,21 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
             Logger.log(`[ROW ${rowNum}] [Check-In 1 (15 Days)] Evaluated for "${title}" - Status: "Sent" (Already processed)`);
           } else if (diffDays === 15) {
             if (curWLower !== "draft ready" && curWLower !== "sent") {
-              createDraft(email, `We'd love your thoughts on ${title}`, firstName, 'checkIn1', title, link, i, checkIn1Col, null, ccMail, revLink, argus);
-              Logger.log(`[ROW ${rowNum}] [Check-In 1 (15 Days)] [DRAFT CREATED] MG Exit was 15 days ago (${checkInRefDate}) & Show Link is blank. Created draft for "${title}" (${email})`);
+              stage5Candidates.push({
+                rowIdx: i,
+                rowNum: rowNum,
+                email: email,
+                firstName: firstName,
+                title: title.toString().trim(),
+                dateKey: getStandardDateKey(checkInRefDate),
+                rawDate: checkInRefDate,
+                link: link,
+                ccMail: ccMail,
+                revLink: revLink,
+                argus: argus,
+                showName: showName,
+                colIdx: checkIn1Col
+              });
             } else {
               Logger.log(`[ROW ${rowNum}] [Check-In 1 (15 Days)] Evaluated for "${title}" - Status: "${curW}"`);
             }
@@ -983,8 +1075,21 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
             Logger.log(`[ROW ${rowNum}] [Check-In 2 (30 Days)] Evaluated for "${title}" - Status: "Sent" (Already processed)`);
           } else if (diffDays === 30) {
             if (curYLower !== "draft ready" && curYLower !== "sent") {
-              createDraft(email, `Pocket FM: A quick update on your show: ${title}`, firstName, 'checkIn2', title, link, i, checkIn2Col, null, ccMail, revLink, argus);
-              Logger.log(`[ROW ${rowNum}] [Check-In 2 (30 Days)] [DRAFT CREATED] MG Exit was 30 days ago (${checkInRefDate}) & Show Link is blank. Created draft for "${title}" (${email})`);
+              stage6Candidates.push({
+                rowIdx: i,
+                rowNum: rowNum,
+                email: email,
+                firstName: firstName,
+                title: title.toString().trim(),
+                dateKey: getStandardDateKey(checkInRefDate),
+                rawDate: checkInRefDate,
+                link: link,
+                ccMail: ccMail,
+                revLink: revLink,
+                argus: argus,
+                showName: showName,
+                colIdx: checkIn2Col
+              });
             } else {
               Logger.log(`[ROW ${rowNum}] [Check-In 2 (30 Days)] Evaluated for "${title}" - Status: "${curY}"`);
             }
@@ -1006,39 +1111,81 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
 
     // =============================================================
     // Stage 7: Show Launch Announcement
-    // Image Condition: Col AG: Show Link IS LIVE URL | Col AA: Status != Drop/Bad
+    // Strict Guard:
+    // 1. Both Show ID AND Show Link MUST be present and valid!
+    //    If Show ID or Show Link is not present -> NO DRAFT!
+    // 2. Col AA (Show Launch Announcement Status) must NOT be "Not launched / Not Live / Unavailable"
+    // 3. Col AB (Show Launch Announcement Sent) must NOT be "Not launched / Not Live / Unavailable"
+    // 4. Status != Drop/Bad/Untested
     // =============================================================
     if (!targetStage || targetStage === "launch") {
-      let isLiveUrl = link && (link.toString().trim().startsWith("http") || link.toString().trim().includes("pocketfm"));
+      let rawValAA = (launchCol > -1 && psRow.length > launchCol && psRow[launchCol]) 
+                     ? psRow[launchCol].toString().trim() 
+                     : "";
+      let rawValAALower = rawValAA.toLowerCase();
+
+      let rawValAB = (launchSentCol > -1 && psRow.length > launchSentCol && psRow[launchSentCol]) 
+                     ? psRow[launchSentCol].toString().trim() 
+                     : "";
+      let rawValABLower = rawValAB.toLowerCase();
+
+      // Helper: Check if Col AA or Col AB indicates "Not launched / Not Live / Unavailable"
+      const isNotLaunchedStatus = (val) => {
+        if (!val) return false;
+        let v = val.toLowerCase().trim();
+        return v.includes("not launch") || 
+               v.includes("not live") || 
+               v.includes("unavail") || 
+               v.includes("not avail") || 
+               v === "unlaunched" || 
+               v === "no" ||
+               v.includes("pending launch");
+      };
+
+      let isAANotLaunched = isNotLaunchedStatus(rawValAALower);
+      let isABNotLaunched = isNotLaunchedStatus(rawValABLower);
+
+      let hasShowId = showId && showId.toString().trim() !== "" && !showId.toString().includes("#REF") && !showId.toString().includes("#N/A");
+      let isLiveUrl = link && (link.toString().trim().startsWith("http") || link.toString().trim().includes("pocketfm")) && !link.toString().includes("#REF") && !link.toString().includes("#N/A");
       let isEligibleLaunchStatus = !launchStatus.includes("drop") && !launchStatus.includes("bad") && !launchStatus.includes("untested");
+
       let targetLaunchCol = launchSentCol > -1 ? launchSentCol : launchCol;
 
-      let currentABVal = (targetLaunchCol > -1 && psRow.length > targetLaunchCol && psRow[targetLaunchCol]) 
-                         ? psRow[targetLaunchCol].toString().trim() 
-                         : "";
-      let currentABLower = currentABVal.toLowerCase();
-
-      if (currentABLower === "sent") {
+      // 1. Already Sent check
+      if (rawValABLower === "sent" || rawValAALower === "sent") {
         Logger.log(`[ROW ${rowNum}] [Show Launch Announcement] Evaluated for "${title}" - Status: "Sent" (Already processed)`);
-      } else if (isLiveUrl && isEligibleLaunchStatus) {
-        if (currentABLower !== "draft ready") {
-          createDraft(email, `Your Pocket FM Show Is Now Live`, firstName, 'launch', title, link, i, targetLaunchCol, null, ccMail, revLink, argus, showName);
-          psSheet.getRange(i + 1, targetLaunchCol + 1).setValue("Draft Ready");
-          if (launchCol > -1) {
-            let curAAFormula = psSheet.getRange(i + 1, launchCol + 1).getFormula();
-            if (!curAAFormula) {
-              psSheet.getRange(i + 1, launchCol + 1).setValue("Draft Ready");
-            }
-          }
-          SpreadsheetApp.flush();
-          Logger.log(`[ROW ${rowNum}] [Show Launch Announcement] [DRAFT CREATED] Col AG Show Link is live ("${link}") & Col AA Status is "${launchStatus}". Created draft and updated Col AB/AA to "Draft Ready"`);
-        } else {
-          Logger.log(`[ROW ${rowNum}] [Show Launch Announcement] Evaluated for "${title}" - Status: "Draft Ready"`);
+      }
+      // 2. Already Draft Ready check
+      else if (rawValABLower === "draft ready" || rawValAALower === "draft ready") {
+        Logger.log(`[ROW ${rowNum}] [Show Launch Announcement] Evaluated for "${title}" - Status: "Draft Ready"`);
+      }
+      // 3. User Guard: If Show ID or Show Link not present, or Col AA / Col AB is "Not launched / Not Live / Unavailable" -> NO DRAFT!
+      else if (!hasShowId || !isLiveUrl || isAANotLaunched || isABNotLaunched) {
+        let reasons = [];
+        if (!hasShowId) reasons.push("Show ID not present");
+        if (!isLiveUrl) reasons.push("Show Link not present or not live URL");
+        if (isAANotLaunched) reasons.push(`Col AA is "${rawValAA}"`);
+        if (isABNotLaunched) reasons.push(`Col AB is "${rawValAB}"`);
+        Logger.log(`[ROW ${rowNum}] [Show Launch Announcement] [SUPPRESSED - NO DRAFT] ${reasons.join(", ")} for "${title}". No draft generated.`);
+      }
+      // 4. Workflow status check (Dropped / Bad)
+      else if (!isEligibleLaunchStatus) {
+        Logger.log(`[ROW ${rowNum}] [Show Launch Announcement] Evaluated for "${title}" - Col AA Status: "${launchStatus}" (Suppressed - Drop/Bad/Untested)`);
+      }
+      // 5. All conditions met: Valid Show ID, live Show Link, eligible status, and Col AA/AB is ready!
+      else {
+        createDraft(email, `Your Pocket FM Show Is Now Live`, firstName, 'launch', title, link, i, targetLaunchCol, null, ccMail, revLink, argus, showName);
+        if (launchSentCol > -1) {
+          psSheet.getRange(i + 1, launchSentCol + 1).setValue("Draft Ready");
         }
-      } else if (!isLiveUrl) {
-        Logger.log(`[ROW ${rowNum}] [Show Launch Announcement] Evaluated for "${title}" - Col AG (Show Link) is not live URL (Value: "${link || 'Blank'}")`);
-      } else if (!isEligibleLaunchStatus) {
-        Logger.log(`[ROW ${rowNum}] [Show Launch Announcement] Evaluated for "${title}" - Col AA Status: "${launchStatus}" (Suppressed - Drop/Bad)`);
+        if (launchCol > -1) {
+          let curAAFormula = psSheet.getRange(i + 1, launchCol + 1).getFormula();
+          if (!curAAFormula) {
+            psSheet.getRange(i + 1, launchCol + 1).setValue("Draft Ready");
+          }
+        }
+        SpreadsheetApp.flush();
+        Logger.log(`[ROW ${rowNum}] [Show Launch Announcement] [DRAFT CREATED] Show ID ("${showId}"), live Link ("${link}"), and Status ("${launchStatus}") verified. Created draft and updated Col AB/AA to "Draft Ready"`);
       }
     }
 
@@ -1076,9 +1223,15 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
 
     // =============================================================
     // Stages 9A, 9B, 9C: Revenue Statements (Approved Columns AI to AM)
-    // 9A: Rev Statement (Content Review): Col AA Status == 'Testing_PGC' / 'Launched (ROW)' | Col Y Show ID in Argus
-    // 9B: Rev Statement (Payment Ready):  Col AA Status == 'Testing_PGC' / 'Launched (ROW)'
-    // 9C: Rev Statement (Sunset / Dropped / Content Bad): Col AA Status == 'Dropped' / 'Bad' | Col Y Show ID in Argus
+    // Mapped directly to Sheet 'Launch Status' Dropdown Options:
+    //   - 'Testing'               -> Stage 9 (Worked Well: 9A Content + 9B Payment)
+    //   - 'Testing_PGC_Completed' -> Stage 9 (Worked Well: 9A Content + 9B Payment)
+    //   - 'Testing_PGC'           -> Stage 9 (Worked Well: 9A Content + 9B Payment)
+    //   - 'Launched (ROW)'        -> Stage 9 (Worked Well: 9A Content + 9B Payment)
+    //   - 'Dropped'               -> Stage 10 / 9C (Didn't Work Well - Content + Payment Related Update)
+    //   - 'Bad'                   -> Stage 10 / 9C (Didn't Work Well - Content + Payment Related Update)
+    //   - 'Untested'              -> On Hold / Pending (Suppressed from 9 & 10)
+    //   - 'Average'               -> Under Evaluation (Suppressed from 9 & 10 unless marked Dropped/Bad)
     // Approved Progress Columns: Col AL (Drive Link), Col AM (Sent Progress Dropdown), Col AJ (Status)
     // =============================================================
     if (!targetStage || targetStage === "revStatement" || targetStage.startsWith("revStatement_") || targetStage === "contentBad") {
@@ -1087,7 +1240,7 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
                           launchStatus.includes("drop") || 
                           launchStatus.includes("bad") || 
                           launchStatus.includes("sunset");
-      let isTestingPgcOrLaunched = !isShowDropped && (launchStatus.includes("testing_pgc") || launchStatus === "testing" || launchStatus.includes("launched (row)") || launchStatus.includes("launched"));
+      let isTestingPgcOrLaunched = !isShowDropped && (launchStatus.includes("testing") || launchStatus.includes("launched"));
       let hasArgusData = showId && (
         (argusData && argusData[showId.toLowerCase().trim()]) || 
         (argusData && argusData[safeTitle]) || 
@@ -1124,20 +1277,113 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
           if (!targetStage || targetStage === "revStatement" || targetStage === "revStatement_workedWell" || targetStage === "revStatement_workedWell_content") {
             if (hasArgusData || (showId && !argusSheet)) {
               createDraft(email, `Content Update for ${title}`, firstName, 'revStatement_workedWell_content', title, link, i, targetRevCol, null, ccMail, revLink, argus, showName);
-              Logger.log(`[ROW ${rowNum}] [Stage 9A: Content Review] [DRAFT CREATED] Status == Testing_PGC / Launched (ROW) & Show ID in Argus for "${title}". Progress stored in Col AM.`);
+              Logger.log(`[ROW ${rowNum}] [Stage 9A: Content Review] [DRAFT CREATED] Status in [Testing, Testing_PGC, Testing_PGC_Completed, Launched (ROW)] & Show ID in Argus for "${title}". Progress stored in Col AM.`);
             }
           }
 
           // Stage 9B: Payment Ready
           if (!targetStage || targetStage === "revStatement" || targetStage === "revStatement_workedWell" || targetStage === "revStatement_workedWell_payment") {
             createDraft(email, "Pocket FM: Your earnings are waiting for you!", firstName, 'revStatement_workedWell_payment', title, link, i, targetRevCol, null, ccMail, revLink, argus, showName);
-            Logger.log(`[ROW ${rowNum}] [Stage 9B: Payment Ready] [DRAFT CREATED] Status == Testing_PGC / Launched (ROW) for "${title}". Progress stored in Col AM.`);
+            Logger.log(`[ROW ${rowNum}] [Stage 9B: Payment Ready] [DRAFT CREATED] Status in [Testing, Testing_PGC, Testing_PGC_Completed, Launched (ROW)] for "${title}". Progress stored in Col AM.`);
           }
         } else {
           Logger.log(`[ROW ${rowNum}] [Rev Statement] Evaluated for "${title}" - Launch Status: "${launchStatus}" (Not eligible for 9A/9B or 9C)`);
         }
       }
     }
+  }
+
+  // =============================================================
+  // PROCESS MULTI-TITLE CONSOLIDATED OUTREACH QUEUES (STAGES 1-6)
+  // Ensures authors with 2+ titles on the same date receive 1 unified draft
+  // capturing ALL qualifying titles, with strict same date verification!
+  // =============================================================
+  function processGroupedCandidates(candidates, stageKey, stageLabel, subjectGenerator) {
+    if (!candidates || candidates.length === 0) return;
+
+    let groups = {};
+    for (let c of candidates) {
+      let gKey = cleanEmail(c.email).toLowerCase() + "___" + (c.dateKey || "unknown");
+      if (!groups[gKey]) {
+        groups[gKey] = [];
+      }
+      groups[gKey].push(c);
+    }
+
+    for (let gKey in groups) {
+      let groupItems = groups[gKey];
+      let rowIndices = groupItems.map(item => item.rowIdx);
+      let rowNums = groupItems.map(item => item.rowNum);
+      let rowNumStr = rowNums.join(", ");
+
+      // Deduplicate titles while preserving encounter order
+      let uniqueTitles = [];
+      for (let item of groupItems) {
+        let t = item.title;
+        if (t && !uniqueTitles.includes(t)) {
+          uniqueTitles.push(t);
+        }
+      }
+      let combinedTitle = uniqueTitles.join(", ");
+      let firstItem = groupItems[0];
+
+      // Combine CC mail if multiple rows have different CC addresses
+      let allCcs = [];
+      for (let item of groupItems) {
+        if (item.ccMail) {
+          item.ccMail.split(/[,;]/).forEach(c => {
+            let cl = cleanEmail(c);
+            if (cl && isValidEmail(cl) && !allCcs.includes(cl)) allCcs.push(cl);
+          });
+        }
+      }
+      let combinedCc = allCcs.join(", ");
+
+      let subject = typeof subjectGenerator === "function" 
+                    ? subjectGenerator(combinedTitle) 
+                    : subjectGenerator;
+
+      createDraft(
+        firstItem.email,
+        subject,
+        firstItem.firstName,
+        stageKey,
+        combinedTitle,
+        firstItem.link,
+        rowIndices, // Pass array of row indices!
+        firstItem.colIdx,
+        null,
+        combinedCc,
+        firstItem.revLink,
+        firstItem.argus,
+        firstItem.showName
+      );
+
+      if (uniqueTitles.length > 1) {
+        Logger.log(`[ROWS ${rowNumStr}] [${stageLabel}] [CONSOLIDATED DRAFT] Same date (${firstItem.dateKey}) check verified. Created 1 consolidated draft for ${uniqueTitles.length} titles ("${combinedTitle}") sent to ${firstItem.email}`);
+      } else {
+        Logger.log(`[ROW ${rowNumStr}] [${stageLabel}] [DRAFT CREATED] Created draft for "${combinedTitle}" (${firstItem.email})`);
+      }
+    }
+  }
+
+  if (!targetStage || targetStage === 'welcome') {
+    processGroupedCandidates(stage1Candidates, 'welcome', 'Welcome Email', 'Welcome to Pocket FM - here\'s what happens next');
+  }
+  if (!targetStage || targetStage === 'vendor') {
+    processGroupedCandidates(stage2Candidates, 'vendor', 'Vendor Onboarding', (t) => 'Vendor Onboarding for ' + t);
+  }
+  if (!targetStage || targetStage === 'mgInitiated') {
+    processGroupedCandidates(stage3Candidates, 'mgInitiated', 'MG Payment Initiated', (t) => 'Payment Initiated: Minimum Guarantee for ' + t);
+  }
+  if (!targetStage || targetStage === 'mgConfirmed') {
+    processGroupedCandidates(stage4Candidates, 'mgConfirmed', 'MG Payment Processed', 'Pocket FM: Your Minimum Guarantee Payment Has Been Processed');
+  }
+  if (!targetStage || targetStage === 'checkIn1') {
+    processGroupedCandidates(stage5Candidates, 'checkIn1', 'Check-In 1 (15 Days)', (t) => 'We\'d love your thoughts on ' + t);
+  }
+  if (!targetStage || targetStage === 'checkIn2') {
+    processGroupedCandidates(stage6Candidates, 'checkIn2', 'Check-In 2 (30 Days)', (t) => 'Pocket FM: A quick update on your show: ' + t);
   }
 
   // Force all spreadsheet updates to commit to the live sheet immediately
@@ -1226,17 +1472,46 @@ function evaluateSingleRowLaunch(psSheet, row, preloadedRowVals = null, preloade
   const link = rowVals[linkCol] ? rowVals[linkCol].toString().trim() : "";
   const rawStatus = rowVals[statusCol] ? rowVals[statusCol].toString().trim().toLowerCase() : "";
 
+  const showIdCol = psFindCol("Show ID") > -1 ? psFindCol("Show ID") : 8;
+  const rawShowId = (showIdCol > -1 && rowVals.length > showIdCol && rowVals[showIdCol]) ? rowVals[showIdCol].toString().trim() : "";
+  const hasShowId = rawShowId && rawShowId !== "" && !rawShowId.includes("#REF") && !rawShowId.includes("#N/A");
+
   const curDropdown = rowVals[colAB] ? rowVals[colAB].toString().trim() : "";
   const curDropdownLower = curDropdown.toLowerCase();
+  const curAAVal = (colAA > -1 && rowVals.length > colAA && rowVals[colAA]) ? rowVals[colAA].toString().trim() : "";
+  const curAALower = curAAVal.toLowerCase();
 
-  // If already marked Sent by user, do not alter
-  if (curDropdownLower === "sent") return;
+  // If already marked Sent or Draft Ready, do not alter
+  if (curDropdownLower === "sent" || curAALower === "sent") return;
+  if (curDropdownLower === "draft ready" || curAALower === "draft ready") return;
+
+  // Helper: Check if Col AA or Col AB indicates "Not launched / Not Live / Unavailable"
+  const isNotLaunchedStatus = (val) => {
+    if (!val) return false;
+    let v = val.toLowerCase().trim();
+    return v.includes("not launch") || 
+           v.includes("not live") || 
+           v.includes("unavail") || 
+           v.includes("not avail") || 
+           v === "unlaunched" || 
+           v === "no" ||
+           v.includes("pending launch");
+  };
+
+  const isAANotLaunched = isNotLaunchedStatus(curAALower);
+  const isABNotLaunched = isNotLaunchedStatus(curDropdownLower);
 
   // Stage 7 Conditions: Col AG: Show Link IS LIVE URL | Col AA: Status != Drop/Bad
-  const isLiveUrl = link && (link.toString().trim().startsWith("http") || link.toString().trim().includes("pocketfm"));
+  const isLiveUrl = link && (link.toString().trim().startsWith("http") || link.toString().trim().includes("pocketfm")) && !link.includes("#REF") && !link.includes("#N/A");
   const isEligibleLaunchStatus = !rawStatus.includes("drop") && !rawStatus.includes("bad") && !rawStatus.includes("untested");
 
-  if (isLiveUrl && isEligibleLaunchStatus) {
+  // Strict guard: If Show ID or Show Link not present, or Col AA / Col AB is "Not launched / Not Live / Unavailable" -> NO DRAFT!
+  if (!hasShowId || !isLiveUrl || isAANotLaunched || isABNotLaunched) {
+    Logger.log(`[LIVE ROW ${row}] [Show Launch Announcement] [SUPPRESSED - NO DRAFT] Show ID or Show Link not present, or Col AA/AB is Not launched/Not Live/Unavailable for "${title}". Draft suppressed.`);
+    return;
+  }
+
+  if (isEligibleLaunchStatus) {
     if (!isValidEmail(email)) {
       Logger.log(`[LIVE ROW ${row}] Missing valid email for "${title}". Draft suppressed.`);
       return;

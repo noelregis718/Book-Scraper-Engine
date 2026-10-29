@@ -2430,7 +2430,7 @@ function getBody(type, firstName, title, link, grammar, revLink, argus, showName
           <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
           <b>Show Snapshot</b><br>
           • Duration Produced: ${argus.duration}<br>
-          • Plays / Daily Active Listeners (LDAUs): ${argus.ldau}<br>
+          • Plays: ${argus.plays || argus.ldau}<br>
           • Comments: ${argus.comments}<br>
           • Ratings: ${argus.ratings}<br>
           • Reviews: ${argus.reviews}
@@ -2525,7 +2525,7 @@ function getBody(type, firstName, title, link, grammar, revLink, argus, showName
           <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
           <b>Show Snapshot</b><br>
           • Duration Produced: ${argus.duration}<br>
-          • Plays / Daily Active Listeners (LDAUs): ${argus.ldau}<br>
+          • Plays: ${argus.plays || argus.ldau}<br>
           • Comments: ${argus.comments}<br>
           • Ratings: ${argus.ratings}<br>
           • Reviews: ${argus.reviews}
@@ -2533,9 +2533,7 @@ function getBody(type, firstName, title, link, grammar, revLink, argus, showName
           <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
           Based on the show's performance and our internal benchmarks, we've decided not to produce additional episodes for <b>${title}</b> at this time. This is purely dependent on how our audience has been responding to this show and doesn't take away from the value of your story at all. We'll continue to share quarterly revenue statements for the episodes already live on Pocket FM.
           </td></tr>
-          <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
-          If you know other authors who may be a good fit for Pocket FM, we'd love an introduction. Our referral program offers meaningful incentives for every author you refer who signs with us. Please watch out for a separate email about the referral program.
-          </td></tr>
+
           <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
           If you have any questions about your revenue statement or your show's performance, simply reply to this email—we're happy to help.
           </td></tr>
@@ -2567,7 +2565,7 @@ function getBody(type, firstName, title, link, grammar, revLink, argus, showName
           <tr><td align="left" style="font-size:16px; color:#121212; padding:10px 35px; line-height:24px;">
           <b>Show Snapshot</b><br>
           • Listening Hours: ${argus.hours}<br>
-          • Daily Active Listeners (LDAUs): ${argus.ldau}<br>
+          • Plays: ${argus.plays || argus.ldau}<br>
           • Duration Produced: ${argus.duration}<br>
           • Comments: ${argus.comments}
           </td></tr>

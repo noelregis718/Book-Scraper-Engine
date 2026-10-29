@@ -45,7 +45,6 @@ function onOpen() {
       .addItem("🔟 Run Content Didn't Work Well Statements Only", "triggerRevStatementContentBadOnly")
       .addSeparator()
       .addItem("🧪 Test Newsletter Draft (Generate Directly to My Gmail)", "triggerTestNewsletterDraft")
-      .addItem("🧪 Test Content Didn't Work Well Draft (Generate Directly to My Gmail)", "triggerTestContentBadDraft")
       .addItem("⚡ Enable Auto-Sync Sent Emails (Every 1 Min)", "installSentMailSyncTrigger")
       .addItem("🔄 Sync Sent Emails Now", "triggerSyncSentEmailsOnly")
       .addToUi();

@@ -19,7 +19,10 @@ function createDraft(rawEmail, subject, firstName, type, title, link, rIdx, cIdx
   const ccMail = cleanCcList(rawCcMail);
   const psSheet = optPsSheet || getPostSalesTrackerSheet();
   const queueSheet = optQueueSheet || getQueueSheet();
-  const rowPrefix = (rIdx !== null && rIdx !== undefined) ? `[ROW ${rIdx + 1}] ` : "";
+  const rowIndices = Array.isArray(rIdx) ? rIdx : (rIdx !== null && rIdx !== undefined ? [rIdx] : []);
+  const rowNumbersDisplay = rowIndices.length > 0 ? rowIndices.map(idx => idx + 1).join(", ") : "";
+  const rowPrefix = rowNumbersDisplay ? (rowIndices.length > 1 ? `[ROWS ${rowNumbersDisplay}] ` : `[ROW ${rowNumbersDisplay}] `) : "";
+  const draftRowNum = rowIndices.length > 0 ? rowIndices[0] + 1 : null;
 
   // 1. Notification Check: Recipient Email ID
   if (!email || email === "" || !isValidEmail(email)) {
@@ -96,7 +99,7 @@ function createDraft(rawEmail, subject, firstName, type, title, link, rIdx, cIdx
         sendDate,
         sendTime,
         "Draft Ready", 
-        rIdx + 1, 
+        rowNumbersDisplay, 
         optPsSheet ? optPsSheet.getName() : "Post-Sales Tracker",
         ccValue,
         cIdx !== undefined && cIdx !== null ? cIdx + 1 : "",
@@ -126,7 +129,7 @@ function createDraft(rawEmail, subject, firstName, type, title, link, rIdx, cIdx
   }
 
   // 8. Update Sheet Dropdowns & Timestamps
-  if (psSheet && rIdx >= 0) {
+  if (psSheet && rowIndices.length > 0) {
     let statusValue = "Draft Ready";
     if (type === "mgConfirmed" || cIdx === colMappings.mgPayoutConfirmationCol) {
       statusValue = "Draft ready";
@@ -134,29 +137,29 @@ function createDraft(rawEmail, subject, firstName, type, title, link, rIdx, cIdx
       statusValue = "draft ready";
     }
 
-    if (cIdx >= 0) {
-      psSheet.getRange(rIdx + 1, cIdx + 1).setValue(statusValue);
-    }
-
-    // Launch dropdown & status: ONLY mark "Draft Ready". DO NOT stamp Sent Date until email is actually sent!
-    if (type === "launch" || type === "launch_no_ai") {
-      let launchSentCol = colMappings.launchSentCol !== undefined ? colMappings.launchSentCol : 27; // Col AB
-      let launchCol = colMappings.launchCol !== undefined ? colMappings.launchCol : 26; // Col AA
-
-      psSheet.getRange(rIdx + 1, launchSentCol + 1).setValue("Draft Ready");
-      let curAAFormula = psSheet.getRange(rIdx + 1, launchCol + 1).getFormula();
-      if (!curAAFormula) {
-        psSheet.getRange(rIdx + 1, launchCol + 1).setValue("Draft Ready");
+    rowIndices.forEach(idx => {
+      if (idx >= 0 && cIdx >= 0) {
+        psSheet.getRange(idx + 1, cIdx + 1).setValue(statusValue);
       }
-      // NOTE: Launch Sent Date (Col AC) is left BLANK. Stamped by syncSentEmails() upon actual dispatch!
-    }
 
-    // Newsletter dropdown: ONLY mark "Draft Ready". DO NOT stamp Sent Date until email is actually sent!
-    if (type === "authorEdit" || type === "newsletter") {
-      let newsletterCol = colMappings.newsletterCol !== undefined ? colMappings.newsletterCol : 29; // Col AD
-      psSheet.getRange(rIdx + 1, newsletterCol + 1).setValue("Draft Ready");
-      // NOTE: Newsletter Sent Date is left BLANK. Stamped by syncSentEmails() upon actual dispatch!
-    }
+      // Launch dropdown & status: ONLY mark "Draft Ready". DO NOT stamp Sent Date until email is actually sent!
+      if (type === "launch" || type === "launch_no_ai") {
+        let launchSentCol = colMappings.launchSentCol !== undefined ? colMappings.launchSentCol : 27; // Col AB
+        let launchCol = colMappings.launchCol !== undefined ? colMappings.launchCol : 26; // Col AA
+
+        psSheet.getRange(idx + 1, launchSentCol + 1).setValue("Draft Ready");
+        let curAAFormula = psSheet.getRange(idx + 1, launchCol + 1).getFormula();
+        if (!curAAFormula) {
+          psSheet.getRange(idx + 1, launchCol + 1).setValue("Draft Ready");
+        }
+      }
+
+      // Newsletter dropdown: ONLY mark "Draft Ready". DO NOT stamp Sent Date until email is actually sent!
+      if (type === "authorEdit" || type === "newsletter") {
+        let newsletterCol = colMappings.newsletterCol !== undefined ? colMappings.newsletterCol : 29; // Col AD
+        psSheet.getRange(idx + 1, newsletterCol + 1).setValue("Draft Ready");
+      }
+    });
 
     // NOTE: Feedback Mail Date (Col V), Check-In 1 Date (Col X), and Check-In 2 Date (Col Z) are left BLANK here.
     // They are stamped strictly by syncSentEmails() with the actual timestamp when the email is sent from Gmail!
@@ -280,7 +283,13 @@ function syncSentEmails() {
       let templateName = qData[i][3];
       let subject = qData[i][4];
       let qStatus = qData[i][8];
-      let trackerRow = parseInt(qData[i][9]);
+      let trackerRowRaw = qData[i][9];
+      let trackerRows = trackerRowRaw 
+        ? trackerRowRaw.toString().split(/[,;]/).map(r => parseInt(r.trim(), 10)).filter(r => !isNaN(r) && r > 0)
+        : [];
+      if (trackerRows.length === 0 && !isNaN(parseInt(trackerRowRaw, 10))) {
+        trackerRows = [parseInt(trackerRowRaw, 10)];
+      }
       let targetSheetName = qData[i][10] || "Post-Sales Tracker";
       let loggedStatusCol = qData[i][12] ? parseInt(qData[i][12]) : null;
       let stageType = qData[i][13] || "";
@@ -329,42 +338,44 @@ function syncSentEmails() {
           targetSheet = mainSheet || psSheet;
         }
 
-        if (targetSheet && trackerRow > 0) {
-          if (loggedStatusCol && loggedStatusCol > 0) {
-            targetSheet.getRange(trackerRow, loggedStatusCol).setValue("Sent");
-          }
-          const tName = norm(templateName);
-          const sType = norm(stageType);
+        if (targetSheet && trackerRows.length > 0) {
+          for (let trackerRow of trackerRows) {
+            if (loggedStatusCol && loggedStatusCol > 0) {
+              targetSheet.getRange(trackerRow, loggedStatusCol).setValue("Sent");
+            }
+            const tName = norm(templateName);
+            const sType = norm(stageType);
 
-          if (tName.includes("welcome") || sType === "welcome") {
-            if (sWelcomeCol !== -1) targetSheet.getRange(trackerRow, sWelcomeCol + 1).setValue("Sent");
-            if (sWelcomeDateCol !== -1) targetSheet.getRange(trackerRow, sWelcomeDateCol + 1).setValue(actualSentDate);
-          } else if (tName.includes("vendor") || sType === "vendor") {
-            if (sVendorCol !== -1) targetSheet.getRange(trackerRow, sVendorCol + 1).setValue("Sent");
-            if (sVendorDateCol !== -1) targetSheet.getRange(trackerRow, sVendorDateCol + 1).setValue(actualSentDate);
-          } else if (tName.includes("mg payment initiated") || tName.includes("mg payout initiated") || sType === "mginitiated") {
-            if (sMgInitCol !== -1) targetSheet.getRange(trackerRow, sMgInitCol + 1).setValue("Sent");
-            if (sMgInitDateCol !== -1) targetSheet.getRange(trackerRow, sMgInitDateCol + 1).setValue(actualSentDate);
-          } else if (tName.includes("mg payment processed") || tName.includes("mg payout confirmation") || sType === "mgconfirmed") {
-            if (sMgConfCol !== -1) targetSheet.getRange(trackerRow, sMgConfCol + 1).setValue("Sent");
-            if (sFeedbackDateCol !== -1) targetSheet.getRange(trackerRow, sFeedbackDateCol + 1).setValue(actualSentDate);
-          } else if (tName.includes("launch") || sType === "launch" || sType === "launch_no_ai") {
-            if (sLaunchSentCol !== -1) targetSheet.getRange(trackerRow, sLaunchSentCol + 1).setValue("Sent");
-            if (sLaunchCol !== -1) targetSheet.getRange(trackerRow, sLaunchCol + 1).setValue("Sent");
-            if (sLaunchSentDateCol !== -1) targetSheet.getRange(trackerRow, sLaunchSentDateCol + 1).setValue(actualSentDate);
-          } else if (tName.includes("check in 1") || sType === "checkin1") {
-            if (sCheckIn1Col !== -1) targetSheet.getRange(trackerRow, sCheckIn1Col + 1).setValue("Sent");
-            if (sCheckIn1DateCol !== -1) targetSheet.getRange(trackerRow, sCheckIn1DateCol + 1).setValue(actualSentDate);
-          } else if (tName.includes("check in 2") || sType === "checkin2") {
-            if (sCheckIn2Col !== -1) targetSheet.getRange(trackerRow, sCheckIn2Col + 1).setValue("Sent");
-            if (sCheckIn2DateCol !== -1) targetSheet.getRange(trackerRow, sCheckIn2DateCol + 1).setValue(actualSentDate);
-          } else if (tName.includes("author edit") || tName.includes("newsletter") || sType === "newsletter" || sType === "authoredit") {
-            if (sNewsletterCol !== -1) targetSheet.getRange(trackerRow, sNewsletterCol + 1).setValue("Sent");
-            if (sNewsletterDateCol !== -1) targetSheet.getRange(trackerRow, sNewsletterDateCol + 1).setValue(actualSentDate);
+            if (tName.includes("welcome") || sType === "welcome") {
+              if (sWelcomeCol !== -1) targetSheet.getRange(trackerRow, sWelcomeCol + 1).setValue("Sent");
+              if (sWelcomeDateCol !== -1) targetSheet.getRange(trackerRow, sWelcomeDateCol + 1).setValue(actualSentDate);
+            } else if (tName.includes("vendor") || sType === "vendor") {
+              if (sVendorCol !== -1) targetSheet.getRange(trackerRow, sVendorCol + 1).setValue("Sent");
+              if (sVendorDateCol !== -1) targetSheet.getRange(trackerRow, sVendorDateCol + 1).setValue(actualSentDate);
+            } else if (tName.includes("mg payment initiated") || tName.includes("mg payout initiated") || sType === "mginitiated") {
+              if (sMgInitCol !== -1) targetSheet.getRange(trackerRow, sMgInitCol + 1).setValue("Sent");
+              if (sMgInitDateCol !== -1) targetSheet.getRange(trackerRow, sMgInitDateCol + 1).setValue(actualSentDate);
+            } else if (tName.includes("mg payment processed") || tName.includes("mg payout confirmation") || sType === "mgconfirmed") {
+              if (sMgConfCol !== -1) targetSheet.getRange(trackerRow, sMgConfCol + 1).setValue("Sent");
+              if (sFeedbackDateCol !== -1) targetSheet.getRange(trackerRow, sFeedbackDateCol + 1).setValue(actualSentDate);
+            } else if (tName.includes("launch") || sType === "launch" || sType === "launch_no_ai") {
+              if (sLaunchSentCol !== -1) targetSheet.getRange(trackerRow, sLaunchSentCol + 1).setValue("Sent");
+              if (sLaunchCol !== -1) targetSheet.getRange(trackerRow, sLaunchCol + 1).setValue("Sent");
+              if (sLaunchSentDateCol !== -1) targetSheet.getRange(trackerRow, sLaunchSentDateCol + 1).setValue(actualSentDate);
+            } else if (tName.includes("check in 1") || sType === "checkin1") {
+              if (sCheckIn1Col !== -1) targetSheet.getRange(trackerRow, sCheckIn1Col + 1).setValue("Sent");
+              if (sCheckIn1DateCol !== -1) targetSheet.getRange(trackerRow, sCheckIn1DateCol + 1).setValue(actualSentDate);
+            } else if (tName.includes("check in 2") || sType === "checkin2") {
+              if (sCheckIn2Col !== -1) targetSheet.getRange(trackerRow, sCheckIn2Col + 1).setValue("Sent");
+              if (sCheckIn2DateCol !== -1) targetSheet.getRange(trackerRow, sCheckIn2DateCol + 1).setValue(actualSentDate);
+            } else if (tName.includes("author edit") || tName.includes("newsletter") || sType === "newsletter" || sType === "authoredit") {
+              if (sNewsletterCol !== -1) targetSheet.getRange(trackerRow, sNewsletterCol + 1).setValue("Sent");
+              if (sNewsletterDateCol !== -1) targetSheet.getRange(trackerRow, sNewsletterDateCol + 1).setValue(actualSentDate);
+            }
           }
         }
         syncedCount++;
-        Logger.log(`[QUEUE SYNC SUCCESS] [ROW ${trackerRow}] Marked ${templateName} as "Sent" (Dispatched at: ${actualSentDate})`);
+        Logger.log(`[QUEUE SYNC SUCCESS] [ROWS ${trackerRows.join(", ")}] Marked ${templateName} as "Sent" (Dispatched at: ${actualSentDate})`);
       }
     }
   }
@@ -847,4 +858,28 @@ function testContentBadDraft() {
   Logger.log(`SUCCESS [Content Bad Draft]: Created "${subject}" with sunset performance review for "${testTitle}"`);
   return subject;
 }
+/**
+ * TEST FUNCTION: MULTI-TITLE MG PAYOUT DRAFT (1 EMAIL 2 TITLES)
+ */
+function testMultiTitleMgPayoutDraft() {
+  const myEmail = Session.getActiveUser().getEmail();
+  const testTitle = "A Shade of Vampire Series, Luna's Choice";
+  const testFirstName = "Bella";
+  const isMulti = testTitle.includes(",");
+  const grammar = {
+    work: isMulti ? "works" : "work",
+    is: isMulti ? "are" : "is",
+    has: isMulti ? "have" : "has",
+    title: isMulti ? "titles" : "title",
+    this: isMulti ? "these" : "this",
+    it: isMulti ? "them" : "it",
+    its: isMulti ? "their" : "its"
+  };
 
+  const qId = Utilities.getUuid();
+  const body = getBody('mgConfirmed', testFirstName, testTitle, "", grammar);
+  const wrapped = wrapHtml(body, qId);
+  const subj = "Pocket FM: Your Minimum Guarantee Payment Has Been Processed";
+  GmailApp.createDraft(myEmail, subj, "", { htmlBody: wrapped });
+  Logger.log(`[TEST MULTI-TITLE MG PAYOUT SUCCESS] Created 1 consolidated test draft for multiple titles ("${testTitle}") sent to: ${myEmail}`);
+}
