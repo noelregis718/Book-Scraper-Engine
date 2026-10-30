@@ -807,6 +807,20 @@ function testCaseB_ValidLaunchAnnouncement() {
 /**
  * EMAIL SANITIZATION & VALIDATION HELPERS (GLOBAL SCOPE)
  */
+// Strict URL validator
+function isValidWebUrl(rawUrl) {
+  if (!rawUrl) return false;
+  let str = rawUrl.toString().trim();
+  if (str === "" || str === "#" || str.includes("#REF") || str.includes("#N/A") || str.includes("#VALUE")) return false;
+  if (/\s/.test(str)) return false;
+  let lower = str.toLowerCase();
+  if (lower === "none" || lower === "na" || lower === "n/a" || lower === "tbd" || lower === "pending" || lower === "-" || lower === "--") return false;
+  if (lower.includes("untested") || lower.includes("never") || lower.includes("live") || lower.includes("show") || lower.includes("dropped") || lower.includes("bad") || lower.includes("review")) return false;
+  if (/^https?:\/\/[a-zA-Z0-9\-._~%]+(\.[a-zA-Z0-9\-._~%]+)+/i.test(str)) return true;
+  if (/^(www\.|drive\.google\.com\/|[a-zA-Z0-9\-]+\.(?:com|app|net|org|io|dev|in|co)\/)/i.test(str)) return true;
+  return false;
+}
+
 function cleanEmail(rawEmail) {
   if (!rawEmail) return "";
   let str = rawEmail.toString().trim();
@@ -1588,9 +1602,12 @@ function processOutreachQueue(isDelayedRun = false) {
     
     // Safely pull from the dynamic Revenue Statement Drive Link column on the PS Tracker
     let revLinkRaw = (revLinkCol > -1 && psRow.length > revLinkCol) ? psRow[revLinkCol] : "";
-    let revLink = (revLinkRaw && revLinkRaw.toString().trim() !== "") ? revLinkRaw.toString().trim() : "";
-    if (revLink && !revLink.startsWith("http")) {
+    let revLink = "";
+    if (isValidWebUrl(revLinkRaw)) {
+      revLink = revLinkRaw.toString().trim();
+      if (!revLink.startsWith("http://") && !revLink.startsWith("https://")) {
         revLink = "https://" + revLink;
+      }
     }
     let psLaunchStatusCol = psFindCol("Launch Status");
     let psLaunchStatus = (psLaunchStatusCol !== -1 && psRow.length > psLaunchStatusCol && psRow[psLaunchStatusCol]) 
@@ -2023,10 +2040,10 @@ function processOutreachQueue(isDelayedRun = false) {
 
       Logger.log(`[DEBUG RevStatement ${qc.code}] Title: ${title} | Status: "${qStatusStr}" | DriveLink: "${qRawLink}" | LaunchStatus: ${launchStatus}`);
 
-      // Strict check: Revenue Statement Link must be present
-      const hasValidRevLink = qRevLink && qRevLink.toString().trim() !== "" && qRevLink.toString().trim() !== "#" && !qRevLink.toString().includes("#REF");
+      // Strict check: Revenue Statement Link must be a valid URL, NOT descriptive text
+      const hasValidRevLink = isValidWebUrl(qRevLink);
       if (!hasValidRevLink) {
-        Logger.log(`[Rev Statement ${qc.code}] [SKIPPED] Missing Revenue Statement link for "${title}". Draft creation suppressed.`);
+        Logger.log(`[Rev Statement ${qc.code}] [SKIPPED] Missing or non-URL Revenue Statement link for "${title}" (Found: "${qRawLink || 'Blank'}"). Draft creation suppressed.`);
         continue;
       }
 

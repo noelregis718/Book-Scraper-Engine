@@ -477,6 +477,20 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
     return cleaned.join(", ");
   }
 
+  // Strict URL validator: Rejects plain text notes (e.g. "Show Untested / Never Made Live") and requires a real URL
+  function isValidWebUrl(rawUrl) {
+    if (!rawUrl) return false;
+    let str = rawUrl.toString().trim();
+    if (str === "" || str === "#" || str.includes("#REF") || str.includes("#N/A") || str.includes("#VALUE")) return false;
+    if (/\s/.test(str)) return false;
+    let lower = str.toLowerCase();
+    if (lower === "none" || lower === "na" || lower === "n/a" || lower === "tbd" || lower === "pending" || lower === "-" || lower === "--") return false;
+    if (lower.includes("untested") || lower.includes("never") || lower.includes("live") || lower.includes("show") || lower.includes("dropped") || lower.includes("bad") || lower.includes("review")) return false;
+    if (/^https?:\/\/[a-zA-Z0-9\-._~%]+(\.[a-zA-Z0-9\-._~%]+)+/i.test(str)) return true;
+    if (/^(www\.|drive\.google\.com\/|[a-zA-Z0-9\-]+\.(?:com|app|net|org|io|dev|in|co)\/)/i.test(str)) return true;
+    return false;
+  }
+
   // Standardized YYYY-MM-DD date key helper for same date check
   function getStandardDateKey(dateVal) {
     if (!dateVal) return "";
@@ -715,9 +729,14 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
                      : ((psRow.length > 37 && psRow[37]) 
                          ? psRow[37] 
                          : ((revLinkCol > -1 && psRow.length > revLinkCol) ? psRow[revLinkCol] : ""));
-    let revLink = (revLinkRaw && revLinkRaw.toString().trim() !== "" && !revLinkRaw.toString().includes("#REF")) ? revLinkRaw.toString().trim() : "";
-    if (revLink && !revLink.startsWith("http")) {
+    
+    // Strict link sanitization: ONLY treat as revLink if it is a genuine URL, NOT descriptive text (e.g. "Show Untested / Never Made Live")!
+    let revLink = "";
+    if (isValidWebUrl(revLinkRaw)) {
+      revLink = revLinkRaw.toString().trim();
+      if (!revLink.startsWith("http://") && !revLink.startsWith("https://")) {
         revLink = "https://" + revLink;
+      }
     }
 
     // Launch Status resolution: Master Col AA (index 26) & Post-Sales Col K (index 10)
@@ -773,10 +792,10 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
         createDraft(email, `Vendor Onboarding for ${title}`, firstName, 'vendor', title, link, i, vendorCol, null, ccMail, revLink, argus);
       }
       if (psRow[revStatementEmailCol] === "Timer Set Rev") {
-        if (revLink && revLink.toString().trim() !== "" && revLink.toString().trim() !== "#" && !revLink.toString().includes("#REF")) {
+        if (isValidWebUrl(revLink)) {
           createDraft(email, "Pocket FM: Your earnings are waiting for you!", firstName, 'revStatement_workedWell_payment', title, link, i, revStatementEmailCol, null, ccMail, revLink, argus);
         } else {
-          Logger.log(`[ROW ${rowNum}] [Rev Statement Timer] [SKIPPED] Missing Revenue Statement link in Col AL for "${title}".`);
+          Logger.log(`[ROW ${rowNum}] [Rev Statement Timer] [SKIPPED] Missing or non-URL Revenue Statement link in Col AL for "${title}".`);
         }
       }
       continue; 
@@ -1264,14 +1283,16 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
                              curRevEmailStatus === "draft ready";
 
       // Strict Revenue Statement Link Validation (Col AL):
-      // If Revenue Statement Link is missing, blank, or placeholder (#, #REF), DO NOT create drafts and DO NOT mark Draft Ready in Col AM!
-      const hasValidRevLink = revLink && revLink.toString().trim() !== "" && revLink.toString().trim() !== "#" && !revLink.toString().includes("#REF");
+      // If Revenue Statement Link is missing, blank, or placeholder/text (e.g. "Show Untested / Never Made Live"),
+      // DO NOT create drafts and DO NOT mark Draft Ready in Col AM!
+      const hasValidRevLink = isValidWebUrl(revLink);
 
       if (isRevProcessed) {
         Logger.log(`[ROW ${rowNum}] [Rev Statement] Evaluated for "${title}" - Col AM Status: "${curRevStatus || curRevEmailStatus}" (Already processed / Draft Ready - Skipped duplicate creation)`);
       } else if (!hasValidRevLink) {
-        Logger.log(`[ROW ${rowNum}] [Rev Statement] [SKIPPED] Missing Revenue Statement link in Col AL for "${title}". Draft creation suppressed; Col AM untouched.`);
-        logNotification("Missing Revenue Statement Link", title, `Revenue Statement draft suppressed for "${title}" because the statement link in Column AL is missing or blank.`, rowNum);
+        let rawVal = (revLinkRaw ? revLinkRaw.toString().trim() : "Blank");
+        Logger.log(`[ROW ${rowNum}] [Rev Statement] [SKIPPED] Missing or non-URL Revenue Statement link in Col AL for "${title}" (Found: "${rawVal}"). Draft creation suppressed; Col AM untouched.`);
+        logNotification("Missing Revenue Statement Link", title, `Revenue Statement draft suppressed for "${title}" because Column AL does not contain a valid URL link (Found: "${rawVal}").`, rowNum);
       } else {
         if (isShowDropped) {
           // Stage 9C: Sunset / Dropped / Content Bad ONLY (Mutually exclusive from 9A & 9B)
