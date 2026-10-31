@@ -753,14 +753,22 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
                       : "";
     let masterStage = (mainInfo.stage ? mainInfo.stage.toString().trim().toLowerCase() : "");
 
-    // Robust Dropped / Condition Bad Detection: If "drop", "bad", or "sunset" appears in ANY status location for this show, it is marked!
+    // Robust Dropped / Bad / Discontinued Detection:
+    // If "drop", "bad", "discontinue", or "sunset" appears in ANY status location for this show, it is marked!
     let isRowDropped = masterLaunchStatus.includes("drop") || 
                        psLaunchStatus.includes("drop") || 
                        psLaunchAnnouncementStatus.includes("drop") || 
                        psRevStatus.includes("drop") ||
                        masterStage.includes("drop") ||
-                       masterLaunchStatus.includes("bad") ||
-                       psLaunchStatus.includes("bad");
+                       masterLaunchStatus.includes("bad") || 
+                       psLaunchStatus.includes("bad") ||
+                       masterLaunchStatus.includes("discontinue") ||
+                       psLaunchStatus.includes("discontinue") ||
+                       psLaunchAnnouncementStatus.includes("discontinue") ||
+                       psRevStatus.includes("discontinue") ||
+                       masterStage.includes("discontinue") ||
+                       masterLaunchStatus.includes("sunset") ||
+                       psLaunchStatus.includes("sunset");
 
     let launchStatus = isRowDropped 
                        ? "dropped" 
@@ -775,7 +783,7 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
                     : ((mainInfo.firstName && mainInfo.firstName !== "" && !mainInfo.firstName.includes("#REF")) ? mainInfo.firstName : (author ? author.split(" ")[0] : "Author"));
     
     // 2. Workflow status eligibility check (Launch Status)
-    const isDropped = isRowDropped || launchStatus.includes("dropped") || launchStatus.includes("bad") || launchStatus.includes("untested");
+    const isDropped = isRowDropped || launchStatus.includes("dropped") || launchStatus.includes("bad") || launchStatus.includes("untested") || launchStatus.includes("discontinue");
     if (isDropped && !launchStatus.includes("dropped") && !isRowDropped) {
       logNotification("Workflow status is not eligible", title, `Workflow status is not eligible for "${title}" (Launch Status is "${launchStatus}"). Standard outreach stages 1-8 are suppressed.`, rowNum);
     }
@@ -808,7 +816,7 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
     // =============================================================
     if (!targetStage || targetStage === 'welcome') {
       let contractDate = mainInfo.contractSigned;
-      let isNotDropBad = !launchStatus.includes("drop") && !launchStatus.includes("bad") && !launchStatus.includes("untested");
+      let isNotDropBad = !launchStatus.includes("drop") && !launchStatus.includes("bad") && !launchStatus.includes("untested") && !launchStatus.includes("discontinue");
 
       if (!contractDate || contractDate.toString().trim() === "") {
         if (isReady(psRow[welcomeCol])) {
@@ -849,7 +857,7 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
     // =============================================================
     if (!targetStage || targetStage === 'vendor') {
       let contractDate = mainInfo.contractSigned;
-      let isNotDropBad = !launchStatus.includes("drop") && !launchStatus.includes("bad") && !launchStatus.includes("untested");
+      let isNotDropBad = !launchStatus.includes("drop") && !launchStatus.includes("bad") && !launchStatus.includes("untested") && !launchStatus.includes("discontinue");
 
       if (!contractDate || contractDate.toString().trim() === "") {
         if (isReady(psRow[vendorCol])) {
@@ -891,7 +899,7 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
     if (!targetStage || targetStage === 'mgInitiated') {
       let vendorStatusVal = mainInfo.vendorStatus ? mainInfo.vendorStatus.toLowerCase().trim() : "";
       let isVendorDone = vendorStatusVal === "done";
-      let isNotDropped = !launchStatus.includes("drop");
+      let isNotDropped = !launchStatus.includes("drop") && !launchStatus.includes("bad") && !launchStatus.includes("discontinue");
 
       if (!mainInfo.vendorLifecycleExited || mainInfo.vendorLifecycleExited.toString().trim() === "") {
         if (isReady(psRow[mgPayoutInitiatedCol])) {
@@ -937,7 +945,7 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
     if (!targetStage || targetStage === 'mgConfirmed') {
       let mgStatusVal = mainInfo.mgStatus ? mainInfo.mgStatus.toLowerCase().trim() : "";
       let isMgDone = mgStatusVal === "done";
-      let isNotDropped = !launchStatus.includes("drop");
+      let isNotDropped = !launchStatus.includes("drop") && !launchStatus.includes("bad") && !launchStatus.includes("discontinue");
 
       if (!mainInfo.mgPayoutExited || mainInfo.mgPayoutExited.toString().trim() === "") {
         if (isReady(psRow[mgPayoutConfirmationCol])) {
@@ -985,7 +993,7 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
     // Otherwise: MG Exit == TODAY-15d/30d | Col AG: Show Link IS BLANK | Col AA: Status != Drop
     // =============================================================
     let isLiveLink = link && (link.toString().trim().startsWith("http") || link.toString().trim().includes("pocketfm"));
-    let isCheckInDropped = launchStatus.includes("drop");
+    let isCheckInDropped = launchStatus.includes("drop") || launchStatus.includes("bad") || launchStatus.includes("discontinue");
     let checkInRefDate = mainInfo.mgPayoutExited || psRow[feedbackMailDateCol];
     let vDateObj = parseDateSafe(checkInRefDate);
 
@@ -1152,7 +1160,7 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
                      : "";
       let rawValABLower = rawValAB.toLowerCase();
 
-      // Helper: Check if Col AA or Col AB indicates "Not launched / Not Live / Unavailable"
+      // Helper: Check if Col AA or Col AB indicates "Not launched / Not Live / Unavailable / Discontinued"
       const isNotLaunchedStatus = (val) => {
         if (!val) return false;
         let v = val.toLowerCase().trim();
@@ -1162,7 +1170,8 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
                v.includes("not avail") || 
                v === "unlaunched" || 
                v === "no" ||
-               v.includes("pending launch");
+               v.includes("pending launch") ||
+               v.includes("discontinue");
       };
 
       let isAANotLaunched = isNotLaunchedStatus(rawValAALower);
@@ -1170,7 +1179,7 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
 
       let hasShowId = showId && showId.toString().trim() !== "" && !showId.toString().includes("#REF") && !showId.toString().includes("#N/A");
       let isLiveUrl = link && (link.toString().trim().startsWith("http") || link.toString().trim().includes("pocketfm")) && !link.toString().includes("#REF") && !link.toString().includes("#N/A");
-      let isEligibleLaunchStatus = !launchStatus.includes("drop") && !launchStatus.includes("bad") && !launchStatus.includes("untested");
+      let isEligibleLaunchStatus = !launchStatus.includes("drop") && !launchStatus.includes("bad") && !launchStatus.includes("untested") && !launchStatus.includes("discontinue");
 
       let targetLaunchCol = launchSentCol > -1 ? launchSentCol : launchCol;
 
@@ -1193,7 +1202,7 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
       }
       // 4. Workflow status check (Dropped / Bad)
       else if (!isEligibleLaunchStatus) {
-        Logger.log(`[ROW ${rowNum}] [Show Launch Announcement] Evaluated for "${title}" - Col AA Status: "${launchStatus}" (Suppressed - Drop/Bad/Untested)`);
+        Logger.log(`[ROW ${rowNum}] [Show Launch Announcement] Evaluated for "${title}" - Launch Status: "${launchStatus}" (Suppressed - Drop/Bad/Untested/Discontinued)`);
       }
       // 5. All conditions met: Valid Show ID, live Show Link, eligible status, and Col AA/AB is ready!
       else {
@@ -1253,8 +1262,9 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
     //   - 'Launched (ROW)'        -> Stage 9 (Worked Well: 9A Content + 9B Payment)
     //   - 'Dropped'               -> Stage 10 / 9C (Didn't Work Well - Content + Payment Related Update)
     //   - 'Bad'                   -> Stage 10 / 9C (Didn't Work Well - Content + Payment Related Update)
+    //   - 'Show Discontinued'     -> Stage 10 / 9C (Didn't Work Well - Content + Payment Related Update)
     //   - 'Untested'              -> On Hold / Pending (Suppressed from 9 & 10)
-    //   - 'Average'               -> Under Evaluation (Suppressed from 9 & 10 unless marked Dropped/Bad)
+    //   - 'Average'               -> Under Evaluation (Suppressed from 9 & 10 unless marked Dropped/Bad/Discontinued)
     // Approved Progress Columns: Col AL (Drive Link), Col AM (Sent Progress Dropdown), Col AJ (Status)
     // =============================================================
     if (!targetStage || targetStage === "revStatement" || targetStage.startsWith("revStatement_") || targetStage === "contentBad") {
@@ -1262,7 +1272,8 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
                           launchStatus.includes("dropped") || 
                           launchStatus.includes("drop") || 
                           launchStatus.includes("bad") || 
-                          launchStatus.includes("sunset");
+                          launchStatus.includes("sunset") ||
+                          launchStatus.includes("discontinue");
       let isTestingPgcOrLaunched = !isShowDropped && (launchStatus.includes("testing") || launchStatus.includes("launched"));
       let hasArgusData = showId && (
         (argusData && argusData[showId.toLowerCase().trim()]) || 
@@ -1517,7 +1528,7 @@ function evaluateSingleRowLaunch(psSheet, row, preloadedRowVals = null, preloade
   if (curDropdownLower === "sent" || curAALower === "sent") return;
   if (curDropdownLower === "draft ready" || curAALower === "draft ready") return;
 
-  // Helper: Check if Col AA or Col AB indicates "Not launched / Not Live / Unavailable"
+  // Helper: Check if Col AA or Col AB indicates "Not launched / Not Live / Unavailable / Discontinued"
   const isNotLaunchedStatus = (val) => {
     if (!val) return false;
     let v = val.toLowerCase().trim();
@@ -1527,15 +1538,16 @@ function evaluateSingleRowLaunch(psSheet, row, preloadedRowVals = null, preloade
            v.includes("not avail") || 
            v === "unlaunched" || 
            v === "no" ||
-           v.includes("pending launch");
+           v.includes("pending launch") ||
+           v.includes("discontinue");
   };
 
   const isAANotLaunched = isNotLaunchedStatus(curAALower);
   const isABNotLaunched = isNotLaunchedStatus(curDropdownLower);
 
-  // Stage 7 Conditions: Col AG: Show Link IS LIVE URL | Col AA: Status != Drop/Bad
+  // Stage 7 Conditions: Col AG: Show Link IS LIVE URL | Col AA: Status != Drop/Bad/Untested/Discontinued
   const isLiveUrl = link && (link.toString().trim().startsWith("http") || link.toString().trim().includes("pocketfm")) && !link.includes("#REF") && !link.includes("#N/A");
-  const isEligibleLaunchStatus = !rawStatus.includes("drop") && !rawStatus.includes("bad") && !rawStatus.includes("untested");
+  const isEligibleLaunchStatus = !rawStatus.includes("drop") && !rawStatus.includes("bad") && !rawStatus.includes("untested") && !rawStatus.includes("discontinue");
 
   // Strict guard: If Show ID or Show Link not present, or Col AA / Col AB is "Not launched / Not Live / Unavailable" -> NO DRAFT!
   if (!hasShowId || !isLiveUrl || isAANotLaunched || isABNotLaunched) {

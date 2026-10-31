@@ -1622,7 +1622,7 @@ function processOutreachQueue(isDelayedRun = false) {
     let firstName = psFirstName !== "" ? psFirstName : ((mainInfo.firstName && mainInfo.firstName.toString().trim() !== "") ? mainInfo.firstName : author);
     
     // 2. Workflow status eligibility check (Launch Status)
-    const isDropped = launchStatus.includes("dropped") || launchStatus.includes("bad") || launchStatus.includes("untested");
+    const isDropped = launchStatus.includes("dropped") || launchStatus.includes("bad") || launchStatus.includes("untested") || launchStatus.includes("discontinue");
     if (isDropped && !launchStatus.includes("dropped")) {
       logNotification("Workflow status is not eligible", title, `Workflow status is not eligible for "${title}" (Launch Status is "${launchStatus}"). Standard outreach stages 1-8 are suppressed.`);
     }
@@ -2059,7 +2059,7 @@ function processOutreachQueue(isDelayedRun = false) {
 
           Logger.log(`[STATUS UPDATE] Drafted Worked Well (${qc.code}) for "${title}". Updated Col ${targetSentCol + 1} to "Draft Ready"`);
         }
-        else if (launchStatus.includes("dropped")) {
+        else if (launchStatus.includes("dropped") || launchStatus.includes("bad") || launchStatus.includes("discontinue")) {
           createDraft(email, `Pocket FM: An Update on ${title}`, firstName, 'revStatement_didntWorkWell', title, link, i, targetSentCol, null, ccMail, qRevLink, argus, showName);
           Logger.log(`[STATUS UPDATE] Drafted Didn't Work Well (${qc.code}) for "${title}". Updated Col ${targetSentCol + 1} to "Draft Ready"`);
         }

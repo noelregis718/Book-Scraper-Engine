@@ -65,7 +65,7 @@ def extract_metrics(html):
 
 def get_tracker_path():
     root = "e:/Internship/PocketFM"
-    preferred = os.path.join(root, "US_Licensing_Lifecycle_Tracker (3).xlsx")
+    preferred = os.path.join(root, "US_Licensing_Lifecycle_Tracker.xlsx")
     if os.path.exists(preferred):
         return preferred
     candidates = [
