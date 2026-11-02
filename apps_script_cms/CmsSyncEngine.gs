@@ -79,7 +79,7 @@ function syncAllCmsShows() {
   const lastRow = sheet.getLastRow();
 
   if (lastRow <= 1) {
-    ss.toast("No shows found in CMS Show Data. Please import shows from Tracker first.", "Pocket FM CMS", 5);
+    safeToast(ss, "No shows found in CMS Show Data. Please import shows from Tracker first.", "Pocket FM CMS", 5);
     return { total: 0, updated: 0, failed: 0 };
   }
 
@@ -99,11 +99,11 @@ function syncAllCmsShows() {
   let failed = 0;
   const errors = [];
 
-  ss.toast(`Starting sync for ${total} shows from Pocket FM CMS...`, "Pocket FM CMS", 4);
+  safeToast(ss, `Starting sync for ${total} shows from Pocket FM CMS...`, "Pocket FM CMS", 4);
 
   for (let i = 0; i < total; i++) {
     const item = showList[i];
-    ss.toast(`Syncing show [${i + 1}/${total}]: ${item.showId.substring(0, 10)}...`, "CMS Syncing", 2);
+    safeToast(ss, `Syncing show [${i + 1}/${total}]: ${item.showId.substring(0, 10)}...`, "CMS Syncing", 2);
 
     const metrics = fetchShowMetricsFromCms(item.showId);
     if (metrics.success) {
@@ -122,11 +122,10 @@ function syncAllCmsShows() {
   const summaryMsg = `CMS Sync Finished!\n\n• Total Shows: ${total}\n• Successfully Updated: ${updated}\n• Failed / Unreachable: ${failed}`;
   Logger.log(summaryMsg);
   
-  const ui = SpreadsheetApp.getUi();
   if (failed > 0) {
-    ui.alert("Pocket FM CMS Sync", `${summaryMsg}\n\nTop Errors:\n${errors.slice(0, 5).join("\n")}`, ui.ButtonSet.OK);
+    safeAlert("Pocket FM CMS Sync", `${summaryMsg}\n\nTop Errors:\n${errors.slice(0, 5).join("\n")}`);
   } else {
-    ss.toast(`Sync Complete! Updated all ${updated} shows.`, "Pocket FM CMS", 6);
+    safeToast(ss, `Sync Complete! Updated all ${updated} shows.`, "Pocket FM CMS", 6);
   }
 
   return { total, updated, failed };
@@ -137,11 +136,19 @@ function syncAllCmsShows() {
  */
 function syncActiveRowShow() {
   const ss = getCmsSpreadsheet();
-  const sheet = ss.getActiveSheet();
-  const activeRow = sheet.getActiveCell().getRow();
+  let sheet = null;
+  let activeRow = -1;
+
+  try {
+    sheet = ss.getActiveSheet();
+    activeRow = sheet.getActiveCell().getRow();
+  } catch (e) {
+    Logger.log("No active cell context in standalone execution. Please run syncAllCmsShows instead.");
+    return;
+  }
 
   if (activeRow <= 1) {
-    ss.toast("Please select a valid data row (row 2 or below).", "Pocket FM CMS", 4);
+    safeToast(ss, "Please select a valid data row (row 2 or below).", "Pocket FM CMS", 4);
     return;
   }
 
@@ -158,20 +165,20 @@ function syncActiveRowShow() {
   }
 
   if (!showId) {
-    ss.toast("No valid 40-character Show ID found in the selected row.", "Pocket FM CMS", 4);
+    safeToast(ss, "No valid 40-character Show ID found in the selected row.", "Pocket FM CMS", 4);
     return;
   }
 
-  ss.toast(`Fetching metrics for Show ID ${showId.substring(0, 10)}...`, "CMS Scraper", 3);
+  safeToast(ss, `Fetching metrics for Show ID ${showId.substring(0, 10)}...`, "CMS Scraper", 3);
   const metrics = fetchShowMetricsFromCms(showId);
 
   if (metrics.success) {
     const cmsSheet = getOrCreateCmsSheet(ss);
     updateOrAppendCmsShow(cmsSheet, metrics);
     SpreadsheetApp.flush();
-    ss.toast(`Updated: "${metrics.showName || showId}" | Plays: ${metrics.plays} | Dur: ${metrics.duration}`, "CMS Scraper", 6);
+    safeToast(ss, `Updated: "${metrics.showName || showId}" | Plays: ${metrics.plays} | Dur: ${metrics.duration}`, "CMS Scraper", 6);
   } else {
-    ss.toast(`Sync Failed: ${metrics.error}`, "Pocket FM CMS Error", 6);
+    safeToast(ss, `Sync Failed: ${metrics.error}`, "Pocket FM CMS Error", 6);
   }
 }
 
@@ -202,7 +209,7 @@ function importNewShowsFromTracker() {
   });
 
   if (!masterSheet) {
-    ss.toast("Could not find Master Lifecycle Tracker sheet to import from.", "Pocket FM CMS", 5);
+    safeToast(ss, "Could not find Master Lifecycle Tracker sheet to import from.", "Pocket FM CMS", 5);
     return 0;
   }
 
@@ -214,7 +221,7 @@ function importNewShowsFromTracker() {
   }) + 1;
 
   if (sidColIdx === 0) {
-    ss.toast("Could not locate 'Show ID' column in Master Tracker.", "Pocket FM CMS", 5);
+    safeToast(ss, "Could not locate 'Show ID' column in Master Tracker.", "Pocket FM CMS", 5);
     return 0;
   }
 
@@ -246,7 +253,7 @@ function importNewShowsFromTracker() {
   }
 
   SpreadsheetApp.flush();
-  ss.toast(`Imported ${importedCount} new shows from Master Tracker into CMS sheet!`, "Pocket FM CMS", 6);
+  safeToast(ss, `Imported ${importedCount} new shows from Master Tracker into CMS sheet!`, "Pocket FM CMS", 6);
   return importedCount;
 }
 
@@ -274,7 +281,7 @@ function auditMissingCmsData() {
   });
 
   if (!masterSheet) {
-    SpreadsheetApp.getUi().alert("Audit Error", "Could not locate Master Lifecycle Tracker sheet.", SpreadsheetApp.getUi().ButtonSet.OK);
+    safeAlert("Audit Error", "Could not locate Master Lifecycle Tracker sheet.");
     return;
   }
 
@@ -298,11 +305,10 @@ function auditMissingCmsData() {
     });
   }
 
-  const ui = SpreadsheetApp.getUi();
   if (missingList.length === 0) {
-    ui.alert("CMS Data Audit", "All shows with a Show ID in Master Tracker are present in CMS Show Data! 100% matched.", ui.ButtonSet.OK);
+    safeAlert("CMS Data Audit", "All shows with a Show ID in Master Tracker are present in CMS Show Data! 100% matched.");
   } else {
-    ui.alert("CMS Data Audit", `Found ${missingList.length} shows missing from CMS:\n\n${missingList.slice(0, 12).join("\n")}\n\nTip: Click 'Import New Shows from Master Tracker' to add them automatically.`, ui.ButtonSet.OK);
+    safeAlert("CMS Data Audit", `Found ${missingList.length} shows missing from CMS:\n\n${missingList.slice(0, 12).join("\n")}\n\nTip: Click 'Import New Shows from Master Tracker' to add them automatically.`);
   }
 }
 
@@ -332,5 +338,6 @@ function cleanAndFormatCmsSheet() {
 
   // Auto-resize standard columns
   sheet.autoResizeColumns(1, Math.min(lastCol, 10));
-  ss.toast("CMS Show Data tab formatted with Pocket FM styling!", "Pocket FM CMS", 4);
+  safeToast(ss, "CMS Show Data tab formatted with Pocket FM styling!", "Pocket FM CMS", 4);
 }
+

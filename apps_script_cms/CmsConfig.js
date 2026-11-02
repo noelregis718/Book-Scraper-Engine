@@ -176,3 +176,41 @@ function getWebhookSecret() {
   }
   return secret;
 }
+
+/**
+ * Safe toast notification that works in container-bound UI and gracefully falls back to Logger in standalone/headless context
+ * @param {GoogleAppsScript.Spreadsheet.Spreadsheet} ss 
+ * @param {string} msg 
+ * @param {string} title 
+ * @param {number} timeoutSec 
+ */
+function safeToast(ss, msg, title = "Pocket FM CMS", timeoutSec = 3) {
+  try {
+    if (ss && typeof ss.toast === "function") {
+      ss.toast(msg, title, timeoutSec);
+      return;
+    }
+  } catch (e) {
+    // Standalone or background execution has no UI notification context
+  }
+  Logger.log(`[${title}] ${msg}`);
+}
+
+/**
+ * Safe UI alert that works in container-bound UI and gracefully falls back to Logger in standalone/headless context
+ * @param {string} title 
+ * @param {string} message 
+ */
+function safeAlert(title, message) {
+  try {
+    const ui = SpreadsheetApp.getUi();
+    if (ui) {
+      ui.alert(title, message, ui.ButtonSet.OK);
+      return;
+    }
+  } catch (e) {
+    // Standalone execution has no UI
+  }
+  Logger.log(`[ALERT: ${title}]\n${message}`);
+}
+

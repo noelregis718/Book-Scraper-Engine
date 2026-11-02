@@ -44,7 +44,14 @@ function installCmsMenu() {
  * UI Prompt allowing users to securely enter or update their CMS session cookie / token
  */
 function promptSetCmsAuthToken() {
-  const ui = SpreadsheetApp.getUi();
+  let ui = null;
+  try {
+    ui = SpreadsheetApp.getUi();
+  } catch (e) {
+    Logger.log("UI prompt is only available when executed from a Google Spreadsheet container. In standalone mode, use setCmsAuthToken('YOUR_TOKEN') in CmsConfig.gs.");
+    return;
+  }
+
   const currentToken = getCmsAuthToken();
   const maskedCurrent = currentToken ? `(Currently configured: ${currentToken.substring(0, 15)}...)` : "(Currently blank)";
 
@@ -70,20 +77,17 @@ function promptSetCmsAuthToken() {
  * Displays current authentication status
  */
 function checkCmsAuthStatus() {
-  const ui = SpreadsheetApp.getUi();
   const token = getCmsAuthToken();
 
   if (token) {
-    ui.alert(
+    safeAlert(
       "CMS Token Status: Active",
-      `A session token is currently saved in Script Properties.\n\n• Token Preview: ${token.substring(0, 20)}...\n• Length: ${token.length} characters\n\nIf sync returns 401/redirect errors, your session may have expired—simply click 'Set / Update CMS Session Token' to update.`,
-      ui.ButtonSet.OK
+      `A session token is currently saved in Script Properties.\n\n• Token Preview: ${token.substring(0, 20)}...\n• Length: ${token.length} characters\n\nIf sync returns 401/redirect errors, your session may have expired—simply click 'Set / Update CMS Session Token' to update.`
     );
   } else {
-    ui.alert(
+    safeAlert(
       "CMS Token Status: Not Configured",
-      "No CMS session token is currently stored.\n\nPlease click 'Set / Update CMS Session Token' to enter your session cookie before syncing directly from Google Sheets.",
-      ui.ButtonSet.OK
+      "No CMS session token is currently stored.\n\nPlease click 'Set / Update CMS Session Token' to enter your session cookie before syncing directly from Google Sheets."
     );
   }
 }
@@ -92,7 +96,6 @@ function checkCmsAuthStatus() {
  * Displays Webhook integration details for external scrapers (e.g. Python Playwright)
  */
 function showWebhookDetailsDialog() {
-  const ui = SpreadsheetApp.getUi();
   const secret = getWebhookSecret();
 
   const msg = `WEBHOOK INTEGRATION DETAILS\n\n` +
@@ -120,5 +123,6 @@ function showWebhookDetailsDialog() {
     `2. Select 'Web app' -> Execute as: Me -> Access: Anyone\n` +
     `3. Copy the Web app URL.`;
 
-  ui.alert("Pocket FM CMS Webhook Endpoint", msg, ui.ButtonSet.OK);
+  safeAlert("Pocket FM CMS Webhook Endpoint", msg);
 }
+

@@ -60,3 +60,4 @@ Because Pocket FM CMS requires JumpCloud Single Sign-On (SSO):
 5. In your Google Sheet, click **`Pocket FM CMS Scraper > 🔑 Set / Update CMS Session Token`**.
 6. Paste the token and click **OK**. It is now securely saved in Google's cloud Script Properties.
 7. Click **`▶️ Sync All Shows from CMS`** to update all show data directly!
+
