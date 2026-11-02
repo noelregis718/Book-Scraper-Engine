@@ -1,22 +1,24 @@
 /**
  * =======================================================================
- * POCKET FM ARGUS CMS SCRAPER & DATA MANAGER - MODULE 1: CONFIGURATION
- * File: ArgusConfig.gs (or ArgusConfig.js)
+ * POCKET FM CMS SCRAPER & DATA MANAGER - MODULE 1: CONFIGURATION
+ * File: CmsConfig.gs (or CmsConfig.js)
  * =======================================================================
  * Single source of truth for:
- * - Sheet name and column mapping definitions
+ * - Target spreadsheet ID & sheet names
+ * - Column mapping definitions
  * - CMS API & Base URLs
  * - Secure Script Properties (Session Token / Cookies)
  * - Metric sanitizers and number formatters
  */
 
 // Target Sheet Configuration
-const ARGUS_SHEET_NAME = "Argus Show Data";
+const SPREADSHEET_ID = "1A1vJ0DsmDxtCFZiuyu6vtuQFWqClPyK7e1_lHKddGdQ";
+const CMS_SHEET_NAME = "CMS Show Data";
 const MASTER_TRACKER_SHEET_NAME = "Lifecycle Tracker - Master";
 const POST_SALES_SHEET_NAME = "Post-Sales Tracker";
 
-// Standard Column Headers for Argus Show Data Tab
-const ARGUS_COLUMNS = [
+// Standard Column Headers for CMS Show Data Tab
+const CMS_COLUMNS = [
   "Show ID",
   "Show Name",
   "Plays",
@@ -35,32 +37,37 @@ const CMS_SHOW_URL = "https://cms.pocketfm.com/shows/audiobooks?tab=published&id
 
 // Secure Script Property Key for Session Authentication
 const PROP_CMS_AUTH_TOKEN = "POCKETFM_CMS_SESSION_TOKEN";
-const PROP_WEBHOOK_SECRET = "ARGUS_WEBHOOK_SECRET_KEY";
+const PROP_WEBHOOK_SECRET = "CMS_WEBHOOK_SECRET_KEY";
 
 /**
- * Returns the active spreadsheet instance
+ * Returns the active or target Google Spreadsheet instance (works both container-bound and standalone)
  * @returns {GoogleAppsScript.Spreadsheet.Spreadsheet}
  */
-function getArgusSpreadsheet() {
-  return SpreadsheetApp.getActiveSpreadsheet();
+function getCmsSpreadsheet() {
+  try {
+    return SpreadsheetApp.getActiveSpreadsheet() || SpreadsheetApp.openById(SPREADSHEET_ID);
+  } catch (err) {
+    return SpreadsheetApp.openById(SPREADSHEET_ID);
+  }
 }
 
 /**
- * Finds or auto-creates the 'Argus Show Data' tab
+ * Finds or auto-creates the 'CMS Show Data' tab (with fallback to existing data tabs)
  * @param {GoogleAppsScript.Spreadsheet.Spreadsheet} ss - Optional spreadsheet instance
  * @returns {GoogleAppsScript.Spreadsheet.Sheet}
  */
-function getOrCreateArgusSheet(ss = null) {
-  const spreadsheet = ss || getArgusSpreadsheet();
-  let sheet = spreadsheet.getSheets().find(s => 
-    s.getName().toLowerCase().trim().includes("argus")
-  );
+function getOrCreateCmsSheet(ss = null) {
+  const spreadsheet = ss || getCmsSpreadsheet();
+  let sheet = spreadsheet.getSheets().find(s => {
+    const n = s.getName().toLowerCase().trim();
+    return n.includes("cms show") || n.includes("cms data") || n.includes("argus");
+  });
 
   if (!sheet) {
-    sheet = spreadsheet.insertSheet(ARGUS_SHEET_NAME);
-    sheet.appendRow(ARGUS_COLUMNS);
+    sheet = spreadsheet.insertSheet(CMS_SHEET_NAME);
+    sheet.appendRow(CMS_COLUMNS);
     sheet.setFrozenRows(1);
-    sheet.getRange(1, 1, 1, ARGUS_COLUMNS.length)
+    sheet.getRange(1, 1, 1, CMS_COLUMNS.length)
       .setBackground("#7a0000")
       .setFontColor("#ffffff")
       .setFontWeight("bold");
@@ -73,8 +80,8 @@ function getOrCreateArgusSheet(ss = null) {
  * @param {GoogleAppsScript.Spreadsheet.Sheet} sheet 
  * @returns {Object} Map of column names to 1-based column indices
  */
-function resolveArgusHeaderMap(sheet) {
-  const lastCol = Math.max(sheet.getLastColumn(), ARGUS_COLUMNS.length);
+function resolveCmsHeaderMap(sheet) {
+  const lastCol = Math.max(sheet.getLastColumn(), CMS_COLUMNS.length);
   const headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
   const colMap = {};
 
@@ -116,7 +123,7 @@ function resolveArgusHeaderMap(sheet) {
  * @param {*} val 
  * @returns {number|string}
  */
-function cleanArgusMetric(val) {
+function cleanCmsMetric(val) {
   if (val === null || val === undefined) return 0;
   const s = val.toString().trim().replace(/,/g, "");
   if (!s || s.toLowerCase() === "nan" || s.toLowerCase().includes("no ")) return 0;
@@ -169,4 +176,3 @@ function getWebhookSecret() {
   }
   return secret;
 }
-

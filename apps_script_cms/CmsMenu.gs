@@ -1,7 +1,7 @@
 /**
  * =======================================================================
- * POCKET FM ARGUS CMS SCRAPER & DATA MANAGER - MODULE 4: UI & MENUS
- * File: ArgusMenu.gs (or ArgusMenu.js)
+ * POCKET FM CMS SCRAPER & DATA MANAGER - MODULE 4: UI & MENUS
+ * File: CmsMenu.gs (or CmsMenu.js)
  * =======================================================================
  * Custom Google Sheets UI Menu & Interactive User Dialogs:
  * - One-click master runners for CMS sync
@@ -13,30 +13,30 @@
  * Standard Google Sheets onOpen trigger to install custom menu
  */
 function onOpen() {
-  installArgusMenu();
+  installCmsMenu();
 }
 
 /**
- * Adds the dedicated 'Pocket FM Argus Scraper' menu to Google Sheets UI
+ * Adds the dedicated 'Pocket FM CMS Scraper' menu to Google Sheets UI
  */
-function installArgusMenu() {
+function installCmsMenu() {
   try {
     const ui = SpreadsheetApp.getUi();
-    ui.createMenu("Pocket FM Argus Scraper")
-      .addItem("▶️ Sync All Shows from CMS", "syncAllArgusShows")
+    ui.createMenu("Pocket FM CMS Scraper")
+      .addItem("▶️ Sync All Shows from CMS", "syncAllCmsShows")
       .addItem("🎯 Sync Currently Selected Show", "syncActiveRowShow")
       .addSeparator()
       .addItem("📥 Import Missing Shows from Tracker", "importNewShowsFromTracker")
-      .addItem("📊 Audit Shows Missing from Argus", "auditMissingArgusData")
+      .addItem("📊 Audit Shows Missing from CMS", "auditMissingCmsData")
       .addSeparator()
       .addItem("🔑 Set / Update CMS Session Token", "promptSetCmsAuthToken")
       .addItem("👁️ Check CMS Auth Token Status", "checkCmsAuthStatus")
       .addItem("🌐 View Webhook URL & Secret Key", "showWebhookDetailsDialog")
       .addSeparator()
-      .addItem("🧹 Clean & Format Argus Sheet", "cleanAndFormatArgusSheet")
+      .addItem("🧹 Clean & Format CMS Sheet", "cleanAndFormatCmsSheet")
       .addToUi();
   } catch (e) {
-    Logger.log("Argus menu already loaded or headless execution: " + e);
+    Logger.log("CMS menu already loaded or headless execution: " + e);
   }
 }
 
@@ -120,6 +120,5 @@ function showWebhookDetailsDialog() {
     `2. Select 'Web app' -> Execute as: Me -> Access: Anyone\n` +
     `3. Copy the Web app URL.`;
 
-  ui.alert("Pocket FM Argus Webhook Endpoint", msg, ui.ButtonSet.OK);
+  ui.alert("Pocket FM CMS Webhook Endpoint", msg, ui.ButtonSet.OK);
 }
-

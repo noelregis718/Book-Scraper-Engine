@@ -1,7 +1,7 @@
 /**
  * =======================================================================
- * POCKET FM ARGUS CMS SCRAPER & DATA MANAGER - MODULE 2: CMS SERVICE
- * File: ArgusService.gs (or ArgusService.js)
+ * POCKET FM CMS SCRAPER & DATA MANAGER - MODULE 2: CMS SERVICE
+ * File: CmsService.gs (or CmsService.js)
  * =======================================================================
  * Handles:
  * - Direct HTTP calls to Pocket FM CMS via UrlFetchApp
@@ -85,11 +85,11 @@ function fetchShowMetricsFromCms(showId) {
           if (showData.title || showData.name) {
             result.showName = showData.title || showData.name;
           }
-          if (showData.plays !== undefined) result.plays = cleanArgusMetric(showData.plays);
-          if (showData.duration !== undefined) result.duration = cleanArgusMetric(showData.duration);
-          if (showData.ratings !== undefined) result.ratings = cleanArgusMetric(showData.ratings);
-          if (showData.reviews !== undefined) result.reviews = cleanArgusMetric(showData.reviews);
-          if (showData.comments !== undefined) result.comments = cleanArgusMetric(showData.comments);
+          if (showData.plays !== undefined) result.plays = cleanCmsMetric(showData.plays);
+          if (showData.duration !== undefined) result.duration = cleanCmsMetric(showData.duration);
+          if (showData.ratings !== undefined) result.ratings = cleanCmsMetric(showData.ratings);
+          if (showData.reviews !== undefined) result.reviews = cleanCmsMetric(showData.reviews);
+          if (showData.comments !== undefined) result.comments = cleanCmsMetric(showData.comments);
           if (result.showName) {
             result.success = true;
             return result;
@@ -114,7 +114,7 @@ function fetchShowMetricsFromCms(showId) {
                        content.match(/Plays<\/div>[^<]*<div[^>]*>([0-9.,KMBkmb]+)/i) ||
                        content.match(/([0-9.,]+)\s*Plays/i);
     if (playsMatch && playsMatch[1]) {
-      result.plays = cleanArgusMetric(playsMatch[1]);
+      result.plays = cleanCmsMetric(playsMatch[1]);
     }
 
     // 3. Duration / Hours
@@ -122,8 +122,8 @@ function fetchShowMetricsFromCms(showId) {
                      content.match(/Hours<\/div>[^<]*<div[^>]*>([0-9.,]+)/i) ||
                      content.match(/([0-9.,]+)\s*Hours/i);
     if (durMatch && durMatch[1]) {
-      result.duration = cleanArgusMetric(durMatch[1]);
-      result.listeningHours = cleanArgusMetric(durMatch[1]);
+      result.duration = cleanCmsMetric(durMatch[1]);
+      result.listeningHours = cleanCmsMetric(durMatch[1]);
     }
 
     // 4. Comments
@@ -131,15 +131,15 @@ function fetchShowMetricsFromCms(showId) {
                          content.match(/Comments<\/div>[^<]*<div[^>]*>([0-9.,KMBkmb]+)/i) ||
                          content.match(/([0-9.,]+)\s*Comments/i);
     if (commentMatch && commentMatch[1]) {
-      result.comments = cleanArgusMetric(commentMatch[1]);
+      result.comments = cleanCmsMetric(commentMatch[1]);
     }
 
     // 5. Ratings & Reviews
     const revMatch = content.match(/([0-9.,]+)\s*Reviews/i) ||
                      content.match(/([0-9.,]+)\s*Ratings/i);
     if (revMatch && revMatch[1]) {
-      result.reviews = cleanArgusMetric(revMatch[1]);
-      result.ratings = cleanArgusMetric(revMatch[1]);
+      result.reviews = cleanCmsMetric(revMatch[1]);
+      result.ratings = cleanCmsMetric(revMatch[1]);
     }
 
     result.success = !!(result.showName || result.plays || result.duration);
@@ -187,20 +187,20 @@ function doPost(e) {
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
-    const sheet = getOrCreateArgusSheet();
+    const sheet = getOrCreateCmsSheet();
     let updatedCount = 0;
 
     // Case 1: Bulk array of shows
     if (Array.isArray(payload.shows)) {
       payload.shows.forEach(show => {
-        if (updateOrAppendArgusShow(sheet, show)) {
+        if (updateOrAppendCmsShow(sheet, show)) {
           updatedCount++;
         }
       });
     } 
     // Case 2: Single show object
     else if (payload.showId) {
-      if (updateOrAppendArgusShow(sheet, payload)) {
+      if (updateOrAppendCmsShow(sheet, payload)) {
         updatedCount++;
       }
     }
@@ -226,10 +226,9 @@ function doPost(e) {
  */
 function doGet(e) {
   return ContentService.createTextOutput(JSON.stringify({
-    service: "Pocket FM Argus CMS Sync Webhook",
+    service: "Pocket FM CMS Sync Webhook",
     status: "active",
     authConfigured: !!getCmsAuthToken(),
     timestamp: new Date().toISOString()
   })).setMimeType(ContentService.MimeType.JSON);
 }
-
