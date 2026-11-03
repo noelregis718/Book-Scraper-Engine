@@ -8,12 +8,15 @@ import json
 from playwright.async_api import async_playwright
 import format_excel
 
-EXCEL_FILE = r"e:\Internship\PocketFM\KF Literary Scouts Series .xlsx"
-SHEET_NAME = "GR data populated sheet"
-START_ROW = 33
-TARGET_ROWS = 48
+import argparse
+import sys
+
+EXCEL_FILE = r"E:\Internship\PocketFM\Kensington_Storefront_Fantasy_Catalog.xlsx"
+SHEET_NAME = "Kensington Unique Storefront"
+START_ROW = 0
+TARGET_ROWS = 10
 CONCURRENCY = 2
-BATCH_SIZE = 30
+BATCH_SIZE = 10
 
 # We use urllib for the Autocomplete API to bypass AWS WAF
 HEADERS = {
@@ -43,7 +46,7 @@ async def process_row(index, row, df, context, sem):
     print(f"DEBUG: Entered process_row for index {index}")
     async with sem:
         # Prefer Book Name for searching Goodreads instead of Series Name
-        book_name = str(row.get("Book Name", row.get("Series Name", ""))).strip()
+        book_name = str(row.get("Book Title", row.get("Book Name", row.get("Series Name", "")))).strip()
         
         # If Book Name is literally 'nan', try Series Name
         if book_name.lower() == 'nan':
@@ -134,9 +137,14 @@ async def process_row(index, row, df, context, sem):
                 df.at[index, "Genre Tags"] = ", ".join(genres)
                 
             # EXTRACT SYNOPSIS
+            syn_text = ""
             desc_el = await page.query_selector('[data-testid="description"] .Formatted, .readable')
             if desc_el: 
-                df.at[index, "Synopsis"] = (await desc_el.inner_text()).strip()
+                syn_text = (await desc_el.inner_text()).strip()
+            if "Goodreads Synopsis" in df.columns:
+                df.at[index, "Goodreads Synopsis"] = syn_text
+            elif "Synopsis" in df.columns:
+                df.at[index, "Synopsis"] = syn_text
                 
             # EXTRACT RATINGS FOR STEP 4
             avg_rating = 0.0
@@ -351,18 +359,82 @@ def _apply_romantasy_checker(df, index, row, genres):
     df.at[index, "Romantasy Checker"] = classification
     print(f"[{index}] Romantasy Checker: {classification}")
 
+def apply_kensington_styling(filepath, sheet_name):
+    import openpyxl
+    from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+    from openpyxl.utils import get_column_letter
+    try:
+        wb = openpyxl.load_workbook(filepath)
+        ws = wb[sheet_name] if sheet_name in wb.sheetnames else wb.active
+        ws.views.sheetView[0].showGridLines = True
+        
+        header_fill = PatternFill(start_color="006666", end_color="006666", fill_type="solid")
+        header_font = Font(name="Segoe UI", size=11, bold=True, color="FFFFFF")
+        data_font = Font(name="Segoe UI", size=10)
+        border_side = Side(border_style="thin", color="D3D3D3")
+        data_border = Border(left=border_side, right=border_side, top=border_side, bottom=border_side)
+        
+        ws.row_dimensions[1].height = 28
+        for col_idx in range(1, ws.max_column + 1):
+            cell = ws.cell(row=1, column=col_idx)
+            cell.fill = header_fill
+            cell.font = header_font
+            cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+            cell.border = data_border
+            
+        for row_idx in range(2, ws.max_row + 1):
+            ws.row_dimensions[row_idx].height = 22
+            for col_idx in range(1, ws.max_column + 1):
+                cell = ws.cell(row=row_idx, column=col_idx)
+                cell.font = data_font
+                cell.border = data_border
+                header_name = str(ws.cell(row=1, column=col_idx).value or "")
+                if header_name in ["Publisher", "Category", "Romantasy Checker"]:
+                    cell.alignment = Alignment(horizontal="center", vertical="center")
+                elif header_name in ["Book1_Rating", "Book1_Num_Ratings", "Num_Primary_Books_in_Series", "Total_Page_Count_of_Primary_Books", "Approx Length (Hrs)"]:
+                    cell.alignment = Alignment(horizontal="right", vertical="center")
+                else:
+                    cell.alignment = Alignment(horizontal="left", vertical="center")
+                    
+        for col in ws.columns:
+            col_letter = get_column_letter(col[0].column)
+            max_len = 0
+            for cell in col:
+                val_str = str(cell.value or '')
+                if len(val_str) > 40:
+                    val_str = val_str[:40]
+                max_len = max(max_len, len(val_str))
+            ws.column_dimensions[col_letter].width = max(max_len + 4, 18)
+            
+        ws.freeze_panes = "A2"
+        ws.auto_filter.ref = f"A1:{get_column_letter(ws.max_column)}{ws.max_row}"
+        wb.save(filepath)
+        wb.close()
+        print(f"Applied Kensington styling to {filepath}")
+    except Exception as e:
+        print(f"Styling note: {e}")
+
 async def run_scraper():
-    print(f"Loading {EXCEL_FILE}...")
+    global START_ROW, TARGET_ROWS
+    parser = argparse.ArgumentParser(description="Mega Goodreads Scraper")
+    parser.add_argument("--start", type=int, default=START_ROW, help="Start row index (0-based)")
+    parser.add_argument("--target", type=int, default=TARGET_ROWS, help="Target end row index")
+    args, unknown = parser.parse_known_args()
+    START_ROW = args.start
+    TARGET_ROWS = args.target
+
+    print(f"Loading {EXCEL_FILE} (Rows {START_ROW} to {TARGET_ROWS})...")
     try:
         df = pd.read_excel(EXCEL_FILE, sheet_name=SHEET_NAME)
     except Exception as e:
         print(f"Excel load error: {e}")
         return
 
-    # Ensure all target columns exist
-    for col in ["GoodReads_Series_URL", "Book1_Rating", "Book1_Num_Ratings", "Num_Primary_Books_in_Series", "Total_Page_Count_of_Primary_Books", "Approx Length (Hrs)", "Genre Tags", "Synopsis", "Romantasy Checker"]:
+    # Ensure all target columns exist and are object dtype so strings can be assigned without float64 error
+    for col in ["GoodReads_Series_URL", "Book1_Rating", "Book1_Num_Ratings", "Num_Primary_Books_in_Series", "Total_Page_Count_of_Primary_Books", "Approx Length (Hrs)", "Genre Tags", "Goodreads Synopsis", "Synopsis", "Romantasy Checker"]:
         if col not in df.columns:
             df[col] = None
+        df[col] = df[col].astype(object)
 
     print(f"Running HYBRID Scraper on FIRST {TARGET_ROWS} ROWS with CONCURRENCY {CONCURRENCY} and BATCH_SIZE {BATCH_SIZE}...")
 
@@ -436,7 +508,7 @@ async def run_scraper():
     try:
         print("\nAll batches complete for the target rows.")
         print("Applying automatic Excel styling...")
-        format_excel.apply_styling(EXCEL_FILE)
+        apply_kensington_styling(EXCEL_FILE, SHEET_NAME)
     except Exception as e:
         print(f"Failed to apply styling: {e}")
 
