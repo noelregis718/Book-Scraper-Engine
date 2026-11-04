@@ -12,8 +12,8 @@
  */
 
 // Global Spreadsheet Constants
-const SPREADSHEET_ID = "1A1vJ0DsmDxtCFZiuyu6vtuQFWqClPyK7e1_lHKddGdQ";
-const POST_SALES_TRACKER_GID = 120747375;
+const SPREADSHEET_ID = "1JFT4_f9Du6UZWi6aM0FjYvyR-mcAsbARq7JyxJwLPZc";
+const POST_SALES_TRACKER_GID = 1100439097;
 
 /**
  * Returns the active or target Google Spreadsheet instance
@@ -31,14 +31,44 @@ function getSpreadsheet() {
  */
 function getPostSalesTrackerSheet(ss = null) {
   const spreadsheet = ss || getSpreadsheet();
-  for (let s of spreadsheet.getSheets()) {
-    if (s.getSheetId() === POST_SALES_TRACKER_GID) return s;
+  if (!spreadsheet) return null;
+  const sheets = spreadsheet.getSheets();
+
+  // Priority 1: STRICT EXACT MATCH for the active "Post-Sales Tracker" tab
+  // (Strictly excludes legacy "Post Sale Comms Tracker" and documentation tabs like "Deal lifecycle stages")
+  for (let s of sheets) {
     let sName = s.getName().toLowerCase().trim().replace("–", "-").replace("—", "-");
-    if (sName.includes("post-sales tracker") || sName.includes("post sales tracker") || sName.includes("post sale comms tracker")) {
+    if (sName === "post-sales tracker" || sName === "post sales tracker") {
       return s;
     }
   }
-  return null;
+
+  // Priority 2: Contains "post-sales" or "post sales" but strictly NOT "comms" and NOT "stage"
+  for (let s of sheets) {
+    let sName = s.getName().toLowerCase().trim().replace("–", "-").replace("—", "-");
+    if ((sName.includes("post-sales") || sName.includes("post sales")) && !sName.includes("comms") && !sName.includes("stage") && !sName.includes("deal lifecycle")) {
+      return s;
+    }
+  }
+
+  // Priority 3: Legacy fallback only if "Post-Sales Tracker" does not exist at all
+  for (let s of sheets) {
+    let sName = s.getName().toLowerCase().trim().replace("–", "-").replace("—", "-");
+    if (sName.includes("post sale comms tracker") || sName.includes("post sale comms")) {
+      return s;
+    }
+  }
+
+  // Priority 4: GID fallback
+  for (let s of sheets) {
+    let sName = s.getName().toLowerCase().trim();
+    if (sName.includes("stage") || sName.includes("doc") || sName.includes("payout") || sName.includes("master") || sName.includes("deal lifecycle") || sName.includes("comms")) continue;
+    if (s.getSheetId() === 120747375 || (typeof POST_SALES_TRACKER_GID !== "undefined" && s.getSheetId() === POST_SALES_TRACKER_GID)) {
+      return s;
+    }
+  }
+
+  return sheets[0];
 }
 
 /**
@@ -308,7 +338,7 @@ function isDealSignedBeforeSept1(dateVal) {
   let cmp = new Date(target.getTime());
   cmp.setHours(0, 0, 0, 0);
   let cutoff = new Date(2026, 8, 1, 0, 0, 0, 0); // September 1, 2026 (Month index 8 = September)
-  return cmp.getTime() <= cutoff.getTime(); // Inclusive: deals signed on or before 1st September
+  return cmp.getTime() < cutoff.getTime(); // Deals signed strictly before 1st September 2026
 }
 
 
@@ -322,7 +352,13 @@ function resolveTrackerColumns(headers) {
     titleCol: findCol("Title / IP") > -1 ? findCol("Title / IP") : 2,
     authorCol: findCol("Author Name") > -1 ? findCol("Author Name") : 1,
     contractDateCol: findCol("Contract Signing date") > -1 ? findCol("Contract Signing date") : 3,
-    mgPayoutDueCol: findCol("MG payout due") > -1 ? findCol("MG payout due") : 4,
+    mgPayoutDueCol: headers.findIndex(h => {
+      let s = h.toString().toLowerCase().trim();
+      return s.includes("mg paid") || s.includes("mg payout");
+    }) > -1 ? headers.findIndex(h => {
+      let s = h.toString().toLowerCase().trim();
+      return s.includes("mg paid") || s.includes("mg payout");
+    }) : 4,
     emailCol: findCol("Receiver Email ID") > -1 ? findCol("Receiver Email ID") : 5,
     ccCol: findCol("CC Mail ID") > -1 ? findCol("CC Mail ID") : 6,
     firstNameCol: findCol("Receiver First Name") > -1 ? findCol("Receiver First Name") : 7,
@@ -337,6 +373,13 @@ function resolveTrackerColumns(headers) {
     statusCol: findCol("Launch Status") > -1 ? findCol("Launch Status") : 10,
     linkCol: findCol("Show Link") > -1 ? findCol("Show Link") : 11,
     showNameCol: findCol("Show Name") > -1 ? findCol("Show Name") : 12,
+    scriptReceivedCol: headers.findIndex(h => {
+      let s = h.toString().toLowerCase().trim();
+      return s.includes("original scripts received") || (s.includes("scripts") && s.includes("received") && !s.includes("date"));
+    }) > -1 ? headers.findIndex(h => {
+      let s = h.toString().toLowerCase().trim();
+      return s.includes("original scripts received") || (s.includes("scripts") && s.includes("received") && !s.includes("date"));
+    }) : 13,
     scriptDateCol: headers.findIndex(h => {
       let s = h.toString().toLowerCase().trim();
       return s.includes("script") && s.includes("date");
@@ -392,7 +435,21 @@ function resolveTrackerColumns(headers) {
       let s = h.toString().toLowerCase().trim();
       return (s.includes("launch") && s.includes("announcement") && s.includes("status")) || s === "show launch announcement status";
     }) : 26,
+    launchCol: headers.findIndex(h => {
+      let s = h.toString().toLowerCase().trim();
+      return (s.includes("launch") && s.includes("announcement") && s.includes("status")) || s === "show launch announcement status";
+    }) > -1 ? headers.findIndex(h => {
+      let s = h.toString().toLowerCase().trim();
+      return (s.includes("launch") && s.includes("announcement") && s.includes("status")) || s === "show launch announcement status";
+    }) : 26,
     colAB: headers.findIndex(h => {
+      let s = h.toString().toLowerCase().trim();
+      return (s.includes("launch") && s.includes("announcement") && (s.includes("sent") || s.includes("email sent")) && !s.includes("date"));
+    }) > -1 ? headers.findIndex(h => {
+      let s = h.toString().toLowerCase().trim();
+      return (s.includes("launch") && s.includes("announcement") && (s.includes("sent") || s.includes("email sent")) && !s.includes("date"));
+    }) : 27,
+    launchSentCol: headers.findIndex(h => {
       let s = h.toString().toLowerCase().trim();
       return (s.includes("launch") && s.includes("announcement") && (s.includes("sent") || s.includes("email sent")) && !s.includes("date"));
     }) > -1 ? headers.findIndex(h => {
@@ -406,13 +463,51 @@ function resolveTrackerColumns(headers) {
       let s = h.toString().toLowerCase().trim();
       return (s.includes("launch") && s.includes("announcement") && s.includes("date")) || (s.includes("launch") && s.includes("sent") && s.includes("date"));
     }) : 28,
+    launchSentDateCol: headers.findIndex(h => {
+      let s = h.toString().toLowerCase().trim();
+      return (s.includes("launch") && s.includes("announcement") && s.includes("date")) || (s.includes("launch") && s.includes("sent") && s.includes("date"));
+    }) > -1 ? headers.findIndex(h => {
+      let s = h.toString().toLowerCase().trim();
+      return (s.includes("launch") && s.includes("announcement") && s.includes("date")) || (s.includes("launch") && s.includes("sent") && s.includes("date"));
+    }) : 28,
     newsletterCol: headers.findIndex(h => {
       let s = h.toString().toLowerCase().trim();
       return s.includes("newsletter") && !s.includes("date");
     }) > -1 ? headers.findIndex(h => {
       let s = h.toString().toLowerCase().trim();
       return s.includes("newsletter") && !s.includes("date");
-    }) : 29
+    }) : 29,
+    newsletterDateCol: headers.findIndex(h => {
+      let s = h.toString().toLowerCase().trim();
+      return s.includes("newsletter") && s.includes("date");
+    }) > -1 ? headers.findIndex(h => {
+      let s = h.toString().toLowerCase().trim();
+      return s.includes("newsletter") && s.includes("date");
+    }) : -1,
+    // Quarterly Revenue Statement Columns:
+    amjDueCol: headers.findIndex(h => h.toString().toLowerCase().includes("amj") && (h.toString().toLowerCase().includes("due") || h.toString().toLowerCase().includes("date"))),
+    amjStatusCol: headers.findIndex(h => h.toString().toLowerCase().includes("amj") && h.toString().toLowerCase().includes("status")),
+    amjLinkCol: headers.findIndex(h => h.toString().toLowerCase().includes("amj") && h.toString().toLowerCase().includes("drive")),
+    amjSentCol: headers.findIndex((h, idx) => idx >= 30 && idx <= 34 && h.toString().toLowerCase().includes("sent")),
+    jasDueCol: headers.findIndex(h => h.toString().toLowerCase().includes("jas") && (h.toString().toLowerCase().includes("due") || h.toString().toLowerCase().includes("date"))) > -1 
+               ? headers.findIndex(h => h.toString().toLowerCase().includes("jas") && (h.toString().toLowerCase().includes("due") || h.toString().toLowerCase().includes("date"))) : 34,
+    jasStatusCol: headers.findIndex(h => h.toString().toLowerCase().includes("jas") && h.toString().toLowerCase().includes("status")) > -1 
+                  ? headers.findIndex(h => h.toString().toLowerCase().includes("jas") && h.toString().toLowerCase().includes("status")) : 35,
+    jasLinkCol: headers.findIndex(h => h.toString().toLowerCase().includes("jas") && h.toString().toLowerCase().includes("drive")) > -1 
+                ? headers.findIndex(h => h.toString().toLowerCase().includes("jas") && h.toString().toLowerCase().includes("drive")) : 37,
+    jasSentCol: headers.findIndex((h, idx) => idx >= 34 && idx <= 39 && h.toString().toLowerCase().includes("sent")) > -1 
+                ? headers.findIndex((h, idx) => idx >= 34 && idx <= 39 && h.toString().toLowerCase().includes("sent")) : 38,
+    ondDueCol: headers.findIndex(h => h.toString().toLowerCase().includes("ond") && (h.toString().toLowerCase().includes("due") || h.toString().toLowerCase().includes("date"))),
+    ondStatusCol: headers.findIndex((h, idx) => idx >= 39 && idx <= 42 && h.toString().toLowerCase().includes("status")),
+    ondLinkCol: headers.findIndex((h, idx) => idx >= 40 && idx <= 43 && h.toString().toLowerCase().includes("drive")),
+    ondSentCol: headers.findIndex((h, idx) => idx >= 41 && idx <= 44 && h.toString().toLowerCase().includes("sent")),
+    // Newsletter Extra Content Columns:
+    publicNewsCol: headers.findIndex(h => h.toString().toLowerCase().includes("public news")) > -1 
+                   ? headers.findIndex(h => h.toString().toLowerCase().includes("public news")) : 45,
+    caseStudyCol: headers.findIndex(h => h.toString().toLowerCase().includes("blockbuster") || h.toString().toLowerCase().includes("case study")) > -1 
+                  ? headers.findIndex(h => h.toString().toLowerCase().includes("blockbuster") || h.toString().toLowerCase().includes("case study")) : 46,
+    newAuthorCol: headers.findIndex(h => h.toString().toLowerCase().includes("newly onboarded") || h.toString().toLowerCase().includes("onboarded author")) > -1 
+                  ? headers.findIndex(h => h.toString().toLowerCase().includes("newly onboarded") || h.toString().toLowerCase().includes("onboarded author")) : 47
   };
 }
 

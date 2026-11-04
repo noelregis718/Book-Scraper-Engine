@@ -3,7 +3,7 @@
 > **Document Version:** 2.0 (Updated with Blank Row Filtering & Single Master Run Button)  
 > **Prepared For:** Pocket FM US Licensing & Engineering Team  
 > **Author:** Antigravity AI Pair Programmer  
-> **Target Sheet:** [Pocket FM Post-Sales Tracker (gid=120747375)](https://docs.google.com/spreadsheets/d/1A1vJ0DsmDxtCFZiuyu6vtuQFWqClPyK7e1_lHKddGdQ/edit?gid=120747375#gid=120747375)
+> **Target Sheet:** [Pocket FM Post-Sales Tracker (gid=120747375)](https://docs.google.com/spreadsheets/d/1JFT4_f9Du6UZWi6aM0FjYvyR-mcAsbARq7JyxJwLPZc/edit?gid=120747375#gid=120747375)
 
 ---
 
@@ -70,7 +70,7 @@ Divide the codebase into **5 logically independent `.gs` files** inside Google A
 **Purpose:** Single source of truth for sheet identifiers, column resolution, date parsing, sanitizers, and the **global row filter**.
 
 * **Global Constants:**
-  * Target Spreadsheet ID: `1A1vJ0DsmDxtCFZiuyu6vtuQFWqClPyK7e1_lHKddGdQ`
+  * Target Spreadsheet ID: `1JFT4_f9Du6UZWi6aM0FjYvyR-mcAsbARq7JyxJwLPZc`
   * Post-Sales Tracker Tab GID: `120747375`
 * **Core Blank Row Gatekeeper (`isTrackerRowFilled`):**
   ```javascript
@@ -271,7 +271,7 @@ function onOpen() {
 ## 4. Implementation Steps (Ready for Execution Upon Approval)
 
 1. **Step 1: Open Apps Script Project**
-   * In [US Licensing Lifecycle Tracker](https://docs.google.com/spreadsheets/d/1A1vJ0DsmDxtCFZiuyu6vtuQFWqClPyK7e1_lHKddGdQ/edit?gid=120747375#gid=120747375), click **Extensions > Apps Script**.
+   * In [US Licensing Lifecycle Tracker](https://docs.google.com/spreadsheets/d/1JFT4_f9Du6UZWi6aM0FjYvyR-mcAsbARq7JyxJwLPZc/edit?gid=120747375#gid=120747375), click **Extensions > Apps Script**.
 2. **Step 2: Create the 5 Files**
    * Click **+** next to *Files* $\rightarrow$ *Script* to create:
      1. `Config.gs`

@@ -12,7 +12,7 @@
  */
 
 // Target Sheet Configuration
-const SPREADSHEET_ID = "1A1vJ0DsmDxtCFZiuyu6vtuQFWqClPyK7e1_lHKddGdQ";
+const SPREADSHEET_ID = "1JFT4_f9Du6UZWi6aM0FjYvyR-mcAsbARq7JyxJwLPZc";
 const CMS_SHEET_NAME = "CMS Show Data";
 const MASTER_TRACKER_SHEET_NAME = "Lifecycle Tracker - Master";
 const POST_SALES_SHEET_NAME = "Post-Sales Tracker";

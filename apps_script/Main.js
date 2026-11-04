@@ -46,7 +46,14 @@ function onOpen() {
       .addSeparator()
       .addItem("🧪 Test Newsletter Draft (Generate Directly to My Gmail)", "triggerTestNewsletterDraft")
       .addItem("⚡ Enable Auto-Sync Sent Emails (Every 1 Min)", "installSentMailSyncTrigger")
+      .addItem("⏰ Enable Daily Outreach Automation (Every Morning 9 AM)", "installDailyOutreachTrigger")
       .addItem("🔄 Sync Sent Emails Now", "triggerSyncSentEmailsOnly")
+      .addToUi();
+
+    // Pocket FM CMS Scraper Menu
+    SpreadsheetApp.getUi()
+      .createMenu("Pocket FM CMS Scraper")
+      .addItem("🚀 Launch CMS Scraper", "openCmsScraperWindow")
       .addToUi();
   } catch (e) {
     Logger.log("Menu creation skipped (not in spreadsheet UI context): " + e.message);
@@ -321,6 +328,32 @@ function openLiveAutomationConsole() {}
  * Installs a time-driven clock trigger in Apps Script to automatically scan Gmail Sent Mail
  * and update "Draft Ready" to "Sent" in the spreadsheet.
  */
+
+/**
+ * AUTOMATED DAILY OUTREACH TRIGGER INSTALLER:
+ * Installs a background trigger to run triggerRunAllStagesSequentially() every day at 9:00 AM automatically.
+ * Automatically checks all 10 stages (e.g. Col AC + 15 days for Newsletter) and generates drafts into Gmail Drafts!
+ */
+function installDailyOutreachTrigger() {
+  const triggers = ScriptApp.getProjectTriggers();
+  for (let t of triggers) {
+    if (t.getHandlerFunction() === 'triggerRunAllStagesSequentially' || t.getHandlerFunction() === 'runAllOutreachAutomations') {
+      ScriptApp.deleteTrigger(t);
+    }
+  }
+  ScriptApp.newTrigger('triggerRunAllStagesSequentially')
+    .timeBased()
+    .atHour(9)
+    .everyDays(1)
+    .create();
+
+  const msg = "⏰ Daily Automated Outreach Trigger is active! Runs every morning at 9:00 AM.";
+  Logger.log("[SUCCESS] " + msg);
+  try {
+    SpreadsheetApp.getActiveSpreadsheet().toast(msg, "Daily Schedule Active", 6);
+  } catch (e) {}
+  return msg;
+}
 function installSentMailSyncTrigger() {
   if (typeof setupAutoSyncSentTrigger === 'function') {
     return setupAutoSyncSentTrigger();
@@ -352,5 +385,179 @@ function triggerTestContentBadDraft() {
     return testContentBadDraft();
   } else {
     Logger.log("testContentBadDraft function is not found in DraftEngine.gs.");
+  }
+}
+
+
+/**
+ * Pocket FM CMS Scraper Menu & 1-Click Launcher
+ * Opens the deployed CMS Scraper Web App directly from the Google Sheet
+ */
+function openCmsScraperWindow() {
+  const webAppUrl = "https://script.google.com/a/macros/pocketfm.com/s/AKfycbzZqhEd3T03yt6u_G-M51QcjYzndd9tkfJNPS8r9eXr8vFA6owv5qt_UzymosThbdkb/exec";
+  const cmsUrl = "https://cms.pocketfm.com/shows/audiobooks?tab=published";
+  
+  const html = `<!DOCTYPE html>
+<html>
+<head>
+  <base target="_blank">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      padding: 24px;
+      margin: 0;
+      background: #fdfdfd;
+      text-align: center;
+      color: #202124;
+    }
+    h2 {
+      color: #7a0000;
+      font-size: 18px;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+    p {
+      color: #5f6368;
+      font-size: 13px;
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+    .btn-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: #7a0000;
+      color: #ffffff !important;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 12px 24px;
+      border-radius: 6px;
+      width: 85%;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn-primary:hover {
+      background: #5c0000;
+      transform: translateY(-1px);
+    }
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: #f1f3f4;
+      color: #3c4043 !important;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 6px;
+      border: 1px solid #dadce0;
+      width: 85%;
+      transition: background 0.2s;
+    }
+    .btn-secondary:hover {
+      background: #e8eaed;
+    }
+    .footer-note {
+      margin-top: 18px;
+      font-size: 11px;
+      color: #80868b;
+    }
+  </style>
+</head>
+<body>
+  <h2>📻 Pocket FM CMS Scraper Launcher</h2>
+  <p>Click below to open your deployed CMS live scraper dashboard in a new window:</p>
+  
+  <div class="btn-container">
+    <a href="${webAppUrl}" target="_blank" class="btn-primary" onclick="setTimeout(function(){google.script.host.close();}, 800)">
+      🚀 Launch Live CMS Scraper Dashboard
+    </a>
+    <a href="${cmsUrl}" target="_blank" class="btn-secondary">
+      🌐 Open Pocket FM CMS Directly
+    </a>
+  </div>
+  
+  <div class="footer-note">
+    Target Sheet: <b>Copy of US_Licensing_Lifecycle_Tracker</b>
+  </div>
+</body>
+</html>`;
+  
+  const htmlOutput = HtmlService.createHtmlOutput(html)
+    .setWidth(460)
+    .setHeight(280);
+    
+  SpreadsheetApp.getUi().showModalDialog(htmlOutput, "Pocket FM CMS Live Scraper");
+}
+
+
+/**
+ * INSTANT ONEDIT TRIGGER FOR POST-SALES TRACKER
+ * Automatically synchronizes manual dropdown selections made by the user in Google Sheets:
+ * - If Column W (Author Check-In 1) is selected as "Sent" -> automatically stamps Column X with today's date!
+ * - If Column Y (Author Check-In 2) is selected as "Sent" -> automatically stamps Column Z with today's date!
+ * - If Column AB (Show Launch Announcement) is selected as "Sent" -> automatically stamps Column AC with today's date!
+ */
+function onEdit(e) {
+  if (!e || !e.range) return;
+  try {
+    const sheet = e.range.getSheet();
+    if (!sheet || typeof sheet.getName !== 'function') return;
+
+    const sheetName = sheet.getName().toLowerCase().trim().replace(/–|—/g, "-");
+    if (sheetName !== "post-sales tracker" && sheetName !== "post sales tracker") {
+      return;
+    }
+
+    const row = e.range.getRow();
+    if (row < 4) return; // Skip headers (Rows 1-3)
+
+    const col = e.range.getColumn();
+    const val = (e.value || sheet.getRange(row, col).getValue() || "").toString().trim().toLowerCase();
+
+    // Col W (Col 23) -> Check-In 1
+    if (col === 23 && (val === "sent" || val === "yes")) {
+      let xCell = sheet.getRange(row, 24);
+      if (!xCell.getValue() || xCell.getValue().toString().trim() === "") {
+        let now = new Date();
+        xCell.setValue(now);
+        SpreadsheetApp.flush();
+        Logger.log(`[onEdit] Row ${row}: Col W set to 'Sent'. Stamped Col X with date: ${now}`);
+      }
+    }
+
+    // Col Y (Col 25) -> Check-In 2
+    if (col === 25 && (val === "sent" || val === "yes")) {
+      let zCell = sheet.getRange(row, 26);
+      if (!zCell.getValue() || zCell.getValue().toString().trim() === "") {
+        let now = new Date();
+        zCell.setValue(now);
+        SpreadsheetApp.flush();
+        Logger.log(`[onEdit] Row ${row}: Col Y set to 'Sent'. Stamped Col Z with date: ${now}`);
+      }
+    }
+
+    // Col AB (Col 28) -> Show Launch Announcement
+    if (col === 28 && (val === "sent" || val === "yes")) {
+      let acCell = sheet.getRange(row, 29);
+      if (!acCell.getValue() || acCell.getValue().toString().trim() === "") {
+        let now = new Date();
+        acCell.setValue(now);
+        SpreadsheetApp.flush();
+        Logger.log(`[onEdit] Row ${row}: Col AB set to 'Sent'. Stamped Col AC with date: ${now}`);
+      }
+    }
+  } catch (err) {
+    Logger.log("[onEdit Error] " + err.message);
   }
 }

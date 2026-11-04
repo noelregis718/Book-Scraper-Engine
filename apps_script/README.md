@@ -16,7 +16,7 @@ This folder contains the complete, verified 5-part modular division of the Pocke
 
 ## How to Install in Google Apps Script
 
-1. Open your Google Sheet: [Pocket FM Post-Sales Tracker](https://docs.google.com/spreadsheets/d/1A1vJ0DsmDxtCFZiuyu6vtuQFWqClPyK7e1_lHKddGdQ/edit?gid=120747375#gid=120747375).
+1. Open your Google Sheet: [Pocket FM Post-Sales Tracker](https://docs.google.com/spreadsheets/d/1JFT4_f9Du6UZWi6aM0FjYvyR-mcAsbARq7JyxJwLPZc/edit?gid=1100439097#gid=1100439097).
 2. Go to **Extensions > Apps Script**.
 3. Create 5 script files by clicking the **+** icon next to **Files** $\rightarrow$ **Script**:
    - `Config`
@@ -42,7 +42,7 @@ This folder contains the complete, verified 5-part modular division of the Pocke
    - **`5️⃣ Run Author Check-In 1 (15 Days) Only`**: 15 days from feedback mail.
    - **`6️⃣ Run Author Check-In 2 (30 Days) Only`**: 30 days from feedback mail.
    - **`7️⃣ Run Show Launch Announcements Only`**: Live show launch.
-   - **`8️⃣ Run Newsletter (The Author Edit) Only`**: 15 days from launch.
+   - **8️⃣ Run Newsletter (The Author Edit) Only**: 15 days from Show Launch Announcement Sent Date (Col AC). Strictly requires Col AC date and live link (ignores Col J).
    - **`9️⃣ Run Quarterly Revenue Statements (Worked Well) Only`**: Testing / Testing_PGC / Testing_PGC_Completed / Launched (ROW) shows (Content Update & Payment Ready drafts). *Strictly requires a valid Revenue Statement Link in Col AL (suppressed if blank).*
    - **`🔟 Run Content Didn't Work Well Statements Only`**: Condition is Dropped / Bad / Sunset (Didn't work well - Content + Payment Related Update draft). *Strictly requires a valid Revenue Statement Link in Col AL (suppressed if blank).*
    - **`🧪 Test Content Didn't Work Well Draft`**: Generates a test "Didn't work well - Content + Payment Related Update" draft directly to your Gmail.

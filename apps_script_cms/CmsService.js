@@ -220,16 +220,84 @@ function doPost(e) {
 }
 
 /**
- * Handles incoming HTTP GET requests for health check & info
+ * =======================================================================
+ * CLIENT DIALOG AJAX HANDLERS
+ * =======================================================================
+ * Powers the interactive popup dialog in Google Sheets & Web App
+ */
+
+/**
+ * Returns initialization data for the interactive scraper dialog
+ * @returns {Object} { spreadsheetId, sheetName, totalShows, shows, hasToken }
+ */
+function getCmsInitData() {
+  const ss = getCmsSpreadsheet();
+  const sheet = getOrCreateCmsSheet(ss);
+  const colMap = resolveCmsHeaderMap(sheet);
+  const lastRow = sheet.getLastRow();
+  const shows = [];
+
+  if (lastRow > 1) {
+    const vals = sheet.getRange(2, colMap.showId, lastRow - 1, 1).getValues();
+    vals.forEach((r, idx) => {
+      const id = extractShowId(r[0]);
+      if (id) shows.push({ rowIdx: idx + 2, showId: id });
+    });
+  }
+
+  return {
+    spreadsheetId: SPREADSHEET_ID,
+    sheetName: sheet.getName(),
+    totalShows: shows.length,
+    shows: shows,
+    hasToken: !!getCmsAuthToken()
+  };
+}
+
+/**
+ * Scrapes a single show and immediately writes the row to Google Sheet
+ * @param {string} showId 
+ * @returns {Object} Scraped show metrics object
+ */
+function scrapeSingleShowAjax(showId) {
+  const ss = getCmsSpreadsheet();
+  const sheet = getOrCreateCmsSheet(ss);
+  const metrics = fetchShowMetricsFromCms(showId);
+
+  if (metrics.success) {
+    updateOrAppendCmsShow(sheet, metrics);
+  }
+
+  return metrics;
+}
+
+/**
+ * Saves CMS session token from interactive dialog
+ * @param {string} token 
+ * @returns {boolean} True if successfully stored
+ */
+function saveCmsTokenAjax(token) {
+  setCmsAuthToken(token);
+  return !!token;
+}
+
+/**
+ * Handles incoming HTTP GET requests: serves interactive Web App UI or health JSON
  * @param {Object} e 
- * @returns {GoogleAppsScript.Content.TextOutput}
+ * @returns {GoogleAppsScript.HTML.HtmlOutput|GoogleAppsScript.Content.TextOutput}
  */
 function doGet(e) {
-  return ContentService.createTextOutput(JSON.stringify({
-    service: "Pocket FM CMS Sync Webhook",
-    status: "active",
-    authConfigured: !!getCmsAuthToken(),
-    timestamp: new Date().toISOString()
-  })).setMimeType(ContentService.MimeType.JSON);
+  if (e && e.parameter && e.parameter.format === "json") {
+    return ContentService.createTextOutput(JSON.stringify({
+      service: "Pocket FM CMS Sync Webhook",
+      status: "active",
+      authConfigured: !!getCmsAuthToken(),
+      timestamp: new Date().toISOString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+
+  return HtmlService.createHtmlOutput(buildCmsScraperDialogHtml())
+    .setTitle("Pocket FM CMS Live Scraper")
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 

@@ -17,7 +17,7 @@ The automation consists of two main functions that work together to track dates,
 3. Delete the existing code and paste the completely updated `apps_script_drafter.js` code.
 4. Click the **Save** (floppy disk) icon.
 
-*(Note: The script is hardcoded to connect to the main production Sheet ID: `1A1vJ0DsmDxtCFZiuyu6vtuQFWqClPyK7e1_lHKddGdQ`)*
+*(Note: The script is hardcoded to connect to the main production Sheet ID: `1JFT4_f9Du6UZWi6aM0FjYvyR-mcAsbARq7JyxJwLPZc`)*
 
 ---
 

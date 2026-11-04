@@ -23,6 +23,8 @@ browser_profile/
 browser_profile_missing_scraper/
 browser_profile_main/
 browser_profile_master/
+backend/chrome_live_profile/
+backend/*.html
 
 # Downloads & Large Archives
 downloads/

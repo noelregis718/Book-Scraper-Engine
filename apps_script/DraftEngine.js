@@ -200,23 +200,35 @@ function syncSentEmails() {
     // Helper to normalize strings for robust comparison (handles curly/straight quotes, spacing)
     const norm = (s) => (s || "").toString().toLowerCase().replace(/[’'"`]/g, "'").replace(/[^a-z0-9]/g, " ").replace(/\s+/g, " ").trim();
 
-    // Helper to find header column index across rows 1 to 3 safely within actual sheet dimensions
+    // Helper to find true header row across rows 1 to 5 using header score to avoid banner rows
     const resolveHeaders = (sheet) => {
       if (!sheet) return { headers: [], rowIdx: -1 };
       const lastCol = sheet.getLastColumn();
       if (lastCol < 1) return { headers: [], rowIdx: -1 };
-      for (let r = 1; r <= 3; r++) {
+      let bestRow = -1;
+      let bestHeaders = [];
+      let bestScore = 0;
+      for (let r = 1; r <= 5; r++) {
         try {
           let vals = sheet.getRange(r, 1, 1, lastCol).getValues()[0];
-          if (vals.some(v => v.toString().toLowerCase().includes("title") || v.toString().toLowerCase().includes("status") || v.toString().toLowerCase().includes("email"))) {
-            return { headers: vals, rowIdx: r };
+          let score = vals.filter(v => {
+            let s = v ? v.toString().toLowerCase().trim() : "";
+            return s.includes("title") || s.includes("status") || s.includes("email") || s.includes("launch") || s.includes("author") || s.includes("contract");
+          }).length;
+          if (score > bestScore) {
+            bestScore = score;
+            bestRow = r;
+            bestHeaders = vals;
           }
         } catch (eH) {}
       }
+      if (bestRow > 0) {
+        return { headers: bestHeaders, rowIdx: bestRow };
+      }
       try {
-        return { headers: sheet.getRange(1, 1, 1, lastCol).getValues()[0], rowIdx: 1 };
+        return { headers: sheet.getRange(3, 1, 1, lastCol).getValues()[0], rowIdx: 3 };
       } catch (eH2) {
-        return { headers: [], rowIdx: 1 };
+        return { headers: sheet.getRange(1, 1, 1, lastCol).getValues()[0], rowIdx: 1 };
       }
     };
 
@@ -242,11 +254,12 @@ function syncSentEmails() {
     let sCheckIn1DateCol = cols.checkIn1DateCol !== undefined ? cols.checkIn1DateCol : 23; // Col X
     let sCheckIn2Col = cols.checkIn2Col !== undefined ? cols.checkIn2Col : 24; // Col Y
     let sCheckIn2DateCol = cols.checkIn2DateCol !== undefined ? cols.checkIn2DateCol : 25; // Col Z
-    let sLaunchCol = cols.launchCol !== undefined ? cols.launchCol : 26; // Col AA
-    let sLaunchSentCol = cols.launchSentCol !== undefined ? cols.launchSentCol : 27; // Col AB
-    let sLaunchSentDateCol = cols.launchSentDateCol !== undefined ? cols.launchSentDateCol : 28; // Col AC
+    let sLaunchCol = cols.launchCol !== undefined && cols.launchCol !== -1 ? cols.launchCol : (cols.colAA !== undefined ? cols.colAA : 26); // Col AA
+    let sLaunchSentCol = cols.launchSentCol !== undefined && cols.launchSentCol !== -1 ? cols.launchSentCol : (cols.colAB !== undefined ? cols.colAB : 27); // Col AB
+    let sLaunchSentDateCol = cols.launchSentDateCol !== undefined && cols.launchSentDateCol !== -1 ? cols.launchSentDateCol : (cols.colAC !== undefined ? cols.colAC : 28); // Col AC
     let sNewsletterCol = cols.newsletterCol !== undefined ? cols.newsletterCol : 29; // Col AD
     let sNewsletterDateCol = cols.newsletterDateCol !== undefined ? cols.newsletterDateCol : 30; // Col AE
+    let sRevStatementCol = cols.jasSentCol !== undefined ? cols.jasSentCol : (cols.revStatementSentCol !== undefined ? cols.revStatementSentCol : 38); // Col AM (index 38)
 
     Logger.log(`[SYNC STEP 3] Column Mappings: TitleCol=${sTitleCol+1}, EmailCol=${sEmailCol+1}, WelcomeCol=${sWelcomeCol+1}, VendorCol=${sVendorCol+1}, LaunchSentCol=${sLaunchSentCol+1}`);
 
@@ -434,14 +447,17 @@ function syncSentEmails() {
         if (!rowTitle) continue;
 
         // Quick check: Does this row have ANY stage marked as 'Draft Ready' or 'Ready'?
-        // Rows with no drafts are skipped in 0ms!
-        const stageCols = [sWelcomeCol, sVendorCol, sMgInitCol, sMgConfCol, sLaunchCol, sLaunchSentCol, sCheckIn1Col, sCheckIn2Col, sNewsletterCol];
+        // Also inspects rows where Launch Announcement was marked Sent/Yes but Column AC date is missing!
+        const stageCols = [sWelcomeCol, sVendorCol, sMgInitCol, sMgConfCol, sLaunchCol, sLaunchSentCol, sCheckIn1Col, sCheckIn2Col, sNewsletterCol, sRevStatementCol];
         const hasDraftReady = stageCols.some(cIdx => {
           if (cIdx === -1 || cIdx >= rowVals.length) return false;
           let v = (rowVals[cIdx] || "").toString().toLowerCase().trim();
           return v === "draft ready" || v === "ready";
         });
-        if (!hasDraftReady) continue;
+        const hasMissingLaunchDate = sLaunchSentDateCol !== -1 && (!rowVals[sLaunchSentDateCol] || rowVals[sLaunchSentDateCol].toString().trim() === "") &&
+          sLaunchSentCol !== -1 && (norm(rowVals[sLaunchSentCol]) === "sent" || norm(rowVals[sLaunchSentCol]) === "yes");
+
+        if (!hasDraftReady && !hasMissingLaunchDate) continue;
 
         // Resolve recipient email: Check Col F in Post-Sales Tracker, fallback to Master
         let recipientEmail = "";
@@ -469,7 +485,10 @@ function syncSentEmails() {
         const checkStatusCol = (statusColIdx, dateColIdx, stageKeywords) => {
           if (statusColIdx === -1 || statusColIdx >= rowVals.length) return;
           let val = (rowVals[statusColIdx] || "").toString().toLowerCase().trim();
-          if (val === "draft ready" || val === "ready") {
+          let isDraftReady = val === "draft ready" || val === "ready";
+          let isSentMissingDate = (val === "sent" || val === "yes") && dateColIdx !== -1 && (!rowVals[dateColIdx] || rowVals[dateColIdx].toString().trim() === "");
+
+          if (isDraftReady || isSentMissingDate) {
             let kwList = Array.isArray(stageKeywords) ? stageKeywords : [stageKeywords];
 
             for (let m = 0; m < sentMsgs.length; m++) {
@@ -495,6 +514,15 @@ function syncSentEmails() {
                 return;
               }
             }
+
+            // If already marked "Sent" in dropdown but Date column is still missing, backfill with today's date
+            if (isSentMissingDate && dateColIdx !== -1) {
+              let fallbackDate = new Date();
+              psSheet.getRange(actualRow, dateColIdx + 1).setValue(fallbackDate);
+              rowVals[dateColIdx] = fallbackDate;
+              syncedCount++;
+              Logger.log(`[DATE BACKFILL] Row ${actualRow} ("${rowTitle}"): Col ${statusColIdx + 1} was marked "Sent" with missing date. Stamped Col ${dateColIdx + 1} with ${fallbackDate}`);
+            }
           }
         };
 
@@ -511,12 +539,10 @@ function syncSentEmails() {
         checkStatusCol(sLaunchSentCol, sLaunchSentDateCol, ["live", "launch", "show is now live", "now live"]);
         if (sLaunchCol !== -1 && sLaunchCol !== sLaunchSentCol) {
           let lVal = (rowVals[sLaunchCol] || "").toString().toLowerCase().trim();
-          if (lVal === "draft ready" || lVal === "ready") {
-            let lSentVal = (rowVals[sLaunchSentCol] || "").toString().toLowerCase().trim();
-            if (lSentVal === "sent") {
-              psSheet.getRange(actualRow, sLaunchCol + 1).setValue("Sent");
-              rowVals[sLaunchCol] = "Sent";
-            }
+          let lSentVal = (rowVals[sLaunchSentCol] || "").toString().toLowerCase().trim();
+          if (lSentVal === "sent" && (lVal === "draft ready" || lVal === "ready" || lVal === "" || lVal === "not launched")) {
+            psSheet.getRange(actualRow, sLaunchCol + 1).setValue("Sent");
+            rowVals[sLaunchCol] = "Sent";
           }
         }
 
@@ -531,6 +557,9 @@ function syncSentEmails() {
 
         // 5. MG Payout Confirmation (Col U, Date Col V)
         checkStatusCol(sMgConfCol, sFeedbackDateCol, ["minimum guarantee", "payment has been processed", "processed"]);
+
+        // 6. Quarterly Revenue Statement (Col AM)
+        checkStatusCol(sRevStatementCol, -1, ["content update", "earnings are waiting", "an update on", "revenue statement", "insights"]);
       }
     }
   }
