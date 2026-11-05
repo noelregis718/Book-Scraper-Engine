@@ -1,90 +1,123 @@
 # PocketFM Post-Sales CRM Automation Playbook
 
-This document outlines the complete, end-to-end automation workflow for identifying milestones in the `Lifecycle Tracker - Master` and `Post Sale Comms Tracker` and automatically generating fully formatted HTML email drafts for authors.
+This document outlines the complete, end-to-end automation workflow for identifying milestones in the `Lifecycle Tracker - Master` and `Post-Sales Tracker` and automatically generating fully formatted HTML email drafts for authors.
 
 ## Overview of the Engine
 The automation consists of two main functions that work together to track dates, draft emails, and log when emails are actually sent:
-1. **The Drafter (`processOutreachQueue`):** Scans the trackers for milestone dates (e.g., 15 Days after MG Payout, Today is Rev Statement Due Date) and dynamically drafts perfectly formatted HTML emails (Welcome, Vendor, Launch, Quarterly Statements).
-2. **The Sync Engine (`syncSentEmails`):** Scans your Gmail "Sent" folder every hour looking for our invisible tracking codes. When it finds that you actually clicked "Send" on a draft, it reaches back into the tracker and changes the status from "Sent" (meaning drafted) to "Yes" or marks it fully completed.
+1. **The Drafter (`processOutreachQueue`):** Scans the trackers for milestone dates and dynamically drafts perfectly formatted HTML emails (Welcome, Vendor, Check-Ins, Launch, Newsletter, Quarterly Statements).
+2. **The Sync Engine (`syncSentEmails`):** Scans your Gmail "Sent" folder looking for tracking codes. When you send a draft from Gmail, it syncs back to the tracker and marks the status as "Sent" and stamps the sent date.
 
 ---
 
 ## Installation & Setup
 
 ### 1. The Apps Script Code
-1. Open your Google Sheet (`Lifecycle Tracker - Master`).
+1. Open your Google Sheet (`Lifecycle Tracker - Master` / `Post-Sales Tracker`).
 2. Click **Extensions > Apps Script**.
-3. Delete the existing code and paste the completely updated `apps_script_drafter.js` code.
+3. Create 5 script files in the Apps Script editor:
+   - `Config.gs`
+   - `Templates.gs`
+   - `DraftEngine.gs`
+   - `StageHandlers.gs`
+   - `Main.gs`
+   *(Source code available in `apps_script/` or single-file fallback `docs/apps_script_drafter.js`).*
 4. Click the **Save** (floppy disk) icon.
 
-*(Note: The script is hardcoded to connect to the main production Sheet ID: `1JFT4_f9Du6UZWi6aM0FjYvyR-mcAsbARq7JyxJwLPZc`)*
+*(Note: The script is configured for the production Sheet ID: `1JFT4_f9Du6UZWi6aM0FjYvyR-mcAsbARq7JyxJwLPZc`)*
 
 ---
 
 ## Trigger Configuration (Set it and forget it)
 
-To make the engine run completely autonomously in the background without you having to click "Run":
+To make the engine run autonomously in the background:
 
-1. In the Apps Script editor, click the **Alarm Clock icon** (Triggers) on the left sidebar.
-2. You will need to add **TWO** triggers.
-
-### Trigger 1: The Drafter
-1. Click **+ Add Trigger**.
-2. **Function to run:** `processOutreachQueue`
-3. **Event source:** `Time-driven`
-4. **Type of time-based trigger:** `Hour timer`
-5. **Hour interval:** `Every 4 hours` *(Or Every hour based on your preference)*
-6. Click **Save**.
-
-### Trigger 2: The Sync Engine
-1. Click **+ Add Trigger**.
-2. **Function to run:** `syncSentEmails`
-3. **Event source:** `Time-driven`
-4. **Type of time-based trigger:** `Hour timer`
-5. **Hour interval:** `Every hour`
-6. Click **Save**.
+1. **Via Spreadsheet Menu:** Use **`Pocket FM Automation`** in the top menu bar to run any stage in isolation, or click:
+   - **`⏰ Enable Daily Outreach Automation (Every Morning 9 AM)`**
+   - **`⚡ Enable Auto-Sync Sent Emails (Every 1 Min)`**
+2. **Via Apps Script Triggers Sidebar:**
+   - **Trigger 1 (The Drafter):** Function `processOutreachQueue` | Event: `Time-driven` | `Day timer` (or `Hour timer`).
+   - **Trigger 2 (The Sync Engine):** Function `syncSentEmails` | Event: `Time-driven` | `Minute timer (Every 1-5 mins)`.
 
 ---
 
 ## How the Triggers Work (The Rules)
 
-The script relies on specific columns and exact date/status combinations to determine whether an email should be drafted.
+The script relies on specific columns and exact date/status combinations to determine whether an email should be drafted or marked Overdue.
 
 ### 1. Welcome Email
-- **Condition:** The `Contract Signing date` in the Master sheet is **Today**.
-- **Action:** Drafts the Welcome email. Updates the Post-Sales tracker status to `Sent`.
+- **Conditions:**
+  - `Contract Signing date` is **Today** & not sent -> Drafts Welcome email (`Col R -> draft ready`).
+  - `Contract Signing date` is **in the past (< TODAY)** & not sent -> Sets `Col R -> Overdue`.
+  - `Status` != Dropped / Bad.
+- **Action:** Introduces author to Pocket FM workflow.
 
 ### 2. Vendor Onboarding Email
-- **Condition:** The `Contract Signing date` is **2 Days Ago**.
-- **Action:** Drafts the Vendor email instructing the author to complete onboarding.
+- **Conditions:**
+  - `Contract Signing date` is **Today** & not sent -> Drafts Vendor Onboarding email (`Col S -> draft ready`).
+  - `Contract Signing date` is **in the past (< TODAY)** & not sent -> Sets `Col S -> Overdue`.
+  - `Status` != Dropped / Bad.
+- **Action:** Dispatches onboarding packet and invoice requirements.
 
 ### 3. MG Payout Initiated
-- **Condition:** The `Vendor Lifecycle Exited` date in the Master sheet is **Today**.
-- **Action:** Drafts the MG Initiated email.
+- **Conditions:**
+  - `Vendor Lifecycle Exited` date is **Today** & `Vendor Status` == `Done` -> Drafts MG Initiated email (`Col T -> draft ready`).
+  - `Vendor Lifecycle Exited` date is **in the past (< TODAY)** & `Vendor Status` == `Done` & not sent -> Sets `Col T -> Overdue`.
+  - `Status` != Dropped / Bad.
+- **Action:** Notifies author that NetSuite bill has been approved.
 
 ### 4. MG Payout Confirmation
-- **Condition:** The `MG Payout Exited` date in the Master sheet is **Today**.
-- **Action:** Drafts the payment confirmation email.
+- **Conditions:**
+  - `MG Payout Exited` date is **Today** & `MG Status` == `Done` -> Drafts MG Confirmed email (`Col U -> draft ready`), stamps `Col V` with Today's Date (*Feedback Mail Date*).
+  - `MG Payout Exited` date is **in the past (< TODAY)** & `MG Status` == `Done` & not sent -> Sets `Col U -> Overdue`.
+  - `Status` != Dropped / Bad.
+- **Action:** Confirms remittance and stamps `Col V` Feedback Mail Date.
 
-### 5. Author Check-In (15 Days)
-- **Condition:** The `MG Payout Exited` date is exactly **15 Days Ago**.
-- **Requirement:** The `Show ID` column must still be **blank**.
-- **Action:** Drafts a check-in email asking the author for world-building insights.
+### 5. Author Check-In 1 (15 Days)
+- **Base Reference Date:** `Col V` (*Author Feedback Call Sent Date*).
+- **Conditions:**
+  - If contract was signed before **1st September** -> `Col W -> Does not apply`.
+  - If `Show Launch Announcement` is `Sent` (Col AA/AB) -> `Col W -> Does not apply`.
+  - If `Col V` is blank OR `diffDays < 15` -> `Col W -> Not due yet`.
+  - If exact 15th day (`diffDays === 15` from Col V) -> Drafts check-in email (`Col W -> draft ready`). Subject: *"We'd love your thoughts on [Title]"*.
+  - If 16+ days passed (`diffDays >= 16`) & not sent -> `Col W -> Overdue` (no catch-up draft).
+- **Action:** Gathers initial creative feedback. When email is sent from Gmail, stamped with date in **Col X**.
 
-### 6. Show Launch Announcement
-- **Condition:** The `Show Launch Announcement Status` is marked as `Ready` (or blank).
-- **Requirement:** The `Show ID (after show creation)` column has a valid link.
-- **Action:** Drafts the official Launch Announcement. Also automatically sets the `Show Launch Announcement Email Sent?` dropdown to `Yes`.
+### 6. Author Check-In 2 (30 Days)
+- **Base Reference Date:** `Col X` (*Author Check-In 1 Sent Date*).
+- **Conditions:**
+  - If contract was signed before **1st September** -> `Col Y -> Does not apply`.
+  - If `Show Launch Announcement` is `Sent` (Col AA/AB) -> `Col Y -> Does not apply`.
+  - If `Col X` is blank OR `diffDays < 30` -> `Col Y -> Not due yet`.
+  - If exact 30th day (`diffDays === 30` from Col X) -> Drafts check-in email (`Col Y -> draft ready`). Subject: *"Pocket FM: A quick update on your show: [Title]"*.
+  - If 31+ days passed (`diffDays >= 31`) & not sent -> `Col Y -> Overdue` (no catch-up draft).
+- **Action:** Follow-up production check-in. When email is sent from Gmail, stamped with date in **Col Z**.
 
-### 7. Quarterly Revenue Statements
-- **Condition:** The `Rev Statement Due Date` is **Today**.
-- **Requirement:** The `Launch Status` in the Master Sheet or Post-Sales Sheet must be either `testing_pgc` or `launched`.
-- **Requirement:** The `Revenue Statement + Insights Email Status` must contain the word `Eligible`.
-- **Data Integration:** Pulls live metrics (Duration, LDAU, Comments, Ratings, Reviews) dynamically from the `Argus Show Data` tab using the Show ID. If the Show ID doesn't match, it safely falls back to `[Insert...]` placeholders.
-- **Action:** Drafts the "Content Update" email containing the Quarterly Statement Drive link.
+### 7. Show Launch Announcement
+- **Conditions:**
+  - Both `Show ID` and `Show Link` must be present and valid (active URL starting with `http` or `pocketfm`).
+  - `Col AA / AB` is NOT "Not launched", "Not live", or "Unavailable".
+  - `Status` != Dropped / Bad.
+- **Action:** Drafts official Launch Announcement (*"Your Pocket FM Show Is Now Live"*). Sets `Col AB -> Draft Ready`. Stamped with date in `Col AC` when sent.
+
+### 8. Newsletter (The Author Edit)
+- **Conditions:**
+  - Base Date: `Col AC` (*Show Launch Announcement Sent Date*) is **15 Days Ago (`diffDays >= 15`)**. *(Strictly ignores Col J).*
+  - `Show Link` is an active live URL.
+  - `Col AD` is not already `Sent` or `Draft Ready`.
+- **Action:** Drafts creator community newsletter (*"What's new at Pocket FM + a few things worth knowing"*). Sets `Col AD -> Draft Ready`.
+
+### 9. Quarterly Revenue Statements
+- **9A & 9B (Worked Well - Content & Payment Ready):**
+  - `Launch Status` is `Testing_PGC` / `Launched (ROW)`.
+  - Strictly requires a valid Revenue Statement Drive Link in `Col AL` (suppressed if blank).
+  - Drafts Content Review & Payment Ready emails. Updates `Col AM -> Draft Ready`.
+- **9C (Content Didn't Work Well):**
+  - `Launch Status` is `Dropped` / `Bad` / `Sunset`.
+  - Strictly requires a valid Revenue Statement Drive Link in `Col AL` (suppressed if blank).
+  - Drafts Sunset Update email. Updates `Col AM -> Draft Ready`.
 
 ---
 
 ## Data Integration Notes
-* The script perfectly maps data from the **Lifecycle Tracker - Master**, **Post Sale Comms Tracker**, and **Argus Show Data**.
-* **Argus Matching:** If you ever see `[Insert...]` in your drafts instead of real numbers, it means the `Show ID` is missing from the Master tracker, or the exact Show ID doesn't exist in the Argus tab.
+* The script maps data from **`Lifecycle Tracker - Master`**, **`Post-Sales Tracker`**, and **`Argus Show Data`**.
+* **Argus Matching:** If you see `[Insert...]` in your drafts, the `Show ID` is missing from the tracker or does not exist in the Argus tab.

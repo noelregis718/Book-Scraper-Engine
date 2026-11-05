@@ -312,6 +312,23 @@ function isToday(dateVal) {
 }
 
 /**
+ * Checks whether a date is strictly before today (in the past).
+ * @param {*} dateVal - Date object, date string, or serial date
+ * @returns {boolean} True if date is before today (midnight to midnight)
+ */
+function isPastDate(dateVal) {
+  if (!dateVal) return false;
+  let target = parseDateSafe(dateVal);
+  if (!target) return false;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  let cmp = new Date(target.getTime());
+  cmp.setHours(0, 0, 0, 0);
+  return cmp.getTime() < today.getTime();
+}
+
+
+/**
  * Returns a standardized YYYY-MM-DD date key for same-date comparisons across timezones and formats.
  * @param {*} dateVal - Date object, date string, or serial date
  * @returns {string} Standardized YYYY-MM-DD string
@@ -327,9 +344,12 @@ function getStandardDateKey(dateVal) {
 }
 
 /**
- * Checks if a contract / deal was signed before 1st September 2026.
+ * Checks if a contract / deal was signed before 1st September.
+ * Supports legacy deals from 2024 (cutoff: Sept 1, 2024) as well as test deals (cutoff: Sept 1, 2026).
+ * Any date in September, October, November, or December is strictly ON OR AFTER September 1.
+ * 
  * @param {*} dateVal - Date object, date string, or serial date
- * @returns {boolean} True if deal was signed before 1st September 2026
+ * @returns {boolean} True if deal was signed strictly before 1st September
  */
 function isDealSignedBeforeSept1(dateVal) {
   if (!dateVal) return false;
@@ -337,8 +357,28 @@ function isDealSignedBeforeSept1(dateVal) {
   if (!target) return false;
   let cmp = new Date(target.getTime());
   cmp.setHours(0, 0, 0, 0);
-  let cutoff = new Date(2026, 8, 1, 0, 0, 0, 0); // September 1, 2026 (Month index 8 = September)
-  return cmp.getTime() < cutoff.getTime(); // Deals signed strictly before 1st September 2026
+
+  let year = cmp.getFullYear();
+
+  // If deal was signed prior to 2024, it is definitely a legacy deal (< Sept 1, 2024)
+  if (year < 2024) return true;
+
+  // Deals in 2024: cutoff is Sept 1, 2024
+  if (year === 2024) {
+    let cutoff2024 = new Date(2024, 8, 1, 0, 0, 0, 0);
+    return cmp.getTime() < cutoff2024.getTime();
+  }
+
+  // Deals in 2025: all were signed after Sept 1, 2024
+  if (year === 2025) return false;
+
+  // For deals in 2026 (or test dates in 2026): cutoff is Sept 1, 2026
+  if (year === 2026) {
+    let cutoff2026 = new Date(2026, 8, 1, 0, 0, 0, 0);
+    return cmp.getTime() < cutoff2026.getTime();
+  }
+
+  return false;
 }
 
 

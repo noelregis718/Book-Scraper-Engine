@@ -817,7 +817,16 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
     // Image Condition: Col AB: Receiver Email | Col F: Title / IP | Col Q: Contract == TODAY | Col AA: Status != Drop/Bad
     // =============================================================
     if (!targetStage || targetStage === 'welcome') {
-      let contractDate = mainInfo.contractSigned;
+      let contractDate = "";
+      if (psContractDateCol > -1 && psRow.length > psContractDateCol && psRow[psContractDateCol] && psRow[psContractDateCol].toString().trim() !== "") {
+        contractDate = psRow[psContractDateCol];
+      } else if (psRow.length > 3 && psRow[3] && psRow[3].toString().trim() !== "") {
+        contractDate = psRow[3];
+      } else if (psRow.length > 15 && psRow[15] && psRow[15].toString().trim() !== "") {
+        contractDate = psRow[15];
+      } else if (mainInfo && mainInfo.contractSigned) {
+        contractDate = mainInfo.contractSigned;
+      }
       let isNotDropBad = !launchStatus.includes("drop") && !launchStatus.includes("bad") && !launchStatus.includes("untested") && !launchStatus.includes("discontinue");
 
       if (!contractDate || contractDate.toString().trim() === "") {
@@ -846,6 +855,20 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
         } else {
           Logger.log(`[ROW ${rowNum}] [Welcome Email] Evaluated for "${title}" - Status: "${psRow[welcomeCol]}" (Already processed)`);
         }
+      } else if (isNotDropBad && isPastDate(contractDate)) {
+        let curWelcome = (welcomeCol > -1 && psRow.length > welcomeCol && psRow[welcomeCol]) ? psRow[welcomeCol].toString().trim() : "";
+        let curWelcomeLower = curWelcome.toLowerCase();
+        if (curWelcomeLower !== "sent") {
+          if (curWelcomeLower !== "overdue") {
+            psSheet.getRange(i + 1, welcomeCol + 1).setValue("Overdue");
+            psRow[welcomeCol] = "Overdue";
+            Logger.log(`[ROW ${rowNum}] [STATUS UPDATE] [Welcome Email] Contract Date (${contractDate}) is in the past and email was not sent. Set Col R to "Overdue" for "${title}".`);
+          } else {
+            Logger.log(`[ROW ${rowNum}] [Welcome Email] Evaluated for "${title}" - Status: "Overdue" (Contract Date ${contractDate} passed)`);
+          }
+        } else {
+          Logger.log(`[ROW ${rowNum}] [Welcome Email] Evaluated for "${title}" - Status: "Sent" (Already processed)`);
+        }
       } else if (isNotDropBad && !isToday(contractDate) && contractDate) {
         Logger.log(`[ROW ${rowNum}] [Welcome Email] Evaluated for "${title}" - Status: "${psRow[welcomeCol] || 'Pending'}" | Contract Date (${contractDate}) is not today`);
       } else if (!isNotDropBad) {
@@ -858,7 +881,16 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
     // Image Condition: Col AB: Receiver Email | Col F: Title / IP | Col Q: Contract == TODAY | Col AA: Status != Drop/Bad
     // =============================================================
     if (!targetStage || targetStage === 'vendor') {
-      let contractDate = mainInfo.contractSigned;
+      let contractDate = "";
+      if (psContractDateCol > -1 && psRow.length > psContractDateCol && psRow[psContractDateCol] && psRow[psContractDateCol].toString().trim() !== "") {
+        contractDate = psRow[psContractDateCol];
+      } else if (psRow.length > 3 && psRow[3] && psRow[3].toString().trim() !== "") {
+        contractDate = psRow[3];
+      } else if (psRow.length > 15 && psRow[15] && psRow[15].toString().trim() !== "") {
+        contractDate = psRow[15];
+      } else if (mainInfo && mainInfo.contractSigned) {
+        contractDate = mainInfo.contractSigned;
+      }
       let isNotDropBad = !launchStatus.includes("drop") && !launchStatus.includes("bad") && !launchStatus.includes("untested") && !launchStatus.includes("discontinue");
 
       if (!contractDate || contractDate.toString().trim() === "") {
@@ -886,6 +918,20 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
           });
         } else {
           Logger.log(`[ROW ${rowNum}] [Vendor Onboarding] Evaluated for "${title}" - Status: "${psRow[vendorCol]}" (Already processed)`);
+        }
+      } else if (isNotDropBad && isPastDate(contractDate)) {
+        let curVendor = (vendorCol > -1 && psRow.length > vendorCol && psRow[vendorCol]) ? psRow[vendorCol].toString().trim() : "";
+        let curVendorLower = curVendor.toLowerCase();
+        if (curVendorLower !== "sent") {
+          if (curVendorLower !== "overdue") {
+            psSheet.getRange(i + 1, vendorCol + 1).setValue("Overdue");
+            psRow[vendorCol] = "Overdue";
+            Logger.log(`[ROW ${rowNum}] [STATUS UPDATE] [Vendor Onboarding] Contract Date (${contractDate}) is in the past and email was not sent. Set Col S to "Overdue" for "${title}".`);
+          } else {
+            Logger.log(`[ROW ${rowNum}] [Vendor Onboarding] Evaluated for "${title}" - Status: "Overdue" (Contract Date ${contractDate} passed)`);
+          }
+        } else {
+          Logger.log(`[ROW ${rowNum}] [Vendor Onboarding] Evaluated for "${title}" - Status: "Sent" (Already processed)`);
         }
       } else if (isNotDropBad && !isToday(contractDate) && contractDate) {
         Logger.log(`[ROW ${rowNum}] [Vendor Onboarding] Evaluated for "${title}" - Status: "${psRow[vendorCol] || 'Pending'}" | Contract Date (${contractDate}) is not today`);
@@ -928,6 +974,20 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
           });
         } else {
           Logger.log(`[ROW ${rowNum}] [MG Payment Initiated] Evaluated for "${title}" - Status: "${psRow[mgPayoutInitiatedCol]}" (Already processed)`);
+        }
+      } else if (isNotDropped && isPastDate(mainInfo.vendorLifecycleExited) && isVendorDone) {
+        let curMgInit = (mgPayoutInitiatedCol > -1 && psRow.length > mgPayoutInitiatedCol && psRow[mgPayoutInitiatedCol]) ? psRow[mgPayoutInitiatedCol].toString().trim() : "";
+        let curMgInitLower = curMgInit.toLowerCase();
+        if (curMgInitLower !== "sent") {
+          if (curMgInitLower !== "overdue") {
+            psSheet.getRange(i + 1, mgPayoutInitiatedCol + 1).setValue("Overdue");
+            psRow[mgPayoutInitiatedCol] = "Overdue";
+            Logger.log(`[ROW ${rowNum}] [STATUS UPDATE] [MG Payment Initiated] Vendor Exit Date (${mainInfo.vendorLifecycleExited}) is in the past, Vendor Status is Done, and email was not sent. Set Col T to "Overdue" for "${title}".`);
+          } else {
+            Logger.log(`[ROW ${rowNum}] [MG Payment Initiated] Evaluated for "${title}" - Status: "Overdue" (Vendor Exit Date ${mainInfo.vendorLifecycleExited} passed)`);
+          }
+        } else {
+          Logger.log(`[ROW ${rowNum}] [MG Payment Initiated] Evaluated for "${title}" - Status: "Sent" (Already processed)`);
         }
       } else if (!isToday(mainInfo.vendorLifecycleExited) && mainInfo.vendorLifecycleExited) {
         Logger.log(`[ROW ${rowNum}] [MG Payment Initiated] Evaluated for "${title}" - Status: "${psRow[mgPayoutInitiatedCol] || 'Empty'}" | Vendor Exit Date (${mainInfo.vendorLifecycleExited}) is not today`);
@@ -975,6 +1035,20 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
         } else {
           Logger.log(`[ROW ${rowNum}] [MG Payment Processed] Evaluated for "${title}" - Status: "${psRow[mgPayoutConfirmationCol]}" (Already processed)`);
         }
+      } else if (isNotDropped && isPastDate(mainInfo.mgPayoutExited) && isMgDone) {
+        let curMgConf = (mgPayoutConfirmationCol > -1 && psRow.length > mgPayoutConfirmationCol && psRow[mgPayoutConfirmationCol]) ? psRow[mgPayoutConfirmationCol].toString().trim() : "";
+        let curMgConfLower = curMgConf.toLowerCase();
+        if (curMgConfLower !== "sent") {
+          if (curMgConfLower !== "overdue") {
+            psSheet.getRange(i + 1, mgPayoutConfirmationCol + 1).setValue("Overdue");
+            psRow[mgPayoutConfirmationCol] = "Overdue";
+            Logger.log(`[ROW ${rowNum}] [STATUS UPDATE] [MG Payment Processed] MG Exit Date (${mainInfo.mgPayoutExited}) is in the past, MG Status is Done, and email was not sent. Set Col U to "Overdue" for "${title}".`);
+          } else {
+            Logger.log(`[ROW ${rowNum}] [MG Payment Processed] Evaluated for "${title}" - Status: "Overdue" (MG Exit Date ${mainInfo.mgPayoutExited} passed)`);
+          }
+        } else {
+          Logger.log(`[ROW ${rowNum}] [MG Payment Processed] Evaluated for "${title}" - Status: "Sent" (Already processed)`);
+        }
       } else if (!isToday(mainInfo.mgPayoutExited) && mainInfo.mgPayoutExited) {
         Logger.log(`[ROW ${rowNum}] [MG Payment Processed] Evaluated for "${title}" - Status: "${psRow[mgPayoutConfirmationCol] || 'Empty'}" | MG Exit Date (${mainInfo.mgPayoutExited}) is not today`);
       } else if (!isMgDone) {
@@ -1008,10 +1082,21 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
     let isCheckInDropped = launchStatus.includes("drop") || launchStatus.includes("bad") || launchStatus.includes("discontinue");
 
     // Deal signing date check (deals signed before 1st September)
-    let rawContractDate = (psContractDateCol > -1 && psRow.length > psContractDateCol && psRow[psContractDateCol]) 
-                          ? psRow[psContractDateCol] 
-                          : (mainInfo ? mainInfo.contractSigned : "");
+    let rawContractDate = "";
+    if (psContractDateCol > -1 && psRow.length > psContractDateCol && psRow[psContractDateCol] && psRow[psContractDateCol].toString().trim() !== "") {
+      rawContractDate = psRow[psContractDateCol];
+    } else if (psRow.length > 3 && psRow[3] && psRow[3].toString().trim() !== "") {
+      rawContractDate = psRow[3]; // Col D (Contract Signing date)
+    } else if (psRow.length > 15 && psRow[15] && psRow[15].toString().trim() !== "") {
+      rawContractDate = psRow[15]; // Col P
+    } else if (psRow.length > 16 && psRow[16] && psRow[16].toString().trim() !== "") {
+      rawContractDate = psRow[16]; // Col Q
+    } else if (mainInfo && mainInfo.contractSigned) {
+      rawContractDate = mainInfo.contractSigned;
+    }
+
     let isBeforeSept1 = isDealSignedBeforeSept1(rawContractDate);
+    Logger.log(`[ROW ${rowNum}] [Check-In 1 (15 Days)] "${title}" - Detected Contract Date: "${rawContractDate}" (Signed before Sept 1: ${isBeforeSept1})`);
 
     // Show Launch Announcement status check (Col AB or Col AA == 'sent')
     let rawColAB = (launchSentCol > -1 && psRow.length > launchSentCol && psRow[launchSentCol]) ? psRow[launchSentCol].toString().trim().toLowerCase() : "";
@@ -1113,7 +1198,7 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
       }
     }
 
-    // --- STAGE 6: CHECK-IN 2 (15 Days from Col X Check-In 1 Sent Date) ---
+    // --- STAGE 6: CHECK-IN 2 (30 Days from Col X Check-In 1 Sent Date) ---
     if (!targetStage || targetStage === "checkIn2") {
       if (checkIn2Col > -1) {
         let curY = (psRow.length > checkIn2Col && psRow[checkIn2Col]) ? psRow[checkIn2Col].toString().trim() : "";
@@ -1155,18 +1240,18 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
           }
           Logger.log(`[ROW ${rowNum}] [Check-In 2 (30 Days)] Evaluated for "${title}" - Col X (Check-In 1 Date) is blank. Status: "Not due yet"`);
         } else {
-          // Col X Date is present & show launch email not sent -> Evaluate X + 15 days
+          // Col X Date is present & show launch email not sent -> Evaluate X + 30 days
           let targetX = new Date(xDateObj.getTime());
           targetX.setHours(0, 0, 0, 0);
           let diffDaysX = Math.floor((today.getTime() - targetX.getTime()) / (1000 * 60 * 60 * 24));
 
-          if (diffDaysX < 15) {
+          if (diffDaysX < 30) {
             if (curYLower !== "not due yet") {
               psSheet.getRange(i + 1, checkIn2Col + 1).setValue("Not due yet");
               psRow[checkIn2Col] = "Not due yet";
             }
-            Logger.log(`[ROW ${rowNum}] [Check-In 2 (30 Days)] Evaluated for "${title}" - Status: "Not due yet" (${diffDaysX}/15 days elapsed since Col X ${rawCheckIn1DateX})`);
-          } else if (diffDaysX === 15) {
+            Logger.log(`[ROW ${rowNum}] [Check-In 2 (30 Days)] Evaluated for "${title}" - Status: "Not due yet" (${diffDaysX}/30 days elapsed since Col X ${rawCheckIn1DateX})`);
+          } else if (diffDaysX === 30) {
             if (curYLower !== "draft ready") {
               stage6Candidates.push({
                 rowIdx: i,
@@ -1186,11 +1271,11 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
             } else {
               Logger.log(`[ROW ${rowNum}] [Check-In 2 (30 Days)] Evaluated for "${title}" - Status: "${curY}" (Already Draft Ready)`);
             }
-          } else if (diffDaysX >= 16) {
+          } else if (diffDaysX >= 31) {
             if (curYLower !== "overdue") {
               psSheet.getRange(i + 1, checkIn2Col + 1).setValue("Overdue");
               psRow[checkIn2Col] = "Overdue";
-              Logger.log(`[ROW ${rowNum}] [STATUS UPDATE] 15 days since Check-In 1 is over (${diffDaysX} days elapsed). Updated Col Y to "Overdue" for "${title}". (NO DRAFT CREATED)`);
+              Logger.log(`[ROW ${rowNum}] [STATUS UPDATE] 30 days since Check-In 1 is over (${diffDaysX} days elapsed). Updated Col Y to "Overdue" for "${title}". (NO DRAFT CREATED)`);
             } else {
               Logger.log(`[ROW ${rowNum}] [Check-In 2 (30 Days)] Evaluated for "${title}" - Status: "Overdue" (${diffDaysX} days elapsed)`);
             }
@@ -1905,6 +1990,9 @@ function evaluateSingleRowCheckIns(psSheet, row, preloadedRowVals = null, preloa
   let rawContractDate = (contractDateCol > -1 && rowVals.length > contractDateCol && rowVals[contractDateCol]) 
                         ? rowVals[contractDateCol] 
                         : null;
+  if (!rawContractDate && rowVals.length > 3 && rowVals[3] && rowVals[3].toString().trim() !== "") rawContractDate = rowVals[3]; // Col D
+  if (!rawContractDate && rowVals.length > 15 && rowVals[15] && rowVals[15].toString().trim() !== "") rawContractDate = rowVals[15]; // Col P
+  if (!rawContractDate && rowVals.length > 16 && rowVals[16] && rowVals[16].toString().trim() !== "") rawContractDate = rowVals[16]; // Col Q
   if (!rawContractDate && psSheet.getParent()) {
     try {
       const master = psSheet.getParent().getSheetByName("Lifecycle Tracker - Master");
@@ -2065,12 +2153,12 @@ function evaluateSingleRowCheckIns(psSheet, row, preloadedRowVals = null, preloa
       targetX.setHours(0, 0, 0, 0);
       let diffDaysX = Math.floor((today.getTime() - targetX.getTime()) / (1000 * 60 * 60 * 24));
 
-      if (diffDaysX < 15) {
+      if (diffDaysX < 30) {
         if (curYLower !== "not due yet") {
           psSheet.getRange(row, checkIn2Col + 1).setValue("Not due yet");
           rowVals[checkIn2Col] = "Not due yet";
         }
-      } else if (diffDaysX === 15) {
+      } else if (diffDaysX === 30) {
         if (curYLower !== "draft ready" && isValidEmail(email)) {
           let queueId = Utilities.getUuid();
           let body = getBody('checkIn2', firstName, title, link, grammar, "", null, showName);
@@ -2099,11 +2187,11 @@ function evaluateSingleRowCheckIns(psSheet, row, preloadedRowVals = null, preloa
             Logger.log(`[LIVE ROW ${row}] ERROR creating Check-In 30 Days draft for "${title}": ${err.message}`);
           }
         }
-      } else if (diffDaysX >= 16) {
+      } else if (diffDaysX >= 31) {
         if (curYLower !== "overdue") {
           psSheet.getRange(row, checkIn2Col + 1).setValue("Overdue");
           rowVals[checkIn2Col] = "Overdue";
-          Logger.log(`[LIVE ROW ${row}] 15 days since Check-In 1 is over (${diffDaysX} days elapsed). Set Col Y to "Overdue" for "${title}".`);
+          Logger.log(`[LIVE ROW ${row}] 30 days since Check-In 1 is over (${diffDaysX} days elapsed). Set Col Y to "Overdue" for "${title}".`);
         }
       }
     }
@@ -2190,17 +2278,17 @@ function testAuthorCheckInTimers() {
     Logger.log(`  -> [${tc.name}]: Got "${statusW}" (Expected "${tc.expectedW}") [${pass}]`);
   });
 
-  // 2. Test Check-In 2 (15 Days from Col X Check-In 1 Sent Date)
-  Logger.log("\n2. Testing Check-In 2 (Col X + 15 days):");
+  // 2. Test Check-In 2 (30 Days from Col X Check-In 1 Sent Date)
+  Logger.log("\n2. Testing Check-In 2 (Col X + 30 days):");
   const testCasesY = [
     { name: "Col X Missing (Check-In 1 not sent yet)", daysAgo: null, expectedY: "Not due yet" },
     { name: "Day 5 since Col X", daysAgo: 5, expectedY: "Not due yet" },
-    { name: "Day 15 since Col X", daysAgo: 15, expectedY: "draft ready" },
-    { name: "Day 16 since Col X", daysAgo: 16, expectedY: "Overdue" }
+    { name: "Day 30 since Col X", daysAgo: 30, expectedY: "draft ready" },
+    { name: "Day 31 since Col X", daysAgo: 31, expectedY: "Overdue" }
   ];
   testCasesY.forEach(tc => {
     let diffDays = tc.daysAgo !== null ? tc.daysAgo : null;
-    let statusY = diffDays === null ? "Not due yet" : (diffDays < 15 ? "Not due yet" : (diffDays === 15 ? "draft ready" : "Overdue"));
+    let statusY = diffDays === null ? "Not due yet" : (diffDays < 30 ? "Not due yet" : (diffDays === 30 ? "draft ready" : "Overdue"));
     let pass = statusY === tc.expectedY ? "PASS" : "FAIL";
     Logger.log(`  -> [${tc.name}]: Got "${statusY}" (Expected "${tc.expectedY}") [${pass}]`);
   });

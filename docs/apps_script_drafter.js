@@ -1000,6 +1000,42 @@ function isToday(dateVal) {
          today.getMonth() === target.getMonth() &&
          today.getFullYear() === target.getFullYear();
 }
+/**
+ * Checks whether a date is strictly before today (in the past).
+ * @param {*} dateVal - Date object, date string, or serial date
+ * @returns {boolean} True if date is before today (midnight to midnight)
+ */
+function isPastDate(dateVal) {
+  if (!dateVal) return false;
+  let target = parseDateSafe(dateVal);
+  if (!target) return false;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  let cmp = new Date(target.getTime());
+  cmp.setHours(0, 0, 0, 0);
+  return cmp.getTime() < today.getTime();
+}
+
+function isDealSignedBeforeSept1(dateVal) {
+  if (!dateVal) return false;
+  let target = parseDateSafe(dateVal);
+  if (!target) return false;
+  let cmp = new Date(target.getTime());
+  cmp.setHours(0, 0, 0, 0);
+  let year = cmp.getFullYear();
+  if (year < 2024) return true;
+  if (year === 2024) {
+    let cutoff2024 = new Date(2024, 8, 1, 0, 0, 0, 0);
+    return cmp.getTime() < cutoff2024.getTime();
+  }
+  if (year === 2025) return false;
+  if (year === 2026) {
+    let cutoff2026 = new Date(2026, 8, 1, 0, 0, 0, 0);
+    return cmp.getTime() < cutoff2026.getTime();
+  }
+  return false;
+}
+
 
 function processOutreachQueue(isDelayedRun = false) {
   // Hardcoded to strictly open the exact correct Google Sheet document you linked
@@ -1663,6 +1699,19 @@ function processOutreachQueue(isDelayedRun = false) {
       } else {
         Logger.log("SKIPPED (Welcome Email): Status is already processed for " + title + " (Current status: " + psRow[welcomeCol] + ")");
       }
+    } else if (!isDropped && isPastDate(welcomeTriggerDate)) {
+      let curW = psRow[welcomeCol] ? psRow[welcomeCol].toString().trim().toLowerCase() : "";
+      if (curW !== "sent" && curW !== "overdue") {
+        psSheet.getRange(i + 1, welcomeCol + 1).setValue("Overdue");
+        psRow[welcomeCol] = "Overdue";
+        Logger.log(`[STATUS UPDATE] [Welcome Email] Contract Date (${welcomeTriggerDate}) is in the past and email was not sent. Set Col R to "Overdue" for "${title}".`);
+      }
+      let curV = psRow[vendorCol] ? psRow[vendorCol].toString().trim().toLowerCase() : "";
+      if (curV !== "sent" && curV !== "overdue") {
+        psSheet.getRange(i + 1, vendorCol + 1).setValue("Overdue");
+        psRow[vendorCol] = "Overdue";
+        Logger.log(`[STATUS UPDATE] [Vendor Onboarding] Contract Date (${welcomeTriggerDate}) is in the past and email was not sent. Set Col S to "Overdue" for "${title}".`);
+      }
     } else if (!isDropped && !isToday(welcomeTriggerDate) && welcomeTriggerDate) {
       Logger.log("SKIPPED (Welcome Email): Timestamp (Col A in Master) for " + title + " is " + welcomeTriggerDate + " which is not today.");
     }
@@ -1674,6 +1723,13 @@ function processOutreachQueue(isDelayedRun = false) {
       }
     } else if (!isDropped && isToday(mainInfo.vendorLifecycleExited) && isReady(psRow[mgPayoutInitiatedCol])) {
       createDraft(email, `Payment Initiated: Minimum Guarantee for ${title}`, firstName, 'mgInitiated', title, link, i, mgPayoutInitiatedCol, null, ccMail, revLink, argus);
+    } else if (!isDropped && isPastDate(mainInfo.vendorLifecycleExited)) {
+      let curMgInit = psRow[mgPayoutInitiatedCol] ? psRow[mgPayoutInitiatedCol].toString().trim().toLowerCase() : "";
+      if (curMgInit !== "sent" && curMgInit !== "overdue") {
+        psSheet.getRange(i + 1, mgPayoutInitiatedCol + 1).setValue("Overdue");
+        psRow[mgPayoutInitiatedCol] = "Overdue";
+        Logger.log(`[STATUS UPDATE] [MG Payment Initiated] Vendor Exit Date (${mainInfo.vendorLifecycleExited}) is in the past and email was not sent. Set Col T to "Overdue" for "${title}".`);
+      }
     }
     
     // Stage 4: MG Payout Confirmation (MG Payout Exit Date)
@@ -1683,6 +1739,13 @@ function processOutreachQueue(isDelayedRun = false) {
       }
     } else if (!isDropped && isToday(mainInfo.mgPayoutExited) && isReady(psRow[mgPayoutConfirmationCol])) {
       createDraft(email, `Pocket FM: Your Minimum Guarantee Payment Has Been Processed`, firstName, 'mgConfirmed', title, link, i, mgPayoutConfirmationCol, null, ccMail, revLink, argus);
+    } else if (!isDropped && isPastDate(mainInfo.mgPayoutExited)) {
+      let curMgConf = psRow[mgPayoutConfirmationCol] ? psRow[mgPayoutConfirmationCol].toString().trim().toLowerCase() : "";
+      if (curMgConf !== "sent" && curMgConf !== "overdue") {
+        psSheet.getRange(i + 1, mgPayoutConfirmationCol + 1).setValue("Overdue");
+        psRow[mgPayoutConfirmationCol] = "Overdue";
+        Logger.log(`[STATUS UPDATE] [MG Payment Processed] MG Exit Date (${mainInfo.mgPayoutExited}) is in the past and email was not sent. Set Col U to "Overdue" for "${title}".`);
+      }
     }
     
     // Stage 5 & 6: Personal Check-Ins (Author Check-In 15 Days & 30 Days)
@@ -1852,23 +1915,23 @@ function processOutreachQueue(isDelayedRun = false) {
           targetX.setHours(0, 0, 0, 0);
           let diffDaysX = Math.floor((today.getTime() - targetX.getTime()) / (1000 * 60 * 60 * 24));
 
-          if (diffDaysX < 15) {
+          if (diffDaysX < 30) {
             if (curYLower !== "not due yet") {
               psSheet.getRange(i + 1, checkIn2Col + 1).setValue("Not due yet");
               psRow[checkIn2Col] = "Not due yet";
             }
             Logger.log(`[ROW ${i + 1}] [Check-In 2 (30 Days)] Evaluated for "${title}" - Status: "Not due yet" (${diffDaysX}/15 days elapsed since Col X ${rawCheckIn1DateX})`);
-          } else if (diffDaysX === 15) {
+          } else if (diffDaysX === 30) {
             if (curYLower !== "draft ready") {
               createDraft(email, `Pocket FM: A quick update on your show: ${title}`, firstName, 'checkIn2', title, link, i, checkIn2Col, null, ccMail, revLink, argus);
             } else {
               Logger.log(`[ROW ${i + 1}] [Check-In 2 (30 Days)] Evaluated for "${title}" - Status: "${curY}" (Already Draft Ready)`);
             }
-          } else if (diffDaysX >= 16) {
+          } else if (diffDaysX >= 31) {
             if (curYLower !== "overdue") {
               psSheet.getRange(i + 1, checkIn2Col + 1).setValue("Overdue");
               psRow[checkIn2Col] = "Overdue";
-              Logger.log(`[ROW ${i + 1}] [STATUS UPDATE] 15 days since Check-In 1 is over (${diffDaysX} days elapsed). Updated Col Y to "Overdue" for "${title}". (NO DRAFT CREATED)`);
+              Logger.log(`[ROW ${i + 1}] [STATUS UPDATE] 30 days since Check-In 1 is over (${diffDaysX} days elapsed). Updated Col Y to "Overdue" for "${title}". (NO DRAFT CREATED)`);
             } else {
               Logger.log(`[ROW ${i + 1}] [Check-In 2 (30 Days)] Evaluated for "${title}" - Status: "Overdue" (${diffDaysX} days elapsed)`);
             }
@@ -4197,12 +4260,12 @@ function evaluateSingleRowCheckIns(psSheet, row, preloadedRowVals = null, preloa
       targetX.setHours(0, 0, 0, 0);
       let diffDaysX = Math.floor((today.getTime() - targetX.getTime()) / (1000 * 60 * 60 * 24));
 
-      if (diffDaysX < 15) {
+      if (diffDaysX < 30) {
         if (curYLower !== "not due yet") {
           psSheet.getRange(row, checkIn2Col + 1).setValue("Not due yet");
           rowVals[checkIn2Col] = "Not due yet";
         }
-      } else if (diffDaysX === 15) {
+      } else if (diffDaysX === 30) {
         if (curYLower !== "draft ready" && isValidEmail(email)) {
           let queueId = Utilities.getUuid();
           let body = getBody('checkIn2', firstName, title, link, grammar, "", null, showName);
@@ -4231,11 +4294,11 @@ function evaluateSingleRowCheckIns(psSheet, row, preloadedRowVals = null, preloa
             Logger.log(`[LIVE ROW ${row}] ERROR creating Check-In 30 Days draft for "${title}": ${err.message}`);
           }
         }
-      } else if (diffDaysX >= 16) {
+      } else if (diffDaysX >= 31) {
         if (curYLower !== "overdue") {
           psSheet.getRange(row, checkIn2Col + 1).setValue("Overdue");
           rowVals[checkIn2Col] = "Overdue";
-          Logger.log(`[LIVE ROW ${row}] 15 days since Check-In 1 is over (${diffDaysX} days elapsed). Set Col Y to "Overdue" for "${title}".`);
+          Logger.log(`[LIVE ROW ${row}] 30 days since Check-In 1 is over (${diffDaysX} days elapsed). Set Col Y to "Overdue" for "${title}".`);
         }
       }
     }

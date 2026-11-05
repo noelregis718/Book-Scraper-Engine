@@ -14,7 +14,7 @@
  * 8. Newsletter (The Author Edit) Only
  * 9. Quarterly Revenue Statements (Worked Well) Only
  * 10. Content Didn't Work Well Statements Only
- * Bonus: Test Newsletter Draft & Sync Sent Emails Only
+ * Bonus: Sync Sent Emails & Triggers
  *
  * ZERO COMMOTION: Each button evaluates and runs ONLY its specific condition!
  * No master "all running together" button.
@@ -44,7 +44,6 @@ function onOpen() {
       .addItem("9️⃣ Run Quarterly Revenue Statements (Worked Well) Only", "triggerRevenueStatementsOnly")
       .addItem("🔟 Run Content Didn't Work Well Statements Only", "triggerRevStatementContentBadOnly")
       .addSeparator()
-      .addItem("🧪 Test Newsletter Draft (Generate Directly to My Gmail)", "triggerTestNewsletterDraft")
       .addItem("⚡ Enable Auto-Sync Sent Emails (Every 1 Min)", "installSentMailSyncTrigger")
       .addItem("⏰ Enable Daily Outreach Automation (Every Morning 9 AM)", "installDailyOutreachTrigger")
       .addItem("🔄 Sync Sent Emails Now", "triggerSyncSentEmailsOnly")

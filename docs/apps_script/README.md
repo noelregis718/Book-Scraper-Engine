@@ -45,7 +45,5 @@ This folder contains the complete, verified 5-part modular division of the Pocke
    - **8️⃣ Run Newsletter (The Author Edit) Only**: 15 days from Show Launch Announcement Sent Date (Col AC). Strictly requires Col AC date and live link (ignores Col J).
    - **`9️⃣ Run Quarterly Revenue Statements (Worked Well) Only`**: Testing / Testing_PGC / Testing_PGC_Completed / Launched (ROW) shows (Content Update & Payment Ready drafts). *Strictly requires a valid Revenue Statement Link in Col AL (suppressed if blank).*
    - **`🔟 Run Content Didn't Work Well Statements Only`**: Condition is Dropped / Bad / Sunset (Didn't work well - Content + Payment Related Update draft). *Strictly requires a valid Revenue Statement Link in Col AL (suppressed if blank).*
-   - **`🧪 Test Content Didn't Work Well Draft`**: Generates a test "Didn't work well - Content + Payment Related Update" draft directly to your Gmail.
-   - **`🧪 Test Newsletter Draft`**: Generates a test newsletter directly to your Gmail.
    - **`⚡ Enable Auto-Sync Sent Emails` / `🔄 Sync Sent Emails Now`**: Syncs sent drafts back to sheet status dropdowns.
 
