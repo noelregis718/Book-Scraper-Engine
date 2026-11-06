@@ -677,9 +677,9 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
   for (let i = 3; i < psData.length; i++) {
     let psRow = psData[i];
     if (!isTrackerRowFilled(psRow, psTitleCol)) continue;
-    const rowNum = i + 1; // Skip blank rows
+    const rowNum = i + 1; // Skip blank formula rows
     let title = psRow[psTitleCol];
-    if (!title) continue;
+    if (!title || title.toString().trim() === "") continue;
     
     let safeTitle = title.toString().toLowerCase().trim();
     let mainInfo = mainDict[safeTitle] || {};
@@ -941,6 +941,54 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
     }
 
     // =============================================================
+    // AUTOMATIC PREREQUISITE RULE:
+    // If Welcome Email (Col R) & Vendor Onboarding Email (Col S) are both 'Sent',
+    // then MG Payout Initiated (Col T) and MG Confirmation (Col U) become "Not Due Yet"
+    // if they are not already 'Sent', 'Draft Ready', or 'Overdue'.
+    // =============================================================
+    let curWelcomeStatus = (welcomeCol > -1 && psRow.length > welcomeCol && psRow[welcomeCol]) ? psRow[welcomeCol].toString().trim().toLowerCase() : "";
+    let curVendorStatus = (vendorCol > -1 && psRow.length > vendorCol && psRow[vendorCol]) ? psRow[vendorCol].toString().trim().toLowerCase() : "";
+    let areWelcomeAndVendorSent = (curWelcomeStatus === "sent" && curVendorStatus === "sent");
+
+    if (areWelcomeAndVendorSent) {
+      // 1. MG Payout Initiated (Col T)
+      if (mgPayoutInitiatedCol > -1 && psRow.length > mgPayoutInitiatedCol) {
+        let curInit = (psRow[mgPayoutInitiatedCol] || "").toString().trim().toLowerCase();
+        if (curInit !== "sent" && curInit !== "draft ready" && curInit !== "overdue") {
+          let vendorStatusVal = mainInfo.vendorStatus ? mainInfo.vendorStatus.toLowerCase().trim() : "";
+          let isVendorDone = vendorStatusVal === "done";
+          let isNotDropped = !launchStatus.includes("drop") && !launchStatus.includes("bad") && !launchStatus.includes("discontinue");
+          let isDueToday = isNotDropped && isVendorDone && mainInfo.vendorLifecycleExited && isToday(mainInfo.vendorLifecycleExited);
+          let isPast = isNotDropped && isVendorDone && mainInfo.vendorLifecycleExited && isPastDate(mainInfo.vendorLifecycleExited);
+
+          if (!isDueToday && !isPast && curInit !== "not due yet") {
+            psSheet.getRange(i + 1, mgPayoutInitiatedCol + 1).setValue("Not due yet");
+            psRow[mgPayoutInitiatedCol] = "Not due yet";
+            Logger.log(`[ROW ${rowNum}] [STATUS UPDATE] [MG Payment Initiated] Welcome and Vendor emails are Sent. Set Col T to "Not due yet" for "${title}".`);
+          }
+        }
+      }
+
+      // 2. MG Payout Confirmation (Col U)
+      if (mgPayoutConfirmationCol > -1 && psRow.length > mgPayoutConfirmationCol) {
+        let curConf = (psRow[mgPayoutConfirmationCol] || "").toString().trim().toLowerCase();
+        if (curConf !== "sent" && curConf !== "draft ready" && curConf !== "overdue") {
+          let mgStatusVal = mainInfo.mgStatus ? mainInfo.mgStatus.toLowerCase().trim() : "";
+          let isMgDone = mgStatusVal === "done";
+          let isNotDropped = !launchStatus.includes("drop") && !launchStatus.includes("bad") && !launchStatus.includes("discontinue");
+          let isDueToday = isNotDropped && isMgDone && mainInfo.mgPayoutExited && isToday(mainInfo.mgPayoutExited);
+          let isPast = isNotDropped && isMgDone && mainInfo.mgPayoutExited && isPastDate(mainInfo.mgPayoutExited);
+
+          if (!isDueToday && !isPast && curConf !== "not due yet") {
+            psSheet.getRange(i + 1, mgPayoutConfirmationCol + 1).setValue("Not due yet");
+            psRow[mgPayoutConfirmationCol] = "Not due yet";
+            Logger.log(`[ROW ${rowNum}] [STATUS UPDATE] [MG Payment Processed] Welcome and Vendor emails are Sent. Set Col U to "Not due yet" for "${title}".`);
+          }
+        }
+      }
+    }
+
+    // =============================================================
     // Stage 3: MG Payment Initiated
     // Image Condition: Col U: Vendor Exit == TODAY | Col S: Vendor Status == Done | Col AA: Status != Drop
     // =============================================================
@@ -950,7 +998,8 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
       let isNotDropped = !launchStatus.includes("drop") && !launchStatus.includes("bad") && !launchStatus.includes("discontinue");
 
       if (!mainInfo.vendorLifecycleExited || mainInfo.vendorLifecycleExited.toString().trim() === "") {
-        if (isReady(psRow[mgPayoutInitiatedCol])) {
+        let curInitVal = (psRow[mgPayoutInitiatedCol] || "").toString().toLowerCase().trim();
+        if (isReady(psRow[mgPayoutInitiatedCol]) && curInitVal !== "not due yet") {
           logNotification("Trigger Date is missing", title, `Vendor Lifecycle Exited date (Col U) is blank for "${title}".`, rowNum);
         } else {
           Logger.log(`[ROW ${rowNum}] [MG Payment Initiated] Evaluated for "${title}" - Status: "${psRow[mgPayoutInitiatedCol] || 'Empty'}" (Vendor Exit Date blank)`);
@@ -1010,7 +1059,8 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
       let isNotDropped = !launchStatus.includes("drop") && !launchStatus.includes("bad") && !launchStatus.includes("discontinue");
 
       if (!mainInfo.mgPayoutExited || mainInfo.mgPayoutExited.toString().trim() === "") {
-        if (isReady(psRow[mgPayoutConfirmationCol])) {
+        let curConfVal = (psRow[mgPayoutConfirmationCol] || "").toString().toLowerCase().trim();
+        if (isReady(psRow[mgPayoutConfirmationCol]) && curConfVal !== "not due yet") {
           logNotification("Trigger Date is missing", title, `MG Payout Exited date (Col X) is blank for "${title}".`, rowNum);
         } else {
           Logger.log(`[ROW ${rowNum}] [MG Payment Processed] Evaluated for "${title}" - Status: "${psRow[mgPayoutConfirmationCol] || 'Empty'}" (MG Exit Date blank)`);
@@ -1079,40 +1129,41 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
     // 5. If Check-In 1 Sent Date (Col X) + 15 days & show launch email not sent -> "Overdue" (diffDaysX > 15)
     //    For draft ready -> diffDaysX === 15 (creates draft, Col Y -> "draft ready")
     // =============================================================
-    let isCheckInDropped = launchStatus.includes("drop") || launchStatus.includes("bad") || launchStatus.includes("discontinue");
+    if (!targetStage || targetStage === "checkIn1" || targetStage === "checkIn2") {
+      let isCheckInDropped = launchStatus.includes("drop") || launchStatus.includes("bad") || launchStatus.includes("discontinue");
 
-    // Deal signing date check (deals signed before 1st September)
-    let rawContractDate = "";
-    if (psContractDateCol > -1 && psRow.length > psContractDateCol && psRow[psContractDateCol] && psRow[psContractDateCol].toString().trim() !== "") {
-      rawContractDate = psRow[psContractDateCol];
-    } else if (psRow.length > 3 && psRow[3] && psRow[3].toString().trim() !== "") {
-      rawContractDate = psRow[3]; // Col D (Contract Signing date)
-    } else if (psRow.length > 15 && psRow[15] && psRow[15].toString().trim() !== "") {
-      rawContractDate = psRow[15]; // Col P
-    } else if (psRow.length > 16 && psRow[16] && psRow[16].toString().trim() !== "") {
-      rawContractDate = psRow[16]; // Col Q
-    } else if (mainInfo && mainInfo.contractSigned) {
-      rawContractDate = mainInfo.contractSigned;
-    }
+      // Deal signing date check (deals signed before 1st September)
+      let rawContractDate = "";
+      if (psContractDateCol > -1 && psRow.length > psContractDateCol && psRow[psContractDateCol] && psRow[psContractDateCol].toString().trim() !== "") {
+        rawContractDate = psRow[psContractDateCol];
+      } else if (psRow.length > 3 && psRow[3] && psRow[3].toString().trim() !== "") {
+        rawContractDate = psRow[3]; // Col D (Contract Signing date)
+      } else if (psRow.length > 15 && psRow[15] && psRow[15].toString().trim() !== "") {
+        rawContractDate = psRow[15]; // Col P
+      } else if (psRow.length > 16 && psRow[16] && psRow[16].toString().trim() !== "") {
+        rawContractDate = psRow[16]; // Col Q
+      } else if (mainInfo && mainInfo.contractSigned) {
+        rawContractDate = mainInfo.contractSigned;
+      }
 
-    let isBeforeSept1 = isDealSignedBeforeSept1(rawContractDate);
-    Logger.log(`[ROW ${rowNum}] [Check-In 1 (15 Days)] "${title}" - Detected Contract Date: "${rawContractDate}" (Signed before Sept 1: ${isBeforeSept1})`);
+      let isBeforeSept1 = isDealSignedBeforeSept1(rawContractDate);
+      Logger.log(`[ROW ${rowNum}] [Check-In 1 (15 Days)] "${title}" - Detected Contract Date: "${rawContractDate}" (Signed before Sept 1: ${isBeforeSept1})`);
 
-    // Show Launch Announcement status check (Col AB or Col AA == 'sent')
-    let rawColAB = (launchSentCol > -1 && psRow.length > launchSentCol && psRow[launchSentCol]) ? psRow[launchSentCol].toString().trim().toLowerCase() : "";
-    let rawColAA = (launchCol > -1 && psRow.length > launchCol && psRow[launchCol]) ? psRow[launchCol].toString().trim().toLowerCase() : "";
-    let isLaunchSent = rawColAB === "sent" || rawColAB.includes("sent") || rawColAA === "sent";
+      // Show Launch Announcement status check (Col AB or Col AA == 'sent')
+      let rawColAB = (launchSentCol > -1 && psRow.length > launchSentCol && psRow[launchSentCol]) ? psRow[launchSentCol].toString().trim().toLowerCase() : "";
+      let rawColAA = (launchCol > -1 && psRow.length > launchCol && psRow[launchCol]) ? psRow[launchCol].toString().trim().toLowerCase() : "";
+      let isLaunchSent = rawColAB === "sent" || rawColAB.includes("sent") || rawColAA === "sent";
 
-    // Base Date for Check-In 1: Col V (Feedback Mail Date)
-    let checkIn1RefDate = psRow[feedbackMailDateCol] || mainInfo.mgPayoutExited;
-    let vDateObj = parseDateSafe(checkIn1RefDate);
+      // Base Date for Check-In 1: Col V (Feedback Mail Date)
+      let checkIn1RefDate = psRow[feedbackMailDateCol] || mainInfo.mgPayoutExited;
+      let vDateObj = parseDateSafe(checkIn1RefDate);
 
-    // Base Date for Check-In 2: Col X (Check-In 1 Sent Date)
-    let rawCheckIn1DateX = (checkIn1DateCol > -1 && psRow.length > checkIn1DateCol) ? psRow[checkIn1DateCol] : null;
-    let xDateObj = parseDateSafe(rawCheckIn1DateX);
+      // Base Date for Check-In 2: Col X (Check-In 1 Sent Date)
+      let rawCheckIn1DateX = (checkIn1DateCol > -1 && psRow.length > checkIn1DateCol) ? psRow[checkIn1DateCol] : null;
+      let xDateObj = parseDateSafe(rawCheckIn1DateX);
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
 
     // --- STAGE 5: CHECK-IN 1 (15 Days from Col V Feedback Mail Date) ---
     if (!targetStage || targetStage === "checkIn1") {
@@ -1283,6 +1334,7 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
         }
       }
     }
+    }
     SpreadsheetApp.flush();
 
     // =============================================================
@@ -1445,13 +1497,17 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
                           launchStatus.includes("bad") || 
                           launchStatus.includes("sunset") ||
                           launchStatus.includes("discontinue");
-      let isTestingPgcOrLaunched = !isShowDropped && (launchStatus.includes("testing") || launchStatus.includes("launched"));
-      let hasArgusData = showId && (
+      let isTestingPgcOrLaunched = !isShowDropped && (
+        launchStatus.includes("testing") || 
+        launchStatus.includes("launch") || 
+        launchStatus.includes("live") || 
+        launchStatus.includes("pgc")
+      );
+      let hasArgusData = !!(showId && (
         (argusData && argusData[showId.toLowerCase().trim()]) || 
         (argusData && argusData[safeTitle]) || 
-        (argus && (argus.duration !== "N/A" || argus.ldau !== "N/A")) ||
-        !argusSheet
-      );
+        (argus && (argus.duration !== "N/A" || argus.ldau !== "N/A"))
+      ));
 
       let targetRevCol = (typeof jasSentCol !== "undefined" && jasSentCol !== -1) ? jasSentCol : 38; // Col AM (index 38, 1-based Col 39)
       let curRevStatus = (targetRevCol > -1 && psRow.length > targetRevCol && psRow[targetRevCol]) ? psRow[targetRevCol].toString().trim().toLowerCase() : "";
@@ -1479,29 +1535,29 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
         if (isShowDropped) {
           // Stage 9C: Sunset / Dropped / Content Bad ONLY (Mutually exclusive from 9A & 9B)
           if (!targetStage || targetStage === "revStatement" || targetStage === "revStatement_didntWorkWell" || targetStage === "contentBad") {
-            if (hasArgusData || (showId && !argusSheet)) {
-              createDraft(email, `Pocket FM: An Update on ${title}`, firstName, 'revStatement_didntWorkWell', title, link, i, targetRevCol, null, ccMail, revLink, argus, showName);
-              Logger.log(`[ROW ${rowNum}] [Stage 9C: Content Bad / Sunset / Dropped] [DRAFT CREATED] Status == Dropped/Bad & Show ID in Argus for "${title}". Progress stored in Col AM.`);
-            } else {
-              Logger.log(`[ROW ${rowNum}] [Stage 9C: Content Bad / Sunset / Dropped] [SKIPPED] Show "${title}" is Dropped/Bad but Show ID ("${showId || 'Blank'}") is not found in Argus Data.`);
-            }
+            createDraft(email, `Pocket FM: An Update on ${title}`, firstName, 'revStatement_didntWorkWell', title, link, i, targetRevCol, null, ccMail, revLink, argus, showName);
+            let metricSource = hasArgusData ? "Show ID in Argus" : "Argus Data Pending - Default Show Snapshot";
+            Logger.log(`[ROW ${rowNum}] [Stage 9C: Content Bad / Sunset / Dropped] [DRAFT CREATED] Status == Dropped/Bad & ${metricSource} for "${title}". Progress stored in Col AM.`);
+          } else {
+            Logger.log(`[ROW ${rowNum}] [Rev Statement] Evaluated for "${title}" - Show is Dropped/Bad (Skipped for target stage: "${targetStage}"; run Stage 10 for Content Didn't Work Well)`);
           }
         } else if (isTestingPgcOrLaunched) {
           // Stage 9A: Content Review
           if (!targetStage || targetStage === "revStatement" || targetStage === "revStatement_workedWell" || targetStage === "revStatement_workedWell_content") {
-            if (hasArgusData || (showId && !argusSheet)) {
-              createDraft(email, `Content Update for ${title}`, firstName, 'revStatement_workedWell_content', title, link, i, targetRevCol, null, ccMail, revLink, argus, showName);
-              Logger.log(`[ROW ${rowNum}] [Stage 9A: Content Review] [DRAFT CREATED] Status in [Testing, Testing_PGC, Testing_PGC_Completed, Launched (ROW)] & Show ID in Argus for "${title}". Progress stored in Col AM.`);
-            }
-          }
-
-          // Stage 9B: Payment Ready
-          if (!targetStage || targetStage === "revStatement" || targetStage === "revStatement_workedWell" || targetStage === "revStatement_workedWell_payment") {
+            createDraft(email, `Content Update for ${title}`, firstName, 'revStatement_workedWell_content', title, link, i, targetRevCol, null, ccMail, revLink, argus, showName);
+            let metricSource = hasArgusData ? "Show ID in Argus" : "Argus Data Pending - Default Show Snapshot";
+            Logger.log(`[ROW ${rowNum}] [Stage 9A: Content Review] [DRAFT CREATED] Status in [Testing, Testing_PGC, Testing_PGC_Completed, Launched (ROW)] & ${metricSource} for "${title}". Progress stored in Col AM.`);
+          } else if (targetStage === "revStatement_workedWell_payment") {
+            // Stage 9B: Payment Ready (Worked Well - Payment / Invoice Request)
+            // Unlinked from standard Worked Well run: requires revenue > 100 USD (to be configured).
+            // Right now, only Stage 9A (Content Update) is generated automatically.
             createDraft(email, "Pocket FM: Your earnings are waiting for you!", firstName, 'revStatement_workedWell_payment', title, link, i, targetRevCol, null, ccMail, revLink, argus, showName);
-            Logger.log(`[ROW ${rowNum}] [Stage 9B: Payment Ready] [DRAFT CREATED] Status in [Testing, Testing_PGC, Testing_PGC_Completed, Launched (ROW)] for "${title}". Progress stored in Col AM.`);
+            Logger.log(`[ROW ${rowNum}] [Stage 9B: Payment Ready] [DRAFT CREATED] Explicitly targeted 'revStatement_workedWell_payment' for "${title}". Progress stored in Col AM.`);
+          } else {
+            Logger.log(`[ROW ${rowNum}] [Rev Statement] Evaluated for "${title}" - Testing/Launched show skipped for non-matching targetStage: "${targetStage}"`);
           }
         } else {
-          Logger.log(`[ROW ${rowNum}] [Rev Statement] Evaluated for "${title}" - Launch Status: "${launchStatus}" (Not eligible for 9A/9B or 9C)`);
+          Logger.log(`[ROW ${rowNum}] [Rev Statement] Evaluated for "${title}" - Launch Status: "${launchStatus || 'Empty'}" (Not eligible for 9A/9B or 9C)`);
         }
       }
     }

@@ -245,6 +245,37 @@ def main():
                             ws.cell(r_idx, col_map[field]).value = str(val)
                 wb.save(excel_path)
                 print(f"--> [SAVED] Successfully written to row {r_idx} in '{ws.title}'!")
+
+                # Live push to Google Sheets Webhook if configured
+                webhook_url = os.getenv("CMS_WEBHOOK_URL")
+                if webhook_url:
+                    try:
+                        import urllib.request
+                        import json
+                        payload = {
+                            "secret": os.getenv("CMS_WEBHOOK_SECRET", "pocketfm_cms_sync_2026"),
+                            "shows": [
+                                {
+                                    "showId": show_id,
+                                    "showName": metrics['Show Name'],
+                                    "plays": metrics['Plays'],
+                                    "duration": metrics['Duration'],
+                                    "ratings": metrics['Ratings'],
+                                    "reviews": metrics['Reviews'],
+                                    "comments": metrics['Comments']
+                                }
+                            ]
+                        }
+                        req_data = json.dumps(payload).encode('utf-8')
+                        req = urllib.request.Request(
+                            webhook_url,
+                            data=req_data,
+                            headers={'Content-Type': 'application/json', 'User-Agent': 'PocketFM-CmsScraper/1.0'}
+                        )
+                        with urllib.request.urlopen(req, timeout=10) as resp:
+                            print(f"--> [GOOGLE SHEET LIVE SYNC] Success (HTTP {resp.status})!")
+                    except Exception as wh_err:
+                        print(f"--> [GOOGLE SHEET SYNC NOTICE] {wh_err}")
                 
             except Exception as e:
                 print(f"--> Timeout or error loading {show_id}: {e}")

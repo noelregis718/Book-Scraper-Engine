@@ -13,7 +13,7 @@
 
 // Target Sheet Configuration
 const SPREADSHEET_ID = "1JFT4_f9Du6UZWi6aM0FjYvyR-mcAsbARq7JyxJwLPZc";
-const CMS_SHEET_NAME = "CMS Show Data";
+const CMS_SHEET_NAME = "Argus Show Data";
 const MASTER_TRACKER_SHEET_NAME = "Lifecycle Tracker - Master";
 const POST_SALES_SHEET_NAME = "Post-Sales Tracker";
 
@@ -38,6 +38,7 @@ const CMS_SHOW_URL = "https://cms.pocketfm.com/shows/audiobooks?tab=published&id
 // Secure Script Property Key for Session Authentication
 const PROP_CMS_AUTH_TOKEN = "POCKETFM_CMS_SESSION_TOKEN";
 const PROP_WEBHOOK_SECRET = "CMS_WEBHOOK_SECRET_KEY";
+const DEFAULT_WEBHOOK_SECRET = "pocketfm_cms_sync_2026";
 
 /**
  * Returns the active or target Google Spreadsheet instance (works both container-bound and standalone)
@@ -52,17 +53,28 @@ function getCmsSpreadsheet() {
 }
 
 /**
- * Finds or auto-creates the 'CMS Show Data' tab (with fallback to existing data tabs)
+ * Finds or auto-creates the 'Argus Show Data' tab (with fallback to existing data tabs)
  * @param {GoogleAppsScript.Spreadsheet.Spreadsheet} ss - Optional spreadsheet instance
  * @returns {GoogleAppsScript.Spreadsheet.Sheet}
  */
 function getOrCreateCmsSheet(ss = null) {
   const spreadsheet = ss || getCmsSpreadsheet();
+  
+  // 1. Search strictly for Argus Show Data first
   let sheet = spreadsheet.getSheets().find(s => {
     const n = s.getName().toLowerCase().trim();
-    return n.includes("cms show") || n.includes("cms data") || n.includes("argus");
+    return n.includes("argus show data") || n.includes("argus show") || n.includes("argus");
   });
 
+  // 2. Fallback to CMS Show Data
+  if (!sheet) {
+    sheet = spreadsheet.getSheets().find(s => {
+      const n = s.getName().toLowerCase().trim();
+      return n.includes("cms show") || n.includes("cms data");
+    });
+  }
+
+  // 3. Insert and format if missing
   if (!sheet) {
     sheet = spreadsheet.insertSheet(CMS_SHEET_NAME);
     sheet.appendRow(CMS_COLUMNS);
@@ -103,17 +115,19 @@ function resolveCmsHeaderMap(sheet) {
   colMap.status = findIdx(["status"]) + 1;
   colMap.lastSynced = findIdx(["last synced", "last updated", "synced at"]) + 1;
 
-  // Fallbacks if columns don't exist yet
-  if (colMap.showId === 0) colMap.showId = 1;
-  if (colMap.showName === 0) colMap.showName = 2;
-  if (colMap.plays === 0) colMap.plays = 3;
-  if (colMap.duration === 0) colMap.duration = 4;
-  if (colMap.ratings === 0) colMap.ratings = 5;
-  if (colMap.reviews === 0) colMap.reviews = 6;
-  if (colMap.comments === 0) colMap.comments = 7;
-  if (colMap.listeningHours === 0) colMap.listeningHours = 8;
-  if (colMap.status === 0) colMap.status = 9;
-  if (colMap.lastSynced === 0) colMap.lastSynced = 10;
+  // Only fallback for Show ID if header row is completely blank
+  if (headers.filter(h => (h || "").toString().trim()).length === 0) {
+    colMap.showId = 1;
+    colMap.showName = 2;
+    colMap.plays = 3;
+    colMap.duration = 4;
+    colMap.ratings = 5;
+    colMap.reviews = 6;
+    colMap.comments = 7;
+    colMap.listeningHours = 8;
+    colMap.status = 9;
+    colMap.lastSynced = 10;
+  }
 
   return colMap;
 }
@@ -171,7 +185,7 @@ function getWebhookSecret() {
   const props = PropertiesService.getScriptProperties();
   let secret = props.getProperty(PROP_WEBHOOK_SECRET);
   if (!secret) {
-    secret = Utilities.getUuid().replace(/-/g, "").substring(0, 16);
+    secret = DEFAULT_WEBHOOK_SECRET;
     props.setProperty(PROP_WEBHOOK_SECRET, secret);
   }
   return secret;
@@ -213,4 +227,3 @@ function safeAlert(title, message) {
   }
   Logger.log(`[ALERT: ${title}]\n${message}`);
 }
-

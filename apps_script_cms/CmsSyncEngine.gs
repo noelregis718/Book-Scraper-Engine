@@ -40,7 +40,9 @@ function updateOrAppendCmsShow(sheet, show) {
 
   // If show already exists in CMS sheet, update cells
   if (targetRow > 1) {
-    if (show.showName && colMap.showName) sheet.getRange(targetRow, colMap.showName).setValue(show.showName);
+    if (show.showName && !/^(CMS|CMS@PocketFM|Pocket\s*FM)$/i.test(show.showName) && colMap.showName) {
+      sheet.getRange(targetRow, colMap.showName).setValue(show.showName);
+    }
     if (show.plays !== undefined && colMap.plays) sheet.getRange(targetRow, colMap.plays).setValue(cleanCmsMetric(show.plays));
     if (show.duration !== undefined && colMap.duration) sheet.getRange(targetRow, colMap.duration).setValue(cleanCmsMetric(show.duration));
     if (show.ratings !== undefined && colMap.ratings) sheet.getRange(targetRow, colMap.ratings).setValue(cleanCmsMetric(show.ratings));
@@ -52,15 +54,17 @@ function updateOrAppendCmsShow(sheet, show) {
   }
 
   // Otherwise, append a new show row
-  const newRow = new Array(Math.max(...Object.values(colMap))).fill("");
-  newRow[colMap.showId - 1] = cleanId;
-  newRow[colMap.showName - 1] = show.showName || "";
-  newRow[colMap.plays - 1] = cleanCmsMetric(show.plays || 0);
-  newRow[colMap.duration - 1] = cleanCmsMetric(show.duration || 0);
-  newRow[colMap.ratings - 1] = cleanCmsMetric(show.ratings || 0);
-  newRow[colMap.reviews - 1] = cleanCmsMetric(show.reviews || 0);
-  newRow[colMap.comments - 1] = cleanCmsMetric(show.comments || 0);
-  newRow[colMap.listeningHours - 1] = cleanCmsMetric(show.listeningHours || show.duration || 0);
+  const validColIndices = Object.values(colMap).filter(v => typeof v === "number" && v > 0);
+  const maxCol = validColIndices.length > 0 ? Math.max(...validColIndices) : 10;
+  const newRow = new Array(maxCol).fill("");
+  if (colMap.showId) newRow[colMap.showId - 1] = cleanId;
+  if (colMap.showName && show.showName && !/^(CMS|CMS@PocketFM|Pocket\s*FM)$/i.test(show.showName)) newRow[colMap.showName - 1] = show.showName;
+  if (colMap.plays) newRow[colMap.plays - 1] = cleanCmsMetric(show.plays || 0);
+  if (colMap.duration) newRow[colMap.duration - 1] = cleanCmsMetric(show.duration || 0);
+  if (colMap.ratings) newRow[colMap.ratings - 1] = cleanCmsMetric(show.ratings || 0);
+  if (colMap.reviews) newRow[colMap.reviews - 1] = cleanCmsMetric(show.reviews || 0);
+  if (colMap.comments) newRow[colMap.comments - 1] = cleanCmsMetric(show.comments || 0);
+  if (colMap.listeningHours) newRow[colMap.listeningHours - 1] = cleanCmsMetric(show.listeningHours || show.duration || 0);
   if (colMap.status) newRow[colMap.status - 1] = show.status || "Active";
   if (colMap.lastSynced) newRow[colMap.lastSynced - 1] = nowStr;
 

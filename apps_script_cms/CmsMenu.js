@@ -212,38 +212,58 @@ function buildCmsScraperDialogHtml() {
 
   <!-- STEP 1: AUTHENTICATION -->
   <div class="card">
-    <h3>Step 1: Pocket FM CMS Authentication</h3>
-    <p style="font-size: 13px; color: #5f6368; margin-bottom: 10px;">
-      1. Click the button below to open Pocket FM CMS and log in via JumpCloud SSO / 2FA.
+    <h3>Step 1: Open CMS & Log In Manually</h3>
+    <p style="font-size: 13px; color: #5f6368; margin-bottom: 12px; line-height: 1.5;">
+      Pocket FM CMS uses JumpCloud SSO with 2FA. Click below to open CMS in your browser, enter your credentials, and complete your login.
     </p>
-    <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 8px;">
+    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
       <button class="btn btn-secondary" onclick="openCmsWindow()">
-        🌐 Open Pocket FM CMS in New Window
+        🌐 1. Open Pocket FM CMS in New Window
       </button>
-      <button class="btn btn-secondary" onclick="toggleTokenBox()">
-        🔑 Paste / Update Session Token
+      <button class="btn btn-secondary" onclick="toggleTokenBox()" style="font-size: 12px;">
+        🔑 Optional: Paste Session Token
       </button>
     </div>
     
-    <div id="tokenBox" style="display: none; margin-top: 8px;">
-      <p style="font-size: 12px; color: #70757a;">
-        Copy cookie from DevTools (F12 $\rightarrow$ Application $\rightarrow$ Cookies) and paste below:
-      </p>
-      <input type="text" id="tokenInput" class="token-input" placeholder="Paste session cookie or authorization token here...">
-      <button class="btn" style="padding: 6px 14px; font-size: 12px;" onclick="saveToken()">💾 Save Token</button>
+    <div id="tokenBox" style="display: none; margin-top: 10px; background: #fdf2f2; border: 1px solid #fad2cf; border-radius: 6px; padding: 12px;">
+      <div style="font-weight: 600; font-size: 12px; color: #b31412; margin-bottom: 4px;">
+        Optional: Paste Session Cookie or Bearer Token:
+      </div>
+      <input type="text" id="tokenInput" class="token-input" placeholder="Paste session cookie or Bearer token here..." style="margin: 6px 0 8px 0;">
+      <div style="display: flex; gap: 8px;">
+        <button class="btn" style="padding: 6px 14px; font-size: 12px;" onclick="saveToken()">💾 Save Token</button>
+        <button class="btn btn-secondary" style="padding: 6px 14px; font-size: 12px;" onclick="toggleTokenBox()">Cancel</button>
+      </div>
     </div>
   </div>
 
   <!-- STEP 2: SCRAPER CONTROL -->
   <div class="card">
     <div style="display: flex; justify-content: space-between; align-items: center;">
-      <h3>Step 2: Scrape Live Metrics</h3>
+      <h3>Step 2: Send Confirmation & Start Live Scraping</h3>
       <span id="showCountBadge" style="font-size: 12px; color: #5f6368; font-weight: 600;">Loading shows...</span>
     </div>
 
-    <button id="startBtn" class="btn" style="margin-top: 6px; padding: 10px 20px; font-size: 14px;" onclick="startScraping()">
-      🚀 Start Live Scraping All Shows
-    </button>
+    <div style="font-size: 12px; color: #70757a; margin-top: 4px;">
+      Target Tab: <b style="color: #7a0000;" id="sheetTargetName">Argus Show Data</b>
+    </div>
+
+    <p style="font-size: 13px; color: #5f6368; margin: 10px 0 8px 0;">
+      Once you are signed into Pocket FM CMS in your browser, click below to confirm and scrape:
+    </p>
+
+    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+      <button id="startBtn" class="btn" style="padding: 10px 20px; font-size: 14px;" onclick="startScraping()">
+        🚀 Start Live Scraping All Shows
+      </button>
+      <a id="bookmarkletLink" class="btn btn-secondary" href="javascript:void(0)" style="font-size: 12px; cursor: move;" title="Drag this button to your browser Bookmarks Bar">
+        ⭐ Drag to Bookmarks: Sync CMS Shows
+      </a>
+    </div>
+
+    <div style="margin-top: 10px; background: #eef3fc; border-left: 3px solid #1a73e8; padding: 8px 12px; border-radius: 4px; font-size: 12px; color: #174ea6;">
+      💡 <b>Alternative (Zero Setup):</b> Double-click <code>run_cms_scraper.bat</code> in your project folder. It launches Chrome with your credentials, prompts for 2FA, and starts scraping as soon as you press Enter!
+    </div>
 
     <div class="progress-container">
       <div id="pBar" class="progress-bar"></div>
@@ -279,6 +299,7 @@ function buildCmsScraperDialogHtml() {
     let isRunning = false;
     let successCount = 0;
     let failCount = 0;
+    let hasAuthToken = false;
 
     window.onload = function() {
       addLog("[INIT] Connecting to Google Sheet...");
@@ -291,18 +312,63 @@ function buildCmsScraperDialogHtml() {
     function onInitSuccess(data) {
       showList = data.shows || [];
       document.getElementById("showCountBadge").innerText = showList.length + " shows found in sheet";
+      if (data.sheetName) {
+        document.getElementById("sheetTargetName").innerText = data.sheetName;
+      }
       
+      hasAuthToken = !!data.hasToken;
       const badge = document.getElementById("authBadge");
-      if (data.hasToken) {
+      if (hasAuthToken) {
         badge.innerText = "Session Token Configured";
         badge.className = "badge badge-success";
-        addLog("[AUTH] CMS session token is active.");
+        addLog("[AUTH] CMS session token is active and ready.");
       } else {
         badge.innerText = "Token Missing / Expired";
         badge.className = "badge badge-warning";
-        addLog("[NOTICE] No session token found. Click 'Paste / Update Session Token' if CMS requires authentication.", "warn");
+        addLog("[NOTICE] No session token configured. You can log into CMS in browser and run the scraper.", "warn");
       }
+      updateBookmarklet();
       addLog("[READY] Ready to scrape " + showList.length + " shows.");
+    }
+
+    function updateBookmarklet() {
+      const showIds = (showList || []).map(function(s) { return s.showId; });
+      const webhookEndpoint = "https://script.google.com/a/macros/pocketfm.com/s/AKfycbzZqhEd3T03yt6u_G-M51QcjYzndd9tkfJNPS8r9eXr8vFA6owv5qt_UzymosThbdkb/exec";
+      const code = "javascript:(async function(){" +
+        "if(!location.hostname.includes('pocketfm.com')){alert('Please click this bookmark while on cms.pocketfm.com!');return;}" +
+        "const shows=" + JSON.stringify(showIds) + ";" +
+        "const box=document.createElement('div');" +
+        "box.style='position:fixed;top:15px;right:15px;background:#7a0000;color:#fff;padding:16px 20px;border-radius:8px;z-index:9999999;font-family:sans-serif;box-shadow:0 4px 16px rgba(0,0,0,0.4);min-width:320px;max-width:400px;';" +
+        "box.innerHTML='<div style=\"font-weight:bold;font-size:14px;\">📻 Pocket FM CMS Live Scraper</div><div id=\"syncMsg\" style=\"margin-top:6px;font-size:12px;\">Starting live scrape...</div>';" +
+        "document.body.appendChild(box);" +
+        "const msg=document.getElementById('syncMsg');" +
+        "const results=[];" +
+        "for(let i=0;i<shows.length;i++){" +
+        "const sid=shows[i];" +
+        "msg.innerText='Scraping show '+(i+1)+'/'+shows.length+' ('+sid.substring(0,8)+')...';" +
+        "try{" +
+        "const resp=await fetch('https://api.cms.pocketfm.com/content_api/book.published_shows?show_id='+sid);" +
+        "const d=await resp.json();" +
+        "const b=(d.result&&d.result.books?d.result.books[0]:(d.result||d.data))||{};" +
+        "const sName=b.title||b.name||b.show_name||('Show '+sid.substring(0,8));" +
+        "const pl=b.plays||b.play_count||0;" +
+        "const dur=b.duration||b.hours||0;" +
+        "msg.innerHTML='<b>'+sName+'</b><br>Plays: '+pl+' | Dur: '+dur+' hrs ('+(i+1)+'/'+shows.length+')';" +
+        "results.push({showId:sid,showName:sName,plays:pl,duration:dur,ratings:b.ratings||b.rating||0,reviews:b.reviews||b.review_count||0,comments:b.comments||b.comment_count||0});" +
+        "}catch(e){results.push({showId:sid,showName:'',plays:0,duration:0,ratings:0,reviews:0,comments:0});}" +
+        "await new Promise(function(r){setTimeout(r,400);});" +
+        "}" +
+        "msg.innerText='Syncing results to Argus Show Data tab...';" +
+        "try{" +
+        "await fetch('" + webhookEndpoint + "',{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({secret:'pocketfm_cms_sync_2026',shows:results})});" +
+        "msg.innerText='✅ Done! Successfully scraped and synced '+results.length+' shows to Google Sheets!';" +
+        "}catch(err){" +
+        "msg.innerText='Scraped '+results.length+' shows! Webhook status: '+err;" +
+        "}" +
+        "setTimeout(function(){if(box.parentNode)box.parentNode.removeChild(box);},6000);" +
+        "})();";
+      const btn = document.getElementById("bookmarkletLink");
+      if(btn) btn.setAttribute("href", code);
     }
 
     function onInitError(err) {
@@ -317,24 +383,36 @@ function buildCmsScraperDialogHtml() {
     function toggleTokenBox() {
       const box = document.getElementById("tokenBox");
       box.style.display = box.style.display === "none" ? "block" : "none";
+      if (box.style.display === "block") {
+        document.getElementById("tokenInput").focus();
+      }
     }
 
     function saveToken() {
       const val = document.getElementById("tokenInput").value.trim();
-      if (!val) return;
+      if (!val) {
+        alert("Please paste your session cookie or token before saving.");
+        return;
+      }
       google.script.run
         .withSuccessHandler(function() {
+          hasAuthToken = true;
           const badge = document.getElementById("authBadge");
           badge.innerText = "Session Token Configured";
           badge.className = "badge badge-success";
           toggleTokenBox();
-          addLog("[AUTH] Session token updated successfully!");
+          addLog("[AUTH] Session token updated successfully! Ready to scrape.", "success");
         })
         .saveCmsTokenAjax(val);
     }
 
     function startScraping() {
       if (isRunning || showList.length === 0) return;
+
+      if (!hasAuthToken) {
+        addLog("[NOTICE] No cloud session token saved. Attempting direct sync or use bookmarklet/runner.", "warn");
+      }
+
       isRunning = true;
       currentIndex = 0;
       successCount = 0;
@@ -342,7 +420,7 @@ function buildCmsScraperDialogHtml() {
 
       document.getElementById("startBtn").disabled = true;
       document.getElementById("liveCard").style.display = "block";
-      addLog("[START] Starting live scraping for " + showList.length + " shows...");
+      addLog("[START] Starting live scraping for " + showList.length + " shows into " + document.getElementById("sheetTargetName").innerText + "...");
 
       scrapeNextShow();
     }
@@ -501,3 +579,4 @@ function showWebhookDetailsDialog() {
 
   safeAlert("Pocket FM CMS Webhook Endpoint", msg);
 }
+

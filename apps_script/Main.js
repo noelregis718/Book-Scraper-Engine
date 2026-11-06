@@ -50,10 +50,19 @@ function onOpen() {
       .addToUi();
 
     // Pocket FM CMS Scraper Menu
-    SpreadsheetApp.getUi()
-      .createMenu("Pocket FM CMS Scraper")
-      .addItem("🚀 Launch CMS Scraper", "openCmsScraperWindow")
-      .addToUi();
+    if (typeof installCmsMenu === "function") {
+      installCmsMenu();
+    } else if (typeof openCmsScraperDialog === "function") {
+      SpreadsheetApp.getUi()
+        .createMenu("Pocket FM CMS Scraper")
+        .addItem("🚀 Launch CMS Scraper Popup", "openCmsScraperDialog")
+        .addToUi();
+    } else {
+      SpreadsheetApp.getUi()
+        .createMenu("Pocket FM CMS Scraper")
+        .addItem("🚀 Launch CMS Scraper", "openCmsScraperWindow")
+        .addToUi();
+    }
   } catch (e) {
     Logger.log("Menu creation skipped (not in spreadsheet UI context): " + e.message);
   }
@@ -393,6 +402,14 @@ function triggerTestContentBadDraft() {
  * Opens the deployed CMS Scraper Web App directly from the Google Sheet
  */
 function openCmsScraperWindow() {
+  Logger.log("[CMS] openCmsScraperWindow triggered from menu. Opening interactive live scraper popup dialog inside Google Sheets...");
+  if (typeof openCmsScraperDialog === "function") {
+    Logger.log("[CMS] Delegating to openCmsScraperDialog()...");
+    openCmsScraperDialog();
+    Logger.log("[CMS] Dialog opened successfully. User interacts with the scraper in the popup window.");
+    return;
+  }
+  Logger.log("[CMS] openCmsScraperDialog not found in current namespace. Displaying fallback launcher...");
   const webAppUrl = "https://script.google.com/a/macros/pocketfm.com/s/AKfycbzZqhEd3T03yt6u_G-M51QcjYzndd9tkfJNPS8r9eXr8vFA6owv5qt_UzymosThbdkb/exec";
   const cmsUrl = "https://cms.pocketfm.com/shows/audiobooks?tab=published";
   

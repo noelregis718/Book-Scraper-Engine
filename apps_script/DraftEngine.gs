@@ -560,6 +560,28 @@ function syncSentEmails() {
 
         // 6. Quarterly Revenue Statement (Col AM)
         checkStatusCol(sRevStatementCol, -1, ["content update", "earnings are waiting", "an update on", "revenue statement", "insights"]);
+
+        // 7. Automatic Prerequisite Rule: If Welcome Email & Vendor Onboarding Email are both Sent -> MG Initiated (Col T) & MG Confirmation (Col U) become "Not Due Yet" if not Sent/Draft Ready/Overdue
+        let wSent = (rowVals[sWelcomeCol] || "").toString().toLowerCase().trim() === "sent";
+        let vSent = (rowVals[sVendorCol] || "").toString().toLowerCase().trim() === "sent";
+        if (wSent && vSent) {
+          if (sMgInitCol !== -1 && sMgInitCol < rowVals.length) {
+            let mInitVal = (rowVals[sMgInitCol] || "").toString().toLowerCase().trim();
+            if (mInitVal !== "sent" && mInitVal !== "draft ready" && mInitVal !== "overdue" && mInitVal !== "not due yet") {
+              psSheet.getRange(actualRow, sMgInitCol + 1).setValue("Not due yet");
+              rowVals[sMgInitCol] = "Not due yet";
+              Logger.log(`[STATUS UPDATE] Row ${actualRow} ("${rowTitle}"): Welcome & Vendor are Sent -> Set MG Payout Initiated (Col ${sMgInitCol + 1}) to "Not due yet".`);
+            }
+          }
+          if (sMgConfCol !== -1 && sMgConfCol < rowVals.length) {
+            let mConfVal = (rowVals[sMgConfCol] || "").toString().toLowerCase().trim();
+            if (mConfVal !== "sent" && mConfVal !== "draft ready" && mConfVal !== "overdue" && mConfVal !== "not due yet") {
+              psSheet.getRange(actualRow, sMgConfCol + 1).setValue("Not due yet");
+              rowVals[sMgConfCol] = "Not due yet";
+              Logger.log(`[STATUS UPDATE] Row ${actualRow} ("${rowTitle}"): Welcome & Vendor are Sent -> Set MG Payout Confirmation (Col ${sMgConfCol + 1}) to "Not due yet".`);
+            }
+          }
+        }
       }
     }
   }

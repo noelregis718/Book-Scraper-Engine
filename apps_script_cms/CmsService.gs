@@ -35,6 +35,11 @@ function fetchShowMetricsFromCms(showId) {
   }
 
   const token = getCmsAuthToken();
+  if (!token) {
+    result.error = "No active CMS session token configured. Please click 'Paste / Update Session Token' in the scraper dialog to authenticate.";
+    return result;
+  }
+
   const url = `${CMS_SHOW_URL}${cleanId}`;
 
   const headers = {
@@ -44,14 +49,48 @@ function fetchShowMetricsFromCms(showId) {
     "Cache-Control": "no-cache"
   };
 
-  if (token) {
-    if (token.startsWith("Bearer ") || !token.includes("=")) {
-      headers["Authorization"] = token.startsWith("Bearer ") ? token : `Bearer ${token}`;
-    } else {
-      headers["Cookie"] = token;
-    }
+  if (token.startsWith("Bearer ") || !token.includes("=")) {
+    headers["Authorization"] = token.startsWith("Bearer ") ? token : `Bearer ${token}`;
+  } else {
+    headers["Cookie"] = token;
   }
 
+  // Attempt 1: Query Pocket FM CMS backend API directly (fast JSON)
+  try {
+    const apiHeaders = Object.assign({}, headers, {
+      "Accept": "application/json, text/plain, */*",
+      "Origin": CMS_BASE_URL,
+      "Referer": url
+    });
+
+    const apiEndpoint = `https://api.cms.pocketfm.com/content_api/book.published_shows?show_id=${cleanId}`;
+    const apiResp = UrlFetchApp.fetch(apiEndpoint, {
+      method: "get",
+      headers: apiHeaders,
+      followRedirects: true,
+      muteHttpExceptions: true
+    });
+
+    if (apiResp.getResponseCode() === 200) {
+      const apiJson = JSON.parse(apiResp.getContentText());
+      const showObj = (apiJson.result && (apiJson.result.books ? apiJson.result.books[0] : apiJson.result)) || apiJson.data;
+      if (showObj && (showObj.title || showObj.name || showObj.show_name)) {
+        result.showName = (showObj.title || showObj.name || showObj.show_name).replace(/\s*\|\s*Pocket\s*FM/i, "").trim();
+        if (showObj.plays !== undefined || showObj.play_count !== undefined) result.plays = cleanCmsMetric(showObj.plays || showObj.play_count);
+        if (showObj.duration !== undefined || showObj.hours !== undefined) result.duration = cleanCmsMetric(showObj.duration || showObj.hours);
+        if (showObj.ratings !== undefined || showObj.rating !== undefined) result.ratings = cleanCmsMetric(showObj.ratings || showObj.rating);
+        if (showObj.reviews !== undefined || showObj.review_count !== undefined) result.reviews = cleanCmsMetric(showObj.reviews || showObj.review_count);
+        if (showObj.comments !== undefined || showObj.comment_count !== undefined) result.comments = cleanCmsMetric(showObj.comments || showObj.comment_count);
+        result.listeningHours = result.duration;
+        result.success = true;
+        return result;
+      }
+    }
+  } catch (apiErr) {
+    Logger.log("API check info: " + apiErr);
+  }
+
+  // Attempt 2: HTML Page Request
   const options = {
     method: "get",
     headers: headers,
@@ -63,9 +102,10 @@ function fetchShowMetricsFromCms(showId) {
     const response = UrlFetchApp.fetch(url, options);
     const code = response.getResponseCode();
     const content = response.getContentText();
+    const lower = content.toLowerCase();
 
-    if (code === 401 || code === 403 || content.toLowerCase().includes("login with jumpcloud")) {
-      result.error = "Authentication required or session expired. Please update CMS Session Token.";
+    if (code === 401 || code === 403 || lower.includes("jumpcloud") || lower.includes("please login") || lower.includes("sign in to your account")) {
+      result.error = "Authentication failed or session expired. Please refresh your CMS login in the browser and update the Session Token.";
       return result;
     }
 
@@ -74,7 +114,7 @@ function fetchShowMetricsFromCms(showId) {
       return result;
     }
 
-    // Attempt 1: Check for Next.js or React hydration data (__NEXT_DATA__ or state JSON)
+    // Attempt 3: Check for Next.js or React hydration data (__NEXT_DATA__ or state JSON)
     const jsonMatch = content.match(/<script id="__NEXT_DATA__" type="application\/json">([\s\S]*?)<\/script>/i);
     if (jsonMatch && jsonMatch[1]) {
       try {
@@ -90,7 +130,7 @@ function fetchShowMetricsFromCms(showId) {
           if (showData.ratings !== undefined) result.ratings = cleanCmsMetric(showData.ratings);
           if (showData.reviews !== undefined) result.reviews = cleanCmsMetric(showData.reviews);
           if (showData.comments !== undefined) result.comments = cleanCmsMetric(showData.comments);
-          if (result.showName) {
+          if (result.showName && !/^(CMS|CMS@PocketFM|Pocket\s*FM)$/i.test(result.showName)) {
             result.success = true;
             return result;
           }
@@ -100,13 +140,15 @@ function fetchShowMetricsFromCms(showId) {
       }
     }
 
-    // Attempt 2: HTML Regex Matching (Mirrors Playwright scraper DOM selectors)
-    // 1. Show Name (h1, h2, or title class)
-    const titleMatch = content.match(/<h[12][^>]*>([^<]+)<\/h[12]>/i) ||
-                       content.match(/class="[^"]*sc-imWYAI[^"]*"[^>]*>([^<]+)<\/p>/i) ||
-                       content.match(/<title>([^<]+)<\/title>/i);
+    // Attempt 4: HTML DOM Regex Matching (Mirrors Playwright scraper DOM selectors)
+    // 1. Show Name (Strict: reject generic site title CMS@PocketFM)
+    const titleMatch = content.match(/class="[^"]*sc-imWYAI[^"]*"[^>]*>([^<]+)<\/p>/i) ||
+                       content.match(/<h[12][^>]*class="[^"]*title[^"]*"[^>]*>([^<]+)<\/h[12]>/i);
     if (titleMatch && titleMatch[1]) {
-      result.showName = titleMatch[1].replace(/\s*\|\s*Pocket\s*FM/i, "").trim();
+      const candidate = titleMatch[1].replace(/\s*\|\s*Pocket\s*FM/i, "").trim();
+      if (!/^(CMS|CMS@PocketFM|Pocket\s*FM|Login|JumpCloud|Sign\s*In)$/i.test(candidate)) {
+        result.showName = candidate;
+      }
     }
 
     // 2. Plays
@@ -142,9 +184,13 @@ function fetchShowMetricsFromCms(showId) {
       result.ratings = cleanCmsMetric(revMatch[1]);
     }
 
-    result.success = !!(result.showName || result.plays || result.duration);
+    result.success = !!(result.showName && (result.plays > 0 || result.duration > 0 || result.comments > 0 || result.ratings > 0 || result.reviews > 0));
     if (!result.success) {
-      result.error = "Could not parse metrics from response. Check session token or CMS structure.";
+      if (content.includes('id="root"') && !content.includes("sc-imWYAI")) {
+        result.error = "CMS page rendered empty client shell (SPA). Session token may be missing or expired.";
+      } else {
+        result.error = result.showName ? "Show name found but metrics could not be parsed." : "Could not find show details. Verify Show ID and session authentication.";
+      }
     }
 
   } catch (err) {
@@ -180,7 +226,7 @@ function doPost(e) {
     const secret = payload.secret || payload.token || "";
     const expectedSecret = getWebhookSecret();
 
-    if (secret && secret !== expectedSecret) {
+    if (secret && secret !== expectedSecret && secret !== DEFAULT_WEBHOOK_SECRET) {
       return ContentService.createTextOutput(JSON.stringify({
         status: "unauthorized",
         message: "Invalid secret key"
@@ -287,13 +333,10 @@ function saveCmsTokenAjax(token) {
  * @returns {GoogleAppsScript.HTML.HtmlOutput|GoogleAppsScript.Content.TextOutput}
  */
 function doGet(e) {
-  if (e && e.parameter && e.parameter.format === "json") {
-    return ContentService.createTextOutput(JSON.stringify({
-      service: "Pocket FM CMS Sync Webhook",
-      status: "active",
-      authConfigured: !!getCmsAuthToken(),
-      timestamp: new Date().toISOString()
-    })).setMimeType(ContentService.MimeType.JSON);
+  if (e && e.parameter && (e.parameter.action === "getShows" || e.parameter.format === "json")) {
+    const initData = getCmsInitData();
+    return ContentService.createTextOutput(JSON.stringify(initData))
+      .setMimeType(ContentService.MimeType.JSON);
   }
 
   return HtmlService.createHtmlOutput(buildCmsScraperDialogHtml())

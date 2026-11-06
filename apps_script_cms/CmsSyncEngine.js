@@ -4,8 +4,8 @@
  * File: CmsSyncEngine.gs (or CmsSyncEngine.js)
  * =======================================================================
  * Core sheet synchronization engine:
- * - Updates existing rows or appends new shows to 'CMS Show Data'
- * - Loops across all shows with real-time safe logging & toasts
+ * - Updates existing rows or appends new shows to 'Argus Show Data'
+ * - Loops across all shows with real-time UI toast notifications
  * - Imports newly created Show IDs from the Master Lifecycle Tracker
  * - Audits missing show metrics and provides professional formatting
  */
@@ -40,7 +40,9 @@ function updateOrAppendCmsShow(sheet, show) {
 
   // If show already exists in CMS sheet, update cells
   if (targetRow > 1) {
-    if (show.showName && colMap.showName) sheet.getRange(targetRow, colMap.showName).setValue(show.showName);
+    if (show.showName && !/^(CMS|CMS@PocketFM|Pocket\s*FM)$/i.test(show.showName) && colMap.showName) {
+      sheet.getRange(targetRow, colMap.showName).setValue(show.showName);
+    }
     if (show.plays !== undefined && colMap.plays) sheet.getRange(targetRow, colMap.plays).setValue(cleanCmsMetric(show.plays));
     if (show.duration !== undefined && colMap.duration) sheet.getRange(targetRow, colMap.duration).setValue(cleanCmsMetric(show.duration));
     if (show.ratings !== undefined && colMap.ratings) sheet.getRange(targetRow, colMap.ratings).setValue(cleanCmsMetric(show.ratings));
@@ -52,15 +54,17 @@ function updateOrAppendCmsShow(sheet, show) {
   }
 
   // Otherwise, append a new show row
-  const newRow = new Array(Math.max(...Object.values(colMap))).fill("");
-  newRow[colMap.showId - 1] = cleanId;
-  newRow[colMap.showName - 1] = show.showName || "";
-  newRow[colMap.plays - 1] = cleanCmsMetric(show.plays || 0);
-  newRow[colMap.duration - 1] = cleanCmsMetric(show.duration || 0);
-  newRow[colMap.ratings - 1] = cleanCmsMetric(show.ratings || 0);
-  newRow[colMap.reviews - 1] = cleanCmsMetric(show.reviews || 0);
-  newRow[colMap.comments - 1] = cleanCmsMetric(show.comments || 0);
-  newRow[colMap.listeningHours - 1] = cleanCmsMetric(show.listeningHours || show.duration || 0);
+  const validColIndices = Object.values(colMap).filter(v => typeof v === "number" && v > 0);
+  const maxCol = validColIndices.length > 0 ? Math.max(...validColIndices) : 10;
+  const newRow = new Array(maxCol).fill("");
+  if (colMap.showId) newRow[colMap.showId - 1] = cleanId;
+  if (colMap.showName && show.showName && !/^(CMS|CMS@PocketFM|Pocket\s*FM)$/i.test(show.showName)) newRow[colMap.showName - 1] = show.showName;
+  if (colMap.plays) newRow[colMap.plays - 1] = cleanCmsMetric(show.plays || 0);
+  if (colMap.duration) newRow[colMap.duration - 1] = cleanCmsMetric(show.duration || 0);
+  if (colMap.ratings) newRow[colMap.ratings - 1] = cleanCmsMetric(show.ratings || 0);
+  if (colMap.reviews) newRow[colMap.reviews - 1] = cleanCmsMetric(show.reviews || 0);
+  if (colMap.comments) newRow[colMap.comments - 1] = cleanCmsMetric(show.comments || 0);
+  if (colMap.listeningHours) newRow[colMap.listeningHours - 1] = cleanCmsMetric(show.listeningHours || show.duration || 0);
   if (colMap.status) newRow[colMap.status - 1] = show.status || "Active";
   if (colMap.lastSynced) newRow[colMap.lastSynced - 1] = nowStr;
 
@@ -69,7 +73,7 @@ function updateOrAppendCmsShow(sheet, show) {
 }
 
 /**
- * Syncs all shows currently listed in 'CMS Show Data' tab directly from CMS
+ * Syncs all shows currently listed in 'Argus Show Data' tab directly from CMS
  * @returns {Object} Summary { total, updated, failed }
  */
 function syncAllCmsShows() {
@@ -79,7 +83,7 @@ function syncAllCmsShows() {
   const lastRow = sheet.getLastRow();
 
   if (lastRow <= 1) {
-    safeToast(ss, "No shows found in CMS Show Data. Please import shows from Tracker first.", "Pocket FM CMS", 5);
+    safeToast(ss, "No shows found in Argus Show Data. Please import shows from Tracker first.", "Pocket FM CMS", 5);
     return { total: 0, updated: 0, failed: 0 };
   }
 
@@ -253,12 +257,12 @@ function importNewShowsFromTracker() {
   }
 
   SpreadsheetApp.flush();
-  safeToast(ss, `Imported ${importedCount} new shows from Master Tracker into CMS sheet!`, "Pocket FM CMS", 6);
+  safeToast(ss, `Imported ${importedCount} new shows from Master Tracker into Argus Show Data!`, "Pocket FM CMS", 6);
   return importedCount;
 }
 
 /**
- * Audits shows in Master Tracker that are missing from CMS Show Data
+ * Audits shows in Master Tracker that are missing from Argus Show Data
  */
 function auditMissingCmsData() {
   const ss = getCmsSpreadsheet();
@@ -306,14 +310,14 @@ function auditMissingCmsData() {
   }
 
   if (missingList.length === 0) {
-    safeAlert("CMS Data Audit", "All shows with a Show ID in Master Tracker are present in CMS Show Data! 100% matched.");
+    safeAlert("CMS Data Audit", "All shows with a Show ID in Master Tracker are present in Argus Show Data! 100% matched.");
   } else {
-    safeAlert("CMS Data Audit", `Found ${missingList.length} shows missing from CMS:\n\n${missingList.slice(0, 12).join("\n")}\n\nTip: Click 'Import New Shows from Master Tracker' to add them automatically.`);
+    safeAlert("CMS Data Audit", `Found ${missingList.length} shows missing from Argus Show Data:\n\n${missingList.slice(0, 12).join("\n")}\n\nTip: Click 'Import New Shows from Master Tracker' to add them automatically.`);
   }
 }
 
 /**
- * Applies clean Pocket FM crimson branding and formatting to 'CMS Show Data' tab
+ * Applies clean Pocket FM crimson branding and formatting to 'Argus Show Data' tab
  */
 function cleanAndFormatCmsSheet() {
   const ss = getCmsSpreadsheet();
@@ -338,5 +342,5 @@ function cleanAndFormatCmsSheet() {
 
   // Auto-resize standard columns
   sheet.autoResizeColumns(1, Math.min(lastCol, 10));
-  safeToast(ss, "CMS Show Data tab formatted with Pocket FM styling!", "Pocket FM CMS", 4);
+  safeToast(ss, "Argus Show Data tab formatted with Pocket FM styling!", "Pocket FM CMS", 4);
 }
