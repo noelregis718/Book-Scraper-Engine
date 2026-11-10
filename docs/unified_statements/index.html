@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pocket FM | Author Revenue Statements Portal</title>
+  <title>Pocket FM | Partner Portal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
@@ -13,7 +13,9 @@
       font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       background-color: #f6f8fa;
       color: #121212;
-      padding: 0 0 80px 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
     .top-header {
       background-color: #0c0c0c;
@@ -23,12 +25,12 @@
       border-bottom: 3px solid #E51A4D;
     }
     .logo-img {
-      height: 50px;
-      margin-bottom: 10px;
+      height: 48px;
+      margin-bottom: 12px;
       object-fit: contain;
     }
     .main-title {
-      font-size: 28px;
+      font-size: 26px;
       font-weight: 700;
       letter-spacing: -0.5px;
     }
@@ -36,105 +38,68 @@
     .subtitle {
       font-size: 14px;
       color: #bbbbbb;
-      margin-top: 5px;
+      margin-top: 6px;
     }
-    .container {
-      max-width: 1080px;
-      margin: 40px auto 0 auto;
+    .main-content {
+      flex: 1;
+      max-width: 680px;
+      margin: 60px auto;
       padding: 0 20px;
+      text-align: center;
     }
-    .section-title {
+    .card {
+      background: #ffffff;
+      border: 1px solid #e1e4e8;
+      border-radius: 12px;
+      padding: 40px 30px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+    }
+    .icon-lock {
+      width: 52px;
+      height: 52px;
+      background: #fef0f2;
+      color: #E51A4D;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px auto;
+    }
+    .card h2 {
       font-size: 20px;
       font-weight: 700;
       color: #0c0c0c;
-      margin: 40px 0 20px 0;
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-    .section-tag {
-      font-size: 13px;
-      font-weight: 600;
-      padding: 4px 12px;
-      border-radius: 14px;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 20px;
-    }
-    .statement-card {
-      background: #ffffff;
-      border: 1px solid #e1e4e8;
-      border-radius: 8px;
-      padding: 20px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
-    }
-    .statement-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 14px rgba(0,0,0,0.08);
-      border-color: #d1d5da;
-    }
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 10px;
       margin-bottom: 12px;
     }
-    .card-title {
-      font-size: 17px;
-      font-weight: 700;
-      color: #0c0c0c;
-      line-height: 1.3;
-    }
-    .badge {
-      font-size: 11px;
-      font-weight: 600;
-      padding: 3px 8px;
-      border-radius: 4px;
-      white-space: nowrap;
-    }
-    .card-meta {
-      font-size: 13px;
+    .card p {
+      font-size: 14px;
       color: #555555;
-      line-height: 1.6;
+      line-height: 1.7;
       margin-bottom: 20px;
-      padding-bottom: 15px;
-      border-bottom: 1px dashed #e1e4e8;
     }
-    .card-footer {
-      display: flex;
-      justify-content: flex-end;
-    }
-    .btn-view {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background-color: #0c0c0c;
-      color: #ffffff;
-      padding: 8px 16px;
-      border-radius: 5px;
+    .help-box {
+      background: #f8f9fa;
+      border: 1px solid #e9ecef;
+      border-radius: 8px;
+      padding: 16px;
       font-size: 13px;
-      font-weight: 600;
+      color: #444444;
+      line-height: 1.6;
+    }
+    .help-box strong { color: #0c0c0c; }
+    .help-box a {
+      color: #E51A4D;
       text-decoration: none;
-      transition: background 0.15s ease;
+      font-weight: 600;
     }
-    .btn-view:hover {
-      background-color: #E51A4D;
-    }
+    .help-box a:hover { text-decoration: underline; }
     .footer {
       text-align: center;
-      margin-top: 60px;
+      padding: 24px 20px;
       font-size: 12px;
       color: #888888;
       border-top: 1px solid #e1e4e8;
-      padding-top: 20px;
+      background: #ffffff;
     }
   </style>
 </head>
@@ -143,351 +108,32 @@
   <header class="top-header">
     <img src="https://d2p67bdkbtpxn2.cloudfront.net/c8b7ada83f09146d4b2c2ba3a5c3c1b8ea36e459.jpg" alt="Pocket FM" class="logo-img">
     <div class="main-title"><span>Pocket FM</span> Partner Portal</div>
-    <div class="subtitle">Official Author Revenue & Performance Statements</div>
+    <div class="subtitle">Confidential Author & Rights Holder Statements</div>
   </header>
 
-  <main class="container">
-
-    <!-- 6-Month Combined Section -->
-    <div class="section-title">
-      <span>6-Month Combined Statements (April – September 2026)</span>
-    </div>
-    <div class="grid">
-      
-    <div class="statement-card">
-      <div class="card-header">
-        <div class="card-title">Gansett Series</div>
+  <main class="main-content">
+    <div class="card">
+      <div class="icon-lock">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
       </div>
-      <div class="card-meta">
-        <div><strong>Author:</strong> Marie Force</div>
-        <div><strong>Period:</strong> April 1, 2026 – September 30, 2026 (6-Month Combined / Q2 + Q3)</div>
-      </div>
-      <div class="card-footer">
-        <a href="Revenue_Statement_Gansett_Series.html" class="btn-view" target="_blank">
-          View Statement
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-            <polyline points="15 3 21 3 21 9"></polyline>
-            <line x1="10" y1="14" x2="21" y2="3"></line>
-          </svg>
-        </a>
+      <h2>Confidential Statement Access</h2>
+      <p>
+        Pocket FM author revenue and quarterly performance statements are private and distributed directly to contracted partners via unique confidential access links.
+      </p>
+      <div class="help-box">
+        <strong>Expecting a statement?</strong><br>
+        Please open the personal private link provided in your official Pocket FM royalty notification email.<br>
+        For inquiries, contract verification, or statement assistance, contact us at: <a href="mailto:us-licensing@pocketfm.com">us-licensing@pocketfm.com</a>
       </div>
     </div>
-  
-    <div class="statement-card">
-      <div class="card-header">
-        <div class="card-title">Blake Larsen</div>
-      </div>
-      <div class="card-meta">
-        <div><strong>Author:</strong> Jack Slater</div>
-        <div><strong>Period:</strong> April 1, 2026 – September 30, 2026 (6-Month Combined / Q2 + Q3)</div>
-      </div>
-      <div class="card-footer">
-        <a href="Revenue_Statement_Blake_Larsen.html" class="btn-view" target="_blank">
-          View Statement
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-            <polyline points="15 3 21 3 21 9"></polyline>
-            <line x1="10" y1="14" x2="21" y2="3"></line>
-          </svg>
-        </a>
-      </div>
-    </div>
-  
-    <div class="statement-card">
-      <div class="card-header">
-        <div class="card-title">Lattes and Levitation</div>
-      </div>
-      <div class="card-meta">
-        <div><strong>Author:</strong> Christine Pope</div>
-        <div><strong>Period:</strong> April 1, 2026 – September 30, 2026 (6-Month Combined / Q2 + Q3)</div>
-      </div>
-      <div class="card-footer">
-        <a href="Revenue_Statement_Lattes_and_Levitation.html" class="btn-view" target="_blank">
-          View Statement
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-            <polyline points="15 3 21 3 21 9"></polyline>
-            <line x1="10" y1="14" x2="21" y2="3"></line>
-          </svg>
-        </a>
-      </div>
-    </div>
-  
-    <div class="statement-card">
-      <div class="card-header">
-        <div class="card-title">Psychic Seasons Series</div>
-      </div>
-      <div class="card-meta">
-        <div><strong>Author:</strong> ReGina Welling</div>
-        <div><strong>Period:</strong> April 1, 2026 – September 30, 2026 (6-Month Combined / Q2 + Q3)</div>
-      </div>
-      <div class="card-footer">
-        <a href="Revenue_Statement_Psychic_Seasons_Series.html" class="btn-view" target="_blank">
-          View Statement
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-            <polyline points="15 3 21 3 21 9"></polyline>
-            <line x1="10" y1="14" x2="21" y2="3"></line>
-          </svg>
-        </a>
-      </div>
-    </div>
-  
-    <div class="statement-card">
-      <div class="card-header">
-        <div class="card-title">Fate Weaver Series</div>
-      </div>
-      <div class="card-meta">
-        <div><strong>Author:</strong> ReGina Welling</div>
-        <div><strong>Period:</strong> April 1, 2026 – September 30, 2026 (6-Month Combined / Q2 + Q3)</div>
-      </div>
-      <div class="card-footer">
-        <a href="Revenue_Statement_Fate_Weaver_Series.html" class="btn-view" target="_blank">
-          View Statement
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-            <polyline points="15 3 21 3 21 9"></polyline>
-            <line x1="10" y1="14" x2="21" y2="3"></line>
-          </svg>
-        </a>
-      </div>
-    </div>
-  
-    <div class="statement-card">
-      <div class="card-header">
-        <div class="card-title">Sweet Tea Witch Mysteries</div>
-      </div>
-      <div class="card-meta">
-        <div><strong>Author:</strong> Amy Boyles</div>
-        <div><strong>Period:</strong> April 1, 2026 – September 30, 2026 (6-Month Combined / Q2 + Q3)</div>
-      </div>
-      <div class="card-footer">
-        <a href="Revenue_Statement_Sweet_Tea_Witch_Mysteries.html" class="btn-view" target="_blank">
-          View Statement
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-            <polyline points="15 3 21 3 21 9"></polyline>
-            <line x1="10" y1="14" x2="21" y2="3"></line>
-          </svg>
-        </a>
-      </div>
-    </div>
-  
-    <div class="statement-card">
-      <div class="card-header">
-        <div class="card-title">St. Marin's Cozy Mysteries</div>
-      </div>
-      <div class="card-meta">
-        <div><strong>Author:</strong> Andi Cumbo</div>
-        <div><strong>Period:</strong> April 1, 2026 – September 30, 2026 (6-Month Combined / Q2 + Q3)</div>
-      </div>
-      <div class="card-footer">
-        <a href="Revenue_Statement_St__Marin_s_Cozy_Mysteries.html" class="btn-view" target="_blank">
-          View Statement
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-            <polyline points="15 3 21 3 21 9"></polyline>
-            <line x1="10" y1="14" x2="21" y2="3"></line>
-          </svg>
-        </a>
-      </div>
-    </div>
-  
-    </div>
-
-    <!-- 3-Month Quarterly Section -->
-    <div class="section-title">
-      <span>3-Month Quarterly Statements (July – September 2026)</span>
-    </div>
-    <div class="grid">
-      
-    <div class="statement-card">
-      <div class="card-header">
-        <div class="card-title">Jackal Among Snakes</div>
-      </div>
-      <div class="card-meta">
-        <div><strong>Author:</strong> Umbrosus</div>
-        <div><strong>Period:</strong> July 1, 2026 – September 30, 2026 (3-Month Statement / Q3)</div>
-      </div>
-      <div class="card-footer">
-        <a href="Revenue_Statement_Jackal_Among_Snakes.html" class="btn-view" target="_blank">
-          View Statement
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-            <polyline points="15 3 21 3 21 9"></polyline>
-            <line x1="10" y1="14" x2="21" y2="3"></line>
-          </svg>
-        </a>
-      </div>
-    </div>
-  
-    <div class="statement-card">
-      <div class="card-header">
-        <div class="card-title">Redemption Arc</div>
-      </div>
-      <div class="card-meta">
-        <div><strong>Author:</strong> Umbrosus</div>
-        <div><strong>Period:</strong> July 1, 2026 – September 30, 2026 (3-Month Statement / Q3)</div>
-      </div>
-      <div class="card-footer">
-        <a href="Revenue_Statement_Redemption_Arc.html" class="btn-view" target="_blank">
-          View Statement
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-            <polyline points="15 3 21 3 21 9"></polyline>
-            <line x1="10" y1="14" x2="21" y2="3"></line>
-          </svg>
-        </a>
-      </div>
-    </div>
-  
-    <div class="statement-card">
-      <div class="card-header">
-        <div class="card-title">Vital Secrets</div>
-      </div>
-      <div class="card-meta">
-        <div><strong>Author:</strong> DF Hart</div>
-        <div><strong>Period:</strong> July 1, 2026 – September 30, 2026 (3-Month Statement / Q3)</div>
-      </div>
-      <div class="card-footer">
-        <a href="Revenue_Statement_Vital_Secrets.html" class="btn-view" target="_blank">
-          View Statement
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-            <polyline points="15 3 21 3 21 9"></polyline>
-            <line x1="10" y1="14" x2="21" y2="3"></line>
-          </svg>
-        </a>
-      </div>
-    </div>
-  
-    <div class="statement-card">
-      <div class="card-header">
-        <div class="card-title">Mrs. Lillywhite Investigates Mysteries</div>
-      </div>
-      <div class="card-meta">
-        <div><strong>Author:</strong> Emily Queen</div>
-        <div><strong>Period:</strong> July 1, 2026 – September 30, 2026 (3-Month Statement / Q3)</div>
-      </div>
-      <div class="card-footer">
-        <a href="Revenue_Statement_Mrs__Lillywhite_Investigates_Mysteries.html" class="btn-view" target="_blank">
-          View Statement
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-            <polyline points="15 3 21 3 21 9"></polyline>
-            <line x1="10" y1="14" x2="21" y2="3"></line>
-          </svg>
-        </a>
-      </div>
-    </div>
-  
-    <div class="statement-card">
-      <div class="card-header">
-        <div class="card-title">Liz Talbot Mystery Series</div>
-      </div>
-      <div class="card-meta">
-        <div><strong>Author:</strong> Susan M. Boyer</div>
-        <div><strong>Period:</strong> July 1, 2026 – September 30, 2026 (3-Month Statement / Q3)</div>
-      </div>
-      <div class="card-footer">
-        <a href="Revenue_Statement_Liz_Talbot_Mystery_Series.html" class="btn-view" target="_blank">
-          View Statement
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-            <polyline points="15 3 21 3 21 9"></polyline>
-            <line x1="10" y1="14" x2="21" y2="3"></line>
-          </svg>
-        </a>
-      </div>
-    </div>
-  
-    <div class="statement-card">
-      <div class="card-header">
-        <div class="card-title">Carolina Tales</div>
-      </div>
-      <div class="card-meta">
-        <div><strong>Author:</strong> Susan M. Boyer</div>
-        <div><strong>Period:</strong> July 1, 2026 – September 30, 2026 (3-Month Statement / Q3)</div>
-      </div>
-      <div class="card-footer">
-        <a href="Revenue_Statement_Carolina_Tales.html" class="btn-view" target="_blank">
-          View Statement
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-            <polyline points="15 3 21 3 21 9"></polyline>
-            <line x1="10" y1="14" x2="21" y2="3"></line>
-          </svg>
-        </a>
-      </div>
-    </div>
-  
-    <div class="statement-card">
-      <div class="card-header">
-        <div class="card-title">Detective Emilia Cruz</div>
-      </div>
-      <div class="card-meta">
-        <div><strong>Author:</strong> Carmen Amato</div>
-        <div><strong>Period:</strong> April 1, 2026 – June 30, 2026 (3-Month Statement / Q2)</div>
-      </div>
-      <div class="card-footer">
-        <a href="Revenue_Statement_Detective_Emilia_Cruz.html" class="btn-view" target="_blank">
-          View Statement
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-            <polyline points="15 3 21 3 21 9"></polyline>
-            <line x1="10" y1="14" x2="21" y2="3"></line>
-          </svg>
-        </a>
-      </div>
-    </div>
-  
-    <div class="statement-card">
-      <div class="card-header">
-        <div class="card-title">Fatal Series</div>
-      </div>
-      <div class="card-meta">
-        <div><strong>Author:</strong> Marie Force</div>
-        <div><strong>Period:</strong> July 1, 2026 – September 30, 2026 (3-Month Statement / Q3)</div>
-      </div>
-      <div class="card-footer">
-        <a href="Revenue_Statement_Fatal_Series.html" class="btn-view" target="_blank">
-          View Statement
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-            <polyline points="15 3 21 3 21 9"></polyline>
-            <line x1="10" y1="14" x2="21" y2="3"></line>
-          </svg>
-        </a>
-      </div>
-    </div>
-  
-    <div class="statement-card">
-      <div class="card-header">
-        <div class="card-title">The Witches of Wheeler Park</div>
-      </div>
-      <div class="card-meta">
-        <div><strong>Author:</strong> Christine Pope</div>
-        <div><strong>Period:</strong> July 1, 2026 – September 30, 2026 (3-Month Statement / Q3)</div>
-      </div>
-      <div class="card-footer">
-        <a href="Revenue_Statement_The_Witches_of_Wheeler_Park.html" class="btn-view" target="_blank">
-          View Statement
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-            <polyline points="15 3 21 3 21 9"></polyline>
-            <line x1="10" y1="14" x2="21" y2="3"></line>
-          </svg>
-        </a>
-      </div>
-    </div>
-  
-    </div>
-
-    <footer class="footer">
-      Pocket Entertainment Services LLC • 13 West Main Street, PO BOX 953, Felton, DE 19943 • us-licensing@pocketfm.com
-    </footer>
   </main>
+
+  <footer class="footer">
+    Pocket Entertainment Services LLC • 13 West Main Street, PO BOX 953, Felton, DE 19943 • Confidential Partner Portal
+  </footer>
 
 </body>
 </html>

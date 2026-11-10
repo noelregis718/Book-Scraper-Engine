@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pocket FM | Internal Statement Management Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #f6f8fa;
+      color: #121212;
+      padding: 0 0 100px 0;
+    }
+    .top-header {
+      background-color: #0c0c0c;
+      color: #ffffff;
+      padding: 28px 20px;
+      text-align: center;
+      border-bottom: 3px solid #E51A4D;
+    }
+    .logo-img {
+      height: 46px;
+      margin-bottom: 8px;
+      object-fit: contain;
+    }
+    .main-title {
+      font-size: 26px;
+      font-weight: 700;
+    }
+    .main-title span { color: #E51A4D; }
+    .subtitle {
+      font-size: 13px;
+      color: #ff9800;
+      font-weight: 600;
+      margin-top: 4px;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 30px auto 0 auto;
+      padding: 0 20px;
+    }
+    
+    /* Top Toolbar */
+    .toolbar {
+      background: #ffffff;
+      border: 1px solid #e1e4e8;
+      border-radius: 10px;
+      padding: 16px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+      margin-bottom: 30px;
+    }
+    .toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      max-width: 450px;
+    }
+    .search-input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #d1d5da;
+      border-radius: 6px;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-input:focus { border-color: #E51A4D; }
+    
+    .toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .btn-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .btn-add {
+      background-color: #E51A4D;
+      color: #ffffff;
+    }
+    .btn-add:hover { background-color: #c4123e; }
+    
+    .btn-sync {
+      background-color: #0066cc;
+      color: #ffffff;
+    }
+    .btn-sync:hover { background-color: #0052a3; }
+    
+    .btn-download-template {
+      background-color: #0c0c0c;
+      color: #ffffff;
+    }
+    .btn-download-template:hover { background-color: #333333; }
+
+    /* Section Styles */
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0c0c0c;
+      margin: 40px 0 20px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .count-badge {
+      font-size: 12px;
+      background: #e1e4e8;
+      color: #333333;
+      padding: 3px 9px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+    }
+    
+    /* Card Styles */
+    .statement-card {
+      background: #ffffff;
+      border: 1px solid #e1e4e8;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .statement-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 14px rgba(0,0,0,0.08);
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      gap: 10px;
+    }
+    .card-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #0c0c0c;
+      line-height: 1.3;
+      flex: 1;
+    }
+    .style-badge {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .badge-gross {
+      background: #e8f4fd;
+      color: #0056b3;
+      border: 1px solid #b8daff;
+    }
+    .badge-net {
+      background: #e6f9f0;
+      color: #1a7f37;
+      border: 1px solid #a3e6c3;
+    }
+    .badge-both {
+      background: #f3e8fd;
+      color: #6f42c1;
+      border: 1px solid #d9b8ff;
+    }
+    .badge-tiered {
+      background: #fff8e6;
+      color: #b07000;
+      border: 1px solid #ffe399;
+    }
+    .badge-carryover {
+      background: #fbf2ea;
+      color: #b24100;
+      border: 1px solid #f9d5be;
+    }
+    .badge-flat {
+      background: #f0f0f0;
+      color: #333333;
+      border: 1px solid #cccccc;
+    }
+    .filter-select {
+      width: auto;
+      min-width: 145px;
+    }
+    .btn-export {
+      background-color: #28a745;
+      color: #ffffff;
+    }
+    .btn-export:hover { background-color: #218838; }
+    .card-meta {
+      font-size: 13px;
+      color: #555555;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px dashed #e1e4e8;
+    }
+    .card-link-box {
+      margin-top: 8px;
+      word-break: break-all;
+      font-family: monospace;
+      font-size: 11px;
+      background: #f0f2f5;
+      padding: 6px 8px;
+      border-radius: 4px;
+      color: #333333;
+    }
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+    }
+    .footer-left {
+      display: flex;
+      gap: 6px;
+    }
+    
+    .btn-view, .btn-copy, .btn-delete {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 7px 12px;
+      border-radius: 5px;
+      font-size: 12px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s ease;
+    }
+    .btn-view {
+      background-color: #0c0c0c;
+      color: #ffffff;
+    }
+    .btn-view:hover { background-color: #E51A4D; }
+    .btn-copy {
+      background-color: #f0f2f5;
+      color: #121212;
+      border: 1px solid #d1d5da;
+    }
+    .btn-copy:hover { background-color: #e1e4e8; }
+    .btn-delete {
+      background-color: #fff1f0;
+      color: #cf1322;
+      border: 1px solid #ffa39e;
+    }
+    .btn-delete:hover { background-color: #ff4d4f; color: #ffffff; }
+
+    /* Modal Popup */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(12, 12, 12, 0.65);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-card {
+      background: #ffffff;
+      width: 100%;
+      border-radius: 14px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.25), 0 4px 16px rgba(0,0,0,0.1);
+      overflow: hidden;
+      animation: modalFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes modalFadeIn {
+      from { transform: scale(0.96) translateY(10px); opacity: 0; }
+      to { transform: scale(1) translateY(0); opacity: 1; }
+    }
+    .modal-header {
+      background: #0c0c0c;
+      color: #ffffff;
+      padding: 18px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #E51A4D;
+    }
+    .modal-header h3 { font-size: 17px; }
+    .modal-close {
+      background: none;
+      border: none;
+      color: #aaaaaa;
+      font-size: 22px;
+      cursor: pointer;
+    }
+    .modal-close:hover { color: #ffffff; }
+    .modal-body {
+      padding: 24px;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 12.5px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #24292f;
+      letter-spacing: -0.1px;
+    }
+    
+    /* Modern & Classic Form Inputs & Dropdowns */
+    .form-group input, .form-group select, .filter-select {
+      width: 100%;
+      height: 42px;
+      padding: 9px 14px;
+      border: 1.5px solid #d0d7de;
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-family: inherit;
+      color: #1f2328;
+      background-color: #ffffff;
+      outline: none;
+      box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .form-group input:hover, .form-group select:hover, .filter-select:hover {
+      border-color: #8c959f;
+      background-color: #fafbfc;
+    }
+    .form-group input:focus, .form-group select:focus, .filter-select:focus {
+      border-color: #E51A4D;
+      background-color: #ffffff;
+      box-shadow: 0 0 0 3px rgba(229, 26, 77, 0.14);
+    }
+
+    /* Distinctive Modern Classic Dropdown (Select) */
+    .form-group select, .filter-select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      padding-right: 36px;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2214%22%20height%3D%2214%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2357606a%22%20stroke-width%3D%222.2%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      background-size: 14px 14px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    /* Custom Modern-Classic Floating Dropdown Components */
+    .modern-select-wrapper {
+      position: relative;
+      width: 100%;
+      user-select: none;
+    }
+    .modern-select-wrapper.inline {
+      width: auto;
+      min-width: 165px;
+    }
+    .modern-select-trigger {
+      width: 100%;
+      height: 42px;
+      padding: 0 14px;
+      border: 1.5px solid #d0d7de;
+      border-radius: 8px;
+      background-color: #ffffff;
+      color: #1f2328;
+      font-size: 13.5px;
+      font-weight: 500;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      cursor: pointer;
+      box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      outline: none;
+    }
+    .modern-select-trigger:hover {
+      border-color: #8c959f;
+      background-color: #fafbfc;
+    }
+    .modern-select-wrapper.open .modern-select-trigger,
+    .modern-select-trigger:focus {
+      border-color: #E51A4D;
+      background-color: #ffffff;
+      box-shadow: 0 0 0 3px rgba(229, 26, 77, 0.14);
+    }
+    .modern-select-trigger .trigger-text {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-align: left;
+      flex: 1;
+    }
+    .modern-select-trigger .trigger-arrow {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      color: #57606a;
+    }
+    .modern-select-wrapper.open .trigger-arrow {
+      transform: rotate(180deg);
+      color: #E51A4D;
+    }
+    .modern-select-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 5px);
+      left: 0;
+      right: 0;
+      background: #ffffff;
+      border: 1px solid #d0d7de;
+      border-radius: 10px;
+      box-shadow: 0 14px 35px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.06);
+      padding: 6px;
+      z-index: 1300;
+      max-height: 250px;
+      overflow-y: auto;
+      animation: modernDropIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes modernDropIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .modern-select-wrapper.open .modern-select-menu {
+      display: block;
+    }
+    .modern-select-option {
+      padding: 9px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #24292f;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      cursor: pointer;
+      transition: background-color 0.12s ease, color 0.12s ease;
+    }
+    .modern-select-option:hover {
+      background-color: #f6f8fa;
+      color: #E51A4D;
+    }
+    .modern-select-option.selected {
+      background-color: #fff1f3;
+      color: #c4123e;
+      font-weight: 600;
+    }
+    .modern-select-option .check-icon {
+      font-size: 13px;
+      color: #E51A4D;
+      font-weight: 700;
+    }
+    .hidden-native-select {
+      display: none !important;
+    }
+    .modal-footer {
+      padding: 16px 24px;
+      background: #f8f9fa;
+      border-top: 1px solid #e1e4e8;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    
+    .footer {
+      text-align: center;
+      margin-top: 60px;
+      font-size: 12px;
+      color: #888888;
+      border-top: 1px solid #e1e4e8;
+      padding-top: 20px;
+    }
+    .empty-state {
+      padding: 30px;
+      text-align: center;
+      color: #888888;
+      font-size: 14px;
+      background: #ffffff;
+      border: 1px dashed #d1d5da;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="top-header">
+    <img src="https://d2p67bdkbtpxn2.cloudfront.net/c8b7ada83f09146d4b2c2ba3a5c3c1b8ea36e459.jpg" alt="Pocket FM" class="logo-img">
+    <div class="main-title"><span>Pocket FM</span> Internal Statement Hub</div>
+    <div class="subtitle">CONFIDENTIAL — FOR POCKET FM LICENSING & OUTREACH TEAM</div>
+  </header>
+
+  <main class="container">
+
+    <!-- Top Action Toolbar -->
+    <div class="toolbar">
+      <div class="toolbar-left" style="max-width: 600px; flex-wrap: wrap;">
+        <input type="text" id="searchInput" class="search-input" style="flex: 2; min-width: 200px;" placeholder="🔍 Search show title or author..." oninput="handleSearch()">
+        <select id="filterPeriod" class="filter-select" onchange="handleSearch()">
+          <option value="all">All Periods</option>
+          <option value="6-Month">6-Month Combined</option>
+          <option value="3-Month">3-Month Quarterly</option>
+          <option value="other">Annual / Other</option>
+        </select>
+        <select id="filterStyle" class="filter-select" onchange="handleSearch()">
+          <option value="all">All Styles</option>
+          <option value="gross">Gross Style</option>
+          <option value="net">Net Style</option>
+          <option value="both">Gross &amp; Net</option>
+          <option value="tiered">Tiered</option>
+          <option value="carryover">Carryover / Recoup</option>
+          <option value="flat">Flat Buyout</option>
+        </select>
+      </div>
+      <div class="toolbar-right">
+        <button class="btn-action btn-export" onclick="exportToCsv()">
+          📥 Export CSV
+        </button>
+        <button class="btn-action btn-sync" onclick="openSyncModal()">
+          ⚡ Sync from Google Sheets
+        </button>
+        <a href="Pocket_FM_Revenue_Statement_Template.doc" download="Pocket_FM_Revenue_Statement_Template.doc" class="btn-action btn-download-template">
+          📄 Download Word Template (.doc)
+        </a>
+        <button class="btn-action btn-add" onclick="openAddModal()">
+          ➕ Add New Revenue Statement
+        </button>
+      </div>
+    </div>
+
+    <!-- 6-Month Combined Section -->
+    <div class="section-title">
+      <span>6-Month Combined Statements (April – September 2026)</span>
+      <span class="count-badge" id="sixMonthCount">0 Shows</span>
+    </div>
+    <div class="grid" id="sixMonthGrid"></div>
+
+    <!-- 3-Month Quarterly Section -->
+    <div class="section-title">
+      <span>3-Month Quarterly Statements (July – September 2026)</span>
+      <span class="count-badge" id="threeMonthCount">0 Shows</span>
+    </div>
+    <div class="grid" id="threeMonthGrid"></div>
+
+    <!-- Annual & Other Period Section -->
+    <div class="section-title" id="otherSectionTitle" style="display: none;">
+      <span>Annual &amp; Other Period Statements</span>
+      <span class="count-badge" id="otherCount">0 Shows</span>
+    </div>
+    <div class="grid" id="otherGrid"></div>
+
+    <div style="text-align:center; margin-top:50px;">
+      <button style="background:none; border:none; color:#999; font-size:12px; cursor:pointer; text-decoration:underline;" onclick="restoreDefaults()">
+        🔄 Restore Original 16 Show Statements
+      </button>
+    </div>
+
+    <footer class="footer">
+      Internal Distribution Reference • Pocket Entertainment Services LLC • Confidential
+    </footer>
+  </main>
+
+  <!-- Add Statement Modal -->
+  <div class="modal-overlay" id="addModal">
+    <div class="modal-card" style="max-width: 620px; max-height: 90vh; overflow-y: auto;">
+      <div class="modal-header">
+        <h3>➕ Add Revenue Statement (All Options &amp; Styles)</h3>
+        <button class="modal-close" onclick="closeAddModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 12px; margin-bottom: 12px;">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label>Show / Series Title *</label>
+            <input type="text" id="newTitle" placeholder="e.g. My Romance Series">
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label>Currency</label>
+            <select id="newCurr" onchange="handleLiveCalc()">
+              <option value="$">USD ($)</option>
+              <option value="€">EUR (€)</option>
+              <option value="£">GBP (£)</option>
+              <option value="CAD $">CAD (C$)</option>
+              <option value="₹">INR (₹)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Author Full Name *</label>
+          <input type="text" id="newAuthor" placeholder="e.g. Jane Doe">
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label>Reporting Period *</label>
+            <select id="newCategory" onchange="handleCategoryChange()">
+              <option value="6-Month">6-Month Combined (April – September 2026)</option>
+              <option value="6-Month-Q4Q1">6-Month Combined (October – March)</option>
+              <option value="3-Month">3-Month Quarterly Q3 (July – September 2026)</option>
+              <option value="3-Month-Q2">3-Month Quarterly Q2 (April – June 2026)</option>
+              <option value="3-Month-Q1">3-Month Quarterly Q1 (January – March 2026)</option>
+              <option value="3-Month-Q4">3-Month Quarterly Q4 (October – December 2026)</option>
+              <option value="Annual">Annual Full Year (2026)</option>
+              <option value="Custom">Custom Period...</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label>Statement Style / Royalty Model *</label>
+            <select id="newModel" onchange="handleModelChange()">
+              <option value="gross">Gross Revenue Style (Standard 15% Gross)</option>
+              <option value="net">Net Revenue Style (15% Net)</option>
+              <option value="both">Both (Gross &amp; Net Dual Breakdown)</option>
+              <option value="tiered">Tiered Royalty Model (15% then 20%)</option>
+              <option value="carryover">Zero Earnings / Unrecouped MG Carryover</option>
+              <option value="flat">Flat Buyout / Advance Only</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Custom Period Text (if custom chosen) -->
+        <div id="customPeriodGroup" class="form-group" style="display: none; margin-bottom: 14px;">
+          <label style="font-size: 12px;">Custom Period Label *</label>
+          <input type="text" id="newCustomPeriod" placeholder="e.g. November 1, 2026 – December 31, 2026">
+        </div>
+
+        <!-- Optional Financial Performance for Auto-generating Format -->
+        <div style="background: #fdfdfd; border: 1px solid #e1e4e8; border-radius: 8px; padding: 14px; margin-bottom: 16px;">
+          <div style="font-size: 13px; font-weight: 700; margin-bottom: 10px; color: #111;">
+            📊 Performance Figures &amp; Royalty Calculation
+          </div>
+          
+          <!-- Gross Revenue (Gross, Both, Tiered, Carryover) -->
+          <div id="grossGroup" class="form-group" style="margin-bottom: 10px;">
+            <label style="font-size: 12px;" id="grossLabel">Gross Revenue Generated ($) *</label>
+            <input type="number" id="newGross" placeholder="0.00" step="0.01" value="0.00" oninput="handleLiveCalc()">
+          </div>
+
+          <!-- Deduction group (Both only) -->
+          <div id="deductGroup" style="display: none; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label style="font-size: 12px;">Platform Deductions (App Store/Google)</label>
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <input type="number" id="newDeductPct" placeholder="30" value="30" oninput="handleLiveCalc()" style="flex: 1;">
+                <span style="font-size: 12px; font-weight: bold;">%</span>
+              </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label style="font-size: 12px;">Deduction Amount ($)</label>
+              <input type="number" id="newDeductAmt" placeholder="0.00" step="0.01" readonly style="background:#f5f5f5;">
+            </div>
+          </div>
+
+          <!-- Net Revenue (Net & Both) -->
+          <div id="netGroup" class="form-group" style="display: none; margin-bottom: 10px;">
+            <label style="font-size: 12px;">Net Revenue Generated ($) *</label>
+            <input type="number" id="newNet" placeholder="0.00" step="0.01" value="0.00" oninput="handleLiveCalc()">
+          </div>
+
+          <!-- Tiered Threshold and Tier 2 % (Tiered only) -->
+          <div id="tieredGroup" style="display: none; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label style="font-size: 12px;">Tier 1 Threshold ($)</label>
+              <input type="number" id="newTierThresh" placeholder="50000" value="50000" oninput="handleLiveCalc()">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label style="font-size: 12px;">Tier 2 Rev Share % (Above Threshold)</label>
+              <input type="number" id="newTier2Pct" placeholder="20" value="20" oninput="handleLiveCalc()">
+            </div>
+          </div>
+
+          <!-- Rev Share & MG Paid -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px;">
+            <div class="form-group" style="margin-bottom: 0;" id="revPctGroup">
+              <label style="font-size: 12px;" id="revPctLabel">Revenue Share % (default 15%)</label>
+              <input type="number" id="newRevPct" placeholder="15" value="15" oninput="handleLiveCalc()">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label style="font-size: 12px;">Minimum Guarantee (MG) Paid ($)</label>
+              <input type="number" id="newMgPaid" placeholder="0.00" step="0.01" value="0.00" oninput="handleLiveCalc()">
+            </div>
+          </div>
+
+          <!-- Previous Recouped & Tax Withholding -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label style="font-size: 12px;">Previously Recouped MG ($)</label>
+              <input type="number" id="newPrevRecouped" placeholder="0.00" step="0.01" value="0.00" oninput="handleLiveCalc()">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label style="font-size: 12px;">Tax Withholding % (W-8BEN, Optional)</label>
+              <input type="number" id="newTaxPct" placeholder="0" value="0" oninput="handleLiveCalc()">
+            </div>
+          </div>
+
+          <!-- Plays & Listeners & Episodes -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label style="font-size: 12px;">Plays</label>
+              <input type="text" id="newPlays" placeholder="e.g. 1,250">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label style="font-size: 12px;">Listeners</label>
+              <input type="text" id="newListeners" placeholder="e.g. 350">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label style="font-size: 12px;">Episodes</label>
+              <input type="text" id="newEpisodes" placeholder="e.g. 45">
+            </div>
+          </div>
+
+          <!-- Custom Note to Author -->
+          <div class="form-group" style="margin-bottom: 0;">
+            <label style="font-size: 12px;">Special Note to Author (Optional)</label>
+            <input type="text" id="newNote" placeholder="e.g. Royalty payout scheduled for next billing cycle.">
+          </div>
+
+          <!-- Live Dynamic Calculation Card -->
+          <div style="background: #eef7ff; border: 1px solid #cce5ff; border-radius: 6px; padding: 12px 14px; margin-top: 14px; font-size: 12px; color: #004085; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <div><strong>Rev Share Earned:</strong> <span id="calcRevShare">$0.00</span></div>
+            <div><strong>MG Recouped This Period:</strong> <span id="calcMgRecouped">$0.00</span></div>
+            <div><strong>Remaining MG Balance:</strong> <span id="calcRemainingMg">$0.00</span></div>
+            <div style="color: #b30000; font-size: 13px;"><strong>Final Payout:</strong> <span id="calcPayout" style="font-weight: 700;">$0.00</span></div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Statement Document Link <span style="font-weight: normal; color: #888; font-size: 12px;">(Optional — leave blank to auto-create Pocket FM statement)</span></label>
+          <input type="text" id="newUrl" placeholder="Optional: https://drive.google.com/... or paste external link">
+          <div style="font-size: 11px; color: #666; margin-top: 4px;">
+            💡 <strong>No link needed!</strong> If left blank, Pocket FM will automatically create and host a branded statement for this author with all options above.
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-action" style="background:#f0f2f5; color:#333;" onclick="closeAddModal()">Cancel</button>
+        <button class="btn-action btn-add" onclick="saveNewStatement()">Save &amp; Generate Statement</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sync from Google Sheets Modal -->
+  <div class="modal-overlay" id="syncModal">
+    <div class="modal-card" style="max-width: 580px;">
+      <div class="modal-header" style="background: #0066cc;">
+        <h3>⚡ Google Sheets Automation &amp; Sync</h3>
+        <button class="modal-close" onclick="closeSyncModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="background: #e8f4fd; border: 1px solid #b8daff; border-radius: 6px; padding: 12px 14px; margin-bottom: 18px; font-size: 13px; color: #004085;">
+          <strong>Target Sheet:</strong> Post-Sales Tracker (GID: 1100439097)<br>
+          <strong>Status:</strong> Live Python Pipeline Ready &amp; Connected
+        </div>
+
+        <h4 style="font-size: 14px; margin-bottom: 8px; color: #111;">How to Run Live Sync:</h4>
+        <div style="margin-bottom: 16px; font-size: 13px; line-height: 1.6; color: #444;">
+          <p style="margin-bottom: 10px;">
+            <strong>Option 1 (Easiest — 1-Click Desktop):</strong><br>
+            Double-click the file <code style="background:#eee; padding:2px 6px; border-radius:4px; font-weight:600; color:#c4123e;">backend\run_revenue_generator.bat</code> in your PocketFM project folder. It automatically runs Python, pulls fresh data from Google Sheets/Excel, recalculates revenue shares, creates unguessable URLs, and deploys directly to this portal.
+          </p>
+          <p style="margin-bottom: 8px;">
+            <strong>Option 2 (Terminal / Command Prompt):</strong><br>
+            Run the automated Python runner directly:
+          </p>
+          <div style="display:flex; gap:8px; align-items:center; background:#1e1e1e; color:#a6e22e; font-family:monospace; padding:10px 12px; border-radius:6px; font-size:12px;">
+            <span style="flex:1;">python backend/generate_revenue_statements.py</span>
+            <button onclick="copySyncCmd(this)" style="background:#444; border:none; color:#fff; padding:5px 10px; border-radius:4px; font-size:11px; cursor:pointer; font-weight:600;">Copy</button>
+          </div>
+        </div>
+
+        <div style="background:#f9f9f9; border: 1px dashed #ccc; border-radius:6px; padding:12px; font-size:12px; color:#555;">
+          <strong>💡 Source Google Sheet Link:</strong><br>
+          <a href="https://docs.google.com/spreadsheets/d/1JFT4_f9Du6UZWi6aM0FjYvyR-mcAsbARq7JyxJwLPZc/edit?gid=1100439097#gid=1100439097" target="_blank" style="color:#0066cc; word-break:break-all;">
+            Open Post-Sales Tracker Sheet ↗
+          </a>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-action" style="background:#f0f2f5; color:#333;" onclick="closeSyncModal()">Close</button>
+        <button class="btn-action" style="background:#0066cc; color:#fff;" onclick="window.location.reload()">🔄 Refresh Portal</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Initial 16 shows configuration
+    const DEFAULT_SHOWS = [
+      // 6-Month Shows
+      { id: '1', key: 'Gansett Series', author: 'Marie Force', category: '6-Month', periodLabel: 'April 1, 2026 – September 30, 2026 (6-Month Combined / Q2 + Q3)', url: 'https://pocketfm-statements.vercel.app/statements/gansett-series-0c7111ce' },
+      { id: '2', key: 'Blake Larsen', author: 'Jack Slater', category: '6-Month', periodLabel: 'April 1, 2026 – September 30, 2026 (6-Month Combined / Q2 + Q3)', url: 'https://pocketfm-statements.vercel.app/statements/blake-larsen-3c6159c2' },
+      { id: '3', key: 'Lattes and Levitation', author: 'Christine Pope', category: '6-Month', periodLabel: 'April 1, 2026 – September 30, 2026 (6-Month Combined / Q2 + Q3)', url: 'https://pocketfm-statements.vercel.app/statements/lattes-and-levitation-f4b0a144' },
+      { id: '4', key: 'Psychic Seasons Series', author: 'ReGina Welling', category: '6-Month', periodLabel: 'April 1, 2026 – September 30, 2026 (6-Month Combined / Q2 + Q3)', url: 'https://pocketfm-statements.vercel.app/statements/psychic-seasons-series-13a093d3' },
+      { id: '5', key: 'Fate Weaver Series', author: 'ReGina Welling', category: '6-Month', periodLabel: 'April 1, 2026 – September 30, 2026 (6-Month Combined / Q2 + Q3)', url: 'https://pocketfm-statements.vercel.app/statements/fate-weaver-series-57897400' },
+      { id: '6', key: 'Sweet Tea Witch Mysteries', author: 'Amy Boyles', category: '6-Month', periodLabel: 'April 1, 2026 – September 30, 2026 (6-Month Combined / Q2 + Q3)', url: 'https://pocketfm-statements.vercel.app/statements/sweet-tea-witch-mysteries-fc8149b2' },
+      { id: '7', key: "St. Marin's Cozy Mysteries", author: 'Andi Cumbo', category: '6-Month', periodLabel: 'April 1, 2026 – September 30, 2026 (6-Month Combined / Q2 + Q3)', url: 'https://pocketfm-statements.vercel.app/statements/st-marin-s-cozy-mysteries-494440e3' },
+      // 3-Month Shows
+      { id: '8', key: 'Jackal Among Snakes', author: 'Umbrosus', category: '3-Month', periodLabel: 'July 1, 2026 – September 30, 2026 (3-Month Statement / Q3)', url: 'https://pocketfm-statements.vercel.app/statements/jackal-among-snakes-3cee9442' },
+      { id: '9', key: 'Redemption Arc', author: 'Umbrosus', category: '3-Month', periodLabel: 'July 1, 2026 – September 30, 2026 (3-Month Statement / Q3)', url: 'https://pocketfm-statements.vercel.app/statements/redemption-arc-f050f6e7' },
+      { id: '10', key: 'Vital Secrets', author: 'DF Hart', category: '3-Month', periodLabel: 'July 1, 2026 – September 30, 2026 (3-Month Statement / Q3)', url: 'https://pocketfm-statements.vercel.app/statements/vital-secrets-f2c5cb33' },
+      { id: '11', key: 'Mrs. Lillywhite Investigates Mysteries', author: 'Emily Queen', category: '3-Month', periodLabel: 'July 1, 2026 – September 30, 2026 (3-Month Statement / Q3)', url: 'https://pocketfm-statements.vercel.app/statements/mrs-lillywhite-investigates-mysteries-ce64cdb7' },
+      { id: '12', key: 'Liz Talbot Mystery Series', author: 'Susan M. Boyer', category: '3-Month', periodLabel: 'July 1, 2026 – September 30, 2026 (3-Month Statement / Q3)', url: 'https://pocketfm-statements.vercel.app/statements/liz-talbot-mystery-series-0de65ac1' },
+      { id: '13', key: 'Carolina Tales', author: 'Susan M. Boyer', category: '3-Month', periodLabel: 'July 1, 2026 – September 30, 2026 (3-Month Statement / Q3)', url: 'https://pocketfm-statements.vercel.app/statements/carolina-tales-cfd9b2f8' },
+      { id: '14', key: 'Detective Emilia Cruz', author: 'Carmen Amato', category: '3-Month', periodLabel: 'April 1, 2026 – June 30, 2026 (3-Month Statement / Q2)', url: 'https://pocketfm-statements.vercel.app/statements/detective-emilia-cruz-8051f011' },
+      { id: '15', key: 'Fatal Series', author: 'Marie Force', category: '3-Month', periodLabel: 'July 1, 2026 – September 30, 2026 (3-Month Statement / Q3)', url: 'https://pocketfm-statements.vercel.app/statements/fatal-series-95fb9b7a' },
+      { id: '16', key: 'The Witches of Wheeler Park', author: 'Christine Pope', category: '3-Month', periodLabel: 'July 1, 2026 – September 30, 2026 (3-Month Statement / Q3)', url: 'https://pocketfm-statements.vercel.app/statements/the-witches-of-wheeler-park-a2759c7d' }
+    ];
+
+    // Storage handling
+    function getStoredShows() {
+      try {
+        const stored = localStorage.getItem('pocketfm_internal_shows');
+        if (stored) return JSON.parse(stored);
+      } catch (e) {}
+      return DEFAULT_SHOWS;
+    }
+
+    function saveStoredShows(shows) {
+      try {
+        localStorage.setItem('pocketfm_internal_shows', JSON.stringify(shows));
+      } catch (e) {}
+    }
+
+    let currentShows = getStoredShows();
+
+    function renderPortal() {
+      const query = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+      const periodFilter = document.getElementById('filterPeriod') ? document.getElementById('filterPeriod').value : 'all';
+      const styleFilter = document.getElementById('filterStyle') ? document.getElementById('filterStyle').value : 'all';
+      
+      const filtered = currentShows.filter(s => {
+        const titleMatches = (s.key || '').toLowerCase().includes(query);
+        const authorMatches = (s.author || '').toLowerCase().includes(query);
+        const matchesQuery = titleMatches || authorMatches;
+
+        let matchesPeriod = true;
+        if (periodFilter === '6-Month') {
+          matchesPeriod = (s.category || '').startsWith('6-Month');
+        } else if (periodFilter === '3-Month') {
+          matchesPeriod = (s.category || '').startsWith('3-Month');
+        } else if (periodFilter === 'other') {
+          matchesPeriod = !(s.category || '').startsWith('6-Month') && !(s.category || '').startsWith('3-Month');
+        }
+
+        let matchesStyle = true;
+        if (styleFilter !== 'all') {
+          const sModel = (s.model || 'gross').toLowerCase();
+          matchesStyle = (sModel === styleFilter);
+        }
+
+        return matchesQuery && matchesPeriod && matchesStyle;
+      });
+
+      const sixMonthItems = filtered.filter(s => (s.category || '').startsWith('6-Month'));
+      const threeMonthItems = filtered.filter(s => (s.category || '').startsWith('3-Month'));
+      const otherItems = filtered.filter(s => !(s.category || '').startsWith('6-Month') && !(s.category || '').startsWith('3-Month'));
+
+      document.getElementById('sixMonthCount').innerText = `${sixMonthItems.length} Shows`;
+      document.getElementById('threeMonthCount').innerText = `${threeMonthItems.length} Shows`;
+
+      const otherSection = document.getElementById('otherSectionTitle');
+      const otherCount = document.getElementById('otherCount');
+      if (otherSection) {
+        if (otherItems.length > 0) {
+          otherSection.style.display = 'flex';
+          otherCount.innerText = `${otherItems.length} Shows`;
+        } else {
+          otherSection.style.display = 'none';
+        }
+      }
+
+      const renderCard = (s) => {
+        const model = (s.model || 'gross').toLowerCase();
+        let badgeClass = 'badge-gross';
+        let badgeLabel = 'Gross Style';
+
+        if (model === 'net') {
+          badgeClass = 'badge-net';
+          badgeLabel = 'Net Style';
+        } else if (model === 'both') {
+          badgeClass = 'badge-both';
+          badgeLabel = 'Gross & Net';
+        } else if (model === 'tiered') {
+          badgeClass = 'badge-tiered';
+          badgeLabel = 'Tiered';
+        } else if (model === 'carryover') {
+          badgeClass = 'badge-carryover';
+          badgeLabel = 'Carryover / Recoup';
+        } else if (model === 'flat') {
+          badgeClass = 'badge-flat';
+          badgeLabel = 'Flat Buyout';
+        }
+
+        return `
+        <div class="statement-card">
+          <div class="card-header">
+            <div class="card-title">${escapeHtml(s.key)}</div>
+            <span class="style-badge ${badgeClass}">${badgeLabel}</span>
+          </div>
+          <div class="card-meta">
+            <div><strong>Author:</strong> ${escapeHtml(s.author)}</div>
+            <div><strong>Period:</strong> ${escapeHtml(s.periodLabel)}</div>
+            <div class="card-link-box">${escapeHtml(s.url)}</div>
+          </div>
+          <div class="card-footer">
+            <div class="footer-left">
+              <button class="btn-copy" onclick="copyUrl('${escapeJs(s.url)}', this)">
+                Copy Link
+              </button>
+              <a href="${escapeHtml(s.url)}" class="btn-view" target="_blank">
+                View
+              </a>
+            </div>
+            <button class="btn-delete" title="Delete Statement" onclick="deleteStatement('${s.id}')">
+              🗑️ Delete
+            </button>
+          </div>
+        </div>
+      `;
+      };
+
+      const sixGrid = document.getElementById('sixMonthGrid');
+      const threeGrid = document.getElementById('threeMonthGrid');
+      const otherGrid = document.getElementById('otherGrid');
+
+      sixGrid.innerHTML = sixMonthItems.length > 0 
+        ? sixMonthItems.map(renderCard).join('') 
+        : '<div class="empty-state">No 6-month statements matching filter.</div>';
+
+      threeGrid.innerHTML = threeMonthItems.length > 0 
+        ? threeMonthItems.map(renderCard).join('') 
+        : '<div class="empty-state">No 3-month statements matching filter.</div>';
+
+      if (otherGrid) {
+        otherGrid.innerHTML = otherItems.length > 0
+          ? otherItems.map(renderCard).join('')
+          : '';
+      }
+    }
+
+    function exportToCsv() {
+      const headers = ['Show Title', 'Author', 'Reporting Period', 'Statement Style', 'Statement Link'];
+      const rows = currentShows.map(s => [
+        `"${(s.key || '').replace(/"/g, '""')}"`,
+        `"${(s.author || '').replace(/"/g, '""')}"`,
+        `"${(s.periodLabel || '').replace(/"/g, '""')}"`,
+        `"${(s.model || 'gross')}"`,
+        `"${(s.url || '').replace(/"/g, '""')}"`
+      ]);
+
+      const csvContent = '\uFEFF' + [headers.join(','), ...rows.map(r => r.join(','))].join('\r\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute('download', 'Pocket_FM_Revenue_Statements.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function handleSearch() {
+      renderPortal();
+    }
+
+    function copyUrl(url, btn) {
+      navigator.clipboard.writeText(url).then(() => {
+        const orig = btn.innerText;
+        btn.innerText = 'Copied! ✓';
+        btn.style.backgroundColor = '#e8f5e9';
+        btn.style.color = '#2e7d32';
+        setTimeout(() => {
+          btn.innerText = orig;
+          btn.style.backgroundColor = '#f0f2f5';
+          btn.style.color = '#121212';
+        }, 2000);
+      });
+    }
+
+    function deleteStatement(id) {
+      const show = currentShows.find(s => s.id === id);
+      const name = show ? show.key : 'this statement';
+      if (confirm(`Are you sure you want to delete "${name}" from this portal?`)) {
+        currentShows = currentShows.filter(s => s.id !== id);
+        saveStoredShows(currentShows);
+        renderPortal();
+      }
+    }
+
+    function handleCategoryChange() {
+      const cat = document.getElementById('newCategory').value;
+      const group = document.getElementById('customPeriodGroup');
+      if (cat === 'Custom') {
+        group.style.display = 'block';
+      } else {
+        group.style.display = 'none';
+      }
+    }
+
+    function handleModelChange() {
+      const model = document.getElementById('newModel').value;
+      const grossGroup = document.getElementById('grossGroup');
+      const deductGroup = document.getElementById('deductGroup');
+      const netGroup = document.getElementById('netGroup');
+      const tieredGroup = document.getElementById('tieredGroup');
+      const revPctGroup = document.getElementById('revPctGroup');
+      const revPctLabel = document.getElementById('revPctLabel');
+
+      // Reset visibilities
+      grossGroup.style.display = 'block';
+      deductGroup.style.display = 'none';
+      netGroup.style.display = 'none';
+      tieredGroup.style.display = 'none';
+      revPctGroup.style.display = 'block';
+
+      if (model === 'net') {
+        grossGroup.style.display = 'none';
+        netGroup.style.display = 'block';
+        revPctLabel.innerText = 'Revenue Share % on Net (e.g. 15%)';
+      } else if (model === 'both') {
+        grossGroup.style.display = 'block';
+        deductGroup.style.display = 'grid';
+        netGroup.style.display = 'block';
+        revPctLabel.innerText = 'Revenue Share % on Net (e.g. 15%)';
+      } else if (model === 'tiered') {
+        grossGroup.style.display = 'block';
+        tieredGroup.style.display = 'grid';
+        revPctLabel.innerText = 'Tier 1 Rev Share % (up to threshold)';
+      } else if (model === 'flat') {
+        grossGroup.style.display = 'none';
+        revPctGroup.style.display = 'none';
+      } else if (model === 'carryover') {
+        grossGroup.style.display = 'block';
+        revPctLabel.innerText = 'Contractual Rev Share % (e.g. 15%)';
+      } else {
+        // gross
+        grossGroup.style.display = 'block';
+        revPctLabel.innerText = 'Revenue Share % on Gross (e.g. 15%)';
+      }
+
+      handleLiveCalc();
+    }
+
+    function handleLiveCalc() {
+      const model = document.getElementById('newModel').value;
+      const curr = document.getElementById('newCurr').value || '$';
+
+      const gross = parseFloat(document.getElementById('newGross').value) || 0;
+      let net = parseFloat(document.getElementById('newNet').value) || 0;
+      const deductPct = parseFloat(document.getElementById('newDeductPct').value) || 30;
+
+      if (model === 'both') {
+        const deductAmt = +(gross * (deductPct / 100.0)).toFixed(2);
+        net = Math.max(0, +(gross - deductAmt).toFixed(2));
+        document.getElementById('newDeductAmt').value = deductAmt.toFixed(2);
+        document.getElementById('newNet').value = net.toFixed(2);
+      }
+
+      const revPct = parseFloat(document.getElementById('newRevPct').value) || 15;
+      const tierThresh = parseFloat(document.getElementById('newTierThresh').value) || 50000;
+      const tier2Pct = parseFloat(document.getElementById('newTier2Pct').value) || 20;
+
+      const mgPaid = parseFloat(document.getElementById('newMgPaid').value) || 0;
+      const prevRecouped = parseFloat(document.getElementById('newPrevRecouped').value) || 0;
+      const taxPct = parseFloat(document.getElementById('newTaxPct').value) || 0;
+
+      let revShareAmt = 0;
+      if (model === 'net' || model === 'both') {
+        revShareAmt = +(net * (revPct / 100.0)).toFixed(2);
+      } else if (model === 'tiered') {
+        const baseAmount = net > 0 ? net : gross;
+        if (baseAmount <= tierThresh) {
+          revShareAmt = +(baseAmount * (revPct / 100.0)).toFixed(2);
+        } else {
+          const t1 = +(tierThresh * (revPct / 100.0)).toFixed(2);
+          const t2 = +((baseAmount - tierThresh) * (tier2Pct / 100.0)).toFixed(2);
+          revShareAmt = +(t1 + t2).toFixed(2);
+        }
+      } else if (model === 'flat') {
+        revShareAmt = mgPaid;
+      } else {
+        // gross / carryover
+        revShareAmt = +(gross * (revPct / 100.0)).toFixed(2);
+      }
+
+      const remainingMgBefore = Math.max(0, +(mgPaid - prevRecouped).toFixed(2));
+      const mgRecoupedThisPeriod = Math.min(remainingMgBefore, revShareAmt);
+      const remainingMgAfter = Math.max(0, +(remainingMgBefore - mgRecoupedThisPeriod).toFixed(2));
+
+      let subtotal = model === 'flat' ? mgPaid : Math.max(0, +(revShareAmt - remainingMgBefore).toFixed(2));
+      let withholdingAmt = +((subtotal * taxPct) / 100.0).toFixed(2);
+      let finalPayout = Math.max(0, +(subtotal - withholdingAmt).toFixed(2));
+
+      const fmt = (n) => `${curr}${Number(n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+      document.getElementById('calcRevShare').innerText = fmt(revShareAmt);
+      document.getElementById('calcMgRecouped').innerText = fmt(mgRecoupedThisPeriod);
+      document.getElementById('calcRemainingMg').innerText = fmt(remainingMgAfter);
+      document.getElementById('calcPayout').innerText = fmt(finalPayout);
+    }
+
+    function initModernDropdown(selectId, isInline = false) {
+      const sel = document.getElementById(selectId);
+      if (!sel) return;
+
+      let oldWrapper = sel.parentNode.querySelector(`.modern-select-wrapper[data-for="${selectId}"]`);
+      if (oldWrapper) oldWrapper.remove();
+
+      sel.classList.add('hidden-native-select');
+
+      const wrapper = document.createElement('div');
+      wrapper.className = `modern-select-wrapper ${isInline ? 'inline' : ''}`;
+      wrapper.setAttribute('data-for', selectId);
+
+      const selectedOpt = sel.options[sel.selectedIndex] || sel.options[0];
+      const trigger = document.createElement('button');
+      trigger.type = 'button';
+      trigger.className = 'modern-select-trigger';
+      trigger.innerHTML = `
+        <span class="trigger-text">${escapeHtml(selectedOpt ? selectedOpt.text : '')}</span>
+        <svg class="trigger-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      `;
+
+      const menu = document.createElement('div');
+      menu.className = 'modern-select-menu';
+
+      Array.from(sel.options).forEach((opt, idx) => {
+        const item = document.createElement('div');
+        const isSelected = idx === sel.selectedIndex;
+        item.className = `modern-select-option ${isSelected ? 'selected' : ''}`;
+        item.innerHTML = `
+          <span>${escapeHtml(opt.text)}</span>
+          ${isSelected ? '<span class="check-icon">✓</span>' : ''}
+        `;
+        item.onclick = (e) => {
+          e.stopPropagation();
+          sel.value = opt.value;
+          trigger.querySelector('.trigger-text').innerText = opt.text;
+          wrapper.querySelectorAll('.modern-select-option').forEach(el => {
+            el.classList.remove('selected');
+            const icon = el.querySelector('.check-icon');
+            if (icon) icon.remove();
+          });
+          item.classList.add('selected');
+          const check = document.createElement('span');
+          check.className = 'check-icon';
+          check.innerText = '✓';
+          item.appendChild(check);
+          wrapper.classList.remove('open');
+          sel.dispatchEvent(new Event('change'));
+        };
+        menu.appendChild(item);
+      });
+
+      trigger.onclick = (e) => {
+        e.stopPropagation();
+        document.querySelectorAll('.modern-select-wrapper.open').forEach(w => {
+          if (w !== wrapper) w.classList.remove('open');
+        });
+        wrapper.classList.toggle('open');
+      };
+
+      wrapper.appendChild(trigger);
+      wrapper.appendChild(menu);
+      sel.parentNode.insertBefore(wrapper, sel.nextSibling);
+    }
+
+    function syncModernDropdown(selectId) {
+      const sel = document.getElementById(selectId);
+      if (!sel) return;
+      const wrapper = sel.parentNode.querySelector(`.modern-select-wrapper[data-for="${selectId}"]`);
+      if (!wrapper) {
+        initModernDropdown(selectId);
+        return;
+      }
+      const selectedOpt = sel.options[sel.selectedIndex] || sel.options[0];
+      const triggerText = wrapper.querySelector('.trigger-text');
+      if (triggerText && selectedOpt) {
+        triggerText.innerText = selectedOpt.text;
+      }
+      const options = wrapper.querySelectorAll('.modern-select-option');
+      options.forEach((el, idx) => {
+        const isSelected = idx === sel.selectedIndex;
+        el.classList.toggle('selected', isSelected);
+        const existingCheck = el.querySelector('.check-icon');
+        if (isSelected && !existingCheck) {
+          const check = document.createElement('span');
+          check.className = 'check-icon';
+          check.innerText = '✓';
+          el.appendChild(check);
+        } else if (!isSelected && existingCheck) {
+          existingCheck.remove();
+        }
+      });
+    }
+
+    function openAddModal() {
+      document.getElementById('newTitle').value = '';
+      document.getElementById('newAuthor').value = '';
+      document.getElementById('newUrl').value = '';
+      document.getElementById('newCurr').value = '$';
+      document.getElementById('newCategory').value = '6-Month';
+      document.getElementById('newCustomPeriod').value = '';
+      document.getElementById('newModel').value = 'gross';
+      document.getElementById('newGross').value = '0.00';
+      document.getElementById('newNet').value = '0.00';
+      document.getElementById('newDeductPct').value = '30';
+      document.getElementById('newDeductAmt').value = '0.00';
+      document.getElementById('newTierThresh').value = '50000';
+      document.getElementById('newTier2Pct').value = '20';
+      document.getElementById('newRevPct').value = '15';
+      document.getElementById('newMgPaid').value = '0.00';
+      document.getElementById('newPrevRecouped').value = '0.00';
+      document.getElementById('newTaxPct').value = '0';
+      document.getElementById('newPlays').value = '';
+      document.getElementById('newListeners').value = '';
+      document.getElementById('newEpisodes').value = '';
+      document.getElementById('newNote').value = '';
+
+      handleCategoryChange();
+      handleModelChange();
+      
+      syncModernDropdown('newCurr');
+      syncModernDropdown('newCategory');
+      syncModernDropdown('newModel');
+
+      document.getElementById('addModal').style.display = 'flex';
+    }
+
+    function closeAddModal() {
+      document.getElementById('addModal').style.display = 'none';
+      document.querySelectorAll('.modern-select-wrapper.open').forEach(w => w.classList.remove('open'));
+    }
+
+    function openSyncModal() {
+      document.getElementById('syncModal').style.display = 'flex';
+    }
+
+    function closeSyncModal() {
+      document.getElementById('syncModal').style.display = 'none';
+    }
+
+    function copySyncCmd(btn) {
+      navigator.clipboard.writeText('python backend/generate_revenue_statements.py').then(() => {
+        const orig = btn.innerText;
+        btn.innerText = 'Copied! ✓';
+        btn.style.backgroundColor = '#2e7d32';
+        setTimeout(() => {
+          btn.innerText = orig;
+          btn.style.backgroundColor = '#444';
+        }, 2000);
+      });
+    }
+
+    window.addEventListener('click', function(e) {
+      if (!e.target.closest('.modern-select-wrapper')) {
+        document.querySelectorAll('.modern-select-wrapper.open').forEach(w => w.classList.remove('open'));
+      }
+      const addModal = document.getElementById('addModal');
+      const syncModal = document.getElementById('syncModal');
+      if (e.target === addModal) closeAddModal();
+      if (e.target === syncModal) closeSyncModal();
+    });
+
+    function saveNewStatement() {
+      const title = document.getElementById('newTitle').value.trim();
+      const author = document.getElementById('newAuthor').value.trim();
+      const category = document.getElementById('newCategory').value;
+      const customPeriod = document.getElementById('newCustomPeriod').value.trim();
+      const model = document.getElementById('newModel').value;
+      const curr = document.getElementById('newCurr').value || '$';
+      let url = document.getElementById('newUrl').value.trim();
+
+      if (!title || !author) {
+        alert('Please fill in at least the Show Title and Author Name!');
+        return;
+      }
+
+      let periodLabel = 'April 1, 2026 – September 30, 2026 (6-Month Combined / Q2 + Q3)';
+      if (category === '3-Month') {
+        periodLabel = 'July 1, 2026 – September 30, 2026 (3-Month Statement / Q3)';
+      } else if (category === '3-Month-Q2') {
+        periodLabel = 'April 1, 2026 – June 30, 2026 (3-Month Statement / Q2)';
+      } else if (category === '3-Month-Q1') {
+        periodLabel = 'January 1, 2026 – March 31, 2026 (3-Month Statement / Q1)';
+      } else if (category === '3-Month-Q4') {
+        periodLabel = 'October 1, 2026 – December 31, 2026 (3-Month Statement / Q4)';
+      } else if (category === '6-Month-Q4Q1') {
+        periodLabel = 'October 1, 2025 – March 31, 2026 (6-Month Combined / Q4 + Q1)';
+      } else if (category === 'Annual') {
+        periodLabel = 'January 1, 2026 – December 31, 2026 (Annual Statement)';
+      } else if (category === 'Custom' && customPeriod) {
+        periodLabel = customPeriod;
+      }
+
+      const id = 'custom_' + Date.now();
+      const gross = parseFloat(document.getElementById('newGross').value) || 0;
+      const net = parseFloat(document.getElementById('newNet').value) || 0;
+      const deductPct = parseFloat(document.getElementById('newDeductPct').value) || 30;
+      const tierThresh = parseFloat(document.getElementById('newTierThresh').value) || 50000;
+      const tier2Pct = parseFloat(document.getElementById('newTier2Pct').value) || 20;
+
+      const revPct = parseFloat(document.getElementById('newRevPct').value) || 15;
+      const mgPaid = parseFloat(document.getElementById('newMgPaid').value) || 0;
+      const prevRecouped = parseFloat(document.getElementById('newPrevRecouped').value) || 0;
+      const taxPct = parseFloat(document.getElementById('newTaxPct').value) || 0;
+
+      const plays = document.getElementById('newPlays').value.trim() || '—';
+      const listeners = document.getElementById('newListeners').value.trim() || '—';
+      const episodes = document.getElementById('newEpisodes').value.trim() || '';
+      const customNote = document.getElementById('newNote').value.trim() || '';
+
+      // If no custom URL provided, auto-generate official Pocket FM statement viewer URL
+      if (!url) {
+        const statementData = {
+          id: id,
+          title: title,
+          author: author,
+          category: category,
+          periodLabel: periodLabel,
+          model: model,
+          curr: curr,
+          gross: gross,
+          net: net,
+          deductPct: deductPct,
+          tierThreshold: tierThresh,
+          tier2Pct: tier2Pct,
+          revPct: revPct,
+          mgPaid: mgPaid,
+          prevRecouped: prevRecouped,
+          withholdingPct: taxPct,
+          plays: plays,
+          listeners: listeners,
+          episodes: episodes,
+          customNote: customNote
+        };
+        try {
+          localStorage.setItem('pocketfm_statement_' + id, JSON.stringify(statementData));
+        } catch(e) {}
+
+        const queryParams = new URLSearchParams({
+          id: id,
+          title: title,
+          author: author,
+          category: category,
+          period: periodLabel,
+          model: model,
+          curr: curr,
+          gross: gross,
+          net: net,
+          deduct_pct: deductPct,
+          tier_thresh: tierThresh,
+          tier2_pct: tier2Pct,
+          revpct: revPct,
+          mg: mgPaid,
+          prev_recouped: prevRecouped,
+          withholding_pct: taxPct,
+          plays: plays,
+          listeners: listeners,
+          episodes: episodes,
+          note: customNote
+        });
+
+        const baseUrl = window.location.protocol.startsWith('http') 
+          ? window.location.origin 
+          : 'https://pocketfm-statements.vercel.app';
+        url = `${baseUrl}/statement_viewer?${queryParams.toString()}`;
+      }
+
+      const newShow = {
+        id: id,
+        key: title,
+        author: author,
+        category: category,
+        model: model,
+        periodLabel: periodLabel,
+        url: url
+      };
+
+      currentShows.unshift(newShow);
+      saveStoredShows(currentShows);
+      closeAddModal();
+      renderPortal();
+    }
+
+    function restoreDefaults() {
+      if (confirm('Restore the original 16 statements list?')) {
+        currentShows = [...DEFAULT_SHOWS];
+        saveStoredShows(currentShows);
+        renderPortal();
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function escapeJs(str) {
+      if (!str) return '';
+      return str.replace(/'/g, "\\'");
+    }
+
+    // Initial render
+    renderPortal();
+
+    // Initialize Modern Dropdowns
+    function initAllModernDropdowns() {
+      initModernDropdown('filterPeriod', true);
+      initModernDropdown('filterStyle', true);
+      initModernDropdown('newCurr', false);
+      initModernDropdown('newCategory', false);
+      initModernDropdown('newModel', false);
+    }
+    initAllModernDropdowns();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,203 @@
+<html xmlns:o='urn:schemas-microsoft-com:office:office'
+      xmlns:w='urn:schemas-microsoft-com:office:word'
+      xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+    <meta charset="utf-8">
+    <title>Pocket FM Revenue Statement Template</title>
+    <!--[if gte mso 9]>
+    <xml>
+      <w:WordDocument>
+        <w:View>Print</w:View>
+        <w:Zoom>100</w:Zoom>
+        <w:DoNotOptimizeForBrowser/>
+      </w:WordDocument>
+    </xml>
+    <![endif]-->
+    <style>
+        body {
+            font-family: 'Segoe UI', Calibri, Arial, sans-serif;
+            font-size: 11pt;
+            color: #000000;
+            background-color: #ffffff;
+            margin: 20px;
+        }
+        .header-table {
+            width: 100%;
+            background-color: #0c0c0c;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+        }
+        .header-table td {
+            padding: 20px;
+            text-align: center;
+            color: #ffffff;
+            border: none;
+        }
+        .header-title {
+            font-size: 22pt;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        .header-subtitle {
+            font-size: 11pt;
+            color: #cccccc;
+        }
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+        }
+        .info-table td {
+            border: 1pt solid #000000;
+            padding: 8pt 10pt;
+            font-size: 10.5pt;
+        }
+        .info-table td.label-cell {
+            background-color: #f2f2f2;
+            font-weight: bold;
+            width: 35%;
+        }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+        }
+        .items-table th {
+            background-color: #E51A4D;
+            color: #ffffff;
+            border: 1pt solid #000000;
+            padding: 9pt 10pt;
+            text-align: left;
+            font-size: 11pt;
+        }
+        .items-table td {
+            border: 1pt solid #000000;
+            padding: 8pt 10pt;
+            font-size: 10pt;
+        }
+        .items-table td.num-cell {
+            text-align: right;
+            font-weight: normal;
+        }
+        .payout-row td {
+            background-color: #d9d9d9;
+            font-weight: bold;
+            font-size: 11pt;
+        }
+        .metrics-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+        }
+        .metrics-table td {
+            border: 1pt solid #000000;
+            padding: 8pt 10pt;
+            width: 50%;
+        }
+        .footer-text {
+            border-top: 1pt solid #b3b3b3;
+            padding-top: 10pt;
+            margin-top: 40pt;
+            font-size: 9pt;
+            color: #555555;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Banner -->
+    <table class="header-table">
+        <tr>
+            <td>
+                <div class="header-title"><span style="color: #E51A4D;">Revenue</span> Statement</div>
+                <div class="header-subtitle">Pocket Entertainment Services LLC</div>
+            </td>
+        </tr>
+    </table>
+
+    <!-- Intro Greeting -->
+    <div style="margin-bottom: 20px; font-size: 11pt; line-height: 1.5;">
+        <p><strong>Hi [Author First Name],</strong></p>
+        <p>Here is your revenue statement for <strong>[Show Title]</strong>. Thank you for partnering with Pocket FM. Below is a summary of your show's performance and revenue calculations.</p>
+    </div>
+
+    <!-- Performance Metrics Table -->
+    <table class="metrics-table">
+        <tr>
+            <td style="background-color: #f2f2f2; font-weight: bold; width: 25%;">TOTAL PLAYS</td>
+            <td style="text-align: right; font-weight: bold; font-size: 13pt; width: 25%;">1,257</td>
+            <td style="background-color: #f2f2f2; font-weight: bold; width: 25%;">TOTAL LISTENERS</td>
+            <td style="text-align: right; font-weight: bold; font-size: 13pt; width: 25%;">299</td>
+        </tr>
+    </table>
+
+    <!-- Show Information Table -->
+    <table class="info-table">
+        <tr>
+            <td class="label-cell">Series Name</td>
+            <td><strong>[Enter Series Name Here]</strong></td>
+        </tr>
+        <tr>
+            <td class="label-cell">Author</td>
+            <td><strong>[Enter Author Full Name Here]</strong></td>
+        </tr>
+        <tr>
+            <td class="label-cell">Reporting Period</td>
+            <td><strong>[e.g. July 1, 2026 – September 30, 2026 (3-Month Statement / Q3)]</strong></td>
+        </tr>
+    </table>
+
+    <!-- Revenue Breakdown Table -->
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th colspan="2">Revenue Breakdown</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Revenue Generated (Gross) $</strong></td>
+                <td class="num-cell">17.14</td>
+            </tr>
+            <tr>
+                <td>Revenue Share at 15% Gross Revenue $</td>
+                <td class="num-cell">2.57</td>
+            </tr>
+            <tr>
+                <td style="color: #ffffff;">-</td>
+                <td class="num-cell"></td>
+            </tr>
+            <tr>
+                <td>MG Paid $</td>
+                <td class="num-cell">7,500.00</td>
+            </tr>
+            <tr>
+                <td>MG to be recouped $</td>
+                <td class="num-cell">7,497.43</td>
+            </tr>
+            <tr class="payout-row">
+                <td>Final Payout $</td>
+                <td class="num-cell" style="font-weight: bold;">0.00</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Notes -->
+    <div style="margin-bottom: 25px; font-size: 10pt; line-height: 1.5;">
+        <p><strong>Please Note:</strong></p>
+        <ul>
+            <li>Revenue is first adjusted against your Minimum Guarantee (MG).</li>
+            <li>Once the MG has been fully recouped, future quarterly statements will include payable earnings.</li>
+        </ul>
+    </div>
+
+    <!-- Official Footer -->
+    <div class="footer-text">
+        <p><strong>Address:</strong> Pocket Entertainment Services LLC, 13 West Main Street, PO BOX 953, Felton, Delaware, USA 19943</p>
+        <p><strong>Email:</strong> us-licensing@pocketfm.com &nbsp;|&nbsp; <strong>Website:</strong> <a href="https://www.pocketfm.com">www.pocketfm.com</a></p>
+    </div>
+
+</body>
+</html>
+
