@@ -574,11 +574,7 @@
     </div>
     <div class="grid" id="otherGrid"></div>
 
-    <div style="text-align:center; margin-top:50px;">
-      <button style="background:none; border:none; color:#999; font-size:12px; cursor:pointer; text-decoration:underline;" onclick="restoreDefaults()">
-        🔄 Restore Original 16 Show Statements
-      </button>
-    </div>
+
 
     <footer class="footer">
       Internal Distribution Reference • Pocket Entertainment Services LLC • Confidential
@@ -1427,13 +1423,7 @@
       renderPortal();
     }
 
-    function restoreDefaults() {
-      if (confirm('Restore the original 16 statements list?')) {
-        currentShows = [...DEFAULT_SHOWS];
-        saveStoredShows(currentShows);
-        renderPortal();
-      }
-    }
+
 
     function escapeHtml(str) {
       if (!str) return '';
