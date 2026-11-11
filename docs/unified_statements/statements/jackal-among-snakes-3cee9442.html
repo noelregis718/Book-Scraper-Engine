@@ -124,25 +124,143 @@
             font-weight: 700;
             color: #000000;
         }
-        .items-table {
-            margin-bottom: 35px;
-        }
-        .items-table th {
-            font-weight: 700;
-            text-align: left;
-            background-color: #E51A4D;
+
+        /* Recoupment Section Styles Matching Modern Spec */
+        .calculation-card {
+            background-color: #0e0e0e;
+            border: 1px solid #262626;
+            border-radius: 12px;
+            padding: 24px;
             color: #ffffff;
-            text-transform: uppercase;
+            margin: 25px 0 35px 0;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.15);
+        }
+        .calc-header {
+            margin-bottom: 20px;
+        }
+        .calc-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .calc-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: -0.2px;
+        }
+        .calc-subtitle {
             font-size: 13px;
+            color: #888888;
+            margin-top: 5px;
+        }
+        .deal-badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        .items-table td:first-child { text-align: left; }
-        .items-table td:last-child { text-align: right; }
-        .payout-row {
-            background-color: #d9d9d9;
-            font-weight: 700;
-            font-size: 15px;
+        .kpi-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #222222;
         }
+        .kpi-box {
+            flex: 1;
+        }
+        .kpi-label {
+            font-size: 11.5px;
+            font-weight: 600;
+            color: #888888;
+            letter-spacing: 0.3px;
+            margin-bottom: 4px;
+        }
+        .kpi-val {
+            font-size: 22px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+        .calc-table-wrap {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .calc-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .calc-table th {
+            text-align: right;
+            padding: 10px 14px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #999999;
+            border-bottom: 1px solid #2c2c2c;
+            border-top: none;
+            border-left: none;
+            border-right: none;
+            background: transparent;
+            text-transform: none;
+            letter-spacing: normal;
+        }
+        .calc-table th:first-child {
+            text-align: left;
+            padding-left: 0;
+            font-size: 14px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+        .calc-table th .sub-th {
+            font-size: 11px;
+            color: #666666;
+            font-weight: normal;
+            margin-top: 2px;
+        }
+        .calc-table td {
+            padding: 9px 14px;
+            border-bottom: 1px solid #1a1a1a;
+            border-top: none;
+            border-left: none;
+            border-right: none;
+            text-align: right;
+            color: #ffffff;
+            font-size: 13px;
+            background: transparent;
+        }
+        .calc-table td:first-child {
+            text-align: left;
+            padding-left: 0;
+            color: #d4d4d4;
+            font-weight: 400;
+        }
+        .calc-table tr.section-heading td {
+            padding-top: 18px;
+            padding-bottom: 6px;
+            font-size: 10.5px;
+            font-weight: 700;
+            color: #777777;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            border-bottom: none;
+        }
+        .calc-table tr.highlight-row td {
+            font-weight: 700;
+            color: #ffffff;
+        }
+        .calc-footnote {
+            font-size: 11.5px;
+            color: #777777;
+            line-height: 1.5;
+            margin-top: 20px;
+            padding-top: 14px;
+            border-top: 1px solid #1f1f1f;
+        }
+
         .notes-block {
             margin-bottom: 35px;
             font-size: 13.5px;
@@ -196,6 +314,25 @@
             body { background-color: #ffffff; padding: 0; }
             .document-container { box-shadow: none; margin: 0; padding: 0; max-width: 100%; }
             .download-btn { display: none; }
+            .calculation-card {
+                background-color: #ffffff !important;
+                border: 1px solid #000000 !important;
+                color: #000000 !important;
+                box-shadow: none !important;
+            }
+            .calc-title { color: #000000 !important; }
+            .calc-subtitle { color: #555555 !important; }
+            .deal-badge { border: 1px solid #000 !important; background: #fff !important; color: #000 !important; }
+            .kpi-row { border-bottom: 1px solid #000 !important; }
+            .kpi-label { color: #555555 !important; }
+            .kpi-val { color: #000000 !important; }
+            .calc-table th { color: #000000 !important; border-bottom: 1px solid #000 !important; }
+            .calc-table th:first-child { color: #000000 !important; }
+            .calc-table th .sub-th { color: #555555 !important; }
+            .calc-table td { color: #000000 !important; border-bottom: 1px solid #e0e0e0 !important; }
+            .calc-table td:first-child { color: #000000 !important; }
+            .calc-table tr.section-heading td { color: #333333 !important; }
+            .calc-footnote { color: #555555 !important; border-top: 1px solid #000 !important; }
         }
     </style>
 </head>
@@ -251,44 +388,67 @@
                     </tr>
                 </table>
 
-                <table class="items-table">
-                    <thead>
-                        <tr>
-                            <th colspan="2">Revenue Breakdown</th>
-                        </tr>
-                    </thead>
-                    <tbody>
 
-                        <tr>
-                            <td style="font-weight: 700;">Revenue Generated (Gross) $</td>
-                            <td>415.52</td>
-                        </tr>
-                        <tr>
-                            <td>Revenue Share at 12% Gross Revenue $</td>
-                            <td>49.86</td>
-                        </tr>
-                        <tr>
-                            <td style="color: transparent;">-</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td>MG Paid $</td>
-                            <td>4,000.00</td>
-                        </tr>
-                        <tr>
-                            <td>MG Recouped $</td>
-                            <td>49.86</td>
-                        </tr>
-                        <tr>
-                            <td>MG to be recouped $</td>
-                            <td>3,950.14</td>
-                        </tr>
-                        <tr class="payout-row">
-                            <td style="padding: 12px;">Final Payout $</td>
-                            <td style="padding: 12px;">0.00</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <!-- Multi-Quarter MG Recoupment Section -->
+                <div class="calculation-card">
+                    <div class="calc-header">
+                        <div class="calc-title-row">
+                            <span class="calc-title">Jackal Among Snakes</span>
+                            <span class="deal-badge" style="background: #182838; color: #60a5fa; border: 1px solid #274b6e;">Gross</span>
+                        </div>
+                        <div class="calc-subtitle">Rycus Wilkins • Gross Deal • 12% Revenue Share</div>
+                    </div>
+
+                    <div class="kpi-row">
+
+                <div class="kpi-box">
+                    <div class="kpi-label">Original MG</div>
+                    <div class="kpi-val">$4,000.00</div>
+                </div>
+                <div class="kpi-box">
+                    <div class="kpi-label">Total MG Recouped</div>
+                    <div class="kpi-val">$49.86</div>
+                </div>
+                <div class="kpi-box">
+                    <div class="kpi-label">Current MG Available</div>
+                    <div class="kpi-val">$3,950.14</div>
+                </div>
+                    </div>
+
+                    <div class="calc-table-wrap">
+                        <table class="calc-table">
+                            <thead>
+                                <tr>
+
+                <th style="text-align: left; width: 46%;">Calculation Field</th>
+                <th style="width: 27%;">Apr–Sep 2026</th>
+                <th style="width: 27%;">Oct–Dec 2026</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                <tr class="section-heading"><td colspan="3">REVENUE</td></tr>
+                <tr><td>Revenue incl. PG</td><td>$469.53</td><td>—</td></tr>
+                <tr><td>PG Charges</td><td>$54.02</td><td>—</td></tr>
+                <tr class="highlight-row"><td>Gross Revenue excl. PG</td><td>$415.52</td><td>—</td></tr>
+
+                <tr class="section-heading"><td colspan="3">REVENUE SHARE</td></tr>
+                <tr><td>Revenue Share %</td><td>12%</td><td>12%</td></tr>
+                <tr class="highlight-row"><td>Author Revenue Share</td><td>$49.86</td><td>—</td></tr>
+
+                <tr class="section-heading"><td colspan="3">MG RECOUPMENT</td></tr>
+                <tr><td>Opening MG</td><td>$4,000.00</td><td>$3,950.14*</td></tr>
+                <tr><td>MG Recouped</td><td>$49.86</td><td>—</td></tr>
+                <tr class="highlight-row"><td>Closing MG Available</td><td>$3,950.14*</td><td>—</td></tr>
+                <tr class="highlight-row" style="border-bottom: 2px solid #333;"><td>Revenue Share Payable</td><td>$0.00</td><td>—</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="calc-footnote">
+                        Apr–Sept figures reflect the current Rev Share Report. The $3,950.14 closing balance is based on verified recoupment. The next quarter remains blank pending financial inputs and validation.
+                    </div>
+                </div>
 
                 <div class="notes-block">
                     <div class="notes-title">Please Note</div>

@@ -505,6 +505,182 @@
       border: 1px dashed #d1d5da;
       border-radius: 8px;
     }
+  
+    /* Hub Navigation Tabs */
+    .hub-tabs-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+    .hub-tabs {
+      background: #ffffff;
+      border: 1px solid #e1e4e8;
+      border-radius: 50px;
+      padding: 5px;
+      display: inline-flex;
+      gap: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .hub-tab-btn {
+      display: inline-flex;
+      align-items: center;
+      padding: 9px 22px;
+      border-radius: 40px;
+      font-size: 13.5px;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      color: #555555;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .hub-tab-btn:hover {
+      color: #000000;
+      background: #f4f4f4;
+    }
+    .hub-tab-btn.active {
+      background: #0c0c0c;
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+
+    /* Master Revenue Summary Card - Dark Mode matching Image 4 */
+    .master-summary-card {
+      background-color: #121212;
+      border: 1px solid #282828;
+      border-radius: 14px;
+      padding: 26px;
+      color: #ffffff;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+    }
+    .master-summary-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 15px;
+    }
+    .master-summary-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.3px;
+    }
+    .master-summary-subtitle {
+      font-size: 13.5px;
+      color: #888888;
+      margin-top: 4px;
+    }
+    .btn-excel-view {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 18px;
+      background: #222222;
+      border: 1px solid #3d3d3d;
+      border-radius: 6px;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-excel-view:hover {
+      background: #2e2e2e;
+      border-color: #555555;
+      transform: translateY(-1px);
+    }
+    .master-deal-select {
+      width: 100%;
+      height: 44px;
+      background-color: #1a1a1a;
+      border: 1.5px solid #333333;
+      border-radius: 8px;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 0 16px;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23aaaaaa%22%20stroke-width%3D%222.2%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      background-size: 16px 16px;
+      transition: border-color 0.2s ease;
+    }
+    .master-deal-select:focus {
+      border-color: #E51A4D;
+    }
+    .master-deal-select option {
+      background: #1a1a1a;
+      color: #ffffff;
+    }
+    .master-table-scroll {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin-top: 18px;
+      border-radius: 8px;
+    }
+    .master-table-scroll::-webkit-scrollbar {
+      height: 8px;
+    }
+    .master-table-scroll::-webkit-scrollbar-track {
+      background: #181818;
+      border-radius: 4px;
+    }
+    .master-table-scroll::-webkit-scrollbar-thumb {
+      background: #383838;
+      border-radius: 4px;
+    }
+    .master-table-scroll::-webkit-scrollbar-thumb:hover {
+      background: #555555;
+    }
+    .master-summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+      white-space: nowrap;
+    }
+    .master-summary-table th {
+      padding: 12px 14px;
+      color: #8e8e8e;
+      font-size: 12px;
+      font-weight: 600;
+      border-bottom: 1px solid #282828;
+      text-transform: none;
+      letter-spacing: normal;
+      background: #121212;
+      line-height: 1.3;
+    }
+    .master-summary-table td {
+      padding: 13px 14px;
+      border-bottom: 1px solid #1f1f1f;
+      color: #ffffff;
+      font-size: 13.5px;
+      background: transparent;
+    }
+    .master-summary-table tr:hover td {
+      background: rgba(255, 255, 255, 0.025);
+    }
+    .master-series-link {
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.15s ease;
+    }
+    .master-series-link:hover {
+      color: #E51A4D;
+      text-decoration: underline;
+    }
+    .master-summary-footnote {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid #222222;
+      font-size: 12px;
+      color: #888888;
+      line-height: 1.5;
+    }
+
   </style>
 </head>
 <body>
@@ -516,6 +692,448 @@
   </header>
 
   <main class="container">
+
+    <!-- Hub Navigation Tabs -->
+    <div class="hub-tabs-container">
+      <div class="hub-tabs">
+        <button class="hub-tab-btn active" id="tabBtnStatements" onclick="switchHubTab('statements')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+          Statement Cards
+        </button>
+        <button class="hub-tab-btn" id="tabBtnMaster" onclick="switchHubTab('master')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+          Master Revenue Summary
+        </button>
+      </div>
+    </div>
+
+    <!-- Master Revenue Summary View (Matching Reference Image) -->
+    <div id="tabContentMaster" style="display: none; margin-bottom: 50px;">
+      <div class="master-summary-card">
+        <div class="master-summary-top">
+          <div>
+            <div class="master-summary-title">Master Revenue Summary</div>
+            <div class="master-summary-subtitle">2026 • Sample from your revenue statement sheets</div>
+          </div>
+          <div>
+            <button class="btn-excel-view" onclick="exportMasterSummaryCsv()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line></svg>
+              Excel View
+            </button>
+          </div>
+        </div>
+
+        <div style="margin-top: 20px;">
+          <select id="masterDealFilter" class="master-deal-select" onchange="filterMasterSummary()">
+            <option value="all">All Deals</option>
+            <option value="gross">Gross Deals</option>
+            <option value="net">Net Deals</option>
+          </select>
+        </div>
+
+        <div class="master-table-scroll">
+          <table class="master-summary-table" id="masterSummaryTable">
+            <thead>
+              <tr>
+                <th style="text-align: left; min-width: 220px;">Series</th>
+                <th style="text-align: left; min-width: 80px;">Deal</th>
+                <th style="text-align: right; min-width: 75px;">Rev %</th>
+                <th style="text-align: right; min-width: 105px;">Original MG</th>
+                <th style="text-align: right; min-width: 95px;">Q2 Share</th>
+                <th style="text-align: right; min-width: 115px;">Q2 MG<br>Closing</th>
+                <th style="text-align: right; min-width: 95px;">Q3 Share</th>
+                <th style="text-align: right; min-width: 115px;">Q3 MG<br>Closing</th>
+                <th style="text-align: right; min-width: 85px;">Q4 Share</th>
+                <th style="text-align: right; min-width: 125px;">Current MG<br>Available</th>
+              </tr>
+            </thead>
+            <tbody id="masterSummaryTbody">
+
+              <tr data-deal="gross">
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/blood-vice-q2-amj-995fdcf9" target="_blank" class="master-series-link">Blood Vice</a></td>
+                <td style="text-align: left;">Gross</td>
+                <td style="text-align: right;">20%</td>
+                <td style="text-align: right;">$1,500</td>
+                <td style="text-align: right;">$34.28</td>
+                <td style="text-align: right;">$1,465.72</td>
+                <td style="text-align: right;">$55.61</td>
+                <td style="text-align: right;">$1,410.11</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right; font-weight: 700;">$1,410.11</td>
+              </tr>
+              <tr data-deal="net">
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/st-marin-s-cozy-mysteries-494440e3" target="_blank" class="master-series-link">St. Marin's Cozy Mysteries</a></td>
+                <td style="text-align: left;">Net</td>
+                <td style="text-align: right;">15%</td>
+                <td style="text-align: right;">$12,500</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right; font-weight: 700;">$12,500.00</td>
+              </tr>
+              <tr data-deal="gross">
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/the-witches-of-wheeler-park-a2759c7d" target="_blank" class="master-series-link">The Witches of Wheeler Park</a></td>
+                <td style="text-align: left;">Gross</td>
+                <td style="text-align: right;">15%</td>
+                <td style="text-align: right;">$500</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$81.55</td>
+                <td style="text-align: right;">$418.45</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right; font-weight: 700;">$418.45</td>
+              </tr>
+              <tr data-deal="gross">
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/fate-weaver-series-57897400" target="_blank" class="master-series-link">Fate Weaver Series</a></td>
+                <td style="text-align: left;">Gross</td>
+                <td style="text-align: right;">15%</td>
+                <td style="text-align: right;">$2,000</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$13.12</td>
+                <td style="text-align: right;">$1,986.88</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right; font-weight: 700;">$1,986.88</td>
+              </tr>
+              <tr data-deal="gross">
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/sweet-tea-witch-mysteries-fc8149b2" target="_blank" class="master-series-link">Sweet Tea Witch Mysteries</a></td>
+                <td style="text-align: left;">Gross</td>
+                <td style="text-align: right;">13%</td>
+                <td style="text-align: right;">$7,500</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$5.40</td>
+                <td style="text-align: right;">$7,494.60</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right; font-weight: 700;">$7,494.60</td>
+              </tr>
+              <tr data-deal="gross">
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/lattes-and-levitation-f4b0a144" target="_blank" class="master-series-link">Lattes and Levitation</a></td>
+                <td style="text-align: left;">Gross</td>
+                <td style="text-align: right;">15%</td>
+                <td style="text-align: right;">$500</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$0.36</td>
+                <td style="text-align: right;">$499.64</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right; font-weight: 700;">$499.64</td>
+              </tr>
+              <tr data-deal="gross">
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/psychic-seasons-series-13a093d3" target="_blank" class="master-series-link">Psychic Seasons Series</a></td>
+                <td style="text-align: left;">Gross</td>
+                <td style="text-align: right;">15%</td>
+                <td style="text-align: right;">$3,000</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right; font-weight: 700;">$2,979.64</td>
+              </tr>
+              <tr data-deal="net">
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/vital-secrets-f2c5cb33" target="_blank" class="master-series-link">Vital Secrets</a></td>
+                <td style="text-align: left;">Net</td>
+                <td style="text-align: right;">15%</td>
+                <td style="text-align: right;">$4,000</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right;">$4,000.00</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right; font-weight: 700;">$4,000.00</td>
+              </tr>
+              <tr data-deal="net">
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/mrs-lillywhite-investigates-mysteries-ce64cdb7" target="_blank" class="master-series-link">Mrs. Lillywhite Investigates Mysteries</a></td>
+                <td style="text-align: left;">Net</td>
+                <td style="text-align: right;">15%</td>
+                <td style="text-align: right;">$2,500</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right;">$2,500.00</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right; font-weight: 700;">$2,500.00</td>
+              </tr>
+              <tr data-deal="gross">
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/liz-talbot-mystery-series-0de65ac1" target="_blank" class="master-series-link">Liz Talbot Mystery Series</a></td>
+                <td style="text-align: left;">Gross</td>
+                <td style="text-align: right;">15%</td>
+                <td style="text-align: right;">$6,000</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$40.07</td>
+                <td style="text-align: right;">$5,959.93</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right; font-weight: 700;">$5,959.93</td>
+              </tr>
+              <tr data-deal="gross">
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/carolina-tales-cfd9b2f8" target="_blank" class="master-series-link">Carolina Tales</a></td>
+                <td style="text-align: left;">Gross</td>
+                <td style="text-align: right;">15%</td>
+                <td style="text-align: right;">$2,500</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$5.55</td>
+                <td style="text-align: right;">$2,494.45</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right; font-weight: 700;">$2,494.45</td>
+              </tr>
+              <tr data-deal="gross">
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/fatal-series-95fb9b7a" target="_blank" class="master-series-link">Fatal Series</a></td>
+                <td style="text-align: left;">Gross</td>
+                <td style="text-align: right;">15%</td>
+                <td style="text-align: right;">$10,000</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right;">$10,000.00</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right; font-weight: 700;">$10,000.00</td>
+              </tr>
+              <tr data-deal="gross">
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/jackal-among-snakes-3cee9442" target="_blank" class="master-series-link">Jackal Among Snakes</a></td>
+                <td style="text-align: left;">Gross</td>
+                <td style="text-align: right;">12%</td>
+                <td style="text-align: right;">$4,000</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right; font-weight: 700;">$3,950.14</td>
+              </tr>
+              <tr data-deal="gross">
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/redemption-arc-f050f6e7" target="_blank" class="master-series-link">Redemption Arc</a></td>
+                <td style="text-align: left;">Gross</td>
+                <td style="text-align: right;">12%</td>
+                <td style="text-align: right;">$3,000</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right; font-weight: 700;">$2,951.18</td>
+              </tr>
+              <tr data-deal="gross">
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/gansett-series-0c7111ce" target="_blank" class="master-series-link">Gansett Series</a></td>
+                <td style="text-align: left;">Gross</td>
+                <td style="text-align: right;">15%</td>
+                <td style="text-align: right;">$7,500</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$2.57</td>
+                <td style="text-align: right;">$7,497.43</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right; font-weight: 700;">$7,497.43</td>
+              </tr>
+              <tr data-deal="gross">
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/the-witches-of-cleopatra-hill-q2-amj-d6526581" target="_blank" class="master-series-link">The Witches of Cleopatra Hill</a></td>
+                <td style="text-align: left;">Gross</td>
+                <td style="text-align: right;">15%</td>
+                <td style="text-align: right;">$1,500</td>
+                <td style="text-align: right;">$18.51</td>
+                <td style="text-align: right;">$1,481.49</td>
+                <td style="text-align: right;">$1.65</td>
+                <td style="text-align: right;">$1,479.84</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right; font-weight: 700;">$1,479.84</td>
+              </tr>
+              <tr data-deal="gross">
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/fae-chronicles-series-11f9a625" target="_blank" class="master-series-link">Fae Chronicles Series</a></td>
+                <td style="text-align: left;">Gross</td>
+                <td style="text-align: right;">22%</td>
+                <td style="text-align: right;">$25,000</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$841.54</td>
+                <td style="text-align: right;">$24,158.46</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right; font-weight: 700;">$24,158.46</td>
+              </tr>
+              <tr data-deal="net">
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/detective-emilia-cruz-8051f011" target="_blank" class="master-series-link">Detective Emilia Cruz</a></td>
+                <td style="text-align: left;">Net</td>
+                <td style="text-align: right;">13%</td>
+                <td style="text-align: right;">$3,000</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right;">$3,000.00</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right; font-weight: 700;">$3,000.00</td>
+              </tr>
+              <tr data-deal="net">
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/death-before-dragon-series-2d51754e" target="_blank" class="master-series-link">Death Before Dragon Series</a></td>
+                <td style="text-align: left;">Net</td>
+                <td style="text-align: right;">25%</td>
+                <td style="text-align: right;">$0</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right; font-weight: 700;">$0.00</td>
+              </tr>
+              <tr data-deal="gross">
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/a-shade-of-vampire-series-2908daf8" target="_blank" class="master-series-link">A Shade of Vampire Series</a></td>
+                <td style="text-align: left;">Gross</td>
+                <td style="text-align: right;">23.5%</td>
+                <td style="text-align: right;">$9,653</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$162.67</td>
+                <td style="text-align: right;">$9,490.04</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right; font-weight: 700;">$9,490.04</td>
+              </tr>
+              <tr data-deal="gross">
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/blake-larsen-3c6159c2" target="_blank" class="master-series-link">Blake Larsen</a></td>
+                <td style="text-align: left;">Gross</td>
+                <td style="text-align: right;">15%</td>
+                <td style="text-align: right;">$10,000</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$28.42</td>
+                <td style="text-align: right;">$9,971.58</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right; font-weight: 700;">$9,971.58</td>
+              </tr>
+              <tr data-deal="net">
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/nocturne-falls-411c8eb0" target="_blank" class="master-series-link">Nocturne Falls</a></td>
+                <td style="text-align: left;">Net</td>
+                <td style="text-align: right;">18%</td>
+                <td style="text-align: right;">$20,000</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right;">$20,000.00</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right; font-weight: 700;">$20,000.00</td>
+              </tr>
+              <tr data-deal="gross">
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/after-darkness-falls-d4483a6c" target="_blank" class="master-series-link">After Darkness Falls</a></td>
+                <td style="text-align: left;">Gross</td>
+                <td style="text-align: right;">15%</td>
+                <td style="text-align: right;">$3,000</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right; font-weight: 700;">$2,995.04</td>
+              </tr>
+              <tr data-deal="gross">
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/lana-harvey-reapers-inc-e657cd1c" target="_blank" class="master-series-link">Lana Harvey, Reapers Inc.</a></td>
+                <td style="text-align: left;">Gross</td>
+                <td style="text-align: right;">20%</td>
+                <td style="text-align: right;">$7,500</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right; font-weight: 700;">$7,500.00</td>
+              </tr>
+              <tr data-deal="gross">
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/the-sedona-files-b7524b5e" target="_blank" class="master-series-link">The Sedona Files</a></td>
+                <td style="text-align: left;">Gross</td>
+                <td style="text-align: right;">15%</td>
+                <td style="text-align: right;">$500</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right;">$500.00</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right; font-weight: 700;">$500.00</td>
+              </tr>
+              <tr data-deal="net">
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/billionaire-bear-brotherhood-dcc2b862" target="_blank" class="master-series-link">Billionaire Bear Brotherhood</a></td>
+                <td style="text-align: left;">Net</td>
+                <td style="text-align: right;">12%</td>
+                <td style="text-align: right;">$1,000</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right;">$1,000.00</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right; font-weight: 700;">$1,000.00</td>
+              </tr>
+              <tr data-deal="gross">
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/i-m-a-fake-genius-in-a-cultivation-sect-6024bb94" target="_blank" class="master-series-link">I'm a Fake Genius in a Cultivation Sect</a></td>
+                <td style="text-align: left;">Gross</td>
+                <td style="text-align: right;">12%</td>
+                <td style="text-align: right;">$0</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$6.68</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right; font-weight: 700;">$0.00</td>
+              </tr>
+              <tr data-deal="gross">
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/rend-a685b4fd" target="_blank" class="master-series-link">Rend</a></td>
+                <td style="text-align: left;">Gross</td>
+                <td style="text-align: right;">17%</td>
+                <td style="text-align: right;">$3,000</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right;">$3,000.00</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right; font-weight: 700;">$3,000.00</td>
+              </tr>
+              <tr data-deal="net">
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/game-day-ea1ccab2" target="_blank" class="master-series-link">Game Day</a></td>
+                <td style="text-align: left;">Net</td>
+                <td style="text-align: right;">12%</td>
+                <td style="text-align: right;">$2,000</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right;">$2,000.00</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right; font-weight: 700;">$2,000.00</td>
+              </tr>
+              <tr data-deal="net">
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/teddy-bears-on-brigade-3ea42fc7" target="_blank" class="master-series-link">Teddy Bears on Brigade</a></td>
+                <td style="text-align: left;">Net</td>
+                <td style="text-align: right;">12%</td>
+                <td style="text-align: right;">$3,000</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right;">$3,000.00</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right; font-weight: 700;">$3,000.00</td>
+              </tr>
+              <tr data-deal="gross">
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/hedgewitch-for-hire-62fad382" target="_blank" class="master-series-link">Hedgewitch for Hire</a></td>
+                <td style="text-align: left;">Gross</td>
+                <td style="text-align: right;">15%</td>
+                <td style="text-align: right;">$1,500</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$7.00</td>
+                <td style="text-align: right;">$1,493.00</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right; font-weight: 700;">$1,493.00</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="master-summary-footnote">
+          Scroll horizontally to see all columns. St. Marin's has a combined Apr–Sep statement, not separate Q2/Q3 figures. Amounts shown are based on inspected worksheets and remain subject to statement-status verification.
+        </div>
+      </div>
+    </div>
+
+    <!-- Statement Cards View Container -->
+    <div id="tabContentCards">
+
 
     <!-- Top Action Toolbar -->
     <div class="toolbar">
@@ -575,6 +1193,8 @@
     <div class="grid" id="otherGrid"></div>
 
 
+
+    </div>
 
     <footer class="footer">
       Internal Distribution Reference • Pocket Entertainment Services LLC • Confidential
@@ -842,6 +1462,444 @@
 
     // Storage handling
     const HUB_DATA_VERSION = '2026_jas_finance_33shows_amj_v1';
+    const MASTER_SUMMARY_DATA = [
+  {
+    "series": "Blood Vice",
+    "deal": "Gross",
+    "rev_pct": "20%",
+    "original_mg": 1500.0,
+    "q2_share": 34.28,
+    "q2_closing": 1465.72,
+    "q3_share": 55.61,
+    "q3_closing": 1410.11,
+    "q4_share": null,
+    "current_mg": 1410.11,
+    "is_six_month": false,
+    "url": "https://pocketfm-statements.vercel.app/statements/blood-vice-q2-amj-995fdcf9"
+  },
+  {
+    "series": "St. Marin's Cozy Mysteries",
+    "deal": "Net",
+    "rev_pct": "15%",
+    "original_mg": 12500.0,
+    "q2_share": null,
+    "q2_closing": null,
+    "q3_share": null,
+    "q3_closing": null,
+    "q4_share": null,
+    "current_mg": 12500.0,
+    "is_six_month": true,
+    "url": "https://pocketfm-statements.vercel.app/statements/st-marin-s-cozy-mysteries-494440e3"
+  },
+  {
+    "series": "The Witches of Wheeler Park",
+    "deal": "Gross",
+    "rev_pct": "15%",
+    "original_mg": 500.0,
+    "q2_share": null,
+    "q2_closing": null,
+    "q3_share": 81.55,
+    "q3_closing": 418.45,
+    "q4_share": null,
+    "current_mg": 418.45,
+    "is_six_month": false,
+    "url": "https://pocketfm-statements.vercel.app/statements/the-witches-of-wheeler-park-a2759c7d"
+  },
+  {
+    "series": "Fate Weaver Series",
+    "deal": "Gross",
+    "rev_pct": "15%",
+    "original_mg": 2000.0,
+    "q2_share": null,
+    "q2_closing": null,
+    "q3_share": 13.12,
+    "q3_closing": 1986.88,
+    "q4_share": null,
+    "current_mg": 1986.88,
+    "is_six_month": false,
+    "url": "https://pocketfm-statements.vercel.app/statements/fate-weaver-series-57897400"
+  },
+  {
+    "series": "Sweet Tea Witch Mysteries",
+    "deal": "Gross",
+    "rev_pct": "13%",
+    "original_mg": 7500.0,
+    "q2_share": null,
+    "q2_closing": null,
+    "q3_share": 5.4,
+    "q3_closing": 7494.6,
+    "q4_share": null,
+    "current_mg": 7494.6,
+    "is_six_month": false,
+    "url": "https://pocketfm-statements.vercel.app/statements/sweet-tea-witch-mysteries-fc8149b2"
+  },
+  {
+    "series": "Lattes and Levitation",
+    "deal": "Gross",
+    "rev_pct": "15%",
+    "original_mg": 500.0,
+    "q2_share": null,
+    "q2_closing": null,
+    "q3_share": 0.36,
+    "q3_closing": 499.64,
+    "q4_share": null,
+    "current_mg": 499.64,
+    "is_six_month": false,
+    "url": "https://pocketfm-statements.vercel.app/statements/lattes-and-levitation-f4b0a144"
+  },
+  {
+    "series": "Psychic Seasons Series",
+    "deal": "Gross",
+    "rev_pct": "15%",
+    "original_mg": 3000.0,
+    "q2_share": null,
+    "q2_closing": null,
+    "q3_share": null,
+    "q3_closing": null,
+    "q4_share": null,
+    "current_mg": 2979.635711,
+    "is_six_month": true,
+    "url": "https://pocketfm-statements.vercel.app/statements/psychic-seasons-series-13a093d3"
+  },
+  {
+    "series": "Vital Secrets",
+    "deal": "Net",
+    "rev_pct": "15%",
+    "original_mg": 4000.0,
+    "q2_share": null,
+    "q2_closing": null,
+    "q3_share": 0.0,
+    "q3_closing": 4000.0,
+    "q4_share": null,
+    "current_mg": 4000.0,
+    "is_six_month": false,
+    "url": "https://pocketfm-statements.vercel.app/statements/vital-secrets-f2c5cb33"
+  },
+  {
+    "series": "Mrs. Lillywhite Investigates Mysteries",
+    "deal": "Net",
+    "rev_pct": "15%",
+    "original_mg": 2500.0,
+    "q2_share": null,
+    "q2_closing": null,
+    "q3_share": 0.0,
+    "q3_closing": 2500.0,
+    "q4_share": null,
+    "current_mg": 2500.0,
+    "is_six_month": false,
+    "url": "https://pocketfm-statements.vercel.app/statements/mrs-lillywhite-investigates-mysteries-ce64cdb7"
+  },
+  {
+    "series": "Liz Talbot Mystery Series",
+    "deal": "Gross",
+    "rev_pct": "15%",
+    "original_mg": 6000.0,
+    "q2_share": null,
+    "q2_closing": null,
+    "q3_share": 40.07,
+    "q3_closing": 5959.93,
+    "q4_share": null,
+    "current_mg": 5959.93,
+    "is_six_month": false,
+    "url": "https://pocketfm-statements.vercel.app/statements/liz-talbot-mystery-series-0de65ac1"
+  },
+  {
+    "series": "Carolina Tales",
+    "deal": "Gross",
+    "rev_pct": "15%",
+    "original_mg": 2500.0,
+    "q2_share": null,
+    "q2_closing": null,
+    "q3_share": 5.55,
+    "q3_closing": 2494.45,
+    "q4_share": null,
+    "current_mg": 2494.45,
+    "is_six_month": false,
+    "url": "https://pocketfm-statements.vercel.app/statements/carolina-tales-cfd9b2f8"
+  },
+  {
+    "series": "Fatal Series",
+    "deal": "Gross",
+    "rev_pct": "15%",
+    "original_mg": 10000.0,
+    "q2_share": null,
+    "q2_closing": null,
+    "q3_share": 0.0,
+    "q3_closing": 10000.0,
+    "q4_share": null,
+    "current_mg": 10000.0,
+    "is_six_month": false,
+    "url": "https://pocketfm-statements.vercel.app/statements/fatal-series-95fb9b7a"
+  },
+  {
+    "series": "Jackal Among Snakes",
+    "deal": "Gross",
+    "rev_pct": "12%",
+    "original_mg": 4000.0,
+    "q2_share": null,
+    "q2_closing": null,
+    "q3_share": null,
+    "q3_closing": null,
+    "q4_share": null,
+    "current_mg": 3950.137877,
+    "is_six_month": true,
+    "url": "https://pocketfm-statements.vercel.app/statements/jackal-among-snakes-3cee9442"
+  },
+  {
+    "series": "Redemption Arc",
+    "deal": "Gross",
+    "rev_pct": "12%",
+    "original_mg": 3000.0,
+    "q2_share": null,
+    "q2_closing": null,
+    "q3_share": null,
+    "q3_closing": null,
+    "q4_share": null,
+    "current_mg": 2951.184217,
+    "is_six_month": true,
+    "url": "https://pocketfm-statements.vercel.app/statements/redemption-arc-f050f6e7"
+  },
+  {
+    "series": "Gansett Series",
+    "deal": "Gross",
+    "rev_pct": "15%",
+    "original_mg": 7500.0,
+    "q2_share": null,
+    "q2_closing": null,
+    "q3_share": 2.57,
+    "q3_closing": 7497.43,
+    "q4_share": null,
+    "current_mg": 7497.43,
+    "is_six_month": false,
+    "url": "https://pocketfm-statements.vercel.app/statements/gansett-series-0c7111ce"
+  },
+  {
+    "series": "The Witches of Cleopatra Hill",
+    "deal": "Gross",
+    "rev_pct": "15%",
+    "original_mg": 1500.0,
+    "q2_share": 18.51,
+    "q2_closing": 1481.49,
+    "q3_share": 1.65,
+    "q3_closing": 1479.84,
+    "q4_share": null,
+    "current_mg": 1479.84,
+    "is_six_month": false,
+    "url": "https://pocketfm-statements.vercel.app/statements/the-witches-of-cleopatra-hill-q2-amj-d6526581"
+  },
+  {
+    "series": "Fae Chronicles Series",
+    "deal": "Gross",
+    "rev_pct": "22%",
+    "original_mg": 25000.0,
+    "q2_share": null,
+    "q2_closing": null,
+    "q3_share": 841.54,
+    "q3_closing": 24158.46,
+    "q4_share": null,
+    "current_mg": 24158.46,
+    "is_six_month": false,
+    "url": "https://pocketfm-statements.vercel.app/statements/fae-chronicles-series-11f9a625"
+  },
+  {
+    "series": "Detective Emilia Cruz",
+    "deal": "Net",
+    "rev_pct": "13%",
+    "original_mg": 3000.0,
+    "q2_share": null,
+    "q2_closing": null,
+    "q3_share": 0.0,
+    "q3_closing": 3000.0,
+    "q4_share": null,
+    "current_mg": 3000.0,
+    "is_six_month": false,
+    "url": "https://pocketfm-statements.vercel.app/statements/detective-emilia-cruz-8051f011"
+  },
+  {
+    "series": "Death Before Dragon Series",
+    "deal": "Net",
+    "rev_pct": "25%",
+    "original_mg": 0.0,
+    "q2_share": null,
+    "q2_closing": null,
+    "q3_share": 0.0,
+    "q3_closing": 0.0,
+    "q4_share": null,
+    "current_mg": 0.0,
+    "is_six_month": false,
+    "url": "https://pocketfm-statements.vercel.app/statements/death-before-dragon-series-2d51754e"
+  },
+  {
+    "series": "A Shade of Vampire Series",
+    "deal": "Gross",
+    "rev_pct": "23.5%",
+    "original_mg": 9652.71,
+    "q2_share": null,
+    "q2_closing": null,
+    "q3_share": 162.67,
+    "q3_closing": 9490.04,
+    "q4_share": null,
+    "current_mg": 9490.04,
+    "is_six_month": false,
+    "url": "https://pocketfm-statements.vercel.app/statements/a-shade-of-vampire-series-2908daf8"
+  },
+  {
+    "series": "Blake Larsen",
+    "deal": "Gross",
+    "rev_pct": "15%",
+    "original_mg": 10000.0,
+    "q2_share": null,
+    "q2_closing": null,
+    "q3_share": 28.42,
+    "q3_closing": 9971.58,
+    "q4_share": null,
+    "current_mg": 9971.58,
+    "is_six_month": false,
+    "url": "https://pocketfm-statements.vercel.app/statements/blake-larsen-3c6159c2"
+  },
+  {
+    "series": "Nocturne Falls",
+    "deal": "Net",
+    "rev_pct": "18%",
+    "original_mg": 20000.0,
+    "q2_share": null,
+    "q2_closing": null,
+    "q3_share": 0.0,
+    "q3_closing": 20000.0,
+    "q4_share": null,
+    "current_mg": 20000.0,
+    "is_six_month": false,
+    "url": "https://pocketfm-statements.vercel.app/statements/nocturne-falls-411c8eb0"
+  },
+  {
+    "series": "After Darkness Falls",
+    "deal": "Gross",
+    "rev_pct": "15%",
+    "original_mg": 3000.0,
+    "q2_share": null,
+    "q2_closing": null,
+    "q3_share": null,
+    "q3_closing": null,
+    "q4_share": null,
+    "current_mg": 2995.036623,
+    "is_six_month": true,
+    "url": "https://pocketfm-statements.vercel.app/statements/after-darkness-falls-d4483a6c"
+  },
+  {
+    "series": "Lana Harvey, Reapers Inc.",
+    "deal": "Gross",
+    "rev_pct": "20%",
+    "original_mg": 7500.0,
+    "q2_share": null,
+    "q2_closing": null,
+    "q3_share": null,
+    "q3_closing": null,
+    "q4_share": null,
+    "current_mg": 7500.0,
+    "is_six_month": true,
+    "url": "https://pocketfm-statements.vercel.app/statements/lana-harvey-reapers-inc-e657cd1c"
+  },
+  {
+    "series": "The Sedona Files",
+    "deal": "Gross",
+    "rev_pct": "15%",
+    "original_mg": 500.0,
+    "q2_share": null,
+    "q2_closing": null,
+    "q3_share": 0.0,
+    "q3_closing": 500.0,
+    "q4_share": null,
+    "current_mg": 500.0,
+    "is_six_month": false,
+    "url": "https://pocketfm-statements.vercel.app/statements/the-sedona-files-b7524b5e"
+  },
+  {
+    "series": "Billionaire Bear Brotherhood",
+    "deal": "Net",
+    "rev_pct": "12%",
+    "original_mg": 1000.0,
+    "q2_share": null,
+    "q2_closing": null,
+    "q3_share": 0.0,
+    "q3_closing": 1000.0,
+    "q4_share": null,
+    "current_mg": 1000.0,
+    "is_six_month": false,
+    "url": "https://pocketfm-statements.vercel.app/statements/billionaire-bear-brotherhood-dcc2b862"
+  },
+  {
+    "series": "I'm a Fake Genius in a Cultivation Sect",
+    "deal": "Gross",
+    "rev_pct": "12%",
+    "original_mg": 0.0,
+    "q2_share": null,
+    "q2_closing": null,
+    "q3_share": 6.68,
+    "q3_closing": 0.0,
+    "q4_share": null,
+    "current_mg": 0.0,
+    "is_six_month": false,
+    "url": "https://pocketfm-statements.vercel.app/statements/i-m-a-fake-genius-in-a-cultivation-sect-6024bb94"
+  },
+  {
+    "series": "Rend",
+    "deal": "Gross",
+    "rev_pct": "17%",
+    "original_mg": 3000.0,
+    "q2_share": null,
+    "q2_closing": null,
+    "q3_share": 0.0,
+    "q3_closing": 3000.0,
+    "q4_share": null,
+    "current_mg": 3000.0,
+    "is_six_month": false,
+    "url": "https://pocketfm-statements.vercel.app/statements/rend-a685b4fd"
+  },
+  {
+    "series": "Game Day",
+    "deal": "Net",
+    "rev_pct": "12%",
+    "original_mg": 2000.0,
+    "q2_share": null,
+    "q2_closing": null,
+    "q3_share": 0.0,
+    "q3_closing": 2000.0,
+    "q4_share": null,
+    "current_mg": 2000.0,
+    "is_six_month": false,
+    "url": "https://pocketfm-statements.vercel.app/statements/game-day-ea1ccab2"
+  },
+  {
+    "series": "Teddy Bears on Brigade",
+    "deal": "Net",
+    "rev_pct": "12%",
+    "original_mg": 3000.0,
+    "q2_share": null,
+    "q2_closing": null,
+    "q3_share": 0.0,
+    "q3_closing": 3000.0,
+    "q4_share": null,
+    "current_mg": 3000.0,
+    "is_six_month": false,
+    "url": "https://pocketfm-statements.vercel.app/statements/teddy-bears-on-brigade-3ea42fc7"
+  },
+  {
+    "series": "Hedgewitch for Hire",
+    "deal": "Gross",
+    "rev_pct": "15%",
+    "original_mg": 1500.0,
+    "q2_share": null,
+    "q2_closing": null,
+    "q3_share": 7.0,
+    "q3_closing": 1493.0,
+    "q4_share": null,
+    "current_mg": 1493.0,
+    "is_six_month": false,
+    "url": "https://pocketfm-statements.vercel.app/statements/hedgewitch-for-hire-62fad382"
+  }
+];
+
+    const HUB_DATA_VERSION = '2026_jas_finance_master_recoupment_v2';
     function getStoredShows() {
       try {
         const cachedVer = localStorage.getItem('pocketfm_internal_shows_ver');
@@ -1449,6 +2507,69 @@
       initModernDropdown('newModel', false);
     }
     initAllModernDropdowns();
+  
+    function switchHubTab(tabName) {
+      const tabCards = document.getElementById('tabContentCards');
+      const tabMaster = document.getElementById('tabContentMaster');
+      const btnCards = document.getElementById('tabBtnStatements');
+      const btnMaster = document.getElementById('tabBtnMaster');
+
+      if (tabName === 'master') {
+        if (tabCards) tabCards.style.display = 'none';
+        if (tabMaster) tabMaster.style.display = 'block';
+        if (btnCards) btnCards.classList.remove('active');
+        if (btnMaster) btnMaster.classList.add('active');
+      } else {
+        if (tabCards) tabCards.style.display = 'block';
+        if (tabMaster) tabMaster.style.display = 'none';
+        if (btnCards) btnCards.classList.add('active');
+        if (btnMaster) btnMaster.classList.remove('active');
+      }
+    }
+
+    function filterMasterSummary() {
+      const filter = (document.getElementById('masterDealFilter').value || 'all').toLowerCase();
+      const rows = document.querySelectorAll('#masterSummaryTbody tr');
+      rows.forEach(r => {
+        const deal = (r.getAttribute('data-deal') || '').toLowerCase();
+        if (filter === 'all' || deal === filter) {
+          r.style.display = '';
+        } else {
+          r.style.display = 'none';
+        }
+      });
+    }
+
+    function exportMasterSummaryCsv() {
+      if (typeof MASTER_SUMMARY_DATA === 'undefined' || !Array.isArray(MASTER_SUMMARY_DATA)) {
+        alert('Master Summary dataset not loaded yet.');
+        return;
+      }
+      const headers = ["Series", "Deal", "Rev %", "Original MG", "Q2 Share", "Q2 MG Closing", "Q3 Share", "Q3 MG Closing", "Q4 Share", "Current MG Available"];
+      let csvContent = headers.join(",") + "\n";
+
+      MASTER_SUMMARY_DATA.forEach(row => {
+        const orig = row.original_mg != null ? `"$${row.original_mg.toLocaleString()}"` : '"—"';
+        const q2s = row.q2_share != null ? `"$${row.q2_share.toFixed(2)}"` : '"—"';
+        const q2c = row.q2_closing != null ? `"$${row.q2_closing.toFixed(2)}"` : '"—"';
+        const q3s = row.q3_share != null ? `"$${row.q3_share.toFixed(2)}"` : '"—"';
+        const q3c = row.q3_closing != null ? `"$${row.q3_closing.toFixed(2)}"` : '"—"';
+        const q4s = '"—"';
+        const cur = row.current_mg != null ? `"$${row.current_mg.toFixed(2)}"` : '"—"';
+        
+        csvContent += `"${row.series.replace(/"/g, '""')}","${row.deal}","${row.rev_pct}",${orig},${q2s},${q2c},${q3s},${q3c},${q4s},${cur}\n`;
+      });
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", "Pocket_FM_Master_Revenue_Summary.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
   </script>
 
 </body>
