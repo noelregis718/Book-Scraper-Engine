@@ -835,18 +835,20 @@
       { id: '28', key: "Rend", author: "Gerardo Diaz", category: '3-Month', periodLabel: "July 1, 2026 \u2013 September 30, 2026 (3-Month Statement / Q3)", model: 'gross', grossRev: 0.0, finalPayout: 0.0, url: 'https://pocketfm-statements.vercel.app/statements/rend-a685b4fd' },
       { id: '29', key: "Game Day", author: "Couerdalene Chambers (Lily Cahill)", category: '3-Month', periodLabel: "July 1, 2026 \u2013 September 30, 2026 (3-Month Statement / Q3)", model: 'net', grossRev: 0.0, finalPayout: 0.0, url: 'https://pocketfm-statements.vercel.app/statements/game-day-ea1ccab2' },
       { id: '30', key: "Teddy Bears on Brigade", author: "Shannon Livingston", category: '3-Month', periodLabel: "July 1, 2026 \u2013 September 30, 2026 (3-Month Statement / Q3)", model: 'net', grossRev: 0.0, finalPayout: 0.0, url: 'https://pocketfm-statements.vercel.app/statements/teddy-bears-on-brigade-3ea42fc7' },
-      { id: '31', key: "Hedgewitch for Hire", author: "Christine Pope", category: '3-Month', periodLabel: "July 1, 2026 \u2013 September 30, 2026 (3-Month Statement / Q3)", model: 'gross', grossRev: 46.67625, finalPayout: 0.0, url: 'https://pocketfm-statements.vercel.app/statements/hedgewitch-for-hire-62fad382' }
+      { id: '31', key: "Hedgewitch for Hire", author: "Christine Pope", category: '3-Month', periodLabel: "July 1, 2026 \u2013 September 30, 2026 (3-Month Statement / Q3)", model: 'gross', grossRev: 46.67625, finalPayout: 0.0, url: 'https://pocketfm-statements.vercel.app/statements/hedgewitch-for-hire-62fad382' },
+      { id: '32', key: "The Witches of Cleopatra Hill (Q2 AMJ)", author: "Christine Pope", category: '3-Month', periodLabel: "April 1, 2026 \u2013 June 30, 2026 (3-Month Statement / Q2 / AMJ)", model: 'gross', grossRev: 123.40391, finalPayout: 0.0, url: 'https://pocketfm-statements.vercel.app/statements/the-witches-of-cleopatra-hill-q2-amj-d6526581' },
+      { id: '33', key: "Blood Vice (Q2 AMJ)", author: "Angela Roquet", category: '3-Month', periodLabel: "April 1, 2026 \u2013 June 30, 2026 (3-Month Statement / Q2 / AMJ)", model: 'gross', grossRev: 171.37651, finalPayout: 0.0, url: 'https://pocketfm-statements.vercel.app/statements/blood-vice-q2-amj-995fdcf9' }
     ];
 
     // Storage handling
-    const HUB_DATA_VERSION = '2026_jas_finance_31shows_v1';
+    const HUB_DATA_VERSION = '2026_jas_finance_33shows_amj_v1';
     function getStoredShows() {
       try {
         const cachedVer = localStorage.getItem('pocketfm_internal_shows_ver');
         const stored = localStorage.getItem('pocketfm_internal_shows');
         if (cachedVer === HUB_DATA_VERSION && stored) {
           const parsed = JSON.parse(stored);
-          if (Array.isArray(parsed) && parsed.length >= 31) return parsed;
+          if (Array.isArray(parsed) && parsed.length >= 33) return parsed;
         }
       } catch (e) {}
       localStorage.setItem('pocketfm_internal_shows_ver', HUB_DATA_VERSION);

@@ -30,13 +30,123 @@ EXCEL_PATH = os.path.join(BASE_DIR, "Rev Statement from Finance - JAS.xlsx")
 
 VERCEL_PROJECT_NAME = "pocketfm-statements"
 VERCEL_BASE_URL = "https://pocketfm-statements.vercel.app"
-HUB_DATA_VERSION = "2026_jas_finance_31shows_v1"
+HUB_DATA_VERSION = "2026_jas_finance_33shows_amj_v1"
 
 
 def ensure_directories():
     """Ensures output directories exist."""
     os.makedirs(STATEMENTS_DIR, exist_ok=True)
     os.makedirs(DOCS_DIR, exist_ok=True)
+
+
+def load_amj_data():
+    """
+    Ingests Q2 (AMJ) statements from 'AMJ Self-Pub Revenue Payouts.xlsx'
+    Specifically tabs: 'Witches of CH' and 'Blood Vice' (ignoring other tabs).
+    """
+    amj_path = os.path.join(BASE_DIR, "AMJ Self-Pub Revenue Payouts.xlsx")
+    if not os.path.exists(amj_path):
+        print(f"ℹ {amj_path} not found, skipping AMJ data.")
+        return []
+
+    print(f"📖 Ingesting AMJ Sheet: {os.path.basename(amj_path)}...")
+    wb = openpyxl.load_workbook(amj_path, data_only=True, read_only=True)
+    amj_shows = []
+
+    # 1. Witches of CH
+    if "Witches of CH" in wb.sheetnames:
+        ws1 = wb["Witches of CH"]
+        rows1 = list(ws1.iter_rows(values_only=True))
+        summary1 = {}
+        for r in rows1:
+            if r and len(r) > 2 and r[1] is not None:
+                summary1[str(r[1]).strip().lower()] = r[2]
+
+        gross_val = float(summary1.get("revenue generated (gross) $", 123.40391))
+        rev_share_val = float(summary1.get("revenue share at 15% $", 18.5105865))
+        mg_paid_val = float(summary1.get("mg paid $", 1500.0))
+        to_recoup_val = float(summary1.get("mg to be recouped $", 1481.489414))
+        payout_val = float(summary1.get("final payout $", 0.0))
+        plays_val = int(summary1.get("total plays", 26647))
+        listeners_val = int(summary1.get("total listeners", 5993))
+
+        amj_shows.append({
+            "id": "32",
+            "key": "The Witches of Cleopatra Hill (Q2 AMJ)",
+            "title": "The Witches of Cleopatra Hill",
+            "author": "Christine Pope",
+            "show_id": "3d6de14d5e9806fa95b61f1eb4a5be3aade1b56b",
+            "category": "3-Month",
+            "periodLabel": "April 1, 2026 – June 30, 2026 (3-Month Statement / Q2 / AMJ)",
+            "periodRaw": "April-May-June 2026",
+            "dealType": "Gross",
+            "model": "gross",
+            "revPct": 15.0,
+            "grossRev": gross_val,
+            "mktgSpend": 0.0,
+            "mktgDeduct": 0.0,
+            "prodCost": 0.0,
+            "prodDeduct": 0.0,
+            "distFee": 0.0,
+            "netCalcRev": gross_val,
+            "revShareEarned": rev_share_val,
+            "mgPaid": mg_paid_val,
+            "mgRecouped": rev_share_val,
+            "toRecoup": to_recoup_val,
+            "finalPayout": payout_val,
+            "listeners": f"{listeners_val:,}",
+            "plays": f"{plays_val:,}",
+            "slug_title": "The Witches of Cleopatra Hill - Q2 AMJ"
+        })
+
+    # 2. Blood Vice
+    if "Blood Vice" in wb.sheetnames:
+        ws2 = wb["Blood Vice"]
+        rows2 = list(ws2.iter_rows(values_only=True))
+        summary2 = {}
+        for r in rows2:
+            if r and len(r) > 1 and r[0] is not None:
+                summary2[str(r[0]).strip().lower()] = r[1]
+
+        gross_val = float(summary2.get("revenue generated (gross) $", 171.37651))
+        rev_share_val = float(summary2.get("revenue share at 20% $", 34.275302))
+        mg_paid_val = float(summary2.get("mg paid $", 1500.0))
+        to_recoup_val = float(summary2.get("mg to be recouped $", 1465.724698))
+        payout_val = float(summary2.get("final payout $", 0.0))
+        plays_val = int(summary2.get("total plays", 14991))
+        listeners_val = int(summary2.get("total listeners", 3218))
+
+        amj_shows.append({
+            "id": "33",
+            "key": "Blood Vice (Q2 AMJ)",
+            "title": "Blood Vice",
+            "author": "Angela Roquet",
+            "show_id": "88bd204348649cffa73a6834dd57203dcbb3f322",
+            "category": "3-Month",
+            "periodLabel": "April 1, 2026 – June 30, 2026 (3-Month Statement / Q2 / AMJ)",
+            "periodRaw": "April-May-June 2026",
+            "dealType": "Gross",
+            "model": "gross",
+            "revPct": 20.0,
+            "grossRev": gross_val,
+            "mktgSpend": 0.0,
+            "mktgDeduct": 0.0,
+            "prodCost": 0.0,
+            "prodDeduct": 0.0,
+            "distFee": 0.0,
+            "netCalcRev": gross_val,
+            "revShareEarned": rev_share_val,
+            "mgPaid": mg_paid_val,
+            "mgRecouped": rev_share_val,
+            "toRecoup": to_recoup_val,
+            "finalPayout": payout_val,
+            "listeners": f"{listeners_val:,}",
+            "plays": f"{plays_val:,}",
+            "slug_title": "Blood Vice - Q2 AMJ"
+        })
+
+    print(f"✓ Successfully processed {len(amj_shows)} Q2 series from AMJ workbook!")
+    return amj_shows
 
 
 def load_finance_jas_data():
@@ -652,12 +762,14 @@ def run_pipeline():
     print("=" * 75)
 
     ensure_directories()
-    shows = load_finance_jas_data()
-    print(f"\nProcessing {len(shows)} audited series...")
+    finance_shows = load_finance_jas_data()
+    amj_shows = load_amj_data()
+    shows = finance_shows + amj_shows
+    print(f"\nProcessing {len(shows)} total audited series ({len(finance_shows)} Finance JAS + {len(amj_shows)} AMJ Q2)...")
 
     generated = []
     for s in shows:
-        filename = generate_secure_slug(s["key"])
+        filename = generate_secure_slug(s.get("slug_title", s["key"]))
         dest_path = os.path.join(STATEMENTS_DIR, filename)
         html = build_statement_html(s)
 
@@ -677,7 +789,7 @@ def run_pipeline():
             "finalPayout": s["finalPayout"],
             "url": full_url
         })
-        print(f"  ✓ [{s['dealType']:<5}] {s['key']:<35} -> {filename}")
+        print(f"  ✓ [{s['dealType']:<5}] {s['key']:<40} -> {filename}")
 
     # Update Internal Hub
     update_internal_hub_html(shows)
@@ -689,15 +801,20 @@ def run_pipeline():
     print(f"SUMMARY OF ALL {len(generated)} GENERATED STATEMENTS:")
     print("=" * 75)
     six_m = [g for g in generated if g["category"] == "6-Month"]
-    three_m = [g for g in generated if g["category"] == "3-Month"]
+    three_m_q3 = [g for g in generated if g["category"] == "3-Month" and "q2" not in g["title"].lower()]
+    three_m_q2 = [g for g in generated if "q2" in g["title"].lower()]
 
     print(f"\n🔷 6-MONTH COMBINED ({len(six_m)} Shows):")
     for g in six_m:
-        print(f"  • {g['title']:<34} | {g['author']:<24} | {g['dealType']:<5} | Gross: ${g['grossRev']:<8.2f} | {g['url']}")
+        print(f"  • {g['title']:<38} | {g['author']:<24} | {g['dealType']:<5} | Gross: ${g['grossRev']:<8.2f} | {g['url']}")
 
-    print(f"\n🔶 3-MONTH Q3 ({len(three_m)} Shows):")
-    for g in three_m:
-        print(f"  • {g['title']:<34} | {g['author']:<24} | {g['dealType']:<5} | Gross: ${g['grossRev']:<8.2f} | {g['url']}")
+    print(f"\n🔶 3-MONTH Q3 ({len(three_m_q3)} Shows):")
+    for g in three_m_q3:
+        print(f"  • {g['title']:<38} | {g['author']:<24} | {g['dealType']:<5} | Gross: ${g['grossRev']:<8.2f} | {g['url']}")
+
+    print(f"\n🌸 3-MONTH Q2 / AMJ ({len(three_m_q2)} Shows):")
+    for g in three_m_q2:
+        print(f"  • {g['title']:<38} | {g['author']:<24} | {g['dealType']:<5} | Gross: ${g['grossRev']:<8.2f} | {g['url']}")
 
     print("\n" + "=" * 75)
     print(f"✨ Production Statements Hub: {VERCEL_BASE_URL}/internal_hub")
