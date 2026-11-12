@@ -84,33 +84,50 @@
     .btn-action {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 10px 16px;
+      justify-content: center;
+      padding: 9px 15px;
       border-radius: 6px;
       font-size: 13px;
-      font-weight: 600;
+      font-weight: 500;
       cursor: pointer;
-      border: none;
       text-decoration: none;
-      transition: all 0.2s ease;
+      transition: all 0.18s ease;
+      white-space: nowrap;
+      box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+      background-color: #ffffff;
+      color: #24292f;
+      border: 1px solid #d0d7de;
+    }
+    .btn-action:hover {
+      background-color: #f6f8fa;
+      border-color: #8c959f;
+      color: #1f2328;
+    }
+    .btn-export,
+    .btn-sync,
+    .btn-download-template {
+      background-color: #ffffff;
+      color: #24292f;
+      border: 1px solid #d0d7de;
+    }
+    .btn-export:hover,
+    .btn-sync:hover,
+    .btn-download-template:hover {
+      background-color: #f6f8fa;
+      border-color: #8c959f;
+      color: #1f2328;
     }
     .btn-add {
-      background-color: #E51A4D;
+      background-color: #1f2328;
+      color: #ffffff;
+      border: 1px solid #1f2328;
+      font-weight: 600;
+    }
+    .btn-add:hover {
+      background-color: #32383f;
+      border-color: #32383f;
       color: #ffffff;
     }
-    .btn-add:hover { background-color: #c4123e; }
-    
-    .btn-sync {
-      background-color: #0066cc;
-      color: #ffffff;
-    }
-    .btn-sync:hover { background-color: #0052a3; }
-    
-    .btn-download-template {
-      background-color: #0c0c0c;
-      color: #ffffff;
-    }
-    .btn-download-template:hover { background-color: #333333; }
 
     /* Section Styles */
     .section-title {
@@ -207,11 +224,7 @@
       width: auto;
       min-width: 145px;
     }
-    .btn-export {
-      background-color: #28a745;
-      color: #ffffff;
-    }
-    .btn-export:hover { background-color: #218838; }
+    
     .card-meta {
       font-size: 13px;
       color: #555555;
@@ -438,16 +451,26 @@
       box-shadow: 0 14px 35px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.06);
       padding: 6px;
       z-index: 1300;
-      max-height: 250px;
+      max-height: 260px;
       overflow-y: auto;
       animation: modernDropIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .modern-select-menu::-webkit-scrollbar {
+      width: 6px;
+    }
+    .modern-select-menu::-webkit-scrollbar-thumb {
+      background-color: #d0d7de;
+      border-radius: 4px;
+    }
+    .modern-select-menu::-webkit-scrollbar-thumb:hover {
+      background-color: #afb8c1;
     }
     @keyframes modernDropIn {
       from { opacity: 0; transform: translateY(-6px); }
       to { opacity: 1; transform: translateY(0); }
     }
     .modern-select-wrapper.open .modern-select-menu {
-      display: block;
+      display: block !important;
     }
     .modern-select-option {
       padding: 9px 12px;
@@ -593,56 +616,64 @@
       transform: translateY(-1px);
     }
     .ledger-desc-box {
-      background: #f6f8fa;
+      background: #fbfcfd;
       border: 1px solid #d0d7de;
-      border-left: 4px solid #E51A4D;
-      border-radius: 8px;
-      padding: 16px 20px;
-      font-size: 13px;
-      color: #24292f;
-      line-height: 1.6;
+      border-radius: 10px;
+      padding: 20px 22px;
       margin-top: 18px;
-      margin-bottom: 20px;
-    }
-    .ledger-desc-box.blue {
-      border-left-color: #0969da;
-    }
-    .ledger-desc-box.green {
-      border-left-color: #1a7f37;
+      margin-bottom: 24px;
     }
     .ledger-desc-box h4 {
-      margin: 0 0 6px 0;
-      font-size: 14.5px;
+      margin: 0 0 8px 0;
+      font-size: 15px;
       font-weight: 700;
       color: #1f2328;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+    }
+    .ledger-desc-box p {
+      margin: 0 0 14px 0;
+      font-size: 13px;
+      color: #57606a;
+      line-height: 1.6;
     }
     .ledger-desc-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 12px;
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid #e1e4e8;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
     }
-    .ledger-desc-item strong {
-      display: block;
-      color: #1f2328;
-      font-size: 12.5px;
-      margin-bottom: 2px;
-    }
-    .formula-tag {
-      display: inline-block;
+    .ledger-step-card {
       background: #ffffff;
+      border: 1px solid #e1e4e8;
+      border-radius: 8px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 8px;
+    }
+    .ledger-step-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1f2328;
+    }
+    .formula-block {
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+      background: #f6f8fa;
       border: 1px solid #d0d7de;
-      border-radius: 4px;
-      padding: 2px 6px;
+      border-radius: 6px;
+      padding: 8px 10px;
       font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
       font-size: 11.5px;
-      color: #24292f;
-      margin: 2px 0;
+      color: #1f2328;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+    .ledger-step-note {
+      font-size: 12px;
+      color: #57606a;
+      line-height: 1.45;
+      margin-top: 2px;
     }
     .master-deal-select {
       width: 100%;
@@ -863,22 +894,10 @@
     <!-- Hub Navigation Tabs -->
     <div class="hub-tabs-container">
       <div class="hub-tabs">
-        <button class="hub-tab-btn active" id="tabBtnStatements" onclick="switchHubTab('statements')">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
-          Statement Cards (33)
-        </button>
-        <button class="hub-tab-btn" id="tabBtnMaster" onclick="switchHubTab('master')">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-          Master Revenue Summary
-        </button>
-        <button class="hub-tab-btn" id="tabBtnGross" onclick="switchHubTab('gross')">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
-          Gross Deals Ledger (24)
-        </button>
-        <button class="hub-tab-btn" id="tabBtnNet" onclick="switchHubTab('net')">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
-          Net Deals Ledger (9)
-        </button>
+        <button class="hub-tab-btn active" id="tabBtnStatements" onclick="switchHubTab('statements')">Statement Cards (33)</button>
+        <button class="hub-tab-btn" id="tabBtnMaster" onclick="switchHubTab('master')">Master Revenue Summary</button>
+        <button class="hub-tab-btn" id="tabBtnGross" onclick="switchHubTab('gross')">Gross Deals Ledger (24)</button>
+        <button class="hub-tab-btn" id="tabBtnNet" onclick="switchHubTab('net')">Net Deals Ledger (9)</button>
       </div>
     </div>
 
@@ -891,44 +910,45 @@
             <div class="master-summary-subtitle">2026 • Portfolio Performance &amp; Minimum Guarantee Recoupment Ledger</div>
           </div>
           <div>
-            <button class="btn-excel-view" onclick="exportMasterSummaryCsv()">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line></svg>
-              Excel View
-            </button>
+            <button class="btn-excel-view" onclick="exportMasterSummaryCsv()">Export CSV</button>
           </div>
         </div>
 
-        <!-- Description Box -->
+        <!-- Master Description Box -->
         <div class="ledger-desc-box">
-          <h4>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E51A4D" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-            Pocket FM Revenue Recoupment &amp; Financial Settlement Framework
-          </h4>
+          <h4>Pocket FM Revenue Recoupment &amp; Financial Settlement Framework</h4>
           <p>
-            This master revenue ledger displays the cumulative quarterly financial performance, licensing deal structure, and Minimum Guarantee (MG) recoupment status across all active titles for the 2026 accounting periods. Under Pocket FM author licensing agreements, upfront Minimum Guarantee advances are systematically recouped against the author's earned revenue share before cash distributions commence.
+            This master revenue ledger displays cumulative quarterly financial performance, licensing deal structure, and Minimum Guarantee (MG) recoupment status across all active titles for 2026 accounting periods. Upfront Minimum Guarantee advances are systematically recouped against the author's earned revenue share before cash distributions commence.
           </p>
           <div class="ledger-desc-grid">
-            <div class="ledger-desc-item">
-              <strong>📅 Accounting Cycles</strong>
-              <span>Reporting covers Q2 (AMJ: April–June 2026), Q3 (JAS: July–September 2026), and Semi-Annual consolidated terms (Apr–Sep 2026).</span>
+            <div class="ledger-step-card">
+              <div class="ledger-step-title">1. Accounting Cycles &amp; Terms</div>
+              <div class="formula-block">Q2 (AMJ) • Q3 (JAS) • Semi-Annual Terms</div>
+              <div class="ledger-step-note">Covers audited quarterly periods (April–June and July–September 2026) as well as 6-Month consolidated licensing contracts.</div>
             </div>
-            <div class="ledger-desc-item">
-              <strong>💳 Payment Gateway (PG) Exclusion</strong>
-              <span>Third-party payment processor and store fees are deducted from gross receipts to establish Gross Revenue excluding PG.</span>
+            <div class="ledger-step-card">
+              <div class="ledger-step-title">2. Payment Gateway (PG) Exclusion</div>
+              <div class="formula-block">Gross Rev excl. PG = Gross Revenue - PG Charges</div>
+              <div class="ledger-step-note">Third-party payment processor and store fees are deducted from gross receipts before computing author revenue share distributions.</div>
             </div>
-            <div class="ledger-desc-item">
-              <strong>⚖️ Cash Payout Trigger Rule</strong>
-              <span>Author Revenue Share Payable remains <strong>$0.00</strong> until the cumulative Opening MG balance is fully recouped ($0.00). Once fully recouped, net payable = earned share minus remaining balance.</span>
+            <div class="ledger-step-card">
+              <div class="ledger-step-title">3. Cash Payout Trigger Rule</div>
+              <div class="formula-block">Closing MG = Opening MG - MG Recouped</div>
+              <div class="ledger-step-note">Author Revenue Share Payable remains $0.00 until Opening MG reaches $0.00. Once fully recouped, net payable is released.</div>
             </div>
           </div>
         </div>
+        </div>
 
-        <div style="margin-top: 20px;">
-          <select id="masterDealFilter" class="master-deal-select" onchange="filterMasterSummary()">
-            <option value="all">All Deals (33 Series)</option>
-            <option value="gross">Gross Deals (24 Series)</option>
-            <option value="net">Net Deals (9 Series)</option>
-          </select>
+        <div style="margin-top: 20px; display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 13px; font-weight: 600; color: #57606a;">Filter by Deal:</span>
+          <div style="min-width: 240px; width: 260px;">
+            <select id="masterDealFilter" class="master-deal-select" onchange="filterMasterSummary()">
+              <option value="all">All Deals (33 Series)</option>
+              <option value="gross">Gross Deals (24 Series)</option>
+              <option value="net">Net Deals (9 Series)</option>
+            </select>
+          </div>
         </div>
 
         <div class="master-table-scroll">
@@ -1348,31 +1368,30 @@
         </div>
 
         <!-- Gross Description Box -->
-        <div class="ledger-desc-box blue">
-          <h4>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0969da" stroke-width="2.2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-            Gross Revenue Deal Mechanics &amp; Recoupment Calculation Rules
-          </h4>
+        <div class="ledger-desc-box">
+          <h4>Gross Revenue Deal Mechanics &amp; Recoupment Calculation Rules</h4>
           <p>
             In Gross Revenue Share agreements, author royalties are calculated directly on gross receipts collected from user transactions, after subtracting only third-party Payment Gateway (PG) fees. Marketing spends, narrator fees, and platform infrastructure overhead are entirely absorbed by Pocket FM and are <strong>not deducted</strong> from the author's gross share.
           </p>
           <div class="ledger-desc-grid">
-            <div class="ledger-desc-item">
-              <strong>1. Gross Revenue Calculation</strong>
-              <span class="formula-tag">Gross Rev excl. PG = Revenue incl. PG - PG Charges</span>
+            <div class="ledger-step-card">
+              <div class="ledger-step-title">1. Gross Revenue Calculation</div>
+              <div class="formula-block">Gross Rev excl. PG = Revenue incl. PG - PG Charges</div>
+              <div class="ledger-step-note">Excludes third-party payment gateway transaction processing charges.</div>
             </div>
-            <div class="ledger-desc-item">
-              <strong>2. Author Revenue Share</strong>
-              <span class="formula-tag">Author Rev Share = Gross Rev excl. PG × Contract Rev Share %</span>
-              <span>Calculated on contracted tier (typically 15% or 20%).</span>
+            <div class="ledger-step-card">
+              <div class="ledger-step-title">2. Author Revenue Share</div>
+              <div class="formula-block">Author Rev Share = Gross Rev excl. PG × Contract Rev Share %</div>
+              <div class="ledger-step-note">Calculated on contracted tier (typically 15% or 20%).</div>
             </div>
-            <div class="ledger-desc-item">
-              <strong>3. Recoupment &amp; Payout Release</strong>
-              <span class="formula-tag">MG Recouped = min(Author Share, Opening MG)</span>
-              <span class="formula-tag">Closing MG = Opening MG - MG Recouped</span>
-              <span>Author Revenue Share Payable remains $0.00 until Opening MG reaches $0.00.</span>
+            <div class="ledger-step-card">
+              <div class="ledger-step-title">3. Recoupment &amp; Payout Release</div>
+              <div class="formula-block">MG Recouped = min(Author Share, Opening MG)</div>
+              <div class="formula-block">Closing MG = Opening MG - MG Recouped</div>
+              <div class="ledger-step-note">Author Revenue Share Payable remains $0.00 until Opening MG reaches $0.00.</div>
             </div>
           </div>
+        </div>
         </div>
 
         <!-- Gross Deals Summary Table -->
@@ -1721,8 +1740,9 @@
               <h3 style="font-size: 17px; font-weight: 700; color: #1f2328; margin: 0;">Quarter-by-Quarter Gross Deal Calculation Viewer</h3>
               <p style="font-size: 13px; color: #57606a; margin: 3px 0 0 0;">Select any Gross Deal series to inspect its complete multi-quarter calculation card:</p>
             </div>
-            <div style="min-width: 260px;">
+            <div style="min-width: 320px; width: 360px; max-width: 100%;">
               <select id="grossShowSelect" class="master-deal-select" onchange="renderGrossCalcCard(this.value)">
+                <option value="Blood Vice" selected>Blood Vice (20%)</option>
                 <option value="Sweet Tea Witch Mysteries">Sweet Tea Witch Mysteries (13%)</option>
                 <option value="The Witches of Wheeler Park">The Witches of Wheeler Park (15%)</option>
                 <option value="Lattes and Levitation">Lattes and Levitation (15%)</option>
@@ -1734,7 +1754,6 @@
                 <option value="Jackal Among Snakes">Jackal Among Snakes (12%)</option>
                 <option value="Redemption Arc">Redemption Arc (12%)</option>
                 <option value="Gansett Series">Gansett Series (15%)</option>
-                <option value="Blood Vice">Blood Vice (20%)</option>
                 <option value="The Witches of Cleopatra Hill">The Witches of Cleopatra Hill (15%)</option>
                 <option value="Fae Chronicles Series">Fae Chronicles Series (22%)</option>
                 <option value="A Shade of Vampire Series">A Shade of Vampire Series (23.5%)</option>
@@ -1775,30 +1794,30 @@
         </div>
 
         <!-- Net Description Box -->
-        <div class="ledger-desc-box green">
-          <h4>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a7f37" stroke-width="2.2"><path d="M16 16v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v1"></path><path d="M18 8h4a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-4"></path><circle cx="8" cy="12" r="2"></circle></svg>
-            Net Revenue Deal Mechanics &amp; Capped Production Deductions
-          </h4>
+        <div class="ledger-desc-box">
+          <h4>Net Revenue Deal Mechanics &amp; Capped Production Deductions</h4>
           <p>
             In Net Revenue Share agreements, designated direct expenses (production narration, audio engineering, marketing spends) are deductible before calculating author royalty distributions. Pocket FM strictly enforces the <strong>Production Cost Deduction Cap Rule</strong> to guarantee author equity.
           </p>
           <div class="ledger-desc-grid">
-            <div class="ledger-desc-item">
-              <strong>1. Net Share Base Formula</strong>
-              <span class="formula-tag">Net Rev for Share = Gross Rev excl. PG - Deductible Prod Costs - Spends</span>
+            <div class="ledger-step-card">
+              <div class="ledger-step-title">1. Net Share Base Formula</div>
+              <div class="formula-block">Net Rev for Share = Gross Rev excl. PG - Deductible Prod Costs - Spends</div>
+              <div class="ledger-step-note">Direct expenses are subtracted from gross revenue to determine the net profit pool.</div>
             </div>
-            <div class="ledger-desc-item">
-              <strong>2. Production Cost Cap Rule</strong>
-              <span>Deductible production costs are strictly <strong>capped at Gross Revenue excl. PG</strong>. Net Revenue for share calculation cannot fall below $0.00 and cannot generate negative debt for the author.</span>
+            <div class="ledger-step-card">
+              <div class="ledger-step-title">2. Production Cost Cap Rule</div>
+              <div class="formula-block">Deductible Costs = min(Reported Costs, Gross Rev excl. PG)</div>
+              <div class="ledger-step-note">Deductible production costs are strictly capped at gross revenue. Net revenue cannot fall below $0.00 and cannot generate author debt.</div>
             </div>
-            <div class="ledger-desc-item">
-              <strong>3. Recoupment &amp; Payout Release</strong>
-              <span class="formula-tag">Author Share = Net Base × 15%</span>
-              <span class="formula-tag">Closing MG = Opening MG - MG Recouped</span>
-              <span>Author Revenue Share Payable releases only once Opening MG is fully recouped.</span>
+            <div class="ledger-step-card">
+              <div class="ledger-step-title">3. Recoupment &amp; Payout Release</div>
+              <div class="formula-block">Author Share = Net Base × 15%</div>
+              <div class="formula-block">Closing MG = Opening MG - MG Recouped</div>
+              <div class="ledger-step-note">Author Revenue Share Payable releases only once Opening MG is fully recouped.</div>
             </div>
           </div>
+        </div>
         </div>
 
         <!-- Net Deals Summary Table -->
@@ -1962,7 +1981,7 @@
               <h3 style="font-size: 17px; font-weight: 700; color: #1f2328; margin: 0;">Net Deal Multi-Quarter Recoupment Viewer</h3>
               <p style="font-size: 13px; color: #57606a; margin: 3px 0 0 0;">Select any Net Deal series to inspect its revenue, production cost deductions, and recoupment card:</p>
             </div>
-            <div style="min-width: 260px;">
+            <div style="min-width: 320px; width: 360px; max-width: 100%;">
               <select id="netShowSelect" class="master-deal-select" onchange="renderNetCalcCard(this.value)">
                 <option value="St. Marin's Cozy Mysteries">St. Marin's Cozy Mysteries (15%)</option>
                 <option value="Vital Secrets">Vital Secrets (15%)</option>
@@ -1999,9 +2018,9 @@
           <option value="other">Annual / Other</option>
         </select>
         <select id="filterStyle" class="filter-select" onchange="handleSearch()">
-          <option value="all">All Styles</option>
-          <option value="gross">Gross Style</option>
-          <option value="net">Net Style</option>
+          <option value="all">All Deals</option>
+          <option value="gross">Gross Deals</option>
+          <option value="net">Net Deals</option>
           <option value="both">Gross &amp; Net</option>
           <option value="tiered">Tiered</option>
           <option value="carryover">Carryover / Recoup</option>
@@ -2010,16 +2029,16 @@
       </div>
       <div class="toolbar-right">
         <button class="btn-action btn-export" onclick="exportToCsv()">
-          📥 Export CSV
+          Export CSV
         </button>
         <button class="btn-action btn-sync" onclick="openSyncModal()">
-          ⚡ Sync from Google Sheets
+          Sync from Google Sheets
         </button>
         <a href="Pocket_FM_Revenue_Statement_Template.doc" download="Pocket_FM_Revenue_Statement_Template.doc" class="btn-action btn-download-template">
-          📄 Download Word Template (.doc)
+          Download Word Template (.doc)
         </a>
         <button class="btn-action btn-add" onclick="openAddModal()">
-          ➕ Add New Revenue Statement
+          Add New Revenue Statement
         </button>
       </div>
     </div>
@@ -2033,7 +2052,7 @@
         <div class="statement-card">
           <div class="card-header">
             <div class="card-title">St. Marin's Cozy Mysteries</div>
-            <span class="style-badge badge-net">Net Style</span>
+            <span class="style-badge badge-net">Net</span>
           </div>
           <div class="card-meta">
             <div><strong>Author:</strong> Andilit, LLC</div>
@@ -2057,7 +2076,7 @@
         <div class="statement-card">
           <div class="card-header">
             <div class="card-title">Psychic Seasons Series</div>
-            <span class="style-badge badge-gross">Gross Style</span>
+            <span class="style-badge badge-gross">Gross</span>
           </div>
           <div class="card-meta">
             <div><strong>Author:</strong> ReGina Welling</div>
@@ -2081,7 +2100,7 @@
         <div class="statement-card">
           <div class="card-header">
             <div class="card-title">Jackal Among Snakes</div>
-            <span class="style-badge badge-gross">Gross Style</span>
+            <span class="style-badge badge-gross">Gross</span>
           </div>
           <div class="card-meta">
             <div><strong>Author:</strong> Rycus Wilkins</div>
@@ -2105,7 +2124,7 @@
         <div class="statement-card">
           <div class="card-header">
             <div class="card-title">Redemption Arc</div>
-            <span class="style-badge badge-gross">Gross Style</span>
+            <span class="style-badge badge-gross">Gross</span>
           </div>
           <div class="card-meta">
             <div><strong>Author:</strong> Rycus Wilkins</div>
@@ -2129,7 +2148,7 @@
         <div class="statement-card">
           <div class="card-header">
             <div class="card-title">After Darkness Falls</div>
-            <span class="style-badge badge-gross">Gross Style</span>
+            <span class="style-badge badge-gross">Gross</span>
           </div>
           <div class="card-meta">
             <div><strong>Author:</strong> May Sage</div>
@@ -2153,7 +2172,7 @@
         <div class="statement-card">
           <div class="card-header">
             <div class="card-title">Lana Harvey, Reapers Inc.</div>
-            <span class="style-badge badge-gross">Gross Style</span>
+            <span class="style-badge badge-gross">Gross</span>
           </div>
           <div class="card-meta">
             <div><strong>Author:</strong> Angela Mothersbaugh</div>
@@ -2185,7 +2204,7 @@
         <div class="statement-card">
           <div class="card-header">
             <div class="card-title">Sweet Tea Witch Mysteries</div>
-            <span class="style-badge badge-gross">Gross Style</span>
+            <span class="style-badge badge-gross">Gross</span>
           </div>
           <div class="card-meta">
             <div><strong>Author:</strong> Amy Boyles</div>
@@ -2209,7 +2228,7 @@
         <div class="statement-card">
           <div class="card-header">
             <div class="card-title">The Witches of Wheeler Park</div>
-            <span class="style-badge badge-gross">Gross Style</span>
+            <span class="style-badge badge-gross">Gross</span>
           </div>
           <div class="card-meta">
             <div><strong>Author:</strong> Christine Pope</div>
@@ -2233,7 +2252,7 @@
         <div class="statement-card">
           <div class="card-header">
             <div class="card-title">Lattes and Levitation</div>
-            <span class="style-badge badge-gross">Gross Style</span>
+            <span class="style-badge badge-gross">Gross</span>
           </div>
           <div class="card-meta">
             <div><strong>Author:</strong> Christine Pope</div>
@@ -2257,7 +2276,7 @@
         <div class="statement-card">
           <div class="card-header">
             <div class="card-title">Fate Weaver Series</div>
-            <span class="style-badge badge-gross">Gross Style</span>
+            <span class="style-badge badge-gross">Gross</span>
           </div>
           <div class="card-meta">
             <div><strong>Author:</strong> ReGina Welling</div>
@@ -2281,7 +2300,7 @@
         <div class="statement-card">
           <div class="card-header">
             <div class="card-title">Vital Secrets</div>
-            <span class="style-badge badge-net">Net Style</span>
+            <span class="style-badge badge-net">Net</span>
           </div>
           <div class="card-meta">
             <div><strong>Author:</strong> DF Hart</div>
@@ -2305,7 +2324,7 @@
         <div class="statement-card">
           <div class="card-header">
             <div class="card-title">Mrs. Lillywhite Investigates Mysteries</div>
-            <span class="style-badge badge-net">Net Style</span>
+            <span class="style-badge badge-net">Net</span>
           </div>
           <div class="card-meta">
             <div><strong>Author:</strong> Willow Hill Books LLC - Emily Queen</div>
@@ -2329,7 +2348,7 @@
         <div class="statement-card">
           <div class="card-header">
             <div class="card-title">Liz Talbot Mystery Series</div>
-            <span class="style-badge badge-gross">Gross Style</span>
+            <span class="style-badge badge-gross">Gross</span>
           </div>
           <div class="card-meta">
             <div><strong>Author:</strong> Susan M Boyer</div>
@@ -2353,7 +2372,7 @@
         <div class="statement-card">
           <div class="card-header">
             <div class="card-title">Carolina Tales</div>
-            <span class="style-badge badge-gross">Gross Style</span>
+            <span class="style-badge badge-gross">Gross</span>
           </div>
           <div class="card-meta">
             <div><strong>Author:</strong> Susan M Boyer</div>
@@ -2377,7 +2396,7 @@
         <div class="statement-card">
           <div class="card-header">
             <div class="card-title">Fatal Series</div>
-            <span class="style-badge badge-gross">Gross Style</span>
+            <span class="style-badge badge-gross">Gross</span>
           </div>
           <div class="card-meta">
             <div><strong>Author:</strong> HJTB Inc</div>
@@ -2401,7 +2420,7 @@
         <div class="statement-card">
           <div class="card-header">
             <div class="card-title">Gansett Series</div>
-            <span class="style-badge badge-gross">Gross Style</span>
+            <span class="style-badge badge-gross">Gross</span>
           </div>
           <div class="card-meta">
             <div><strong>Author:</strong> HJTB Inc</div>
@@ -2425,7 +2444,7 @@
         <div class="statement-card">
           <div class="card-header">
             <div class="card-title">Blood Vice</div>
-            <span class="style-badge badge-gross">Gross Style</span>
+            <span class="style-badge badge-gross">Gross</span>
           </div>
           <div class="card-meta">
             <div><strong>Author:</strong> Angela Mothersbaugh</div>
@@ -2449,7 +2468,7 @@
         <div class="statement-card">
           <div class="card-header">
             <div class="card-title">The Witches of Cleopatra Hill</div>
-            <span class="style-badge badge-gross">Gross Style</span>
+            <span class="style-badge badge-gross">Gross</span>
           </div>
           <div class="card-meta">
             <div><strong>Author:</strong> Christine Pope</div>
@@ -2473,7 +2492,7 @@
         <div class="statement-card">
           <div class="card-header">
             <div class="card-title">Fae Chronicles Series</div>
-            <span class="style-badge badge-gross">Gross Style</span>
+            <span class="style-badge badge-gross">Gross</span>
           </div>
           <div class="card-meta">
             <div><strong>Author:</strong> Amelia Hutchins</div>
@@ -2497,7 +2516,7 @@
         <div class="statement-card">
           <div class="card-header">
             <div class="card-title">Detective Emilia Cruz</div>
-            <span class="style-badge badge-net">Net Style</span>
+            <span class="style-badge badge-net">Net</span>
           </div>
           <div class="card-meta">
             <div><strong>Author:</strong> Carmen Amato</div>
@@ -2521,7 +2540,7 @@
         <div class="statement-card">
           <div class="card-header">
             <div class="card-title">Death Before Dragon Series</div>
-            <span class="style-badge badge-net">Net Style</span>
+            <span class="style-badge badge-net">Net</span>
           </div>
           <div class="card-meta">
             <div><strong>Author:</strong> Lindsay Buroker</div>
@@ -2545,7 +2564,7 @@
         <div class="statement-card">
           <div class="card-header">
             <div class="card-title">A Shade of Vampire Series</div>
-            <span class="style-badge badge-gross">Gross Style</span>
+            <span class="style-badge badge-gross">Gross</span>
           </div>
           <div class="card-meta">
             <div><strong>Author:</strong> Bella Forrest</div>
@@ -2569,7 +2588,7 @@
         <div class="statement-card">
           <div class="card-header">
             <div class="card-title">Blake Larsen</div>
-            <span class="style-badge badge-gross">Gross Style</span>
+            <span class="style-badge badge-gross">Gross</span>
           </div>
           <div class="card-meta">
             <div><strong>Author:</strong> Ben North (writing as JS), Clipstone Press Limited</div>
@@ -2593,7 +2612,7 @@
         <div class="statement-card">
           <div class="card-header">
             <div class="card-title">Nocturne Falls</div>
-            <span class="style-badge badge-net">Net Style</span>
+            <span class="style-badge badge-net">Net</span>
           </div>
           <div class="card-meta">
             <div><strong>Author:</strong> Kristen Painter</div>
@@ -2617,7 +2636,7 @@
         <div class="statement-card">
           <div class="card-header">
             <div class="card-title">The Sedona Files</div>
-            <span class="style-badge badge-gross">Gross Style</span>
+            <span class="style-badge badge-gross">Gross</span>
           </div>
           <div class="card-meta">
             <div><strong>Author:</strong> Christine Pope</div>
@@ -2641,7 +2660,7 @@
         <div class="statement-card">
           <div class="card-header">
             <div class="card-title">Billionaire Bear Brotherhood</div>
-            <span class="style-badge badge-net">Net Style</span>
+            <span class="style-badge badge-net">Net</span>
           </div>
           <div class="card-meta">
             <div><strong>Author:</strong> Lily Cahill</div>
@@ -2665,7 +2684,7 @@
         <div class="statement-card">
           <div class="card-header">
             <div class="card-title">I'm a Fake Genius in a Cultivation Sect</div>
-            <span class="style-badge badge-gross">Gross Style</span>
+            <span class="style-badge badge-gross">Gross</span>
           </div>
           <div class="card-meta">
             <div><strong>Author:</strong> Travis Harvey</div>
@@ -2689,7 +2708,7 @@
         <div class="statement-card">
           <div class="card-header">
             <div class="card-title">Rend</div>
-            <span class="style-badge badge-gross">Gross Style</span>
+            <span class="style-badge badge-gross">Gross</span>
           </div>
           <div class="card-meta">
             <div><strong>Author:</strong> Gerardo Diaz</div>
@@ -2713,7 +2732,7 @@
         <div class="statement-card">
           <div class="card-header">
             <div class="card-title">Game Day</div>
-            <span class="style-badge badge-net">Net Style</span>
+            <span class="style-badge badge-net">Net</span>
           </div>
           <div class="card-meta">
             <div><strong>Author:</strong> Couerdalene Chambers (Lily Cahill)</div>
@@ -2737,7 +2756,7 @@
         <div class="statement-card">
           <div class="card-header">
             <div class="card-title">Teddy Bears on Brigade</div>
-            <span class="style-badge badge-net">Net Style</span>
+            <span class="style-badge badge-net">Net</span>
           </div>
           <div class="card-meta">
             <div><strong>Author:</strong> Shannon Livingston</div>
@@ -2761,7 +2780,7 @@
         <div class="statement-card">
           <div class="card-header">
             <div class="card-title">Hedgewitch for Hire</div>
-            <span class="style-badge badge-gross">Gross Style</span>
+            <span class="style-badge badge-gross">Gross</span>
           </div>
           <div class="card-meta">
             <div><strong>Author:</strong> Christine Pope</div>
@@ -2785,7 +2804,7 @@
         <div class="statement-card">
           <div class="card-header">
             <div class="card-title">The Witches of Cleopatra Hill (Q2 AMJ)</div>
-            <span class="style-badge badge-gross">Gross Style</span>
+            <span class="style-badge badge-gross">Gross</span>
           </div>
           <div class="card-meta">
             <div><strong>Author:</strong> Christine Pope</div>
@@ -2809,7 +2828,7 @@
         <div class="statement-card">
           <div class="card-header">
             <div class="card-title">Blood Vice (Q2 AMJ)</div>
-            <span class="style-badge badge-gross">Gross Style</span>
+            <span class="style-badge badge-gross">Gross</span>
           </div>
           <div class="card-meta">
             <div><strong>Author:</strong> Angela Roquet</div>
@@ -3070,7 +3089,6 @@
   </div>
 
   <script>
-    // Initial 16 shows configuration
     const DEFAULT_SHOWS = [
       { id: '1', key: "St. Marin's Cozy Mysteries", author: "Andilit, LLC", category: '6-Month', periodLabel: "April 1, 2026 \u2013 September 30, 2026 (6-Month Combined / Q2 + Q3)", model: 'net', grossRev: 24.76904, finalPayout: 0.0, url: 'https://pocketfm-statements.vercel.app/statements/st-marin-s-cozy-mysteries-494440e3' },
       { id: '2', key: "Sweet Tea Witch Mysteries", author: "Amy Boyles", category: '3-Month', periodLabel: "July 1, 2026 \u2013 September 30, 2026 (3-Month Statement / Q3)", model: 'gross', grossRev: 41.50225, finalPayout: 0.0, url: 'https://pocketfm-statements.vercel.app/statements/sweet-tea-witch-mysteries-fc8149b2' },
@@ -3107,8 +3125,6 @@
       { id: '33', key: "Blood Vice (Q2 AMJ)", author: "Angela Roquet", category: '3-Month', periodLabel: "April 1, 2026 \u2013 June 30, 2026 (3-Month Statement / Q2 / AMJ)", model: 'gross', grossRev: 171.37651, finalPayout: 0.0, url: 'https://pocketfm-statements.vercel.app/statements/blood-vice-q2-amj-995fdcf9' }
     ];
 
-    // Storage handling
-    
     const MASTER_SUMMARY_DATA = [
   {
     "series": "Blood Vice",
@@ -4420,7 +4436,7 @@
         "\u2014"
       ]
     ],
-    "footnote": "Q2 and Q3 figures are from audited finance sheets. Q4 is pending. *The proposed Q4 opening balance assumes the previous quarters are finalized and there are no additional adjustments."
+    "footnote": "Q2 and Q3 figures are from audited finance sheets. Q4 is pending. *The proposed Q4 opening balance assumes previous quarters are finalized."
   },
   "The Witches of Cleopatra Hill": {
     "title": "The Witches of Cleopatra Hill",
@@ -5320,7 +5336,7 @@
         "\u2014"
       ]
     ],
-    "footnote": "Q2 and Q3 figures are from audited finance sheets. Q4 is pending. *The proposed Q4 opening balance assumes the previous quarters are finalized and there are no additional adjustments."
+    "footnote": "Q2 and Q3 figures are from audited finance sheets. Q4 is pending. *The proposed Q4 opening balance assumes previous quarters are finalized."
   }
 };
     const NET_DEALS_DATA = {
@@ -6172,7 +6188,849 @@
   }
 };
 
-    </script>
+    const HUB_DATA_VERSION = '2026.11.12.v10';
+
+    function getStoredShows() {
+      try {
+        const cachedVer = localStorage.getItem('pocketfm_internal_shows_ver');
+        const stored = localStorage.getItem('pocketfm_internal_shows');
+        if (cachedVer === HUB_DATA_VERSION && stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length >= 33) return parsed;
+        }
+      } catch (e) {}
+      localStorage.setItem('pocketfm_internal_shows_ver', HUB_DATA_VERSION);
+      localStorage.setItem('pocketfm_internal_shows', JSON.stringify(DEFAULT_SHOWS));
+      return DEFAULT_SHOWS;
+    }
+
+    function saveStoredShows(shows) {
+      try {
+        localStorage.setItem('pocketfm_internal_shows', JSON.stringify(shows));
+      } catch (e) {}
+    }
+
+    let currentShows = getStoredShows();
+
+    function renderPortal() {
+      const query = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+      const periodFilter = document.getElementById('filterPeriod') ? document.getElementById('filterPeriod').value : 'all';
+      const styleFilter = document.getElementById('filterStyle') ? document.getElementById('filterStyle').value : 'all';
+      
+      const filtered = currentShows.filter(s => {
+        const titleMatches = (s.key || '').toLowerCase().includes(query);
+        const authorMatches = (s.author || '').toLowerCase().includes(query);
+        const matchesQuery = titleMatches || authorMatches;
+
+        let matchesPeriod = true;
+        if (periodFilter === '6-Month') {
+          matchesPeriod = (s.category || '').startsWith('6-Month');
+        } else if (periodFilter === '3-Month') {
+          matchesPeriod = (s.category || '').startsWith('3-Month');
+        } else if (periodFilter === 'other') {
+          matchesPeriod = !(s.category || '').startsWith('6-Month') && !(s.category || '').startsWith('3-Month');
+        }
+
+        let matchesStyle = true;
+        if (styleFilter !== 'all') {
+          const sModel = (s.model || 'gross').toLowerCase();
+          matchesStyle = (sModel === styleFilter);
+        }
+
+        return matchesQuery && matchesPeriod && matchesStyle;
+      });
+
+      const sixMonthItems = filtered.filter(s => (s.category || '').startsWith('6-Month'));
+      const threeMonthItems = filtered.filter(s => (s.category || '').startsWith('3-Month'));
+      const otherItems = filtered.filter(s => !(s.category || '').startsWith('6-Month') && !(s.category || '').startsWith('3-Month'));
+
+      document.getElementById('sixMonthCount').innerText = `${sixMonthItems.length} Shows`;
+      document.getElementById('threeMonthCount').innerText = `${threeMonthItems.length} Shows`;
+
+      const otherSection = document.getElementById('otherSectionTitle');
+      const otherCount = document.getElementById('otherCount');
+      if (otherSection) {
+        if (otherItems.length > 0) {
+          otherSection.style.display = 'flex';
+          otherCount.innerText = `${otherItems.length} Shows`;
+        } else {
+          otherSection.style.display = 'none';
+        }
+      }
+
+      const renderCard = (s) => {
+        const model = (s.model || 'gross').toLowerCase();
+        let badgeClass = 'badge-gross';
+        let badgeLabel = 'Gross';
+
+        if (model === 'net') {
+          badgeClass = 'badge-net';
+          badgeLabel = 'Net';
+        } else if (model === 'both') {
+          badgeClass = 'badge-both';
+          badgeLabel = 'Gross & Net';
+        } else if (model === 'tiered') {
+          badgeClass = 'badge-tiered';
+          badgeLabel = 'Tiered';
+        } else if (model === 'carryover') {
+          badgeClass = 'badge-carryover';
+          badgeLabel = 'Carryover / Recoup';
+        } else if (model === 'flat') {
+          badgeClass = 'badge-flat';
+          badgeLabel = 'Flat Buyout';
+        }
+
+        return `
+        <div class="statement-card">
+          <div class="card-header">
+            <div class="card-title">${escapeHtml(s.key)}</div>
+            <span class="style-badge ${badgeClass}">${badgeLabel}</span>
+          </div>
+          <div class="card-meta">
+            <div><strong>Author:</strong> ${escapeHtml(s.author)}</div>
+            <div><strong>Period:</strong> ${escapeHtml(s.periodLabel)}</div>
+            <div class="card-link-box">${escapeHtml(s.url)}</div>
+          </div>
+          <div class="card-footer">
+            <div class="footer-left">
+              <button class="btn-copy" onclick="copyUrl('${escapeJs(s.url)}', this)">
+                Copy Link
+              </button>
+              <a href="${escapeHtml(s.url)}" class="btn-view" target="_blank">
+                View
+              </a>
+            </div>
+            <button class="btn-delete" title="Delete Statement" onclick="deleteStatement('${s.id}')">
+              🗑️ Delete
+            </button>
+          </div>
+        </div>
+      `;
+      };
+
+      const sixGrid = document.getElementById('sixMonthGrid');
+      const threeGrid = document.getElementById('threeMonthGrid');
+      const otherGrid = document.getElementById('otherGrid');
+
+      sixGrid.innerHTML = sixMonthItems.length > 0 
+        ? sixMonthItems.map(renderCard).join('') 
+        : '<div class="empty-state">No 6-month statements matching filter.</div>';
+
+      threeGrid.innerHTML = threeMonthItems.length > 0 
+        ? threeMonthItems.map(renderCard).join('') 
+        : '<div class="empty-state">No 3-month statements matching filter.</div>';
+
+      if (otherGrid) {
+        otherGrid.innerHTML = otherItems.length > 0
+          ? otherItems.map(renderCard).join('')
+          : '';
+      }
+    }
+
+    function exportToCsv() {
+      const headers = ['Show Title', 'Author', 'Reporting Period', 'Statement Style', 'Statement Link'];
+      const rows = currentShows.map(s => [
+        `"${(s.key || '').replace(/"/g, '""')}"`,
+        `"${(s.author || '').replace(/"/g, '""')}"`,
+        `"${(s.periodLabel || '').replace(/"/g, '""')}"`,
+        `"${(s.model || 'gross')}"`,
+        `"${(s.url || '').replace(/"/g, '""')}"`
+      ]);
+
+      const csvContent = '\uFEFF' + [headers.join(','), ...rows.map(r => r.join(','))].join('\r\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute('download', 'Pocket_FM_Revenue_Statements.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function handleSearch() {
+      renderPortal();
+    }
+
+    function copyUrl(url, btn) {
+      navigator.clipboard.writeText(url).then(() => {
+        const orig = btn.innerText;
+        btn.innerText = 'Copied! ✓';
+        btn.style.backgroundColor = '#e8f5e9';
+        btn.style.color = '#2e7d32';
+        setTimeout(() => {
+          btn.innerText = orig;
+          btn.style.backgroundColor = '#f0f2f5';
+          btn.style.color = '#121212';
+        }, 2000);
+      });
+    }
+
+    function deleteStatement(id) {
+      const show = currentShows.find(s => s.id === id);
+      const name = show ? show.key : 'this statement';
+      if (confirm(`Are you sure you want to delete "${name}" from this portal?`)) {
+        currentShows = currentShows.filter(s => s.id !== id);
+        saveStoredShows(currentShows);
+        renderPortal();
+      }
+    }
+
+    function handleCategoryChange() {
+      const cat = document.getElementById('newCategory').value;
+      const group = document.getElementById('customPeriodGroup');
+      if (cat === 'Custom') {
+        group.style.display = 'block';
+      } else {
+        group.style.display = 'none';
+      }
+    }
+
+    function handleModelChange() {
+      const model = document.getElementById('newModel').value;
+      const grossGroup = document.getElementById('grossGroup');
+      const deductGroup = document.getElementById('deductGroup');
+      const netGroup = document.getElementById('netGroup');
+      const tieredGroup = document.getElementById('tieredGroup');
+      const revPctGroup = document.getElementById('revPctGroup');
+      const revPctLabel = document.getElementById('revPctLabel');
+
+      // Reset visibilities
+      grossGroup.style.display = 'block';
+      deductGroup.style.display = 'none';
+      netGroup.style.display = 'none';
+      tieredGroup.style.display = 'none';
+      revPctGroup.style.display = 'block';
+
+      if (model === 'net') {
+        grossGroup.style.display = 'none';
+        netGroup.style.display = 'block';
+        revPctLabel.innerText = 'Revenue Share % on Net (e.g. 15%)';
+      } else if (model === 'both') {
+        grossGroup.style.display = 'block';
+        deductGroup.style.display = 'grid';
+        netGroup.style.display = 'block';
+        revPctLabel.innerText = 'Revenue Share % on Net (e.g. 15%)';
+      } else if (model === 'tiered') {
+        grossGroup.style.display = 'block';
+        tieredGroup.style.display = 'grid';
+        revPctLabel.innerText = 'Tier 1 Rev Share % (up to threshold)';
+      } else if (model === 'flat') {
+        grossGroup.style.display = 'none';
+        revPctGroup.style.display = 'none';
+      } else if (model === 'carryover') {
+        grossGroup.style.display = 'block';
+        revPctLabel.innerText = 'Contractual Rev Share % (e.g. 15%)';
+      } else {
+        // gross
+        grossGroup.style.display = 'block';
+        revPctLabel.innerText = 'Revenue Share % on Gross (e.g. 15%)';
+      }
+
+      handleLiveCalc();
+    }
+
+    function handleLiveCalc() {
+      const model = document.getElementById('newModel').value;
+      const curr = document.getElementById('newCurr').value || '$';
+
+      const gross = parseFloat(document.getElementById('newGross').value) || 0;
+      let net = parseFloat(document.getElementById('newNet').value) || 0;
+      const deductPct = parseFloat(document.getElementById('newDeductPct').value) || 30;
+
+      if (model === 'both') {
+        const deductAmt = +(gross * (deductPct / 100.0)).toFixed(2);
+        net = Math.max(0, +(gross - deductAmt).toFixed(2));
+        document.getElementById('newDeductAmt').value = deductAmt.toFixed(2);
+        document.getElementById('newNet').value = net.toFixed(2);
+      }
+
+      const revPct = parseFloat(document.getElementById('newRevPct').value) || 15;
+      const tierThresh = parseFloat(document.getElementById('newTierThresh').value) || 50000;
+      const tier2Pct = parseFloat(document.getElementById('newTier2Pct').value) || 20;
+
+      const mgPaid = parseFloat(document.getElementById('newMgPaid').value) || 0;
+      const prevRecouped = parseFloat(document.getElementById('newPrevRecouped').value) || 0;
+      const taxPct = parseFloat(document.getElementById('newTaxPct').value) || 0;
+
+      let revShareAmt = 0;
+      if (model === 'net' || model === 'both') {
+        revShareAmt = +(net * (revPct / 100.0)).toFixed(2);
+      } else if (model === 'tiered') {
+        const baseAmount = net > 0 ? net : gross;
+        if (baseAmount <= tierThresh) {
+          revShareAmt = +(baseAmount * (revPct / 100.0)).toFixed(2);
+        } else {
+          const t1 = +(tierThresh * (revPct / 100.0)).toFixed(2);
+          const t2 = +((baseAmount - tierThresh) * (tier2Pct / 100.0)).toFixed(2);
+          revShareAmt = +(t1 + t2).toFixed(2);
+        }
+      } else if (model === 'flat') {
+        revShareAmt = mgPaid;
+      } else {
+        // gross / carryover
+        revShareAmt = +(gross * (revPct / 100.0)).toFixed(2);
+      }
+
+      const remainingMgBefore = Math.max(0, +(mgPaid - prevRecouped).toFixed(2));
+      const mgRecoupedThisPeriod = Math.min(remainingMgBefore, revShareAmt);
+      const remainingMgAfter = Math.max(0, +(remainingMgBefore - mgRecoupedThisPeriod).toFixed(2));
+
+      let subtotal = model === 'flat' ? mgPaid : Math.max(0, +(revShareAmt - remainingMgBefore).toFixed(2));
+      let withholdingAmt = +((subtotal * taxPct) / 100.0).toFixed(2);
+      let finalPayout = Math.max(0, +(subtotal - withholdingAmt).toFixed(2));
+
+      const fmt = (n) => `${curr}${Number(n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+      document.getElementById('calcRevShare').innerText = fmt(revShareAmt);
+      document.getElementById('calcMgRecouped').innerText = fmt(mgRecoupedThisPeriod);
+      document.getElementById('calcRemainingMg').innerText = fmt(remainingMgAfter);
+      document.getElementById('calcPayout').innerText = fmt(finalPayout);
+    }
+
+    function initModernDropdown(selectId, isInline = false) {
+      const sel = document.getElementById(selectId);
+      if (!sel) return;
+
+      let oldWrapper = sel.parentNode.querySelector(`.modern-select-wrapper[data-for="${selectId}"]`);
+      if (oldWrapper) oldWrapper.remove();
+
+      sel.classList.add('hidden-native-select');
+
+      const wrapper = document.createElement('div');
+      wrapper.className = `modern-select-wrapper ${isInline ? 'inline' : ''}`;
+      wrapper.setAttribute('data-for', selectId);
+
+      const selectedOpt = sel.options[sel.selectedIndex] || sel.options[0];
+      const trigger = document.createElement('button');
+      trigger.type = 'button';
+      trigger.className = 'modern-select-trigger';
+      trigger.innerHTML = `
+        <span class="trigger-text">${escapeHtml(selectedOpt ? selectedOpt.text : '')}</span>
+        <svg class="trigger-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      `;
+
+      const menu = document.createElement('div');
+      menu.className = 'modern-select-menu';
+
+      Array.from(sel.options).forEach((opt, idx) => {
+        const item = document.createElement('div');
+        const isSelected = idx === sel.selectedIndex;
+        item.className = `modern-select-option ${isSelected ? 'selected' : ''}`;
+        item.innerHTML = `
+          <span>${escapeHtml(opt.text)}</span>
+          ${isSelected ? '<span class="check-icon">✓</span>' : ''}
+        `;
+        item.onclick = (e) => {
+          e.stopPropagation();
+          sel.value = opt.value;
+          trigger.querySelector('.trigger-text').innerText = opt.text;
+          wrapper.querySelectorAll('.modern-select-option').forEach(el => {
+            el.classList.remove('selected');
+            const icon = el.querySelector('.check-icon');
+            if (icon) icon.remove();
+          });
+          item.classList.add('selected');
+          const check = document.createElement('span');
+          check.className = 'check-icon';
+          check.innerText = '✓';
+          item.appendChild(check);
+          wrapper.classList.remove('open');
+          sel.dispatchEvent(new Event('change'));
+        };
+        menu.appendChild(item);
+      });
+
+      trigger.onclick = (e) => {
+        e.stopPropagation();
+        document.querySelectorAll('.modern-select-wrapper.open').forEach(w => {
+          if (w !== wrapper) w.classList.remove('open');
+        });
+        wrapper.classList.toggle('open');
+      };
+
+      wrapper.appendChild(trigger);
+      wrapper.appendChild(menu);
+      sel.parentNode.insertBefore(wrapper, sel.nextSibling);
+    }
+
+    function syncModernDropdown(selectId) {
+      const sel = document.getElementById(selectId);
+      if (!sel) return;
+      const wrapper = sel.parentNode.querySelector(`.modern-select-wrapper[data-for="${selectId}"]`);
+      if (!wrapper) {
+        initModernDropdown(selectId);
+        return;
+      }
+      const selectedOpt = sel.options[sel.selectedIndex] || sel.options[0];
+      const triggerText = wrapper.querySelector('.trigger-text');
+      if (triggerText && selectedOpt) {
+        triggerText.innerText = selectedOpt.text;
+      }
+      const options = wrapper.querySelectorAll('.modern-select-option');
+      options.forEach((el, idx) => {
+        const isSelected = idx === sel.selectedIndex;
+        el.classList.toggle('selected', isSelected);
+        const existingCheck = el.querySelector('.check-icon');
+        if (isSelected && !existingCheck) {
+          const check = document.createElement('span');
+          check.className = 'check-icon';
+          check.innerText = '✓';
+          el.appendChild(check);
+        } else if (!isSelected && existingCheck) {
+          existingCheck.remove();
+        }
+      });
+    }
+
+    function openAddModal() {
+      document.getElementById('newTitle').value = '';
+      document.getElementById('newAuthor').value = '';
+      document.getElementById('newUrl').value = '';
+      document.getElementById('newCurr').value = '$';
+      document.getElementById('newCategory').value = '6-Month';
+      document.getElementById('newCustomPeriod').value = '';
+      document.getElementById('newModel').value = 'gross';
+      document.getElementById('newGross').value = '0.00';
+      document.getElementById('newNet').value = '0.00';
+      document.getElementById('newDeductPct').value = '30';
+      document.getElementById('newDeductAmt').value = '0.00';
+      document.getElementById('newTierThresh').value = '50000';
+      document.getElementById('newTier2Pct').value = '20';
+      document.getElementById('newRevPct').value = '15';
+      document.getElementById('newMgPaid').value = '0.00';
+      document.getElementById('newPrevRecouped').value = '0.00';
+      document.getElementById('newTaxPct').value = '0';
+      document.getElementById('newPlays').value = '';
+      document.getElementById('newListeners').value = '';
+      document.getElementById('newEpisodes').value = '';
+      document.getElementById('newNote').value = '';
+
+      handleCategoryChange();
+      handleModelChange();
+      
+      syncModernDropdown('newCurr');
+      syncModernDropdown('newCategory');
+      syncModernDropdown('newModel');
+
+      document.getElementById('addModal').style.display = 'flex';
+    }
+
+    function closeAddModal() {
+      document.getElementById('addModal').style.display = 'none';
+      document.querySelectorAll('.modern-select-wrapper.open').forEach(w => w.classList.remove('open'));
+    }
+
+    function openSyncModal() {
+      document.getElementById('syncModal').style.display = 'flex';
+    }
+
+    function closeSyncModal() {
+      document.getElementById('syncModal').style.display = 'none';
+    }
+
+    function copySyncCmd(btn) {
+      navigator.clipboard.writeText('python backend/generate_revenue_statements.py').then(() => {
+        const orig = btn.innerText;
+        btn.innerText = 'Copied! ✓';
+        btn.style.backgroundColor = '#2e7d32';
+        setTimeout(() => {
+          btn.innerText = orig;
+          btn.style.backgroundColor = '#444';
+        }, 2000);
+      });
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modern-select-wrapper.open').forEach(w => w.classList.remove('open'));
+      }
+    });
+
+    window.addEventListener('click', function(e) {
+      if (!e.target.closest('.modern-select-wrapper')) {
+        document.querySelectorAll('.modern-select-wrapper.open').forEach(w => w.classList.remove('open'));
+      }
+      const addModal = document.getElementById('addModal');
+      const syncModal = document.getElementById('syncModal');
+      if (e.target === addModal) closeAddModal();
+      if (e.target === syncModal) closeSyncModal();
+    });
+
+    function saveNewStatement() {
+      const title = document.getElementById('newTitle').value.trim();
+      const author = document.getElementById('newAuthor').value.trim();
+      const category = document.getElementById('newCategory').value;
+      const customPeriod = document.getElementById('newCustomPeriod').value.trim();
+      const model = document.getElementById('newModel').value;
+      const curr = document.getElementById('newCurr').value || '$';
+      let url = document.getElementById('newUrl').value.trim();
+
+      if (!title || !author) {
+        alert('Please fill in at least the Show Title and Author Name!');
+        return;
+      }
+
+      let periodLabel = 'April 1, 2026 – September 30, 2026 (6-Month Combined / Q2 + Q3)';
+      if (category === '3-Month') {
+        periodLabel = 'July 1, 2026 – September 30, 2026 (3-Month Statement / Q3)';
+      } else if (category === '3-Month-Q2') {
+        periodLabel = 'April 1, 2026 – June 30, 2026 (3-Month Statement / Q2)';
+      } else if (category === '3-Month-Q1') {
+        periodLabel = 'January 1, 2026 – March 31, 2026 (3-Month Statement / Q1)';
+      } else if (category === '3-Month-Q4') {
+        periodLabel = 'October 1, 2026 – December 31, 2026 (3-Month Statement / Q4)';
+      } else if (category === '6-Month-Q4Q1') {
+        periodLabel = 'October 1, 2025 – March 31, 2026 (6-Month Combined / Q4 + Q1)';
+      } else if (category === 'Annual') {
+        periodLabel = 'January 1, 2026 – December 31, 2026 (Annual Statement)';
+      } else if (category === 'Custom' && customPeriod) {
+        periodLabel = customPeriod;
+      }
+
+      const id = 'custom_' + Date.now();
+      const gross = parseFloat(document.getElementById('newGross').value) || 0;
+      const net = parseFloat(document.getElementById('newNet').value) || 0;
+      const deductPct = parseFloat(document.getElementById('newDeductPct').value) || 30;
+      const tierThresh = parseFloat(document.getElementById('newTierThresh').value) || 50000;
+      const tier2Pct = parseFloat(document.getElementById('newTier2Pct').value) || 20;
+
+      const revPct = parseFloat(document.getElementById('newRevPct').value) || 15;
+      const mgPaid = parseFloat(document.getElementById('newMgPaid').value) || 0;
+      const prevRecouped = parseFloat(document.getElementById('newPrevRecouped').value) || 0;
+      const taxPct = parseFloat(document.getElementById('newTaxPct').value) || 0;
+
+      const plays = document.getElementById('newPlays').value.trim() || '—';
+      const listeners = document.getElementById('newListeners').value.trim() || '—';
+      const episodes = document.getElementById('newEpisodes').value.trim() || '';
+      const customNote = document.getElementById('newNote').value.trim() || '';
+
+      // If no custom URL provided, auto-generate official Pocket FM statement viewer URL
+      if (!url) {
+        const statementData = {
+          id: id,
+          title: title,
+          author: author,
+          category: category,
+          periodLabel: periodLabel,
+          model: model,
+          curr: curr,
+          gross: gross,
+          net: net,
+          deductPct: deductPct,
+          tierThreshold: tierThresh,
+          tier2Pct: tier2Pct,
+          revPct: revPct,
+          mgPaid: mgPaid,
+          prevRecouped: prevRecouped,
+          withholdingPct: taxPct,
+          plays: plays,
+          listeners: listeners,
+          episodes: episodes,
+          customNote: customNote
+        };
+        try {
+          localStorage.setItem('pocketfm_statement_' + id, JSON.stringify(statementData));
+        } catch(e) {}
+
+        const queryParams = new URLSearchParams({
+          id: id,
+          title: title,
+          author: author,
+          category: category,
+          period: periodLabel,
+          model: model,
+          curr: curr,
+          gross: gross,
+          net: net,
+          deduct_pct: deductPct,
+          tier_thresh: tierThresh,
+          tier2_pct: tier2Pct,
+          revpct: revPct,
+          mg: mgPaid,
+          prev_recouped: prevRecouped,
+          withholding_pct: taxPct,
+          plays: plays,
+          listeners: listeners,
+          episodes: episodes,
+          note: customNote
+        });
+
+        const baseUrl = window.location.protocol.startsWith('http') 
+          ? window.location.origin 
+          : 'https://pocketfm-statements.vercel.app';
+        url = `${baseUrl}/statement_viewer?${queryParams.toString()}`;
+      }
+
+      const newShow = {
+        id: id,
+        key: title,
+        author: author,
+        category: category,
+        model: model,
+        periodLabel: periodLabel,
+        url: url
+      };
+
+      currentShows.unshift(newShow);
+      saveStoredShows(currentShows);
+      closeAddModal();
+      renderPortal();
+    }
+
+
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function escapeJs(str) {
+      if (!str) return '';
+      return str.replace(/'/g, "\\'");
+    }
+
+    // Initial render
+    renderPortal();
+
+    // Initialize Modern Dropdowns
+    function initAllModernDropdowns() {
+      initModernDropdown('filterPeriod', true);
+      initModernDropdown('filterStyle', true);
+      initModernDropdown('newCurr', false);
+      initModernDropdown('newCategory', false);
+      initModernDropdown('newModel', false);
+      initModernDropdown('masterDealFilter', false);
+      initModernDropdown('grossShowSelect', false);
+      initModernDropdown('netShowSelect', false);
+    }
+    initAllModernDropdowns();
+  
+
+
+    // Hub Tabs Switching & Recoupment Card Renderers
+    function switchHubTab(tabName) {
+      const tabCards = document.getElementById('tabContentCards');
+      const tabMaster = document.getElementById('tabContentMaster');
+      const tabGross = document.getElementById('tabContentGross');
+      const tabNet = document.getElementById('tabContentNet');
+
+      const btnCards = document.getElementById('tabBtnStatements');
+      const btnMaster = document.getElementById('tabBtnMaster');
+      const btnGross = document.getElementById('tabBtnGross');
+      const btnNet = document.getElementById('tabBtnNet');
+
+      if (tabCards) tabCards.style.display = 'none';
+      if (tabMaster) tabMaster.style.display = 'none';
+      if (tabGross) tabGross.style.display = 'none';
+      if (tabNet) tabNet.style.display = 'none';
+
+      if (btnCards) btnCards.classList.remove('active');
+      if (btnMaster) btnMaster.classList.remove('active');
+      if (btnGross) btnGross.classList.remove('active');
+      if (btnNet) btnNet.classList.remove('active');
+
+      if (tabName === 'master') {
+        if (tabMaster) tabMaster.style.display = 'block';
+        if (btnMaster) btnMaster.classList.add('active');
+        syncModernDropdown('masterDealFilter');
+      } else if (tabName === 'gross') {
+        if (tabGross) tabGross.style.display = 'block';
+        if (btnGross) btnGross.classList.add('active');
+        syncModernDropdown('grossShowSelect');
+        const sel = document.getElementById('grossShowSelect');
+        if (sel) renderGrossCalcCard(sel.value);
+      } else if (tabName === 'net') {
+        if (tabNet) tabNet.style.display = 'block';
+        if (btnNet) btnNet.classList.add('active');
+        syncModernDropdown('netShowSelect');
+        const sel = document.getElementById('netShowSelect');
+        if (sel) renderNetCalcCard(sel.value);
+      } else {
+        if (tabCards) tabCards.style.display = 'block';
+        if (btnCards) btnCards.classList.add('active');
+      }
+    }
+
+    function filterMasterSummary() {
+      const filter = (document.getElementById('masterDealFilter').value || 'all').toLowerCase();
+      const rows = document.querySelectorAll('#masterSummaryTbody tr');
+      rows.forEach(r => {
+        const deal = (r.getAttribute('data-deal') || '').toLowerCase();
+        if (filter === 'all' || deal === filter) {
+          r.style.display = '';
+        } else {
+          r.style.display = 'none';
+        }
+      });
+    }
+
+    function renderGrossCalcCard(key) {
+      if (!key || typeof key !== 'string') { const s = document.getElementById('grossShowSelect'); key = s ? s.value : 'Blood Vice'; }
+      const data = GROSS_DEALS_DATA[key];
+      const container = document.getElementById('grossCalcCardContainer');
+      if (!data || !container) return;
+
+      let thCols = data.headers.map((h, i) => `<th style="text-align:${i===0?'left':'right'};">${h}</th>`).join('');
+      let rowsHtml = '';
+      data.rows.forEach(r => {
+        if (r[1] === 'hdr') {
+          rowsHtml += `<tr class="section-hdr"><td colspan="${data.headers.length}">${r[0]}</td></tr>`;
+        } else {
+          let isPayable = r[0].indexOf('Payable') !== -1;
+          let isHighlight = isPayable || r[0].indexOf('Closing') !== -1 || r[0].indexOf('Earned') !== -1;
+          let cls = isPayable ? 'payable-row' : (isHighlight ? 'highlight' : '');
+          let tds = r.map((c, i) => `<td style="text-align:${i===0?'left':'right'};">${c}</td>`).join('');
+          rowsHtml += `<tr class="${cls}">${tds}</tr>`;
+        }
+      });
+
+      container.innerHTML = `
+        <div class="calc-card-preview">
+          <div class="calc-card-preview-header">
+            <div>
+              <div style="font-size: 20px; font-weight: 700; color: #1f2328;">${data.title}</div>
+              <div style="font-size: 13px; color: #57606a; margin-top: 3px;">${data.author} • Gross Revenue Deal • ${data.rev_pct} Revenue Share</div>
+            </div>
+            <span class="badge-deal-gross">${data.badge}</span>
+          </div>
+
+          <div class="calc-card-preview-kpis">
+            <div class="calc-card-kpi">
+              <div class="calc-card-kpi-label">Original MG</div>
+              <div class="calc-card-kpi-val">${data.orig_mg}</div>
+            </div>
+            <div class="calc-card-kpi">
+              <div class="calc-card-kpi-label">Total MG Recouped</div>
+              <div class="calc-card-kpi-val">${data.recouped_mg}</div>
+            </div>
+            <div class="calc-card-kpi">
+              <div class="calc-card-kpi-label">Current MG Available</div>
+              <div class="calc-card-kpi-val">${data.avail_mg}</div>
+            </div>
+          </div>
+
+          <table class="calc-card-table">
+            <thead><tr>${thCols}</tr></thead>
+            <tbody>${rowsHtml}</tbody>
+          </table>
+
+          <div style="margin-top: 14px; font-size: 12px; color: #57606a; line-height: 1.5;">
+            ${data.footnote}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderNetCalcCard(key) {
+      if (!key || typeof key !== 'string') { const s = document.getElementById('netShowSelect'); key = s ? s.value : "St. Marin's Cozy Mysteries"; }
+      const data = NET_DEALS_DATA[key];
+      const container = document.getElementById('netCalcCardContainer');
+      if (!data || !container) return;
+
+      let thCols = data.headers.map((h, i) => `<th style="text-align:${i===0?'left':'right'};">${h}</th>`).join('');
+      let rowsHtml = '';
+      data.rows.forEach(r => {
+        if (r[1] === 'hdr') {
+          rowsHtml += `<tr class="section-hdr"><td colspan="${data.headers.length}">${r[0]}</td></tr>`;
+        } else {
+          let isPayable = r[0].indexOf('Payable') !== -1;
+          let isHighlight = isPayable || r[0].indexOf('Closing') !== -1 || r[0].indexOf('Earned') !== -1;
+          let cls = isPayable ? 'payable-row' : (isHighlight ? 'highlight' : '');
+          let tds = r.map((c, i) => `<td style="text-align:${i===0?'left':'right'};">${c}</td>`).join('');
+          rowsHtml += `<tr class="${cls}">${tds}</tr>`;
+        }
+      });
+
+      container.innerHTML = `
+        <div class="calc-card-preview">
+          <div class="calc-card-preview-header">
+            <div>
+              <div style="font-size: 20px; font-weight: 700; color: #1f2328;">${data.title}</div>
+              <div style="font-size: 13px; color: #57606a; margin-top: 3px;">${data.author} • Net Revenue Deal • ${data.rev_pct} Revenue Share</div>
+            </div>
+            <span class="badge-deal-net">${data.badge}</span>
+          </div>
+
+          <div class="calc-card-preview-kpis">
+            <div class="calc-card-kpi">
+              <div class="calc-card-kpi-label">Opening MG Available</div>
+              <div class="calc-card-kpi-val">${data.avail_mg}</div>
+            </div>
+            <div class="calc-card-kpi">
+              <div class="calc-card-kpi-label">Total MG Recouped</div>
+              <div class="calc-card-kpi-val">${data.recouped_mg}</div>
+            </div>
+            <div class="calc-card-kpi">
+              <div class="calc-card-kpi-label">Revenue Share Payable</div>
+              <div class="calc-card-kpi-val">${data.payable}</div>
+            </div>
+          </div>
+
+          <table class="calc-card-table">
+            <thead><tr>${thCols}</tr></thead>
+            <tbody>${rowsHtml}</tbody>
+          </table>
+
+          <div style="margin-top: 14px; font-size: 12px; color: #57606a; line-height: 1.5;">
+            ${data.footnote}
+          </div>
+        </div>
+      `;
+    }
+
+    function exportMasterSummaryCsv() {
+      if (typeof MASTER_SUMMARY_DATA === 'undefined' || !Array.isArray(MASTER_SUMMARY_DATA)) return;
+      const headers = ["Series", "Deal", "Rev %", "Original MG", "Q2 Share", "Q2 MG Closing", "Q3 Share", "Q3 MG Closing", "Q4 Share", "Current MG Available"];
+      let csv = headers.join(",") + "\n";
+      MASTER_SUMMARY_DATA.forEach(r => {
+        const orig = r.original_mg != null ? `"$${r.original_mg.toLocaleString()}"` : '"—"';
+        const q2s = r.q2_share != null ? `"$${r.q2_share.toFixed(2)}"` : '"—"';
+        const q2c = r.q2_closing != null ? `"$${r.q2_closing.toFixed(2)}"` : '"—"';
+        const q3s = r.q3_share != null ? `"$${r.q3_share.toFixed(2)}"` : '"—"';
+        const q3c = r.q3_closing != null ? `"$${r.q3_closing.toFixed(2)}"` : '"—"';
+        const q4s = '"—"';
+        const cur = r.current_mg != null ? `"$${r.current_mg.toFixed(2)}"` : '"—"';
+        csv += `"${r.series.replace(/"/g, '""')}","${r.deal}","${r.rev_pct}",${orig},${q2s},${q2c},${q3s},${q3c},${q4s},${cur}\n`;
+      });
+      downloadCsv(csv, "Pocket_FM_Master_Revenue_Summary.csv");
+    }
+
+    function exportGrossDealsCsv() {
+      if (typeof GROSS_DEALS_DATA === 'undefined') return;
+      const headers = ["Series", "Author", "Rev %", "Original MG", "Total MG Recouped", "Current MG Available"];
+      let csv = headers.join(",") + "\n";
+      Object.keys(GROSS_DEALS_DATA).forEach(k => {
+        const d = GROSS_DEALS_DATA[k];
+        csv += `"${d.title.replace(/"/g, '""')}","${d.author.replace(/"/g, '""')}","${d.rev_pct}","${d.orig_mg}","${d.recouped_mg}","${d.avail_mg}"\n`;
+      });
+      downloadCsv(csv, "Pocket_FM_Gross_Deals_Ledger.csv");
+    }
+
+    function exportNetDealsCsv() {
+      if (typeof NET_DEALS_DATA === 'undefined') return;
+      const headers = ["Series", "Author", "Rev %", "Original MG Available", "Total MG Recouped", "Revenue Share Payable"];
+      let csv = headers.join(",") + "\n";
+      Object.keys(NET_DEALS_DATA).forEach(k => {
+        const d = NET_DEALS_DATA[k];
+        csv += `"${d.title.replace(/"/g, '""')}","${d.author.replace(/"/g, '""')}","${d.rev_pct}","${d.avail_mg}","${d.recouped_mg}","${d.payable}"\n`;
+      });
+      downloadCsv(csv, "Pocket_FM_Net_Deals_Ledger.csv");
+    }
+
+    function downloadCsv(content, filename) {
+      const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+  </script>
 
 </body>
 </html>

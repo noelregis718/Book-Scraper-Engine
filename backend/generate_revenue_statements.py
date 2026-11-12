@@ -1164,10 +1164,10 @@ def update_internal_hub_html(shows_list, master_rows):
     def make_card_html(s):
         model = (s.get("model") or "gross").lower()
         badge_class = "badge-gross"
-        badge_label = "Gross Style"
+        badge_label = "Gross"
         if model == "net":
             badge_class = "badge-net"
-            badge_label = "Net Style"
+            badge_label = "Net"
         elif model == "both":
             badge_class = "badge-both"
             badge_label = "Gross & Net"
@@ -1562,56 +1562,64 @@ def update_internal_hub_html(shows_list, master_rows):
       transform: translateY(-1px);
     }
     .ledger-desc-box {
-      background: #f6f8fa;
+      background: #fbfcfd;
       border: 1px solid #d0d7de;
-      border-left: 4px solid #E51A4D;
-      border-radius: 8px;
-      padding: 16px 20px;
-      font-size: 13px;
-      color: #24292f;
-      line-height: 1.6;
+      border-radius: 10px;
+      padding: 20px 22px;
       margin-top: 18px;
-      margin-bottom: 20px;
-    }
-    .ledger-desc-box.blue {
-      border-left-color: #0969da;
-    }
-    .ledger-desc-box.green {
-      border-left-color: #1a7f37;
+      margin-bottom: 24px;
     }
     .ledger-desc-box h4 {
-      margin: 0 0 6px 0;
-      font-size: 14.5px;
+      margin: 0 0 8px 0;
+      font-size: 15px;
       font-weight: 700;
       color: #1f2328;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+    }
+    .ledger-desc-box p {
+      margin: 0 0 14px 0;
+      font-size: 13px;
+      color: #57606a;
+      line-height: 1.6;
     }
     .ledger-desc-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 12px;
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid #e1e4e8;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
     }
-    .ledger-desc-item strong {
-      display: block;
-      color: #1f2328;
-      font-size: 12.5px;
-      margin-bottom: 2px;
-    }
-    .formula-tag {
-      display: inline-block;
+    .ledger-step-card {
       background: #ffffff;
+      border: 1px solid #e1e4e8;
+      border-radius: 8px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 8px;
+    }
+    .ledger-step-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1f2328;
+    }
+    .formula-block {
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+      background: #f6f8fa;
       border: 1px solid #d0d7de;
-      border-radius: 4px;
-      padding: 2px 6px;
+      border-radius: 6px;
+      padding: 8px 10px;
       font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
       font-size: 11.5px;
-      color: #24292f;
-      margin: 2px 0;
+      color: #1f2328;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+    .ledger-step-note {
+      font-size: 12px;
+      color: #57606a;
+      line-height: 1.45;
+      margin-top: 2px;
     }
     .master-deal-select {
       width: 100%;
@@ -1826,22 +1834,10 @@ def update_internal_hub_html(shows_list, master_rows):
     <!-- Hub Navigation Tabs -->
     <div class="hub-tabs-container">
       <div class="hub-tabs">
-        <button class="hub-tab-btn active" id="tabBtnStatements" onclick="switchHubTab('statements')">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
-          Statement Cards (33)
-        </button>
-        <button class="hub-tab-btn" id="tabBtnMaster" onclick="switchHubTab('master')">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-          Master Revenue Summary
-        </button>
-        <button class="hub-tab-btn" id="tabBtnGross" onclick="switchHubTab('gross')">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
-          Gross Deals Ledger (24)
-        </button>
-        <button class="hub-tab-btn" id="tabBtnNet" onclick="switchHubTab('net')">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
-          Net Deals Ledger (9)
-        </button>
+        <button class="hub-tab-btn active" id="tabBtnStatements" onclick="switchHubTab('statements')">Statement Cards (33)</button>
+        <button class="hub-tab-btn" id="tabBtnMaster" onclick="switchHubTab('master')">Master Revenue Summary</button>
+        <button class="hub-tab-btn" id="tabBtnGross" onclick="switchHubTab('gross')">Gross Deals Ledger (24)</button>
+        <button class="hub-tab-btn" id="tabBtnNet" onclick="switchHubTab('net')">Net Deals Ledger (9)</button>
       </div>
     </div>
 
@@ -1854,44 +1850,45 @@ def update_internal_hub_html(shows_list, master_rows):
             <div class="master-summary-subtitle">2026 • Portfolio Performance &amp; Minimum Guarantee Recoupment Ledger</div>
           </div>
           <div>
-            <button class="btn-excel-view" onclick="exportMasterSummaryCsv()">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line></svg>
-              Excel View
-            </button>
+            <button class="btn-excel-view" onclick="exportMasterSummaryCsv()">Export CSV</button>
           </div>
         </div>
 
-        <!-- Description Box -->
+        <!-- Master Description Box -->
         <div class="ledger-desc-box">
-          <h4>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E51A4D" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-            Pocket FM Revenue Recoupment &amp; Financial Settlement Framework
-          </h4>
+          <h4>Pocket FM Revenue Recoupment &amp; Financial Settlement Framework</h4>
           <p>
-            This master revenue ledger displays the cumulative quarterly financial performance, licensing deal structure, and Minimum Guarantee (MG) recoupment status across all active titles for the 2026 accounting periods. Under Pocket FM author licensing agreements, upfront Minimum Guarantee advances are systematically recouped against the author's earned revenue share before cash distributions commence.
+            This master revenue ledger displays cumulative quarterly financial performance, licensing deal structure, and Minimum Guarantee (MG) recoupment status across all active titles for 2026 accounting periods. Upfront Minimum Guarantee advances are systematically recouped against the author's earned revenue share before cash distributions commence.
           </p>
           <div class="ledger-desc-grid">
-            <div class="ledger-desc-item">
-              <strong>📅 Accounting Cycles</strong>
-              <span>Reporting covers Q2 (AMJ: April–June 2026), Q3 (JAS: July–September 2026), and Semi-Annual consolidated terms (Apr–Sep 2026).</span>
+            <div class="ledger-step-card">
+              <div class="ledger-step-title">1. Accounting Cycles &amp; Terms</div>
+              <div class="formula-block">Q2 (AMJ) • Q3 (JAS) • Semi-Annual Terms</div>
+              <div class="ledger-step-note">Covers audited quarterly periods (April–June and July–September 2026) as well as 6-Month consolidated licensing contracts.</div>
             </div>
-            <div class="ledger-desc-item">
-              <strong>💳 Payment Gateway (PG) Exclusion</strong>
-              <span>Third-party payment processor and store fees are deducted from gross receipts to establish Gross Revenue excluding PG.</span>
+            <div class="ledger-step-card">
+              <div class="ledger-step-title">2. Payment Gateway (PG) Exclusion</div>
+              <div class="formula-block">Gross Rev excl. PG = Gross Revenue - PG Charges</div>
+              <div class="ledger-step-note">Third-party payment processor and store fees are deducted from gross receipts before computing author revenue share distributions.</div>
             </div>
-            <div class="ledger-desc-item">
-              <strong>⚖️ Cash Payout Trigger Rule</strong>
-              <span>Author Revenue Share Payable remains <strong>$0.00</strong> until the cumulative Opening MG balance is fully recouped ($0.00). Once fully recouped, net payable = earned share minus remaining balance.</span>
+            <div class="ledger-step-card">
+              <div class="ledger-step-title">3. Cash Payout Trigger Rule</div>
+              <div class="formula-block">Closing MG = Opening MG - MG Recouped</div>
+              <div class="ledger-step-note">Author Revenue Share Payable remains $0.00 until Opening MG reaches $0.00. Once fully recouped, net payable is released.</div>
             </div>
           </div>
         </div>
+        </div>
 
-        <div style="margin-top: 20px;">
-          <select id="masterDealFilter" class="master-deal-select" onchange="filterMasterSummary()">
-            <option value="all">All Deals (33 Series)</option>
-            <option value="gross">Gross Deals (24 Series)</option>
-            <option value="net">Net Deals (9 Series)</option>
-          </select>
+        <div style="margin-top: 20px; display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 13px; font-weight: 600; color: #57606a;">Filter by Deal:</span>
+          <div style="min-width: 240px; width: 260px;">
+            <select id="masterDealFilter" class="master-deal-select" onchange="filterMasterSummary()">
+              <option value="all">All Deals (33 Series)</option>
+              <option value="gross">Gross Deals (24 Series)</option>
+              <option value="net">Net Deals (9 Series)</option>
+            </select>
+          </div>
         </div>
 
         <div class="master-table-scroll">
@@ -1939,31 +1936,30 @@ def update_internal_hub_html(shows_list, master_rows):
         </div>
 
         <!-- Gross Description Box -->
-        <div class="ledger-desc-box blue">
-          <h4>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0969da" stroke-width="2.2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-            Gross Revenue Deal Mechanics &amp; Recoupment Calculation Rules
-          </h4>
+        <div class="ledger-desc-box">
+          <h4>Gross Revenue Deal Mechanics &amp; Recoupment Calculation Rules</h4>
           <p>
             In Gross Revenue Share agreements, author royalties are calculated directly on gross receipts collected from user transactions, after subtracting only third-party Payment Gateway (PG) fees. Marketing spends, narrator fees, and platform infrastructure overhead are entirely absorbed by Pocket FM and are <strong>not deducted</strong> from the author's gross share.
           </p>
           <div class="ledger-desc-grid">
-            <div class="ledger-desc-item">
-              <strong>1. Gross Revenue Calculation</strong>
-              <span class="formula-tag">Gross Rev excl. PG = Revenue incl. PG - PG Charges</span>
+            <div class="ledger-step-card">
+              <div class="ledger-step-title">1. Gross Revenue Calculation</div>
+              <div class="formula-block">Gross Rev excl. PG = Revenue incl. PG - PG Charges</div>
+              <div class="ledger-step-note">Excludes third-party payment gateway transaction processing charges.</div>
             </div>
-            <div class="ledger-desc-item">
-              <strong>2. Author Revenue Share</strong>
-              <span class="formula-tag">Author Rev Share = Gross Rev excl. PG × Contract Rev Share %</span>
-              <span>Calculated on contracted tier (typically 15% or 20%).</span>
+            <div class="ledger-step-card">
+              <div class="ledger-step-title">2. Author Revenue Share</div>
+              <div class="formula-block">Author Rev Share = Gross Rev excl. PG × Contract Rev Share %</div>
+              <div class="ledger-step-note">Calculated on contracted tier (typically 15% or 20%).</div>
             </div>
-            <div class="ledger-desc-item">
-              <strong>3. Recoupment &amp; Payout Release</strong>
-              <span class="formula-tag">MG Recouped = min(Author Share, Opening MG)</span>
-              <span class="formula-tag">Closing MG = Opening MG - MG Recouped</span>
-              <span>Author Revenue Share Payable remains $0.00 until Opening MG reaches $0.00.</span>
+            <div class="ledger-step-card">
+              <div class="ledger-step-title">3. Recoupment &amp; Payout Release</div>
+              <div class="formula-block">MG Recouped = min(Author Share, Opening MG)</div>
+              <div class="formula-block">Closing MG = Opening MG - MG Recouped</div>
+              <div class="ledger-step-note">Author Revenue Share Payable remains $0.00 until Opening MG reaches $0.00.</div>
             </div>
           </div>
+        </div>
         </div>
 
         <!-- Gross Deals Summary Table -->
@@ -2000,7 +1996,7 @@ def update_internal_hub_html(shows_list, master_rows):
               <h3 style="font-size: 17px; font-weight: 700; color: #1f2328; margin: 0;">Quarter-by-Quarter Gross Deal Calculation Viewer</h3>
               <p style="font-size: 13px; color: #57606a; margin: 3px 0 0 0;">Select any Gross Deal series to inspect its complete multi-quarter calculation card:</p>
             </div>
-            <div style="min-width: 260px;">
+            <div style="min-width: 320px; width: 360px; max-width: 100%;">
               <select id="grossShowSelect" class="master-deal-select" onchange="renderGrossCalcCard(this.value)">
                 {gross_options_html}
               </select>
@@ -2031,30 +2027,30 @@ def update_internal_hub_html(shows_list, master_rows):
         </div>
 
         <!-- Net Description Box -->
-        <div class="ledger-desc-box green">
-          <h4>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a7f37" stroke-width="2.2"><path d="M16 16v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v1"></path><path d="M18 8h4a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-4"></path><circle cx="8" cy="12" r="2"></circle></svg>
-            Net Revenue Deal Mechanics &amp; Capped Production Deductions
-          </h4>
+        <div class="ledger-desc-box">
+          <h4>Net Revenue Deal Mechanics &amp; Capped Production Deductions</h4>
           <p>
             In Net Revenue Share agreements, designated direct expenses (production narration, audio engineering, marketing spends) are deductible before calculating author royalty distributions. Pocket FM strictly enforces the <strong>Production Cost Deduction Cap Rule</strong> to guarantee author equity.
           </p>
           <div class="ledger-desc-grid">
-            <div class="ledger-desc-item">
-              <strong>1. Net Share Base Formula</strong>
-              <span class="formula-tag">Net Rev for Share = Gross Rev excl. PG - Deductible Prod Costs - Spends</span>
+            <div class="ledger-step-card">
+              <div class="ledger-step-title">1. Net Share Base Formula</div>
+              <div class="formula-block">Net Rev for Share = Gross Rev excl. PG - Deductible Prod Costs - Spends</div>
+              <div class="ledger-step-note">Direct expenses are subtracted from gross revenue to determine the net profit pool.</div>
             </div>
-            <div class="ledger-desc-item">
-              <strong>2. Production Cost Cap Rule</strong>
-              <span>Deductible production costs are strictly <strong>capped at Gross Revenue excl. PG</strong>. Net Revenue for share calculation cannot fall below $0.00 and cannot generate negative debt for the author.</span>
+            <div class="ledger-step-card">
+              <div class="ledger-step-title">2. Production Cost Cap Rule</div>
+              <div class="formula-block">Deductible Costs = min(Reported Costs, Gross Rev excl. PG)</div>
+              <div class="ledger-step-note">Deductible production costs are strictly capped at gross revenue. Net revenue cannot fall below $0.00 and cannot generate author debt.</div>
             </div>
-            <div class="ledger-desc-item">
-              <strong>3. Recoupment &amp; Payout Release</strong>
-              <span class="formula-tag">Author Share = Net Base × 15%</span>
-              <span class="formula-tag">Closing MG = Opening MG - MG Recouped</span>
-              <span>Author Revenue Share Payable releases only once Opening MG is fully recouped.</span>
+            <div class="ledger-step-card">
+              <div class="ledger-step-title">3. Recoupment &amp; Payout Release</div>
+              <div class="formula-block">Author Share = Net Base × 15%</div>
+              <div class="formula-block">Closing MG = Opening MG - MG Recouped</div>
+              <div class="ledger-step-note">Author Revenue Share Payable releases only once Opening MG is fully recouped.</div>
             </div>
           </div>
+        </div>
         </div>
 
         <!-- Net Deals Summary Table -->
@@ -2092,7 +2088,7 @@ def update_internal_hub_html(shows_list, master_rows):
               <h3 style="font-size: 17px; font-weight: 700; color: #1f2328; margin: 0;">Net Deal Multi-Quarter Recoupment Viewer</h3>
               <p style="font-size: 13px; color: #57606a; margin: 3px 0 0 0;">Select any Net Deal series to inspect its revenue, production cost deductions, and recoupment card:</p>
             </div>
-            <div style="min-width: 260px;">
+            <div style="min-width: 320px; width: 360px; max-width: 100%;">
               <select id="netShowSelect" class="master-deal-select" onchange="renderNetCalcCard(this.value)">
                 {net_options_html}
               </select>
@@ -2354,9 +2350,23 @@ def update_internal_hub_html(shows_list, master_rows):
     }}
 """
 
-    hub_content = re.sub(r'function switchHubTab[\s\S]*?(?=</script>)', "", hub_content)
-    hub_content = hub_content.replace("function getStoredShows()", f"{js_datasets}\n\n    function getStoredShows()")
+    # Clean and inject script block using string indices
+    s_start = hub_content.find("<script>")
+    s_end = hub_content.rfind("</script>")
+    if s_start != -1 and s_end != -1:
+        # Extract core portal functions if present, or maintain them
+        if "function getStoredShows" not in js_datasets:
+            # Look for existing core script between function getStoredShows and function switchHubTab
+            core_idx = hub_content.find("function getStoredShows()")
+            core_end_idx = hub_content.find("// Hub Tabs Switching")
+            if core_end_idx == -1:
+                core_end_idx = hub_content.find("function switchHubTab")
+            if core_idx != -1 and core_end_idx != -1:
+                core_script = hub_content[core_idx:core_end_idx].strip()
+                js_datasets = js_datasets.replace("const HUB_DATA_VERSION = ", f"{core_script}\n\n    const HUB_DATA_VERSION = ")
 
+        hub_content = hub_content[:s_start] + f"<script>\n{js_datasets}\n  </script>" + hub_content[s_end + len("</script>"):]
+    
     with open(INTERNAL_HUB_FILE, "w", encoding="utf-8") as f:
         f.write(hub_content)
 
