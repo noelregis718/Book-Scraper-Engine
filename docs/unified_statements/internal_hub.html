@@ -506,6 +506,8 @@
       border-radius: 8px;
     }
   
+    
+    
     /* Hub Navigation Tabs */
     .hub-tabs-container {
       display: flex;
@@ -514,87 +516,141 @@
     }
     .hub-tabs {
       background: #ffffff;
-      border: 1px solid #e1e4e8;
+      border: 1px solid #d0d7de;
       border-radius: 50px;
       padding: 5px;
       display: inline-flex;
       gap: 6px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      flex-wrap: wrap;
     }
     .hub-tab-btn {
       display: inline-flex;
       align-items: center;
-      padding: 9px 22px;
+      padding: 9px 20px;
       border-radius: 40px;
       font-size: 13.5px;
       font-weight: 600;
       border: none;
       background: transparent;
-      color: #555555;
+      color: #57606a;
       cursor: pointer;
       transition: all 0.2s ease;
     }
     .hub-tab-btn:hover {
-      color: #000000;
-      background: #f4f4f4;
+      color: #1f2328;
+      background: #f6f8fa;
     }
     .hub-tab-btn.active {
-      background: #0c0c0c;
+      background: #E51A4D;
       color: #ffffff;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      box-shadow: 0 2px 6px rgba(229, 26, 77, 0.28);
     }
 
-    /* Master Revenue Summary Card - Dark Mode matching Image 4 */
+    /* Clean White-Themed Ledger & Master Summary Cards */
     .master-summary-card {
-      background-color: #121212;
-      border: 1px solid #282828;
-      border-radius: 14px;
+      background-color: #ffffff;
+      border: 1px solid #d0d7de;
+      border-radius: 12px;
       padding: 26px;
-      color: #ffffff;
-      box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+      color: #1f2328;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.04);
     }
     .master-summary-top {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
       gap: 15px;
+      flex-wrap: wrap;
     }
     .master-summary-title {
       font-size: 24px;
       font-weight: 700;
-      color: #ffffff;
+      color: #1f2328;
       letter-spacing: -0.3px;
     }
     .master-summary-subtitle {
       font-size: 13.5px;
-      color: #888888;
+      color: #57606a;
       margin-top: 4px;
     }
     .btn-excel-view {
       display: inline-flex;
       align-items: center;
       padding: 8px 18px;
-      background: #222222;
-      border: 1px solid #3d3d3d;
+      background: #ffffff;
+      border: 1.5px solid #d0d7de;
       border-radius: 6px;
-      color: #ffffff;
+      color: #24292f;
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s ease;
     }
     .btn-excel-view:hover {
-      background: #2e2e2e;
-      border-color: #555555;
+      background: #f6f8fa;
+      border-color: #afb8c1;
       transform: translateY(-1px);
+    }
+    .ledger-desc-box {
+      background: #f6f8fa;
+      border: 1px solid #d0d7de;
+      border-left: 4px solid #E51A4D;
+      border-radius: 8px;
+      padding: 16px 20px;
+      font-size: 13px;
+      color: #24292f;
+      line-height: 1.6;
+      margin-top: 18px;
+      margin-bottom: 20px;
+    }
+    .ledger-desc-box.blue {
+      border-left-color: #0969da;
+    }
+    .ledger-desc-box.green {
+      border-left-color: #1a7f37;
+    }
+    .ledger-desc-box h4 {
+      margin: 0 0 6px 0;
+      font-size: 14.5px;
+      font-weight: 700;
+      color: #1f2328;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .ledger-desc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #e1e4e8;
+    }
+    .ledger-desc-item strong {
+      display: block;
+      color: #1f2328;
+      font-size: 12.5px;
+      margin-bottom: 2px;
+    }
+    .formula-tag {
+      display: inline-block;
+      background: #ffffff;
+      border: 1px solid #d0d7de;
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+      font-size: 11.5px;
+      color: #24292f;
+      margin: 2px 0;
     }
     .master-deal-select {
       width: 100%;
-      height: 44px;
-      background-color: #1a1a1a;
-      border: 1.5px solid #333333;
+      height: 42px;
+      background-color: #ffffff;
+      border: 1.5px solid #d0d7de;
       border-radius: 8px;
-      color: #ffffff;
+      color: #1f2328;
       font-size: 14px;
       font-weight: 600;
       padding: 0 16px;
@@ -602,7 +658,7 @@
       cursor: pointer;
       appearance: none;
       -webkit-appearance: none;
-      background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23aaaaaa%22%20stroke-width%3D%222.2%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2357606a%22%20stroke-width%3D%222.2%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
       background-repeat: no-repeat;
       background-position: right 14px center;
       background-size: 16px 16px;
@@ -612,58 +668,60 @@
       border-color: #E51A4D;
     }
     .master-deal-select option {
-      background: #1a1a1a;
-      color: #ffffff;
+      background: #ffffff;
+      color: #1f2328;
     }
     .master-table-scroll {
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
       margin-top: 18px;
+      border: 1px solid #d0d7de;
       border-radius: 8px;
+      background: #ffffff;
     }
     .master-table-scroll::-webkit-scrollbar {
       height: 8px;
     }
     .master-table-scroll::-webkit-scrollbar-track {
-      background: #181818;
+      background: #f6f8fa;
       border-radius: 4px;
     }
     .master-table-scroll::-webkit-scrollbar-thumb {
-      background: #383838;
+      background: #d0d7de;
       border-radius: 4px;
     }
     .master-table-scroll::-webkit-scrollbar-thumb:hover {
-      background: #555555;
+      background: #afb8c1;
     }
     .master-summary-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 13.5px;
+      font-size: 13px;
       white-space: nowrap;
     }
     .master-summary-table th {
       padding: 12px 14px;
-      color: #8e8e8e;
+      color: #57606a;
       font-size: 12px;
       font-weight: 600;
-      border-bottom: 1px solid #282828;
+      border-bottom: 2px solid #d0d7de;
       text-transform: none;
       letter-spacing: normal;
-      background: #121212;
+      background: #f6f8fa;
       line-height: 1.3;
     }
     .master-summary-table td {
-      padding: 13px 14px;
-      border-bottom: 1px solid #1f1f1f;
-      color: #ffffff;
-      font-size: 13.5px;
-      background: transparent;
+      padding: 12px 14px;
+      border-bottom: 1px solid #eaecef;
+      color: #1f2328;
+      font-size: 13px;
+      background: #ffffff;
     }
     .master-summary-table tr:hover td {
-      background: rgba(255, 255, 255, 0.025);
+      background: #f6f8fa;
     }
     .master-series-link {
-      color: #ffffff;
+      color: #0969da;
       text-decoration: none;
       font-weight: 600;
       transition: color 0.15s ease;
@@ -672,13 +730,122 @@
       color: #E51A4D;
       text-decoration: underline;
     }
+    .badge-deal-gross {
+      display: inline-block;
+      background: #ddf4ff;
+      color: #0969da;
+      border: 1px solid #b6e3ff;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11.5px;
+      font-weight: 600;
+    }
+    .badge-deal-net {
+      display: inline-block;
+      background: #dafbe1;
+      color: #1a7f37;
+      border: 1px solid #aceebb;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11.5px;
+      font-weight: 600;
+    }
     .master-summary-footnote {
       margin-top: 18px;
       padding-top: 14px;
-      border-top: 1px solid #222222;
+      border-top: 1px solid #d0d7de;
       font-size: 12px;
-      color: #888888;
+      color: #57606a;
       line-height: 1.5;
+    }
+
+    /* Interactive Recoupment Card in White Theme */
+    .calc-card-preview {
+      background: #ffffff;
+      border: 1.5px solid #d0d7de;
+      border-radius: 12px;
+      padding: 22px;
+      margin-top: 18px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+    .calc-card-preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #eaecef;
+    }
+    .calc-card-preview-kpis {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .calc-card-kpi {
+      background: #f6f8fa;
+      border: 1px solid #d0d7de;
+      border-radius: 8px;
+      padding: 12px 14px;
+      text-align: left;
+    }
+    .calc-card-kpi-label {
+      font-size: 11.5px;
+      color: #57606a;
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    .calc-card-kpi-val {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1f2328;
+      margin-top: 4px;
+    }
+    .calc-card-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .calc-card-table th {
+      background: #f6f8fa;
+      color: #57606a;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 10px 14px;
+      border-bottom: 2px solid #d0d7de;
+      text-align: right;
+    }
+    .calc-card-table th:first-child {
+      text-align: left;
+    }
+    .calc-card-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid #eaecef;
+      color: #1f2328;
+      text-align: right;
+    }
+    .calc-card-table td:first-child {
+      text-align: left;
+      font-weight: 500;
+    }
+    .calc-card-table tr.section-hdr td {
+      background: #f6f8fa;
+      font-size: 11px;
+      font-weight: 700;
+      color: #57606a;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      padding: 8px 14px;
+    }
+    .calc-card-table tr.highlight td {
+      font-weight: 600;
+      background: #fbfcfd;
+    }
+    .calc-card-table tr.payable-row td {
+      font-weight: 700;
+      background: #f6f8fa;
+      border-bottom: 2px solid #d0d7de;
     }
 
   </style>
@@ -698,22 +865,30 @@
       <div class="hub-tabs">
         <button class="hub-tab-btn active" id="tabBtnStatements" onclick="switchHubTab('statements')">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
-          Statement Cards
+          Statement Cards (33)
         </button>
         <button class="hub-tab-btn" id="tabBtnMaster" onclick="switchHubTab('master')">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
           Master Revenue Summary
         </button>
+        <button class="hub-tab-btn" id="tabBtnGross" onclick="switchHubTab('gross')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+          Gross Deals Ledger (24)
+        </button>
+        <button class="hub-tab-btn" id="tabBtnNet" onclick="switchHubTab('net')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+          Net Deals Ledger (9)
+        </button>
       </div>
     </div>
 
-    <!-- Master Revenue Summary View (Matching Reference Image) -->
+    <!-- Master Revenue Summary View (Clean White Theme) -->
     <div id="tabContentMaster" style="display: none; margin-bottom: 50px;">
       <div class="master-summary-card">
         <div class="master-summary-top">
           <div>
             <div class="master-summary-title">Master Revenue Summary</div>
-            <div class="master-summary-subtitle">2026 • Sample from your revenue statement sheets</div>
+            <div class="master-summary-subtitle">2026 • Portfolio Performance &amp; Minimum Guarantee Recoupment Ledger</div>
           </div>
           <div>
             <button class="btn-excel-view" onclick="exportMasterSummaryCsv()">
@@ -723,11 +898,36 @@
           </div>
         </div>
 
+        <!-- Description Box -->
+        <div class="ledger-desc-box">
+          <h4>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E51A4D" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            Pocket FM Revenue Recoupment &amp; Financial Settlement Framework
+          </h4>
+          <p>
+            This master revenue ledger displays the cumulative quarterly financial performance, licensing deal structure, and Minimum Guarantee (MG) recoupment status across all active titles for the 2026 accounting periods. Under Pocket FM author licensing agreements, upfront Minimum Guarantee advances are systematically recouped against the author's earned revenue share before cash distributions commence.
+          </p>
+          <div class="ledger-desc-grid">
+            <div class="ledger-desc-item">
+              <strong>📅 Accounting Cycles</strong>
+              <span>Reporting covers Q2 (AMJ: April–June 2026), Q3 (JAS: July–September 2026), and Semi-Annual consolidated terms (Apr–Sep 2026).</span>
+            </div>
+            <div class="ledger-desc-item">
+              <strong>💳 Payment Gateway (PG) Exclusion</strong>
+              <span>Third-party payment processor and store fees are deducted from gross receipts to establish Gross Revenue excluding PG.</span>
+            </div>
+            <div class="ledger-desc-item">
+              <strong>⚖️ Cash Payout Trigger Rule</strong>
+              <span>Author Revenue Share Payable remains <strong>$0.00</strong> until the cumulative Opening MG balance is fully recouped ($0.00). Once fully recouped, net payable = earned share minus remaining balance.</span>
+            </div>
+          </div>
+        </div>
+
         <div style="margin-top: 20px;">
           <select id="masterDealFilter" class="master-deal-select" onchange="filterMasterSummary()">
-            <option value="all">All Deals</option>
-            <option value="gross">Gross Deals</option>
-            <option value="net">Net Deals</option>
+            <option value="all">All Deals (33 Series)</option>
+            <option value="gross">Gross Deals (24 Series)</option>
+            <option value="net">Net Deals (9 Series)</option>
           </select>
         </div>
 
@@ -736,7 +936,7 @@
             <thead>
               <tr>
                 <th style="text-align: left; min-width: 220px;">Series</th>
-                <th style="text-align: left; min-width: 80px;">Deal</th>
+                <th style="text-align: left; min-width: 85px;">Deal</th>
                 <th style="text-align: right; min-width: 75px;">Rev %</th>
                 <th style="text-align: right; min-width: 105px;">Original MG</th>
                 <th style="text-align: right; min-width: 95px;">Q2 Share</th>
@@ -751,7 +951,7 @@
 
               <tr data-deal="gross">
                 <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/blood-vice-q2-amj-995fdcf9" target="_blank" class="master-series-link">Blood Vice</a></td>
-                <td style="text-align: left;">Gross</td>
+                <td style="text-align: left;"><span class="badge-deal-gross">Gross</span></td>
                 <td style="text-align: right;">20%</td>
                 <td style="text-align: right;">$1,500</td>
                 <td style="text-align: right;">$34.28</td>
@@ -763,7 +963,7 @@
               </tr>
               <tr data-deal="net">
                 <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/st-marin-s-cozy-mysteries-494440e3" target="_blank" class="master-series-link">St. Marin's Cozy Mysteries</a></td>
-                <td style="text-align: left;">Net</td>
+                <td style="text-align: left;"><span class="badge-deal-net">Net</span></td>
                 <td style="text-align: right;">15%</td>
                 <td style="text-align: right;">$12,500</td>
                 <td style="text-align: right;">—</td>
@@ -775,7 +975,7 @@
               </tr>
               <tr data-deal="gross">
                 <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/the-witches-of-wheeler-park-a2759c7d" target="_blank" class="master-series-link">The Witches of Wheeler Park</a></td>
-                <td style="text-align: left;">Gross</td>
+                <td style="text-align: left;"><span class="badge-deal-gross">Gross</span></td>
                 <td style="text-align: right;">15%</td>
                 <td style="text-align: right;">$500</td>
                 <td style="text-align: right;">—</td>
@@ -787,7 +987,7 @@
               </tr>
               <tr data-deal="gross">
                 <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/fate-weaver-series-57897400" target="_blank" class="master-series-link">Fate Weaver Series</a></td>
-                <td style="text-align: left;">Gross</td>
+                <td style="text-align: left;"><span class="badge-deal-gross">Gross</span></td>
                 <td style="text-align: right;">15%</td>
                 <td style="text-align: right;">$2,000</td>
                 <td style="text-align: right;">—</td>
@@ -799,7 +999,7 @@
               </tr>
               <tr data-deal="gross">
                 <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/sweet-tea-witch-mysteries-fc8149b2" target="_blank" class="master-series-link">Sweet Tea Witch Mysteries</a></td>
-                <td style="text-align: left;">Gross</td>
+                <td style="text-align: left;"><span class="badge-deal-gross">Gross</span></td>
                 <td style="text-align: right;">13%</td>
                 <td style="text-align: right;">$7,500</td>
                 <td style="text-align: right;">—</td>
@@ -811,7 +1011,7 @@
               </tr>
               <tr data-deal="gross">
                 <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/lattes-and-levitation-f4b0a144" target="_blank" class="master-series-link">Lattes and Levitation</a></td>
-                <td style="text-align: left;">Gross</td>
+                <td style="text-align: left;"><span class="badge-deal-gross">Gross</span></td>
                 <td style="text-align: right;">15%</td>
                 <td style="text-align: right;">$500</td>
                 <td style="text-align: right;">—</td>
@@ -823,7 +1023,7 @@
               </tr>
               <tr data-deal="gross">
                 <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/psychic-seasons-series-13a093d3" target="_blank" class="master-series-link">Psychic Seasons Series</a></td>
-                <td style="text-align: left;">Gross</td>
+                <td style="text-align: left;"><span class="badge-deal-gross">Gross</span></td>
                 <td style="text-align: right;">15%</td>
                 <td style="text-align: right;">$3,000</td>
                 <td style="text-align: right;">—</td>
@@ -835,7 +1035,7 @@
               </tr>
               <tr data-deal="net">
                 <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/vital-secrets-f2c5cb33" target="_blank" class="master-series-link">Vital Secrets</a></td>
-                <td style="text-align: left;">Net</td>
+                <td style="text-align: left;"><span class="badge-deal-net">Net</span></td>
                 <td style="text-align: right;">15%</td>
                 <td style="text-align: right;">$4,000</td>
                 <td style="text-align: right;">—</td>
@@ -847,7 +1047,7 @@
               </tr>
               <tr data-deal="net">
                 <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/mrs-lillywhite-investigates-mysteries-ce64cdb7" target="_blank" class="master-series-link">Mrs. Lillywhite Investigates Mysteries</a></td>
-                <td style="text-align: left;">Net</td>
+                <td style="text-align: left;"><span class="badge-deal-net">Net</span></td>
                 <td style="text-align: right;">15%</td>
                 <td style="text-align: right;">$2,500</td>
                 <td style="text-align: right;">—</td>
@@ -859,7 +1059,7 @@
               </tr>
               <tr data-deal="gross">
                 <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/liz-talbot-mystery-series-0de65ac1" target="_blank" class="master-series-link">Liz Talbot Mystery Series</a></td>
-                <td style="text-align: left;">Gross</td>
+                <td style="text-align: left;"><span class="badge-deal-gross">Gross</span></td>
                 <td style="text-align: right;">15%</td>
                 <td style="text-align: right;">$6,000</td>
                 <td style="text-align: right;">—</td>
@@ -871,7 +1071,7 @@
               </tr>
               <tr data-deal="gross">
                 <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/carolina-tales-cfd9b2f8" target="_blank" class="master-series-link">Carolina Tales</a></td>
-                <td style="text-align: left;">Gross</td>
+                <td style="text-align: left;"><span class="badge-deal-gross">Gross</span></td>
                 <td style="text-align: right;">15%</td>
                 <td style="text-align: right;">$2,500</td>
                 <td style="text-align: right;">—</td>
@@ -883,7 +1083,7 @@
               </tr>
               <tr data-deal="gross">
                 <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/fatal-series-95fb9b7a" target="_blank" class="master-series-link">Fatal Series</a></td>
-                <td style="text-align: left;">Gross</td>
+                <td style="text-align: left;"><span class="badge-deal-gross">Gross</span></td>
                 <td style="text-align: right;">15%</td>
                 <td style="text-align: right;">$10,000</td>
                 <td style="text-align: right;">—</td>
@@ -895,7 +1095,7 @@
               </tr>
               <tr data-deal="gross">
                 <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/jackal-among-snakes-3cee9442" target="_blank" class="master-series-link">Jackal Among Snakes</a></td>
-                <td style="text-align: left;">Gross</td>
+                <td style="text-align: left;"><span class="badge-deal-gross">Gross</span></td>
                 <td style="text-align: right;">12%</td>
                 <td style="text-align: right;">$4,000</td>
                 <td style="text-align: right;">—</td>
@@ -907,7 +1107,7 @@
               </tr>
               <tr data-deal="gross">
                 <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/redemption-arc-f050f6e7" target="_blank" class="master-series-link">Redemption Arc</a></td>
-                <td style="text-align: left;">Gross</td>
+                <td style="text-align: left;"><span class="badge-deal-gross">Gross</span></td>
                 <td style="text-align: right;">12%</td>
                 <td style="text-align: right;">$3,000</td>
                 <td style="text-align: right;">—</td>
@@ -919,7 +1119,7 @@
               </tr>
               <tr data-deal="gross">
                 <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/gansett-series-0c7111ce" target="_blank" class="master-series-link">Gansett Series</a></td>
-                <td style="text-align: left;">Gross</td>
+                <td style="text-align: left;"><span class="badge-deal-gross">Gross</span></td>
                 <td style="text-align: right;">15%</td>
                 <td style="text-align: right;">$7,500</td>
                 <td style="text-align: right;">—</td>
@@ -931,7 +1131,7 @@
               </tr>
               <tr data-deal="gross">
                 <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/the-witches-of-cleopatra-hill-q2-amj-d6526581" target="_blank" class="master-series-link">The Witches of Cleopatra Hill</a></td>
-                <td style="text-align: left;">Gross</td>
+                <td style="text-align: left;"><span class="badge-deal-gross">Gross</span></td>
                 <td style="text-align: right;">15%</td>
                 <td style="text-align: right;">$1,500</td>
                 <td style="text-align: right;">$18.51</td>
@@ -943,7 +1143,7 @@
               </tr>
               <tr data-deal="gross">
                 <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/fae-chronicles-series-11f9a625" target="_blank" class="master-series-link">Fae Chronicles Series</a></td>
-                <td style="text-align: left;">Gross</td>
+                <td style="text-align: left;"><span class="badge-deal-gross">Gross</span></td>
                 <td style="text-align: right;">22%</td>
                 <td style="text-align: right;">$25,000</td>
                 <td style="text-align: right;">—</td>
@@ -955,7 +1155,7 @@
               </tr>
               <tr data-deal="net">
                 <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/detective-emilia-cruz-8051f011" target="_blank" class="master-series-link">Detective Emilia Cruz</a></td>
-                <td style="text-align: left;">Net</td>
+                <td style="text-align: left;"><span class="badge-deal-net">Net</span></td>
                 <td style="text-align: right;">13%</td>
                 <td style="text-align: right;">$3,000</td>
                 <td style="text-align: right;">—</td>
@@ -967,7 +1167,7 @@
               </tr>
               <tr data-deal="net">
                 <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/death-before-dragon-series-2d51754e" target="_blank" class="master-series-link">Death Before Dragon Series</a></td>
-                <td style="text-align: left;">Net</td>
+                <td style="text-align: left;"><span class="badge-deal-net">Net</span></td>
                 <td style="text-align: right;">25%</td>
                 <td style="text-align: right;">$0</td>
                 <td style="text-align: right;">—</td>
@@ -979,7 +1179,7 @@
               </tr>
               <tr data-deal="gross">
                 <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/a-shade-of-vampire-series-2908daf8" target="_blank" class="master-series-link">A Shade of Vampire Series</a></td>
-                <td style="text-align: left;">Gross</td>
+                <td style="text-align: left;"><span class="badge-deal-gross">Gross</span></td>
                 <td style="text-align: right;">23.5%</td>
                 <td style="text-align: right;">$9,653</td>
                 <td style="text-align: right;">—</td>
@@ -991,7 +1191,7 @@
               </tr>
               <tr data-deal="gross">
                 <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/blake-larsen-3c6159c2" target="_blank" class="master-series-link">Blake Larsen</a></td>
-                <td style="text-align: left;">Gross</td>
+                <td style="text-align: left;"><span class="badge-deal-gross">Gross</span></td>
                 <td style="text-align: right;">15%</td>
                 <td style="text-align: right;">$10,000</td>
                 <td style="text-align: right;">—</td>
@@ -1003,7 +1203,7 @@
               </tr>
               <tr data-deal="net">
                 <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/nocturne-falls-411c8eb0" target="_blank" class="master-series-link">Nocturne Falls</a></td>
-                <td style="text-align: left;">Net</td>
+                <td style="text-align: left;"><span class="badge-deal-net">Net</span></td>
                 <td style="text-align: right;">18%</td>
                 <td style="text-align: right;">$20,000</td>
                 <td style="text-align: right;">—</td>
@@ -1015,7 +1215,7 @@
               </tr>
               <tr data-deal="gross">
                 <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/after-darkness-falls-d4483a6c" target="_blank" class="master-series-link">After Darkness Falls</a></td>
-                <td style="text-align: left;">Gross</td>
+                <td style="text-align: left;"><span class="badge-deal-gross">Gross</span></td>
                 <td style="text-align: right;">15%</td>
                 <td style="text-align: right;">$3,000</td>
                 <td style="text-align: right;">—</td>
@@ -1027,7 +1227,7 @@
               </tr>
               <tr data-deal="gross">
                 <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/lana-harvey-reapers-inc-e657cd1c" target="_blank" class="master-series-link">Lana Harvey, Reapers Inc.</a></td>
-                <td style="text-align: left;">Gross</td>
+                <td style="text-align: left;"><span class="badge-deal-gross">Gross</span></td>
                 <td style="text-align: right;">20%</td>
                 <td style="text-align: right;">$7,500</td>
                 <td style="text-align: right;">—</td>
@@ -1039,7 +1239,7 @@
               </tr>
               <tr data-deal="gross">
                 <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/the-sedona-files-b7524b5e" target="_blank" class="master-series-link">The Sedona Files</a></td>
-                <td style="text-align: left;">Gross</td>
+                <td style="text-align: left;"><span class="badge-deal-gross">Gross</span></td>
                 <td style="text-align: right;">15%</td>
                 <td style="text-align: right;">$500</td>
                 <td style="text-align: right;">—</td>
@@ -1051,7 +1251,7 @@
               </tr>
               <tr data-deal="net">
                 <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/billionaire-bear-brotherhood-dcc2b862" target="_blank" class="master-series-link">Billionaire Bear Brotherhood</a></td>
-                <td style="text-align: left;">Net</td>
+                <td style="text-align: left;"><span class="badge-deal-net">Net</span></td>
                 <td style="text-align: right;">12%</td>
                 <td style="text-align: right;">$1,000</td>
                 <td style="text-align: right;">—</td>
@@ -1063,7 +1263,7 @@
               </tr>
               <tr data-deal="gross">
                 <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/i-m-a-fake-genius-in-a-cultivation-sect-6024bb94" target="_blank" class="master-series-link">I'm a Fake Genius in a Cultivation Sect</a></td>
-                <td style="text-align: left;">Gross</td>
+                <td style="text-align: left;"><span class="badge-deal-gross">Gross</span></td>
                 <td style="text-align: right;">12%</td>
                 <td style="text-align: right;">$0</td>
                 <td style="text-align: right;">—</td>
@@ -1075,7 +1275,7 @@
               </tr>
               <tr data-deal="gross">
                 <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/rend-a685b4fd" target="_blank" class="master-series-link">Rend</a></td>
-                <td style="text-align: left;">Gross</td>
+                <td style="text-align: left;"><span class="badge-deal-gross">Gross</span></td>
                 <td style="text-align: right;">17%</td>
                 <td style="text-align: right;">$3,000</td>
                 <td style="text-align: right;">—</td>
@@ -1087,7 +1287,7 @@
               </tr>
               <tr data-deal="net">
                 <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/game-day-ea1ccab2" target="_blank" class="master-series-link">Game Day</a></td>
-                <td style="text-align: left;">Net</td>
+                <td style="text-align: left;"><span class="badge-deal-net">Net</span></td>
                 <td style="text-align: right;">12%</td>
                 <td style="text-align: right;">$2,000</td>
                 <td style="text-align: right;">—</td>
@@ -1099,7 +1299,7 @@
               </tr>
               <tr data-deal="net">
                 <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/teddy-bears-on-brigade-3ea42fc7" target="_blank" class="master-series-link">Teddy Bears on Brigade</a></td>
-                <td style="text-align: left;">Net</td>
+                <td style="text-align: left;"><span class="badge-deal-net">Net</span></td>
                 <td style="text-align: right;">12%</td>
                 <td style="text-align: right;">$3,000</td>
                 <td style="text-align: right;">—</td>
@@ -1111,7 +1311,7 @@
               </tr>
               <tr data-deal="gross">
                 <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/hedgewitch-for-hire-62fad382" target="_blank" class="master-series-link">Hedgewitch for Hire</a></td>
-                <td style="text-align: left;">Gross</td>
+                <td style="text-align: left;"><span class="badge-deal-gross">Gross</span></td>
                 <td style="text-align: right;">15%</td>
                 <td style="text-align: right;">$1,500</td>
                 <td style="text-align: right;">—</td>
@@ -1126,7 +1326,660 @@
         </div>
 
         <div class="master-summary-footnote">
-          Scroll horizontally to see all columns. St. Marin's has a combined Apr–Sep statement, not separate Q2/Q3 figures. Amounts shown are based on inspected worksheets and remain subject to statement-status verification.
+          Scroll horizontally to see all columns. St. Marin's has a combined Apr–Sep statement, not separate Q2/Q3 figures. Amounts shown are based on audited finance worksheets and remain subject to statement-status verification.
+        </div>
+      </div>
+    </div>
+
+    <!-- Gross Deals Ledger View -->
+    <div id="tabContentGross" style="display: none; margin-bottom: 50px;">
+      <div class="master-summary-card">
+        <div class="master-summary-top">
+          <div>
+            <div class="master-summary-title">Gross Revenue Deals — Recoupment &amp; Calculation Ledger</div>
+            <div class="master-summary-subtitle">2026 • 24 Active Series with Gross Revenue Royalty Agreements (15% &amp; 20% Royalty Tiers)</div>
+          </div>
+          <div>
+            <button class="btn-excel-view" onclick="exportGrossDealsCsv()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line></svg>
+              Excel View
+            </button>
+          </div>
+        </div>
+
+        <!-- Gross Description Box -->
+        <div class="ledger-desc-box blue">
+          <h4>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0969da" stroke-width="2.2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            Gross Revenue Deal Mechanics &amp; Recoupment Calculation Rules
+          </h4>
+          <p>
+            In Gross Revenue Share agreements, author royalties are calculated directly on gross receipts collected from user transactions, after subtracting only third-party Payment Gateway (PG) fees. Marketing spends, narrator fees, and platform infrastructure overhead are entirely absorbed by Pocket FM and are <strong>not deducted</strong> from the author's gross share.
+          </p>
+          <div class="ledger-desc-grid">
+            <div class="ledger-desc-item">
+              <strong>1. Gross Revenue Calculation</strong>
+              <span class="formula-tag">Gross Rev excl. PG = Revenue incl. PG - PG Charges</span>
+            </div>
+            <div class="ledger-desc-item">
+              <strong>2. Author Revenue Share</strong>
+              <span class="formula-tag">Author Rev Share = Gross Rev excl. PG × Contract Rev Share %</span>
+              <span>Calculated on contracted tier (typically 15% or 20%).</span>
+            </div>
+            <div class="ledger-desc-item">
+              <strong>3. Recoupment &amp; Payout Release</strong>
+              <span class="formula-tag">MG Recouped = min(Author Share, Opening MG)</span>
+              <span class="formula-tag">Closing MG = Opening MG - MG Recouped</span>
+              <span>Author Revenue Share Payable remains $0.00 until Opening MG reaches $0.00.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gross Deals Summary Table -->
+        <div style="margin-top: 24px;">
+          <h3 style="font-size: 16px; font-weight: 700; color: #1f2328; margin-bottom: 8px;">Gross Deals Portfolio Summary (24 Titles)</h3>
+          <div class="master-table-scroll">
+            <table class="master-summary-table" id="grossSummaryTable">
+              <thead>
+                <tr>
+                  <th style="text-align: left; min-width: 200px;">Series</th>
+                  <th style="text-align: left; min-width: 140px;">Author</th>
+                  <th style="text-align: right; min-width: 70px;">Rev %</th>
+                  <th style="text-align: right; min-width: 95px;">Original MG</th>
+                  <th style="text-align: right; min-width: 90px;">Q2 Share</th>
+                  <th style="text-align: right; min-width: 105px;">Q2 Closing</th>
+                  <th style="text-align: right; min-width: 90px;">Q3 Share</th>
+                  <th style="text-align: right; min-width: 105px;">Q3 Closing</th>
+                  <th style="text-align: right; min-width: 115px;">Current MG<br>Available</th>
+                  <th style="text-align: center; min-width: 130px;">Recoupment Status</th>
+                  <th style="text-align: center; min-width: 80px;">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+
+              <tr>
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/sweet-tea-witch-mysteries-fc8149b2" target="_blank" class="master-series-link">Sweet Tea Witch Mysteries</a></td>
+                <td style="text-align: left; color: #57606a;">Amy Boyles</td>
+                <td style="text-align: right;">13%</td>
+                <td style="text-align: right;">$7,500</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$5.40</td>
+                <td style="text-align: right;">$7,494.60</td>
+                <td style="text-align: right; font-weight: 700;">$7,494.60</td>
+                <td style="text-align: center;"><span class="badge-deal-gross">Recouping ($7,495 left)</span></td>
+                <td style="text-align: center;"><a href="https://pocketfm-statements.vercel.app/statements/sweet-tea-witch-mysteries-fc8149b2" target="_blank" class="btn-excel-view" style="padding: 4px 10px; font-size: 11.5px; text-decoration: none;">View</a></td>
+              </tr>
+              <tr>
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/the-witches-of-wheeler-park-a2759c7d" target="_blank" class="master-series-link">The Witches of Wheeler Park</a></td>
+                <td style="text-align: left; color: #57606a;">Christine Pope</td>
+                <td style="text-align: right;">15%</td>
+                <td style="text-align: right;">$500</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$81.55</td>
+                <td style="text-align: right;">$418.45</td>
+                <td style="text-align: right; font-weight: 700;">$418.45</td>
+                <td style="text-align: center;"><span class="badge-deal-gross">Recouping ($418 left)</span></td>
+                <td style="text-align: center;"><a href="https://pocketfm-statements.vercel.app/statements/the-witches-of-wheeler-park-a2759c7d" target="_blank" class="btn-excel-view" style="padding: 4px 10px; font-size: 11.5px; text-decoration: none;">View</a></td>
+              </tr>
+              <tr>
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/lattes-and-levitation-f4b0a144" target="_blank" class="master-series-link">Lattes and Levitation</a></td>
+                <td style="text-align: left; color: #57606a;">Christine Pope</td>
+                <td style="text-align: right;">15%</td>
+                <td style="text-align: right;">$500</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$0.36</td>
+                <td style="text-align: right;">$499.64</td>
+                <td style="text-align: right; font-weight: 700;">$499.64</td>
+                <td style="text-align: center;"><span class="badge-deal-gross">Recouping ($500 left)</span></td>
+                <td style="text-align: center;"><a href="https://pocketfm-statements.vercel.app/statements/lattes-and-levitation-f4b0a144" target="_blank" class="btn-excel-view" style="padding: 4px 10px; font-size: 11.5px; text-decoration: none;">View</a></td>
+              </tr>
+              <tr>
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/fate-weaver-series-57897400" target="_blank" class="master-series-link">Fate Weaver Series</a></td>
+                <td style="text-align: left; color: #57606a;">ReGina Welling</td>
+                <td style="text-align: right;">15%</td>
+                <td style="text-align: right;">$2,000</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$13.12</td>
+                <td style="text-align: right;">$1,986.88</td>
+                <td style="text-align: right; font-weight: 700;">$1,986.88</td>
+                <td style="text-align: center;"><span class="badge-deal-gross">Recouping ($1,987 left)</span></td>
+                <td style="text-align: center;"><a href="https://pocketfm-statements.vercel.app/statements/fate-weaver-series-57897400" target="_blank" class="btn-excel-view" style="padding: 4px 10px; font-size: 11.5px; text-decoration: none;">View</a></td>
+              </tr>
+              <tr>
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/psychic-seasons-series-13a093d3" target="_blank" class="master-series-link">Psychic Seasons Series</a></td>
+                <td style="text-align: left; color: #57606a;">ReGina Welling</td>
+                <td style="text-align: right;">15%</td>
+                <td style="text-align: right;">$3,000</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$20.36</td>
+                <td style="text-align: right;">$2,979.64</td>
+                <td style="text-align: right; font-weight: 700;">$2,979.64</td>
+                <td style="text-align: center;"><span class="badge-deal-gross">Recouping ($2,980 left)</span></td>
+                <td style="text-align: center;"><a href="https://pocketfm-statements.vercel.app/statements/psychic-seasons-series-13a093d3" target="_blank" class="btn-excel-view" style="padding: 4px 10px; font-size: 11.5px; text-decoration: none;">View</a></td>
+              </tr>
+              <tr>
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/liz-talbot-mystery-series-0de65ac1" target="_blank" class="master-series-link">Liz Talbot Mystery Series</a></td>
+                <td style="text-align: left; color: #57606a;">Susan M Boyer</td>
+                <td style="text-align: right;">15%</td>
+                <td style="text-align: right;">$6,000</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$40.07</td>
+                <td style="text-align: right;">$5,959.93</td>
+                <td style="text-align: right; font-weight: 700;">$5,959.93</td>
+                <td style="text-align: center;"><span class="badge-deal-gross">Recouping ($5,960 left)</span></td>
+                <td style="text-align: center;"><a href="https://pocketfm-statements.vercel.app/statements/liz-talbot-mystery-series-0de65ac1" target="_blank" class="btn-excel-view" style="padding: 4px 10px; font-size: 11.5px; text-decoration: none;">View</a></td>
+              </tr>
+              <tr>
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/carolina-tales-cfd9b2f8" target="_blank" class="master-series-link">Carolina Tales</a></td>
+                <td style="text-align: left; color: #57606a;">Susan M Boyer</td>
+                <td style="text-align: right;">15%</td>
+                <td style="text-align: right;">$2,500</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$5.55</td>
+                <td style="text-align: right;">$2,494.45</td>
+                <td style="text-align: right; font-weight: 700;">$2,494.45</td>
+                <td style="text-align: center;"><span class="badge-deal-gross">Recouping ($2,494 left)</span></td>
+                <td style="text-align: center;"><a href="https://pocketfm-statements.vercel.app/statements/carolina-tales-cfd9b2f8" target="_blank" class="btn-excel-view" style="padding: 4px 10px; font-size: 11.5px; text-decoration: none;">View</a></td>
+              </tr>
+              <tr>
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/fatal-series-95fb9b7a" target="_blank" class="master-series-link">Fatal Series</a></td>
+                <td style="text-align: left; color: #57606a;">HJTB Inc</td>
+                <td style="text-align: right;">15%</td>
+                <td style="text-align: right;">$10,000</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right;">$10,000.00</td>
+                <td style="text-align: right; font-weight: 700;">$10,000.00</td>
+                <td style="text-align: center;"><span class="badge-deal-gross">Recouping ($10,000 left)</span></td>
+                <td style="text-align: center;"><a href="https://pocketfm-statements.vercel.app/statements/fatal-series-95fb9b7a" target="_blank" class="btn-excel-view" style="padding: 4px 10px; font-size: 11.5px; text-decoration: none;">View</a></td>
+              </tr>
+              <tr>
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/jackal-among-snakes-3cee9442" target="_blank" class="master-series-link">Jackal Among Snakes</a></td>
+                <td style="text-align: left; color: #57606a;">Rycus Wilkins</td>
+                <td style="text-align: right;">12%</td>
+                <td style="text-align: right;">$4,000</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$49.86</td>
+                <td style="text-align: right;">$3,950.14</td>
+                <td style="text-align: right; font-weight: 700;">$3,950.14</td>
+                <td style="text-align: center;"><span class="badge-deal-gross">Recouping ($3,950 left)</span></td>
+                <td style="text-align: center;"><a href="https://pocketfm-statements.vercel.app/statements/jackal-among-snakes-3cee9442" target="_blank" class="btn-excel-view" style="padding: 4px 10px; font-size: 11.5px; text-decoration: none;">View</a></td>
+              </tr>
+              <tr>
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/redemption-arc-f050f6e7" target="_blank" class="master-series-link">Redemption Arc</a></td>
+                <td style="text-align: left; color: #57606a;">Rycus Wilkins</td>
+                <td style="text-align: right;">12%</td>
+                <td style="text-align: right;">$3,000</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$48.82</td>
+                <td style="text-align: right;">$2,951.18</td>
+                <td style="text-align: right; font-weight: 700;">$2,951.18</td>
+                <td style="text-align: center;"><span class="badge-deal-gross">Recouping ($2,951 left)</span></td>
+                <td style="text-align: center;"><a href="https://pocketfm-statements.vercel.app/statements/redemption-arc-f050f6e7" target="_blank" class="btn-excel-view" style="padding: 4px 10px; font-size: 11.5px; text-decoration: none;">View</a></td>
+              </tr>
+              <tr>
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/gansett-series-0c7111ce" target="_blank" class="master-series-link">Gansett Series</a></td>
+                <td style="text-align: left; color: #57606a;">HJTB Inc</td>
+                <td style="text-align: right;">15%</td>
+                <td style="text-align: right;">$7,500</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$2.57</td>
+                <td style="text-align: right;">$7,497.43</td>
+                <td style="text-align: right; font-weight: 700;">$7,497.43</td>
+                <td style="text-align: center;"><span class="badge-deal-gross">Recouping ($7,497 left)</span></td>
+                <td style="text-align: center;"><a href="https://pocketfm-statements.vercel.app/statements/gansett-series-0c7111ce" target="_blank" class="btn-excel-view" style="padding: 4px 10px; font-size: 11.5px; text-decoration: none;">View</a></td>
+              </tr>
+              <tr>
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/blood-vice-504adcc0" target="_blank" class="master-series-link">Blood Vice</a></td>
+                <td style="text-align: left; color: #57606a;">Angela Mothersbaugh</td>
+                <td style="text-align: right;">20%</td>
+                <td style="text-align: right;">$1,500</td>
+                <td style="text-align: right;">$34.28</td>
+                <td style="text-align: right;">$1,465.72</td>
+                <td style="text-align: right;">$55.61</td>
+                <td style="text-align: right;">$1,410.11</td>
+                <td style="text-align: right; font-weight: 700;">$1,410.11</td>
+                <td style="text-align: center;"><span class="badge-deal-gross">Recouping ($1,410 left)</span></td>
+                <td style="text-align: center;"><a href="https://pocketfm-statements.vercel.app/statements/blood-vice-504adcc0" target="_blank" class="btn-excel-view" style="padding: 4px 10px; font-size: 11.5px; text-decoration: none;">View</a></td>
+              </tr>
+              <tr>
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/the-witches-of-cleopatra-hill-977419bc" target="_blank" class="master-series-link">The Witches of Cleopatra Hill</a></td>
+                <td style="text-align: left; color: #57606a;">Christine Pope</td>
+                <td style="text-align: right;">15%</td>
+                <td style="text-align: right;">$1,500</td>
+                <td style="text-align: right;">$18.51</td>
+                <td style="text-align: right;">$1,481.49</td>
+                <td style="text-align: right;">$1.65</td>
+                <td style="text-align: right;">$1,479.84</td>
+                <td style="text-align: right; font-weight: 700;">$1,479.84</td>
+                <td style="text-align: center;"><span class="badge-deal-gross">Recouping ($1,480 left)</span></td>
+                <td style="text-align: center;"><a href="https://pocketfm-statements.vercel.app/statements/the-witches-of-cleopatra-hill-977419bc" target="_blank" class="btn-excel-view" style="padding: 4px 10px; font-size: 11.5px; text-decoration: none;">View</a></td>
+              </tr>
+              <tr>
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/fae-chronicles-series-11f9a625" target="_blank" class="master-series-link">Fae Chronicles Series</a></td>
+                <td style="text-align: left; color: #57606a;">Amelia Hutchins</td>
+                <td style="text-align: right;">22%</td>
+                <td style="text-align: right;">$25,000</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$841.54</td>
+                <td style="text-align: right;">$24,158.46</td>
+                <td style="text-align: right; font-weight: 700;">$24,158.46</td>
+                <td style="text-align: center;"><span class="badge-deal-gross">Recouping ($24,158 left)</span></td>
+                <td style="text-align: center;"><a href="https://pocketfm-statements.vercel.app/statements/fae-chronicles-series-11f9a625" target="_blank" class="btn-excel-view" style="padding: 4px 10px; font-size: 11.5px; text-decoration: none;">View</a></td>
+              </tr>
+              <tr>
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/a-shade-of-vampire-series-2908daf8" target="_blank" class="master-series-link">A Shade of Vampire Series</a></td>
+                <td style="text-align: left; color: #57606a;">Bella Forrest</td>
+                <td style="text-align: right;">23.5%</td>
+                <td style="text-align: right;">$9,653</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$162.67</td>
+                <td style="text-align: right;">$9,490.04</td>
+                <td style="text-align: right; font-weight: 700;">$9,490.04</td>
+                <td style="text-align: center;"><span class="badge-deal-gross">Recouping ($9,490 left)</span></td>
+                <td style="text-align: center;"><a href="https://pocketfm-statements.vercel.app/statements/a-shade-of-vampire-series-2908daf8" target="_blank" class="btn-excel-view" style="padding: 4px 10px; font-size: 11.5px; text-decoration: none;">View</a></td>
+              </tr>
+              <tr>
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/blake-larsen-3c6159c2" target="_blank" class="master-series-link">Blake Larsen</a></td>
+                <td style="text-align: left; color: #57606a;">Ben North (writing as JS), Clipstone Press Limited</td>
+                <td style="text-align: right;">15%</td>
+                <td style="text-align: right;">$10,000</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$28.42</td>
+                <td style="text-align: right;">$9,971.58</td>
+                <td style="text-align: right; font-weight: 700;">$9,971.58</td>
+                <td style="text-align: center;"><span class="badge-deal-gross">Recouping ($9,972 left)</span></td>
+                <td style="text-align: center;"><a href="https://pocketfm-statements.vercel.app/statements/blake-larsen-3c6159c2" target="_blank" class="btn-excel-view" style="padding: 4px 10px; font-size: 11.5px; text-decoration: none;">View</a></td>
+              </tr>
+              <tr>
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/after-darkness-falls-d4483a6c" target="_blank" class="master-series-link">After Darkness Falls</a></td>
+                <td style="text-align: left; color: #57606a;">May Sage</td>
+                <td style="text-align: right;">15%</td>
+                <td style="text-align: right;">$3,000</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$4.96</td>
+                <td style="text-align: right;">$2,995.04</td>
+                <td style="text-align: right; font-weight: 700;">$2,995.04</td>
+                <td style="text-align: center;"><span class="badge-deal-gross">Recouping ($2,995 left)</span></td>
+                <td style="text-align: center;"><a href="https://pocketfm-statements.vercel.app/statements/after-darkness-falls-d4483a6c" target="_blank" class="btn-excel-view" style="padding: 4px 10px; font-size: 11.5px; text-decoration: none;">View</a></td>
+              </tr>
+              <tr>
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/lana-harvey-reapers-inc-e657cd1c" target="_blank" class="master-series-link">Lana Harvey, Reapers Inc.</a></td>
+                <td style="text-align: left; color: #57606a;">Angela Mothersbaugh</td>
+                <td style="text-align: right;">20%</td>
+                <td style="text-align: right;">$7,500</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right;">$7,500.00</td>
+                <td style="text-align: right; font-weight: 700;">$7,500.00</td>
+                <td style="text-align: center;"><span class="badge-deal-gross">Recouping ($7,500 left)</span></td>
+                <td style="text-align: center;"><a href="https://pocketfm-statements.vercel.app/statements/lana-harvey-reapers-inc-e657cd1c" target="_blank" class="btn-excel-view" style="padding: 4px 10px; font-size: 11.5px; text-decoration: none;">View</a></td>
+              </tr>
+              <tr>
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/the-sedona-files-b7524b5e" target="_blank" class="master-series-link">The Sedona Files</a></td>
+                <td style="text-align: left; color: #57606a;">Christine Pope</td>
+                <td style="text-align: right;">15%</td>
+                <td style="text-align: right;">$500</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right;">$500.00</td>
+                <td style="text-align: right; font-weight: 700;">$500.00</td>
+                <td style="text-align: center;"><span class="badge-deal-gross">Recouping ($500 left)</span></td>
+                <td style="text-align: center;"><a href="https://pocketfm-statements.vercel.app/statements/the-sedona-files-b7524b5e" target="_blank" class="btn-excel-view" style="padding: 4px 10px; font-size: 11.5px; text-decoration: none;">View</a></td>
+              </tr>
+              <tr>
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/i-m-a-fake-genius-in-a-cultivation-sect-6024bb94" target="_blank" class="master-series-link">I'm a Fake Genius in a Cultivation Sect</a></td>
+                <td style="text-align: left; color: #57606a;">Travis Harvey</td>
+                <td style="text-align: right;">12%</td>
+                <td style="text-align: right;">$0</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$6.68</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right; font-weight: 700;">$0.00</td>
+                <td style="text-align: center;"><span class="badge-deal-gross" style="background:#dafbe1;color:#1a7f37;border-color:#aceebb;">Fully Recouped</span></td>
+                <td style="text-align: center;"><a href="https://pocketfm-statements.vercel.app/statements/i-m-a-fake-genius-in-a-cultivation-sect-6024bb94" target="_blank" class="btn-excel-view" style="padding: 4px 10px; font-size: 11.5px; text-decoration: none;">View</a></td>
+              </tr>
+              <tr>
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/rend-a685b4fd" target="_blank" class="master-series-link">Rend</a></td>
+                <td style="text-align: left; color: #57606a;">Gerardo Diaz</td>
+                <td style="text-align: right;">17%</td>
+                <td style="text-align: right;">$3,000</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right;">$3,000.00</td>
+                <td style="text-align: right; font-weight: 700;">$3,000.00</td>
+                <td style="text-align: center;"><span class="badge-deal-gross">Recouping ($3,000 left)</span></td>
+                <td style="text-align: center;"><a href="https://pocketfm-statements.vercel.app/statements/rend-a685b4fd" target="_blank" class="btn-excel-view" style="padding: 4px 10px; font-size: 11.5px; text-decoration: none;">View</a></td>
+              </tr>
+              <tr>
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/hedgewitch-for-hire-62fad382" target="_blank" class="master-series-link">Hedgewitch for Hire</a></td>
+                <td style="text-align: left; color: #57606a;">Christine Pope</td>
+                <td style="text-align: right;">15%</td>
+                <td style="text-align: right;">$1,500</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">—</td>
+                <td style="text-align: right;">$7.00</td>
+                <td style="text-align: right;">$1,493.00</td>
+                <td style="text-align: right; font-weight: 700;">$1,493.00</td>
+                <td style="text-align: center;"><span class="badge-deal-gross">Recouping ($1,493 left)</span></td>
+                <td style="text-align: center;"><a href="https://pocketfm-statements.vercel.app/statements/hedgewitch-for-hire-62fad382" target="_blank" class="btn-excel-view" style="padding: 4px 10px; font-size: 11.5px; text-decoration: none;">View</a></td>
+              </tr>
+              <tr>
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/the-witches-of-cleopatra-hill-q2-amj-d6526581" target="_blank" class="master-series-link">The Witches of Cleopatra Hill</a></td>
+                <td style="text-align: left; color: #57606a;">Christine Pope</td>
+                <td style="text-align: right;">15%</td>
+                <td style="text-align: right;">$1,500</td>
+                <td style="text-align: right;">$18.51</td>
+                <td style="text-align: right;">$1,481.49</td>
+                <td style="text-align: right;">$18.51</td>
+                <td style="text-align: right;">$1,481.49</td>
+                <td style="text-align: right; font-weight: 700;">$1,481.49</td>
+                <td style="text-align: center;"><span class="badge-deal-gross">Recouping ($1,481 left)</span></td>
+                <td style="text-align: center;"><a href="https://pocketfm-statements.vercel.app/statements/the-witches-of-cleopatra-hill-q2-amj-d6526581" target="_blank" class="btn-excel-view" style="padding: 4px 10px; font-size: 11.5px; text-decoration: none;">View</a></td>
+              </tr>
+              <tr>
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/blood-vice-q2-amj-995fdcf9" target="_blank" class="master-series-link">Blood Vice</a></td>
+                <td style="text-align: left; color: #57606a;">Angela Roquet</td>
+                <td style="text-align: right;">20%</td>
+                <td style="text-align: right;">$1,500</td>
+                <td style="text-align: right;">$34.28</td>
+                <td style="text-align: right;">$1,465.72</td>
+                <td style="text-align: right;">$55.61</td>
+                <td style="text-align: right;">$1,410.11</td>
+                <td style="text-align: right; font-weight: 700;">$1,410.11</td>
+                <td style="text-align: center;"><span class="badge-deal-gross">Recouping ($1,410 left)</span></td>
+                <td style="text-align: center;"><a href="https://pocketfm-statements.vercel.app/statements/blood-vice-q2-amj-995fdcf9" target="_blank" class="btn-excel-view" style="padding: 4px 10px; font-size: 11.5px; text-decoration: none;">View</a></td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Interactive Gross Calculation Viewer -->
+        <div style="margin-top: 36px; padding-top: 24px; border-top: 1px solid #d0d7de;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
+            <div>
+              <h3 style="font-size: 17px; font-weight: 700; color: #1f2328; margin: 0;">Quarter-by-Quarter Gross Deal Calculation Viewer</h3>
+              <p style="font-size: 13px; color: #57606a; margin: 3px 0 0 0;">Select any Gross Deal series to inspect its complete multi-quarter calculation card:</p>
+            </div>
+            <div style="min-width: 260px;">
+              <select id="grossShowSelect" class="master-deal-select" onchange="renderGrossCalcCard(this.value)">
+                <option value="Sweet Tea Witch Mysteries">Sweet Tea Witch Mysteries (13%)</option>
+                <option value="The Witches of Wheeler Park">The Witches of Wheeler Park (15%)</option>
+                <option value="Lattes and Levitation">Lattes and Levitation (15%)</option>
+                <option value="Fate Weaver Series">Fate Weaver Series (15%)</option>
+                <option value="Psychic Seasons Series">Psychic Seasons Series (15%)</option>
+                <option value="Liz Talbot Mystery Series">Liz Talbot Mystery Series (15%)</option>
+                <option value="Carolina Tales">Carolina Tales (15%)</option>
+                <option value="Fatal Series">Fatal Series (15%)</option>
+                <option value="Jackal Among Snakes">Jackal Among Snakes (12%)</option>
+                <option value="Redemption Arc">Redemption Arc (12%)</option>
+                <option value="Gansett Series">Gansett Series (15%)</option>
+                <option value="Blood Vice">Blood Vice (20%)</option>
+                <option value="The Witches of Cleopatra Hill">The Witches of Cleopatra Hill (15%)</option>
+                <option value="Fae Chronicles Series">Fae Chronicles Series (22%)</option>
+                <option value="A Shade of Vampire Series">A Shade of Vampire Series (23.5%)</option>
+                <option value="Blake Larsen">Blake Larsen (15%)</option>
+                <option value="After Darkness Falls">After Darkness Falls (15%)</option>
+                <option value="Lana Harvey, Reapers Inc.">Lana Harvey, Reapers Inc. (20%)</option>
+                <option value="The Sedona Files">The Sedona Files (15%)</option>
+                <option value="I'm a Fake Genius in a Cultivation Sect">I'm a Fake Genius in a Cultivation Sect (12%)</option>
+                <option value="Rend">Rend (17%)</option>
+                <option value="Hedgewitch for Hire">Hedgewitch for Hire (15%)</option>
+                <option value="The Witches of Cleopatra Hill (Q2 AMJ)">The Witches of Cleopatra Hill (15%)</option>
+                <option value="Blood Vice (Q2 AMJ)">Blood Vice (20%)</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="grossCalcCardContainer">
+            <!-- Injected by renderGrossCalcCard() -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Net Deals Ledger View -->
+    <div id="tabContentNet" style="display: none; margin-bottom: 50px;">
+      <div class="master-summary-card">
+        <div class="master-summary-top">
+          <div>
+            <div class="master-summary-title">Net Revenue Deals — Deductions, Recoupment &amp; Calculation Ledger</div>
+            <div class="master-summary-subtitle">2026 • 9 Active Series with Net Revenue Royalty Agreements (15% Royalty Tier)</div>
+          </div>
+          <div>
+            <button class="btn-excel-view" onclick="exportNetDealsCsv()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line></svg>
+              Excel View
+            </button>
+          </div>
+        </div>
+
+        <!-- Net Description Box -->
+        <div class="ledger-desc-box green">
+          <h4>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a7f37" stroke-width="2.2"><path d="M16 16v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v1"></path><path d="M18 8h4a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-4"></path><circle cx="8" cy="12" r="2"></circle></svg>
+            Net Revenue Deal Mechanics &amp; Capped Production Deductions
+          </h4>
+          <p>
+            In Net Revenue Share agreements, designated direct expenses (production narration, audio engineering, marketing spends) are deductible before calculating author royalty distributions. Pocket FM strictly enforces the <strong>Production Cost Deduction Cap Rule</strong> to guarantee author equity.
+          </p>
+          <div class="ledger-desc-grid">
+            <div class="ledger-desc-item">
+              <strong>1. Net Share Base Formula</strong>
+              <span class="formula-tag">Net Rev for Share = Gross Rev excl. PG - Deductible Prod Costs - Spends</span>
+            </div>
+            <div class="ledger-desc-item">
+              <strong>2. Production Cost Cap Rule</strong>
+              <span>Deductible production costs are strictly <strong>capped at Gross Revenue excl. PG</strong>. Net Revenue for share calculation cannot fall below $0.00 and cannot generate negative debt for the author.</span>
+            </div>
+            <div class="ledger-desc-item">
+              <strong>3. Recoupment &amp; Payout Release</strong>
+              <span class="formula-tag">Author Share = Net Base × 15%</span>
+              <span class="formula-tag">Closing MG = Opening MG - MG Recouped</span>
+              <span>Author Revenue Share Payable releases only once Opening MG is fully recouped.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Net Deals Summary Table -->
+        <div style="margin-top: 24px;">
+          <h3 style="font-size: 16px; font-weight: 700; color: #1f2328; margin-bottom: 8px;">Net Deals Portfolio Summary (9 Titles)</h3>
+          <div class="master-table-scroll">
+            <table class="master-summary-table" id="netSummaryTable">
+              <thead>
+                <tr>
+                  <th style="text-align: left; min-width: 200px;">Series</th>
+                  <th style="text-align: left; min-width: 140px;">Author</th>
+                  <th style="text-align: right; min-width: 70px;">Rev %</th>
+                  <th style="text-align: right; min-width: 95px;">Original MG</th>
+                  <th style="text-align: right; min-width: 105px;">Gross Rev<br>excl. PG</th>
+                  <th style="text-align: right; min-width: 110px;">Reported<br>Prod Costs</th>
+                  <th style="text-align: right; min-width: 110px;">Deductible<br>Costs (Capped)</th>
+                  <th style="text-align: right; min-width: 110px;">Net Rev for<br>Share Calc</th>
+                  <th style="text-align: right; min-width: 95px;">Author<br>Share</th>
+                  <th style="text-align: right; min-width: 115px;">Current MG<br>Available</th>
+                  <th style="text-align: center; min-width: 130px;">Recoupment Status</th>
+                  <th style="text-align: center; min-width: 80px;">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+
+              <tr>
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/st-marin-s-cozy-mysteries-494440e3" target="_blank" class="master-series-link">St. Marin's Cozy Mysteries</a></td>
+                <td style="text-align: left; color: #57606a;">Andilit, LLC</td>
+                <td style="text-align: right;">15%</td>
+                <td style="text-align: right;">$12,500</td>
+                <td style="text-align: right;">$24.77</td>
+                <td style="text-align: right;">$2,258.00</td>
+                <td style="text-align: right; color: #b91c1c;">$24.77</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right; font-weight: 700;">$12,500.00</td>
+                <td style="text-align: center;"><span class="badge-deal-net">Recouping ($12,500 left)</span></td>
+                <td style="text-align: center;"><a href="https://pocketfm-statements.vercel.app/statements/st-marin-s-cozy-mysteries-494440e3" target="_blank" class="btn-excel-view" style="padding: 4px 10px; font-size: 11.5px; text-decoration: none;">View</a></td>
+              </tr>
+              <tr>
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/vital-secrets-f2c5cb33" target="_blank" class="master-series-link">Vital Secrets</a></td>
+                <td style="text-align: left; color: #57606a;">DF Hart</td>
+                <td style="text-align: right;">15%</td>
+                <td style="text-align: right;">$4,000</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right;">$1,339.00</td>
+                <td style="text-align: right; color: #b91c1c;">$0.00</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right; font-weight: 700;">$4,000.00</td>
+                <td style="text-align: center;"><span class="badge-deal-net">Recouping ($4,000 left)</span></td>
+                <td style="text-align: center;"><a href="https://pocketfm-statements.vercel.app/statements/vital-secrets-f2c5cb33" target="_blank" class="btn-excel-view" style="padding: 4px 10px; font-size: 11.5px; text-decoration: none;">View</a></td>
+              </tr>
+              <tr>
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/mrs-lillywhite-investigates-mysteries-ce64cdb7" target="_blank" class="master-series-link">Mrs. Lillywhite Investigates Mysteries</a></td>
+                <td style="text-align: left; color: #57606a;">Willow Hill Books LLC - Emily Queen</td>
+                <td style="text-align: right;">15%</td>
+                <td style="text-align: right;">$2,500</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right;">$853.00</td>
+                <td style="text-align: right; color: #b91c1c;">$0.00</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right; font-weight: 700;">$2,500.00</td>
+                <td style="text-align: center;"><span class="badge-deal-net">Recouping ($2,500 left)</span></td>
+                <td style="text-align: center;"><a href="https://pocketfm-statements.vercel.app/statements/mrs-lillywhite-investigates-mysteries-ce64cdb7" target="_blank" class="btn-excel-view" style="padding: 4px 10px; font-size: 11.5px; text-decoration: none;">View</a></td>
+              </tr>
+              <tr>
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/detective-emilia-cruz-8051f011" target="_blank" class="master-series-link">Detective Emilia Cruz</a></td>
+                <td style="text-align: left; color: #57606a;">Carmen Amato</td>
+                <td style="text-align: right;">13%</td>
+                <td style="text-align: right;">$3,000</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right;">$1,549.00</td>
+                <td style="text-align: right; color: #b91c1c;">$0.00</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right; font-weight: 700;">$3,000.00</td>
+                <td style="text-align: center;"><span class="badge-deal-net">Recouping ($3,000 left)</span></td>
+                <td style="text-align: center;"><a href="https://pocketfm-statements.vercel.app/statements/detective-emilia-cruz-8051f011" target="_blank" class="btn-excel-view" style="padding: 4px 10px; font-size: 11.5px; text-decoration: none;">View</a></td>
+              </tr>
+              <tr>
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/death-before-dragon-series-2d51754e" target="_blank" class="master-series-link">Death Before Dragon Series</a></td>
+                <td style="text-align: left; color: #57606a;">Lindsay Buroker</td>
+                <td style="text-align: right;">25%</td>
+                <td style="text-align: right;">$0</td>
+                <td style="text-align: right;">$3,309.97</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right; color: #b91c1c;">$0.00</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right; font-weight: 700;">$0.00</td>
+                <td style="text-align: center;"><span class="badge-deal-net" style="background:#dafbe1;color:#1a7f37;border-color:#aceebb;">Fully Recouped</span></td>
+                <td style="text-align: center;"><a href="https://pocketfm-statements.vercel.app/statements/death-before-dragon-series-2d51754e" target="_blank" class="btn-excel-view" style="padding: 4px 10px; font-size: 11.5px; text-decoration: none;">View</a></td>
+              </tr>
+              <tr>
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/nocturne-falls-411c8eb0" target="_blank" class="master-series-link">Nocturne Falls</a></td>
+                <td style="text-align: left; color: #57606a;">Kristen Painter</td>
+                <td style="text-align: right;">18%</td>
+                <td style="text-align: right;">$20,000</td>
+                <td style="text-align: right;">$1,145.18</td>
+                <td style="text-align: right;">$3,532.00</td>
+                <td style="text-align: right; color: #b91c1c;">$1,145.18</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right; font-weight: 700;">$20,000.00</td>
+                <td style="text-align: center;"><span class="badge-deal-net">Recouping ($20,000 left)</span></td>
+                <td style="text-align: center;"><a href="https://pocketfm-statements.vercel.app/statements/nocturne-falls-411c8eb0" target="_blank" class="btn-excel-view" style="padding: 4px 10px; font-size: 11.5px; text-decoration: none;">View</a></td>
+              </tr>
+              <tr>
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/billionaire-bear-brotherhood-dcc2b862" target="_blank" class="master-series-link">Billionaire Bear Brotherhood</a></td>
+                <td style="text-align: left; color: #57606a;">Lily Cahill</td>
+                <td style="text-align: right;">12%</td>
+                <td style="text-align: right;">$1,000</td>
+                <td style="text-align: right;">$3.53</td>
+                <td style="text-align: right;">$426.00</td>
+                <td style="text-align: right; color: #b91c1c;">$3.53</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right; font-weight: 700;">$1,000.00</td>
+                <td style="text-align: center;"><span class="badge-deal-net">Recouping ($1,000 left)</span></td>
+                <td style="text-align: center;"><a href="https://pocketfm-statements.vercel.app/statements/billionaire-bear-brotherhood-dcc2b862" target="_blank" class="btn-excel-view" style="padding: 4px 10px; font-size: 11.5px; text-decoration: none;">View</a></td>
+              </tr>
+              <tr>
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/game-day-ea1ccab2" target="_blank" class="master-series-link">Game Day</a></td>
+                <td style="text-align: left; color: #57606a;">Couerdalene Chambers (Lily Cahill)</td>
+                <td style="text-align: right;">12%</td>
+                <td style="text-align: right;">$2,000</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right; color: #b91c1c;">$0.00</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right; font-weight: 700;">$2,000.00</td>
+                <td style="text-align: center;"><span class="badge-deal-net">Recouping ($2,000 left)</span></td>
+                <td style="text-align: center;"><a href="https://pocketfm-statements.vercel.app/statements/game-day-ea1ccab2" target="_blank" class="btn-excel-view" style="padding: 4px 10px; font-size: 11.5px; text-decoration: none;">View</a></td>
+              </tr>
+              <tr>
+                <td style="text-align: left;"><a href="https://pocketfm-statements.vercel.app/statements/teddy-bears-on-brigade-3ea42fc7" target="_blank" class="master-series-link">Teddy Bears on Brigade</a></td>
+                <td style="text-align: left; color: #57606a;">Shannon Livingston</td>
+                <td style="text-align: right;">12%</td>
+                <td style="text-align: right;">$3,000</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right;">$2,273.00</td>
+                <td style="text-align: right; color: #b91c1c;">$0.00</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right;">$0.00</td>
+                <td style="text-align: right; font-weight: 700;">$3,000.00</td>
+                <td style="text-align: center;"><span class="badge-deal-net">Recouping ($3,000 left)</span></td>
+                <td style="text-align: center;"><a href="https://pocketfm-statements.vercel.app/statements/teddy-bears-on-brigade-3ea42fc7" target="_blank" class="btn-excel-view" style="padding: 4px 10px; font-size: 11.5px; text-decoration: none;">View</a></td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Interactive Net Calculation Viewer -->
+        <div style="margin-top: 36px; padding-top: 24px; border-top: 1px solid #d0d7de;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
+            <div>
+              <h3 style="font-size: 17px; font-weight: 700; color: #1f2328; margin: 0;">Net Deal Multi-Quarter Recoupment Viewer</h3>
+              <p style="font-size: 13px; color: #57606a; margin: 3px 0 0 0;">Select any Net Deal series to inspect its revenue, production cost deductions, and recoupment card:</p>
+            </div>
+            <div style="min-width: 260px;">
+              <select id="netShowSelect" class="master-deal-select" onchange="renderNetCalcCard(this.value)">
+                <option value="St. Marin's Cozy Mysteries">St. Marin's Cozy Mysteries (15%)</option>
+                <option value="Vital Secrets">Vital Secrets (15%)</option>
+                <option value="Mrs. Lillywhite Investigates Mysteries">Mrs. Lillywhite Investigates Mysteries (15%)</option>
+                <option value="Detective Emilia Cruz">Detective Emilia Cruz (13%)</option>
+                <option value="Death Before Dragon Series">Death Before Dragon Series (25%)</option>
+                <option value="Nocturne Falls">Nocturne Falls (18%)</option>
+                <option value="Billionaire Bear Brotherhood">Billionaire Bear Brotherhood (12%)</option>
+                <option value="Game Day">Game Day (12%)</option>
+                <option value="Teddy Bears on Brigade">Teddy Bears on Brigade (12%)</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="netCalcCardContainer">
+            <!-- Injected by renderNetCalcCard() -->
+          </div>
         </div>
       </div>
     </div>
@@ -2255,6 +3108,7 @@
     ];
 
     // Storage handling
+    
     const MASTER_SUMMARY_DATA = [
   {
     "series": "Blood Vice",
@@ -2691,679 +3545,2634 @@
     "url": "https://pocketfm-statements.vercel.app/statements/hedgewitch-for-hire-62fad382"
   }
 ];
-
-    const HUB_DATA_VERSION = '2026_jas_finance_master_recoupment_v3';
-    function getStoredShows() {
-      try {
-        const cachedVer = localStorage.getItem('pocketfm_internal_shows_ver');
-        const stored = localStorage.getItem('pocketfm_internal_shows');
-        if (cachedVer === HUB_DATA_VERSION && stored) {
-          const parsed = JSON.parse(stored);
-          if (Array.isArray(parsed) && parsed.length >= 33) return parsed;
-        }
-      } catch (e) {}
-      localStorage.setItem('pocketfm_internal_shows_ver', HUB_DATA_VERSION);
-      localStorage.setItem('pocketfm_internal_shows', JSON.stringify(DEFAULT_SHOWS));
-      return DEFAULT_SHOWS;
-    }
-
-    function saveStoredShows(shows) {
-      try {
-        localStorage.setItem('pocketfm_internal_shows', JSON.stringify(shows));
-      } catch (e) {}
-    }
-
-    let currentShows = getStoredShows();
-
-    function renderPortal() {
-      const query = (document.getElementById('searchInput').value || '').toLowerCase().trim();
-      const periodFilter = document.getElementById('filterPeriod') ? document.getElementById('filterPeriod').value : 'all';
-      const styleFilter = document.getElementById('filterStyle') ? document.getElementById('filterStyle').value : 'all';
-      
-      const filtered = currentShows.filter(s => {
-        const titleMatches = (s.key || '').toLowerCase().includes(query);
-        const authorMatches = (s.author || '').toLowerCase().includes(query);
-        const matchesQuery = titleMatches || authorMatches;
-
-        let matchesPeriod = true;
-        if (periodFilter === '6-Month') {
-          matchesPeriod = (s.category || '').startsWith('6-Month');
-        } else if (periodFilter === '3-Month') {
-          matchesPeriod = (s.category || '').startsWith('3-Month');
-        } else if (periodFilter === 'other') {
-          matchesPeriod = !(s.category || '').startsWith('6-Month') && !(s.category || '').startsWith('3-Month');
-        }
-
-        let matchesStyle = true;
-        if (styleFilter !== 'all') {
-          const sModel = (s.model || 'gross').toLowerCase();
-          matchesStyle = (sModel === styleFilter);
-        }
-
-        return matchesQuery && matchesPeriod && matchesStyle;
-      });
-
-      const sixMonthItems = filtered.filter(s => (s.category || '').startsWith('6-Month'));
-      const threeMonthItems = filtered.filter(s => (s.category || '').startsWith('3-Month'));
-      const otherItems = filtered.filter(s => !(s.category || '').startsWith('6-Month') && !(s.category || '').startsWith('3-Month'));
-
-      document.getElementById('sixMonthCount').innerText = `${sixMonthItems.length} Shows`;
-      document.getElementById('threeMonthCount').innerText = `${threeMonthItems.length} Shows`;
-
-      const otherSection = document.getElementById('otherSectionTitle');
-      const otherCount = document.getElementById('otherCount');
-      if (otherSection) {
-        if (otherItems.length > 0) {
-          otherSection.style.display = 'flex';
-          otherCount.innerText = `${otherItems.length} Shows`;
-        } else {
-          otherSection.style.display = 'none';
-        }
-      }
-
-      const renderCard = (s) => {
-        const model = (s.model || 'gross').toLowerCase();
-        let badgeClass = 'badge-gross';
-        let badgeLabel = 'Gross Style';
-
-        if (model === 'net') {
-          badgeClass = 'badge-net';
-          badgeLabel = 'Net Style';
-        } else if (model === 'both') {
-          badgeClass = 'badge-both';
-          badgeLabel = 'Gross & Net';
-        } else if (model === 'tiered') {
-          badgeClass = 'badge-tiered';
-          badgeLabel = 'Tiered';
-        } else if (model === 'carryover') {
-          badgeClass = 'badge-carryover';
-          badgeLabel = 'Carryover / Recoup';
-        } else if (model === 'flat') {
-          badgeClass = 'badge-flat';
-          badgeLabel = 'Flat Buyout';
-        }
-
-        return `
-        <div class="statement-card">
-          <div class="card-header">
-            <div class="card-title">${escapeHtml(s.key)}</div>
-            <span class="style-badge ${badgeClass}">${badgeLabel}</span>
-          </div>
-          <div class="card-meta">
-            <div><strong>Author:</strong> ${escapeHtml(s.author)}</div>
-            <div><strong>Period:</strong> ${escapeHtml(s.periodLabel)}</div>
-            <div class="card-link-box">${escapeHtml(s.url)}</div>
-          </div>
-          <div class="card-footer">
-            <div class="footer-left">
-              <button class="btn-copy" onclick="copyUrl('${escapeJs(s.url)}', this)">
-                Copy Link
-              </button>
-              <a href="${escapeHtml(s.url)}" class="btn-view" target="_blank">
-                View
-              </a>
-            </div>
-            <button class="btn-delete" title="Delete Statement" onclick="deleteStatement('${s.id}')">
-              🗑️ Delete
-            </button>
-          </div>
-        </div>
-      `;
-      };
-
-      const sixGrid = document.getElementById('sixMonthGrid');
-      const threeGrid = document.getElementById('threeMonthGrid');
-      const otherGrid = document.getElementById('otherGrid');
-
-      sixGrid.innerHTML = sixMonthItems.length > 0 
-        ? sixMonthItems.map(renderCard).join('') 
-        : '<div class="empty-state">No 6-month statements matching filter.</div>';
-
-      threeGrid.innerHTML = threeMonthItems.length > 0 
-        ? threeMonthItems.map(renderCard).join('') 
-        : '<div class="empty-state">No 3-month statements matching filter.</div>';
-
-      if (otherGrid) {
-        otherGrid.innerHTML = otherItems.length > 0
-          ? otherItems.map(renderCard).join('')
-          : '';
-      }
-    }
-
-    function exportToCsv() {
-      const headers = ['Show Title', 'Author', 'Reporting Period', 'Statement Style', 'Statement Link'];
-      const rows = currentShows.map(s => [
-        `"${(s.key || '').replace(/"/g, '""')}"`,
-        `"${(s.author || '').replace(/"/g, '""')}"`,
-        `"${(s.periodLabel || '').replace(/"/g, '""')}"`,
-        `"${(s.model || 'gross')}"`,
-        `"${(s.url || '').replace(/"/g, '""')}"`
-      ]);
-
-      const csvContent = '\uFEFF' + [headers.join(','), ...rows.map(r => r.join(','))].join('\r\n');
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.setAttribute('download', 'Pocket_FM_Revenue_Statements.csv');
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-
-    function handleSearch() {
-      renderPortal();
-    }
-
-    function copyUrl(url, btn) {
-      navigator.clipboard.writeText(url).then(() => {
-        const orig = btn.innerText;
-        btn.innerText = 'Copied! ✓';
-        btn.style.backgroundColor = '#e8f5e9';
-        btn.style.color = '#2e7d32';
-        setTimeout(() => {
-          btn.innerText = orig;
-          btn.style.backgroundColor = '#f0f2f5';
-          btn.style.color = '#121212';
-        }, 2000);
-      });
-    }
-
-    function deleteStatement(id) {
-      const show = currentShows.find(s => s.id === id);
-      const name = show ? show.key : 'this statement';
-      if (confirm(`Are you sure you want to delete "${name}" from this portal?`)) {
-        currentShows = currentShows.filter(s => s.id !== id);
-        saveStoredShows(currentShows);
-        renderPortal();
-      }
-    }
-
-    function handleCategoryChange() {
-      const cat = document.getElementById('newCategory').value;
-      const group = document.getElementById('customPeriodGroup');
-      if (cat === 'Custom') {
-        group.style.display = 'block';
-      } else {
-        group.style.display = 'none';
-      }
-    }
-
-    function handleModelChange() {
-      const model = document.getElementById('newModel').value;
-      const grossGroup = document.getElementById('grossGroup');
-      const deductGroup = document.getElementById('deductGroup');
-      const netGroup = document.getElementById('netGroup');
-      const tieredGroup = document.getElementById('tieredGroup');
-      const revPctGroup = document.getElementById('revPctGroup');
-      const revPctLabel = document.getElementById('revPctLabel');
-
-      // Reset visibilities
-      grossGroup.style.display = 'block';
-      deductGroup.style.display = 'none';
-      netGroup.style.display = 'none';
-      tieredGroup.style.display = 'none';
-      revPctGroup.style.display = 'block';
-
-      if (model === 'net') {
-        grossGroup.style.display = 'none';
-        netGroup.style.display = 'block';
-        revPctLabel.innerText = 'Revenue Share % on Net (e.g. 15%)';
-      } else if (model === 'both') {
-        grossGroup.style.display = 'block';
-        deductGroup.style.display = 'grid';
-        netGroup.style.display = 'block';
-        revPctLabel.innerText = 'Revenue Share % on Net (e.g. 15%)';
-      } else if (model === 'tiered') {
-        grossGroup.style.display = 'block';
-        tieredGroup.style.display = 'grid';
-        revPctLabel.innerText = 'Tier 1 Rev Share % (up to threshold)';
-      } else if (model === 'flat') {
-        grossGroup.style.display = 'none';
-        revPctGroup.style.display = 'none';
-      } else if (model === 'carryover') {
-        grossGroup.style.display = 'block';
-        revPctLabel.innerText = 'Contractual Rev Share % (e.g. 15%)';
-      } else {
-        // gross
-        grossGroup.style.display = 'block';
-        revPctLabel.innerText = 'Revenue Share % on Gross (e.g. 15%)';
-      }
-
-      handleLiveCalc();
-    }
-
-    function handleLiveCalc() {
-      const model = document.getElementById('newModel').value;
-      const curr = document.getElementById('newCurr').value || '$';
-
-      const gross = parseFloat(document.getElementById('newGross').value) || 0;
-      let net = parseFloat(document.getElementById('newNet').value) || 0;
-      const deductPct = parseFloat(document.getElementById('newDeductPct').value) || 30;
-
-      if (model === 'both') {
-        const deductAmt = +(gross * (deductPct / 100.0)).toFixed(2);
-        net = Math.max(0, +(gross - deductAmt).toFixed(2));
-        document.getElementById('newDeductAmt').value = deductAmt.toFixed(2);
-        document.getElementById('newNet').value = net.toFixed(2);
-      }
-
-      const revPct = parseFloat(document.getElementById('newRevPct').value) || 15;
-      const tierThresh = parseFloat(document.getElementById('newTierThresh').value) || 50000;
-      const tier2Pct = parseFloat(document.getElementById('newTier2Pct').value) || 20;
-
-      const mgPaid = parseFloat(document.getElementById('newMgPaid').value) || 0;
-      const prevRecouped = parseFloat(document.getElementById('newPrevRecouped').value) || 0;
-      const taxPct = parseFloat(document.getElementById('newTaxPct').value) || 0;
-
-      let revShareAmt = 0;
-      if (model === 'net' || model === 'both') {
-        revShareAmt = +(net * (revPct / 100.0)).toFixed(2);
-      } else if (model === 'tiered') {
-        const baseAmount = net > 0 ? net : gross;
-        if (baseAmount <= tierThresh) {
-          revShareAmt = +(baseAmount * (revPct / 100.0)).toFixed(2);
-        } else {
-          const t1 = +(tierThresh * (revPct / 100.0)).toFixed(2);
-          const t2 = +((baseAmount - tierThresh) * (tier2Pct / 100.0)).toFixed(2);
-          revShareAmt = +(t1 + t2).toFixed(2);
-        }
-      } else if (model === 'flat') {
-        revShareAmt = mgPaid;
-      } else {
-        // gross / carryover
-        revShareAmt = +(gross * (revPct / 100.0)).toFixed(2);
-      }
-
-      const remainingMgBefore = Math.max(0, +(mgPaid - prevRecouped).toFixed(2));
-      const mgRecoupedThisPeriod = Math.min(remainingMgBefore, revShareAmt);
-      const remainingMgAfter = Math.max(0, +(remainingMgBefore - mgRecoupedThisPeriod).toFixed(2));
-
-      let subtotal = model === 'flat' ? mgPaid : Math.max(0, +(revShareAmt - remainingMgBefore).toFixed(2));
-      let withholdingAmt = +((subtotal * taxPct) / 100.0).toFixed(2);
-      let finalPayout = Math.max(0, +(subtotal - withholdingAmt).toFixed(2));
-
-      const fmt = (n) => `${curr}${Number(n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-
-      document.getElementById('calcRevShare').innerText = fmt(revShareAmt);
-      document.getElementById('calcMgRecouped').innerText = fmt(mgRecoupedThisPeriod);
-      document.getElementById('calcRemainingMg').innerText = fmt(remainingMgAfter);
-      document.getElementById('calcPayout').innerText = fmt(finalPayout);
-    }
-
-    function initModernDropdown(selectId, isInline = false) {
-      const sel = document.getElementById(selectId);
-      if (!sel) return;
-
-      let oldWrapper = sel.parentNode.querySelector(`.modern-select-wrapper[data-for="${selectId}"]`);
-      if (oldWrapper) oldWrapper.remove();
-
-      sel.classList.add('hidden-native-select');
-
-      const wrapper = document.createElement('div');
-      wrapper.className = `modern-select-wrapper ${isInline ? 'inline' : ''}`;
-      wrapper.setAttribute('data-for', selectId);
-
-      const selectedOpt = sel.options[sel.selectedIndex] || sel.options[0];
-      const trigger = document.createElement('button');
-      trigger.type = 'button';
-      trigger.className = 'modern-select-trigger';
-      trigger.innerHTML = `
-        <span class="trigger-text">${escapeHtml(selectedOpt ? selectedOpt.text : '')}</span>
-        <svg class="trigger-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="6 9 12 15 18 9"></polyline>
-        </svg>
-      `;
-
-      const menu = document.createElement('div');
-      menu.className = 'modern-select-menu';
-
-      Array.from(sel.options).forEach((opt, idx) => {
-        const item = document.createElement('div');
-        const isSelected = idx === sel.selectedIndex;
-        item.className = `modern-select-option ${isSelected ? 'selected' : ''}`;
-        item.innerHTML = `
-          <span>${escapeHtml(opt.text)}</span>
-          ${isSelected ? '<span class="check-icon">✓</span>' : ''}
-        `;
-        item.onclick = (e) => {
-          e.stopPropagation();
-          sel.value = opt.value;
-          trigger.querySelector('.trigger-text').innerText = opt.text;
-          wrapper.querySelectorAll('.modern-select-option').forEach(el => {
-            el.classList.remove('selected');
-            const icon = el.querySelector('.check-icon');
-            if (icon) icon.remove();
-          });
-          item.classList.add('selected');
-          const check = document.createElement('span');
-          check.className = 'check-icon';
-          check.innerText = '✓';
-          item.appendChild(check);
-          wrapper.classList.remove('open');
-          sel.dispatchEvent(new Event('change'));
-        };
-        menu.appendChild(item);
-      });
-
-      trigger.onclick = (e) => {
-        e.stopPropagation();
-        document.querySelectorAll('.modern-select-wrapper.open').forEach(w => {
-          if (w !== wrapper) w.classList.remove('open');
-        });
-        wrapper.classList.toggle('open');
-      };
-
-      wrapper.appendChild(trigger);
-      wrapper.appendChild(menu);
-      sel.parentNode.insertBefore(wrapper, sel.nextSibling);
-    }
-
-    function syncModernDropdown(selectId) {
-      const sel = document.getElementById(selectId);
-      if (!sel) return;
-      const wrapper = sel.parentNode.querySelector(`.modern-select-wrapper[data-for="${selectId}"]`);
-      if (!wrapper) {
-        initModernDropdown(selectId);
-        return;
-      }
-      const selectedOpt = sel.options[sel.selectedIndex] || sel.options[0];
-      const triggerText = wrapper.querySelector('.trigger-text');
-      if (triggerText && selectedOpt) {
-        triggerText.innerText = selectedOpt.text;
-      }
-      const options = wrapper.querySelectorAll('.modern-select-option');
-      options.forEach((el, idx) => {
-        const isSelected = idx === sel.selectedIndex;
-        el.classList.toggle('selected', isSelected);
-        const existingCheck = el.querySelector('.check-icon');
-        if (isSelected && !existingCheck) {
-          const check = document.createElement('span');
-          check.className = 'check-icon';
-          check.innerText = '✓';
-          el.appendChild(check);
-        } else if (!isSelected && existingCheck) {
-          existingCheck.remove();
-        }
-      });
-    }
-
-    function openAddModal() {
-      document.getElementById('newTitle').value = '';
-      document.getElementById('newAuthor').value = '';
-      document.getElementById('newUrl').value = '';
-      document.getElementById('newCurr').value = '$';
-      document.getElementById('newCategory').value = '6-Month';
-      document.getElementById('newCustomPeriod').value = '';
-      document.getElementById('newModel').value = 'gross';
-      document.getElementById('newGross').value = '0.00';
-      document.getElementById('newNet').value = '0.00';
-      document.getElementById('newDeductPct').value = '30';
-      document.getElementById('newDeductAmt').value = '0.00';
-      document.getElementById('newTierThresh').value = '50000';
-      document.getElementById('newTier2Pct').value = '20';
-      document.getElementById('newRevPct').value = '15';
-      document.getElementById('newMgPaid').value = '0.00';
-      document.getElementById('newPrevRecouped').value = '0.00';
-      document.getElementById('newTaxPct').value = '0';
-      document.getElementById('newPlays').value = '';
-      document.getElementById('newListeners').value = '';
-      document.getElementById('newEpisodes').value = '';
-      document.getElementById('newNote').value = '';
-
-      handleCategoryChange();
-      handleModelChange();
-      
-      syncModernDropdown('newCurr');
-      syncModernDropdown('newCategory');
-      syncModernDropdown('newModel');
-
-      document.getElementById('addModal').style.display = 'flex';
-    }
-
-    function closeAddModal() {
-      document.getElementById('addModal').style.display = 'none';
-      document.querySelectorAll('.modern-select-wrapper.open').forEach(w => w.classList.remove('open'));
-    }
-
-    function openSyncModal() {
-      document.getElementById('syncModal').style.display = 'flex';
-    }
-
-    function closeSyncModal() {
-      document.getElementById('syncModal').style.display = 'none';
-    }
-
-    function copySyncCmd(btn) {
-      navigator.clipboard.writeText('python backend/generate_revenue_statements.py').then(() => {
-        const orig = btn.innerText;
-        btn.innerText = 'Copied! ✓';
-        btn.style.backgroundColor = '#2e7d32';
-        setTimeout(() => {
-          btn.innerText = orig;
-          btn.style.backgroundColor = '#444';
-        }, 2000);
-      });
-    }
-
-    window.addEventListener('click', function(e) {
-      if (!e.target.closest('.modern-select-wrapper')) {
-        document.querySelectorAll('.modern-select-wrapper.open').forEach(w => w.classList.remove('open'));
-      }
-      const addModal = document.getElementById('addModal');
-      const syncModal = document.getElementById('syncModal');
-      if (e.target === addModal) closeAddModal();
-      if (e.target === syncModal) closeSyncModal();
-    });
-
-    function saveNewStatement() {
-      const title = document.getElementById('newTitle').value.trim();
-      const author = document.getElementById('newAuthor').value.trim();
-      const category = document.getElementById('newCategory').value;
-      const customPeriod = document.getElementById('newCustomPeriod').value.trim();
-      const model = document.getElementById('newModel').value;
-      const curr = document.getElementById('newCurr').value || '$';
-      let url = document.getElementById('newUrl').value.trim();
-
-      if (!title || !author) {
-        alert('Please fill in at least the Show Title and Author Name!');
-        return;
-      }
-
-      let periodLabel = 'April 1, 2026 – September 30, 2026 (6-Month Combined / Q2 + Q3)';
-      if (category === '3-Month') {
-        periodLabel = 'July 1, 2026 – September 30, 2026 (3-Month Statement / Q3)';
-      } else if (category === '3-Month-Q2') {
-        periodLabel = 'April 1, 2026 – June 30, 2026 (3-Month Statement / Q2)';
-      } else if (category === '3-Month-Q1') {
-        periodLabel = 'January 1, 2026 – March 31, 2026 (3-Month Statement / Q1)';
-      } else if (category === '3-Month-Q4') {
-        periodLabel = 'October 1, 2026 – December 31, 2026 (3-Month Statement / Q4)';
-      } else if (category === '6-Month-Q4Q1') {
-        periodLabel = 'October 1, 2025 – March 31, 2026 (6-Month Combined / Q4 + Q1)';
-      } else if (category === 'Annual') {
-        periodLabel = 'January 1, 2026 – December 31, 2026 (Annual Statement)';
-      } else if (category === 'Custom' && customPeriod) {
-        periodLabel = customPeriod;
-      }
-
-      const id = 'custom_' + Date.now();
-      const gross = parseFloat(document.getElementById('newGross').value) || 0;
-      const net = parseFloat(document.getElementById('newNet').value) || 0;
-      const deductPct = parseFloat(document.getElementById('newDeductPct').value) || 30;
-      const tierThresh = parseFloat(document.getElementById('newTierThresh').value) || 50000;
-      const tier2Pct = parseFloat(document.getElementById('newTier2Pct').value) || 20;
-
-      const revPct = parseFloat(document.getElementById('newRevPct').value) || 15;
-      const mgPaid = parseFloat(document.getElementById('newMgPaid').value) || 0;
-      const prevRecouped = parseFloat(document.getElementById('newPrevRecouped').value) || 0;
-      const taxPct = parseFloat(document.getElementById('newTaxPct').value) || 0;
-
-      const plays = document.getElementById('newPlays').value.trim() || '—';
-      const listeners = document.getElementById('newListeners').value.trim() || '—';
-      const episodes = document.getElementById('newEpisodes').value.trim() || '';
-      const customNote = document.getElementById('newNote').value.trim() || '';
-
-      // If no custom URL provided, auto-generate official Pocket FM statement viewer URL
-      if (!url) {
-        const statementData = {
-          id: id,
-          title: title,
-          author: author,
-          category: category,
-          periodLabel: periodLabel,
-          model: model,
-          curr: curr,
-          gross: gross,
-          net: net,
-          deductPct: deductPct,
-          tierThreshold: tierThresh,
-          tier2Pct: tier2Pct,
-          revPct: revPct,
-          mgPaid: mgPaid,
-          prevRecouped: prevRecouped,
-          withholdingPct: taxPct,
-          plays: plays,
-          listeners: listeners,
-          episodes: episodes,
-          customNote: customNote
-        };
-        try {
-          localStorage.setItem('pocketfm_statement_' + id, JSON.stringify(statementData));
-        } catch(e) {}
-
-        const queryParams = new URLSearchParams({
-          id: id,
-          title: title,
-          author: author,
-          category: category,
-          period: periodLabel,
-          model: model,
-          curr: curr,
-          gross: gross,
-          net: net,
-          deduct_pct: deductPct,
-          tier_thresh: tierThresh,
-          tier2_pct: tier2Pct,
-          revpct: revPct,
-          mg: mgPaid,
-          prev_recouped: prevRecouped,
-          withholding_pct: taxPct,
-          plays: plays,
-          listeners: listeners,
-          episodes: episodes,
-          note: customNote
-        });
-
-        const baseUrl = window.location.protocol.startsWith('http') 
-          ? window.location.origin 
-          : 'https://pocketfm-statements.vercel.app';
-        url = `${baseUrl}/statement_viewer?${queryParams.toString()}`;
-      }
-
-      const newShow = {
-        id: id,
-        key: title,
-        author: author,
-        category: category,
-        model: model,
-        periodLabel: periodLabel,
-        url: url
-      };
-
-      currentShows.unshift(newShow);
-      saveStoredShows(currentShows);
-      closeAddModal();
-      renderPortal();
-    }
-
-
-
-    function escapeHtml(str) {
-      if (!str) return '';
-      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-    }
-
-    function escapeJs(str) {
-      if (!str) return '';
-      return str.replace(/'/g, "\\'");
-    }
-
-    // Initial render
-    renderPortal();
-
-    // Initialize Modern Dropdowns
-    function initAllModernDropdowns() {
-      initModernDropdown('filterPeriod', true);
-      initModernDropdown('filterStyle', true);
-      initModernDropdown('newCurr', false);
-      initModernDropdown('newCategory', false);
-      initModernDropdown('newModel', false);
-    }
-    initAllModernDropdowns();
-  
-    function switchHubTab(tabName) {
-      const tabCards = document.getElementById('tabContentCards');
-      const tabMaster = document.getElementById('tabContentMaster');
-      const btnCards = document.getElementById('tabBtnStatements');
-      const btnMaster = document.getElementById('tabBtnMaster');
-
-      if (tabName === 'master') {
-        if (tabCards) tabCards.style.display = 'none';
-        if (tabMaster) tabMaster.style.display = 'block';
-        if (btnCards) btnCards.classList.remove('active');
-        if (btnMaster) btnMaster.classList.add('active');
-      } else {
-        if (tabCards) tabCards.style.display = 'block';
-        if (tabMaster) tabMaster.style.display = 'none';
-        if (btnCards) btnCards.classList.add('active');
-        if (btnMaster) btnMaster.classList.remove('active');
-      }
-    }
-
-    function filterMasterSummary() {
-      const filter = (document.getElementById('masterDealFilter').value || 'all').toLowerCase();
-      const rows = document.querySelectorAll('#masterSummaryTbody tr');
-      rows.forEach(r => {
-        const deal = (r.getAttribute('data-deal') || '').toLowerCase();
-        if (filter === 'all' || deal === filter) {
-          r.style.display = '';
-        } else {
-          r.style.display = 'none';
-        }
-      });
-    }
-
-    function exportMasterSummaryCsv() {
-      if (typeof MASTER_SUMMARY_DATA === 'undefined' || !Array.isArray(MASTER_SUMMARY_DATA)) {
-        alert('Master Summary dataset not loaded yet.');
-        return;
-      }
-      const headers = ["Series", "Deal", "Rev %", "Original MG", "Q2 Share", "Q2 MG Closing", "Q3 Share", "Q3 MG Closing", "Q4 Share", "Current MG Available"];
-      let csvContent = headers.join(",") + "\n";
-
-      MASTER_SUMMARY_DATA.forEach(row => {
-        const orig = row.original_mg != null ? `"$${row.original_mg.toLocaleString()}"` : '"—"';
-        const q2s = row.q2_share != null ? `"$${row.q2_share.toFixed(2)}"` : '"—"';
-        const q2c = row.q2_closing != null ? `"$${row.q2_closing.toFixed(2)}"` : '"—"';
-        const q3s = row.q3_share != null ? `"$${row.q3_share.toFixed(2)}"` : '"—"';
-        const q3c = row.q3_closing != null ? `"$${row.q3_closing.toFixed(2)}"` : '"—"';
-        const q4s = '"—"';
-        const cur = row.current_mg != null ? `"$${row.current_mg.toFixed(2)}"` : '"—"';
-        
-        csvContent += `"${row.series.replace(/"/g, '""')}","${row.deal}","${row.rev_pct}",${orig},${q2s},${q2c},${q3s},${q3c},${q4s},${cur}\n`;
-      });
-
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.setAttribute("href", url);
-      link.setAttribute("download", "Pocket_FM_Master_Revenue_Summary.csv");
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-
-  </script>
+    const GROSS_DEALS_DATA = {
+  "Sweet Tea Witch Mysteries": {
+    "title": "Sweet Tea Witch Mysteries",
+    "badge": "Gross",
+    "author": "Amy Boyles",
+    "rev_pct": "13%",
+    "orig_mg": "$7,500.00",
+    "recouped_mg": "$5.40",
+    "avail_mg": "$7,494.60",
+    "headers": [
+      "Calculation Field",
+      "Q2 2026<br><span style='font-size:11px;font-weight:400;'>Apr\u2013Jun</span>",
+      "Q3 2026<br><span style='font-size:11px;font-weight:400;'>Jul\u2013Sep</span>",
+      "Q4 2026<br><span style='font-size:11px;font-weight:400;'>Oct\u2013Dec</span>"
+    ],
+    "rows": [
+      [
+        "REVENUE",
+        "hdr"
+      ],
+      [
+        "Gross Revenue excl. PG",
+        "\u2014",
+        "$41.50",
+        "\u2014"
+      ],
+      [
+        "REVENUE SHARE",
+        "hdr"
+      ],
+      [
+        "Revenue Share %",
+        "13%",
+        "13%",
+        "13%"
+      ],
+      [
+        "Author Revenue Share",
+        "\u2014",
+        "$5.40",
+        "\u2014"
+      ],
+      [
+        "MG RECOUPMENT",
+        "hdr"
+      ],
+      [
+        "Opening MG",
+        "\u2014",
+        "$7,500.00",
+        "$7,494.60*"
+      ],
+      [
+        "MG Recouped",
+        "\u2014",
+        "$5.40",
+        "\u2014"
+      ],
+      [
+        "Closing MG Available",
+        "\u2014",
+        "$7,494.60",
+        "\u2014"
+      ],
+      [
+        "Revenue Share Payable",
+        "$0.00",
+        "$0.00",
+        "\u2014"
+      ]
+    ],
+    "footnote": "Amounts reflect audited finance worksheet values. Remaining MG to recoup: $7,494.60."
+  },
+  "The Witches of Wheeler Park": {
+    "title": "The Witches of Wheeler Park",
+    "badge": "Gross",
+    "author": "Christine Pope",
+    "rev_pct": "15%",
+    "orig_mg": "$500.00",
+    "recouped_mg": "$81.55",
+    "avail_mg": "$418.45",
+    "headers": [
+      "Calculation Field",
+      "Q2 2026<br><span style='font-size:11px;font-weight:400;'>Apr\u2013Jun</span>",
+      "Q3 2026<br><span style='font-size:11px;font-weight:400;'>Jul\u2013Sep</span>",
+      "Q4 2026<br><span style='font-size:11px;font-weight:400;'>Oct\u2013Dec</span>"
+    ],
+    "rows": [
+      [
+        "REVENUE",
+        "hdr"
+      ],
+      [
+        "Gross Revenue excl. PG",
+        "\u2014",
+        "$543.69",
+        "\u2014"
+      ],
+      [
+        "REVENUE SHARE",
+        "hdr"
+      ],
+      [
+        "Revenue Share %",
+        "15%",
+        "15%",
+        "15%"
+      ],
+      [
+        "Author Revenue Share",
+        "\u2014",
+        "$81.55",
+        "\u2014"
+      ],
+      [
+        "MG RECOUPMENT",
+        "hdr"
+      ],
+      [
+        "Opening MG",
+        "\u2014",
+        "$500.00",
+        "$418.45*"
+      ],
+      [
+        "MG Recouped",
+        "\u2014",
+        "$81.55",
+        "\u2014"
+      ],
+      [
+        "Closing MG Available",
+        "\u2014",
+        "$418.45",
+        "\u2014"
+      ],
+      [
+        "Revenue Share Payable",
+        "$0.00",
+        "$0.00",
+        "\u2014"
+      ]
+    ],
+    "footnote": "Amounts reflect audited finance worksheet values. Remaining MG to recoup: $418.45."
+  },
+  "Lattes and Levitation": {
+    "title": "Lattes and Levitation",
+    "badge": "Gross",
+    "author": "Christine Pope",
+    "rev_pct": "15%",
+    "orig_mg": "$500.00",
+    "recouped_mg": "$0.36",
+    "avail_mg": "$499.64",
+    "headers": [
+      "Calculation Field",
+      "Q2 2026<br><span style='font-size:11px;font-weight:400;'>Apr\u2013Jun</span>",
+      "Q3 2026<br><span style='font-size:11px;font-weight:400;'>Jul\u2013Sep</span>",
+      "Q4 2026<br><span style='font-size:11px;font-weight:400;'>Oct\u2013Dec</span>"
+    ],
+    "rows": [
+      [
+        "REVENUE",
+        "hdr"
+      ],
+      [
+        "Gross Revenue excl. PG",
+        "\u2014",
+        "$2.40",
+        "\u2014"
+      ],
+      [
+        "REVENUE SHARE",
+        "hdr"
+      ],
+      [
+        "Revenue Share %",
+        "15%",
+        "15%",
+        "15%"
+      ],
+      [
+        "Author Revenue Share",
+        "\u2014",
+        "$0.36",
+        "\u2014"
+      ],
+      [
+        "MG RECOUPMENT",
+        "hdr"
+      ],
+      [
+        "Opening MG",
+        "\u2014",
+        "$500.00",
+        "$499.64*"
+      ],
+      [
+        "MG Recouped",
+        "\u2014",
+        "$0.36",
+        "\u2014"
+      ],
+      [
+        "Closing MG Available",
+        "\u2014",
+        "$499.64",
+        "\u2014"
+      ],
+      [
+        "Revenue Share Payable",
+        "$0.00",
+        "$0.00",
+        "\u2014"
+      ]
+    ],
+    "footnote": "Amounts reflect audited finance worksheet values. Remaining MG to recoup: $499.64."
+  },
+  "Fate Weaver Series": {
+    "title": "Fate Weaver Series",
+    "badge": "Gross",
+    "author": "ReGina Welling",
+    "rev_pct": "15%",
+    "orig_mg": "$2,000.00",
+    "recouped_mg": "$13.12",
+    "avail_mg": "$1,986.88",
+    "headers": [
+      "Calculation Field",
+      "Q2 2026<br><span style='font-size:11px;font-weight:400;'>Apr\u2013Jun</span>",
+      "Q3 2026<br><span style='font-size:11px;font-weight:400;'>Jul\u2013Sep</span>",
+      "Q4 2026<br><span style='font-size:11px;font-weight:400;'>Oct\u2013Dec</span>"
+    ],
+    "rows": [
+      [
+        "REVENUE",
+        "hdr"
+      ],
+      [
+        "Gross Revenue excl. PG",
+        "\u2014",
+        "$87.43",
+        "\u2014"
+      ],
+      [
+        "REVENUE SHARE",
+        "hdr"
+      ],
+      [
+        "Revenue Share %",
+        "15%",
+        "15%",
+        "15%"
+      ],
+      [
+        "Author Revenue Share",
+        "\u2014",
+        "$13.12",
+        "\u2014"
+      ],
+      [
+        "MG RECOUPMENT",
+        "hdr"
+      ],
+      [
+        "Opening MG",
+        "\u2014",
+        "$2,000.00",
+        "$1,986.88*"
+      ],
+      [
+        "MG Recouped",
+        "\u2014",
+        "$13.12",
+        "\u2014"
+      ],
+      [
+        "Closing MG Available",
+        "\u2014",
+        "$1,986.88",
+        "\u2014"
+      ],
+      [
+        "Revenue Share Payable",
+        "$0.00",
+        "$0.00",
+        "\u2014"
+      ]
+    ],
+    "footnote": "Amounts reflect audited finance worksheet values. Remaining MG to recoup: $1,986.88."
+  },
+  "Psychic Seasons Series": {
+    "title": "Psychic Seasons Series",
+    "badge": "Gross",
+    "author": "ReGina Welling",
+    "rev_pct": "15%",
+    "orig_mg": "$3,000.00",
+    "recouped_mg": "$20.36",
+    "avail_mg": "$2,979.64",
+    "headers": [
+      "Calculation Field",
+      "Q2 2026<br><span style='font-size:11px;font-weight:400;'>Apr\u2013Jun</span>",
+      "Q3 2026<br><span style='font-size:11px;font-weight:400;'>Jul\u2013Sep</span>",
+      "Q4 2026<br><span style='font-size:11px;font-weight:400;'>Oct\u2013Dec</span>"
+    ],
+    "rows": [
+      [
+        "REVENUE",
+        "hdr"
+      ],
+      [
+        "Gross Revenue excl. PG",
+        "\u2014",
+        "$135.76",
+        "\u2014"
+      ],
+      [
+        "REVENUE SHARE",
+        "hdr"
+      ],
+      [
+        "Revenue Share %",
+        "15%",
+        "15%",
+        "15%"
+      ],
+      [
+        "Author Revenue Share",
+        "\u2014",
+        "$20.36",
+        "\u2014"
+      ],
+      [
+        "MG RECOUPMENT",
+        "hdr"
+      ],
+      [
+        "Opening MG",
+        "\u2014",
+        "$3,000.00",
+        "$2,979.64*"
+      ],
+      [
+        "MG Recouped",
+        "\u2014",
+        "$20.36",
+        "\u2014"
+      ],
+      [
+        "Closing MG Available",
+        "\u2014",
+        "$2,979.64",
+        "\u2014"
+      ],
+      [
+        "Revenue Share Payable",
+        "$0.00",
+        "$0.00",
+        "\u2014"
+      ]
+    ],
+    "footnote": "Amounts reflect audited finance worksheet values. Remaining MG to recoup: $2,979.64."
+  },
+  "Liz Talbot Mystery Series": {
+    "title": "Liz Talbot Mystery Series",
+    "badge": "Gross",
+    "author": "Susan M Boyer",
+    "rev_pct": "15%",
+    "orig_mg": "$6,000.00",
+    "recouped_mg": "$40.07",
+    "avail_mg": "$5,959.93",
+    "headers": [
+      "Calculation Field",
+      "Q2 2026<br><span style='font-size:11px;font-weight:400;'>Apr\u2013Jun</span>",
+      "Q3 2026<br><span style='font-size:11px;font-weight:400;'>Jul\u2013Sep</span>",
+      "Q4 2026<br><span style='font-size:11px;font-weight:400;'>Oct\u2013Dec</span>"
+    ],
+    "rows": [
+      [
+        "REVENUE",
+        "hdr"
+      ],
+      [
+        "Gross Revenue excl. PG",
+        "\u2014",
+        "$267.10",
+        "\u2014"
+      ],
+      [
+        "REVENUE SHARE",
+        "hdr"
+      ],
+      [
+        "Revenue Share %",
+        "15%",
+        "15%",
+        "15%"
+      ],
+      [
+        "Author Revenue Share",
+        "\u2014",
+        "$40.07",
+        "\u2014"
+      ],
+      [
+        "MG RECOUPMENT",
+        "hdr"
+      ],
+      [
+        "Opening MG",
+        "\u2014",
+        "$6,000.00",
+        "$5,959.93*"
+      ],
+      [
+        "MG Recouped",
+        "\u2014",
+        "$40.07",
+        "\u2014"
+      ],
+      [
+        "Closing MG Available",
+        "\u2014",
+        "$5,959.93",
+        "\u2014"
+      ],
+      [
+        "Revenue Share Payable",
+        "$0.00",
+        "$0.00",
+        "\u2014"
+      ]
+    ],
+    "footnote": "Amounts reflect audited finance worksheet values. Remaining MG to recoup: $5,959.93."
+  },
+  "Carolina Tales": {
+    "title": "Carolina Tales",
+    "badge": "Gross",
+    "author": "Susan M Boyer",
+    "rev_pct": "15%",
+    "orig_mg": "$2,500.00",
+    "recouped_mg": "$5.55",
+    "avail_mg": "$2,494.45",
+    "headers": [
+      "Calculation Field",
+      "Q2 2026<br><span style='font-size:11px;font-weight:400;'>Apr\u2013Jun</span>",
+      "Q3 2026<br><span style='font-size:11px;font-weight:400;'>Jul\u2013Sep</span>",
+      "Q4 2026<br><span style='font-size:11px;font-weight:400;'>Oct\u2013Dec</span>"
+    ],
+    "rows": [
+      [
+        "REVENUE",
+        "hdr"
+      ],
+      [
+        "Gross Revenue excl. PG",
+        "\u2014",
+        "$37.03",
+        "\u2014"
+      ],
+      [
+        "REVENUE SHARE",
+        "hdr"
+      ],
+      [
+        "Revenue Share %",
+        "15%",
+        "15%",
+        "15%"
+      ],
+      [
+        "Author Revenue Share",
+        "\u2014",
+        "$5.55",
+        "\u2014"
+      ],
+      [
+        "MG RECOUPMENT",
+        "hdr"
+      ],
+      [
+        "Opening MG",
+        "\u2014",
+        "$2,500.00",
+        "$2,494.45*"
+      ],
+      [
+        "MG Recouped",
+        "\u2014",
+        "$5.55",
+        "\u2014"
+      ],
+      [
+        "Closing MG Available",
+        "\u2014",
+        "$2,494.45",
+        "\u2014"
+      ],
+      [
+        "Revenue Share Payable",
+        "$0.00",
+        "$0.00",
+        "\u2014"
+      ]
+    ],
+    "footnote": "Amounts reflect audited finance worksheet values. Remaining MG to recoup: $2,494.45."
+  },
+  "Fatal Series": {
+    "title": "Fatal Series",
+    "badge": "Gross",
+    "author": "HJTB Inc",
+    "rev_pct": "15%",
+    "orig_mg": "$10,000.00",
+    "recouped_mg": "$0.00",
+    "avail_mg": "$10,000.00",
+    "headers": [
+      "Calculation Field",
+      "Q2 2026<br><span style='font-size:11px;font-weight:400;'>Apr\u2013Jun</span>",
+      "Q3 2026<br><span style='font-size:11px;font-weight:400;'>Jul\u2013Sep</span>",
+      "Q4 2026<br><span style='font-size:11px;font-weight:400;'>Oct\u2013Dec</span>"
+    ],
+    "rows": [
+      [
+        "REVENUE",
+        "hdr"
+      ],
+      [
+        "Gross Revenue excl. PG",
+        "\u2014",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "REVENUE SHARE",
+        "hdr"
+      ],
+      [
+        "Revenue Share %",
+        "15%",
+        "15%",
+        "15%"
+      ],
+      [
+        "Author Revenue Share",
+        "\u2014",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "MG RECOUPMENT",
+        "hdr"
+      ],
+      [
+        "Opening MG",
+        "\u2014",
+        "$10,000.00",
+        "$10,000.00*"
+      ],
+      [
+        "MG Recouped",
+        "\u2014",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Closing MG Available",
+        "\u2014",
+        "$10,000.00",
+        "\u2014"
+      ],
+      [
+        "Revenue Share Payable",
+        "$0.00",
+        "$0.00",
+        "\u2014"
+      ]
+    ],
+    "footnote": "Amounts reflect audited finance worksheet values. Remaining MG to recoup: $10,000.00."
+  },
+  "Jackal Among Snakes": {
+    "title": "Jackal Among Snakes",
+    "badge": "Gross",
+    "author": "Rycus Wilkins",
+    "rev_pct": "12%",
+    "orig_mg": "$4,000.00",
+    "recouped_mg": "$49.86",
+    "avail_mg": "$3,950.14",
+    "headers": [
+      "Calculation Field",
+      "Q2 2026<br><span style='font-size:11px;font-weight:400;'>Apr\u2013Jun</span>",
+      "Q3 2026<br><span style='font-size:11px;font-weight:400;'>Jul\u2013Sep</span>",
+      "Q4 2026<br><span style='font-size:11px;font-weight:400;'>Oct\u2013Dec</span>"
+    ],
+    "rows": [
+      [
+        "REVENUE",
+        "hdr"
+      ],
+      [
+        "Gross Revenue excl. PG",
+        "\u2014",
+        "$415.52",
+        "\u2014"
+      ],
+      [
+        "REVENUE SHARE",
+        "hdr"
+      ],
+      [
+        "Revenue Share %",
+        "12%",
+        "12%",
+        "12%"
+      ],
+      [
+        "Author Revenue Share",
+        "\u2014",
+        "$49.86",
+        "\u2014"
+      ],
+      [
+        "MG RECOUPMENT",
+        "hdr"
+      ],
+      [
+        "Opening MG",
+        "\u2014",
+        "$4,000.00",
+        "$3,950.14*"
+      ],
+      [
+        "MG Recouped",
+        "\u2014",
+        "$49.86",
+        "\u2014"
+      ],
+      [
+        "Closing MG Available",
+        "\u2014",
+        "$3,950.14",
+        "\u2014"
+      ],
+      [
+        "Revenue Share Payable",
+        "$0.00",
+        "$0.00",
+        "\u2014"
+      ]
+    ],
+    "footnote": "Amounts reflect audited finance worksheet values. Remaining MG to recoup: $3,950.14."
+  },
+  "Redemption Arc": {
+    "title": "Redemption Arc",
+    "badge": "Gross",
+    "author": "Rycus Wilkins",
+    "rev_pct": "12%",
+    "orig_mg": "$3,000.00",
+    "recouped_mg": "$48.82",
+    "avail_mg": "$2,951.18",
+    "headers": [
+      "Calculation Field",
+      "Q2 2026<br><span style='font-size:11px;font-weight:400;'>Apr\u2013Jun</span>",
+      "Q3 2026<br><span style='font-size:11px;font-weight:400;'>Jul\u2013Sep</span>",
+      "Q4 2026<br><span style='font-size:11px;font-weight:400;'>Oct\u2013Dec</span>"
+    ],
+    "rows": [
+      [
+        "REVENUE",
+        "hdr"
+      ],
+      [
+        "Gross Revenue excl. PG",
+        "\u2014",
+        "$406.80",
+        "\u2014"
+      ],
+      [
+        "REVENUE SHARE",
+        "hdr"
+      ],
+      [
+        "Revenue Share %",
+        "12%",
+        "12%",
+        "12%"
+      ],
+      [
+        "Author Revenue Share",
+        "\u2014",
+        "$48.82",
+        "\u2014"
+      ],
+      [
+        "MG RECOUPMENT",
+        "hdr"
+      ],
+      [
+        "Opening MG",
+        "\u2014",
+        "$3,000.00",
+        "$2,951.18*"
+      ],
+      [
+        "MG Recouped",
+        "\u2014",
+        "$48.82",
+        "\u2014"
+      ],
+      [
+        "Closing MG Available",
+        "\u2014",
+        "$2,951.18",
+        "\u2014"
+      ],
+      [
+        "Revenue Share Payable",
+        "$0.00",
+        "$0.00",
+        "\u2014"
+      ]
+    ],
+    "footnote": "Amounts reflect audited finance worksheet values. Remaining MG to recoup: $2,951.18."
+  },
+  "Gansett Series": {
+    "title": "Gansett Series",
+    "badge": "Gross",
+    "author": "HJTB Inc",
+    "rev_pct": "15%",
+    "orig_mg": "$7,500.00",
+    "recouped_mg": "$2.57",
+    "avail_mg": "$7,497.43",
+    "headers": [
+      "Calculation Field",
+      "Q2 2026<br><span style='font-size:11px;font-weight:400;'>Apr\u2013Jun</span>",
+      "Q3 2026<br><span style='font-size:11px;font-weight:400;'>Jul\u2013Sep</span>",
+      "Q4 2026<br><span style='font-size:11px;font-weight:400;'>Oct\u2013Dec</span>"
+    ],
+    "rows": [
+      [
+        "REVENUE",
+        "hdr"
+      ],
+      [
+        "Gross Revenue excl. PG",
+        "\u2014",
+        "$17.14",
+        "\u2014"
+      ],
+      [
+        "REVENUE SHARE",
+        "hdr"
+      ],
+      [
+        "Revenue Share %",
+        "15%",
+        "15%",
+        "15%"
+      ],
+      [
+        "Author Revenue Share",
+        "\u2014",
+        "$2.57",
+        "\u2014"
+      ],
+      [
+        "MG RECOUPMENT",
+        "hdr"
+      ],
+      [
+        "Opening MG",
+        "\u2014",
+        "$7,500.00",
+        "$7,497.43*"
+      ],
+      [
+        "MG Recouped",
+        "\u2014",
+        "$2.57",
+        "\u2014"
+      ],
+      [
+        "Closing MG Available",
+        "\u2014",
+        "$7,497.43",
+        "\u2014"
+      ],
+      [
+        "Revenue Share Payable",
+        "$0.00",
+        "$0.00",
+        "\u2014"
+      ]
+    ],
+    "footnote": "Amounts reflect audited finance worksheet values. Remaining MG to recoup: $7,497.43."
+  },
+  "Blood Vice": {
+    "title": "Blood Vice",
+    "badge": "Gross",
+    "author": "Angela Mothersbaugh",
+    "rev_pct": "20%",
+    "orig_mg": "$1,500.00",
+    "recouped_mg": "$89.89",
+    "avail_mg": "$1,410.11",
+    "headers": [
+      "Calculation Field",
+      "Q2 2026<br><span style='font-size:11px;font-weight:400;'>Apr\u2013Jun</span>",
+      "Q3 2026<br><span style='font-size:11px;font-weight:400;'>Jul\u2013Sep</span>",
+      "Q4 2026<br><span style='font-size:11px;font-weight:400;'>Oct\u2013Dec</span>"
+    ],
+    "rows": [
+      [
+        "REVENUE",
+        "hdr"
+      ],
+      [
+        "Revenue incl. PG",
+        "$196.82",
+        "$304.65",
+        "\u2014"
+      ],
+      [
+        "PG Charges",
+        "($25.45)",
+        "($26.58)",
+        "\u2014"
+      ],
+      [
+        "Gross Revenue excl. PG",
+        "$171.38",
+        "$278.06",
+        "\u2014"
+      ],
+      [
+        "REVENUE SHARE",
+        "hdr"
+      ],
+      [
+        "Revenue Share %",
+        "20%",
+        "20%",
+        "20%"
+      ],
+      [
+        "Author Revenue Share",
+        "$34.28",
+        "$55.61",
+        "\u2014"
+      ],
+      [
+        "MG RECOUPMENT",
+        "hdr"
+      ],
+      [
+        "Opening MG",
+        "$1,500.00",
+        "$1,465.72",
+        "$1,410.11*"
+      ],
+      [
+        "MG Recouped",
+        "$34.28",
+        "$55.61",
+        "\u2014"
+      ],
+      [
+        "Closing MG Available",
+        "$1,465.72",
+        "$1,410.11",
+        "\u2014"
+      ],
+      [
+        "Revenue Share Payable",
+        "$0.00",
+        "$0.00",
+        "\u2014"
+      ]
+    ],
+    "footnote": "Q2 and Q3 figures are from audited finance sheets. Q4 is pending. *The proposed Q4 opening balance assumes the previous quarters are finalized and there are no additional adjustments."
+  },
+  "The Witches of Cleopatra Hill": {
+    "title": "The Witches of Cleopatra Hill",
+    "badge": "Gross",
+    "author": "Christine Pope",
+    "rev_pct": "15%",
+    "orig_mg": "$1,500.00",
+    "recouped_mg": "$20.16",
+    "avail_mg": "$1,479.84",
+    "headers": [
+      "Calculation Field",
+      "Q2 2026<br><span style='font-size:11px;font-weight:400;'>Apr\u2013Jun</span>",
+      "Q3 2026<br><span style='font-size:11px;font-weight:400;'>Jul\u2013Sep</span>",
+      "Q4 2026<br><span style='font-size:11px;font-weight:400;'>Oct\u2013Dec</span>"
+    ],
+    "rows": [
+      [
+        "REVENUE",
+        "hdr"
+      ],
+      [
+        "Revenue incl. PG",
+        "$141.92",
+        "$12.63",
+        "\u2014"
+      ],
+      [
+        "PG Charges",
+        "($18.51)",
+        "($1.65)",
+        "\u2014"
+      ],
+      [
+        "Gross Revenue excl. PG",
+        "$123.40",
+        "$10.98",
+        "\u2014"
+      ],
+      [
+        "REVENUE SHARE",
+        "hdr"
+      ],
+      [
+        "Revenue Share %",
+        "15%",
+        "15%",
+        "15%"
+      ],
+      [
+        "Author Revenue Share",
+        "$18.51",
+        "$1.65",
+        "\u2014"
+      ],
+      [
+        "MG RECOUPMENT",
+        "hdr"
+      ],
+      [
+        "Opening MG",
+        "$1,500.00",
+        "$1,481.49",
+        "$1,479.84*"
+      ],
+      [
+        "MG Recouped",
+        "$18.51",
+        "$1.65",
+        "\u2014"
+      ],
+      [
+        "Closing MG Available",
+        "$1,481.49",
+        "$1,479.84",
+        "\u2014"
+      ],
+      [
+        "Revenue Share Payable",
+        "$0.00",
+        "$0.00",
+        "\u2014"
+      ]
+    ],
+    "footnote": "Q2 and Q3 figures are from audited finance sheets. Q4 opening balance assumes previous quarters are finalized."
+  },
+  "Fae Chronicles Series": {
+    "title": "Fae Chronicles Series",
+    "badge": "Gross",
+    "author": "Amelia Hutchins",
+    "rev_pct": "22%",
+    "orig_mg": "$25,000.00",
+    "recouped_mg": "$841.54",
+    "avail_mg": "$24,158.46",
+    "headers": [
+      "Calculation Field",
+      "Q2 2026<br><span style='font-size:11px;font-weight:400;'>Apr\u2013Jun</span>",
+      "Q3 2026<br><span style='font-size:11px;font-weight:400;'>Jul\u2013Sep</span>",
+      "Q4 2026<br><span style='font-size:11px;font-weight:400;'>Oct\u2013Dec</span>"
+    ],
+    "rows": [
+      [
+        "REVENUE",
+        "hdr"
+      ],
+      [
+        "Gross Revenue excl. PG",
+        "\u2014",
+        "$3,825.18",
+        "\u2014"
+      ],
+      [
+        "REVENUE SHARE",
+        "hdr"
+      ],
+      [
+        "Revenue Share %",
+        "22%",
+        "22%",
+        "22%"
+      ],
+      [
+        "Author Revenue Share",
+        "\u2014",
+        "$841.54",
+        "\u2014"
+      ],
+      [
+        "MG RECOUPMENT",
+        "hdr"
+      ],
+      [
+        "Opening MG",
+        "\u2014",
+        "$25,000.00",
+        "$24,158.46*"
+      ],
+      [
+        "MG Recouped",
+        "\u2014",
+        "$841.54",
+        "\u2014"
+      ],
+      [
+        "Closing MG Available",
+        "\u2014",
+        "$24,158.46",
+        "\u2014"
+      ],
+      [
+        "Revenue Share Payable",
+        "$0.00",
+        "$0.00",
+        "\u2014"
+      ]
+    ],
+    "footnote": "Amounts reflect audited finance worksheet values. Remaining MG to recoup: $24,158.46."
+  },
+  "A Shade of Vampire Series": {
+    "title": "A Shade of Vampire Series",
+    "badge": "Gross",
+    "author": "Bella Forrest",
+    "rev_pct": "23.5%",
+    "orig_mg": "$9,652.71",
+    "recouped_mg": "$162.67",
+    "avail_mg": "$9,490.04",
+    "headers": [
+      "Calculation Field",
+      "Q2 2026<br><span style='font-size:11px;font-weight:400;'>Apr\u2013Jun</span>",
+      "Q3 2026<br><span style='font-size:11px;font-weight:400;'>Jul\u2013Sep</span>",
+      "Q4 2026<br><span style='font-size:11px;font-weight:400;'>Oct\u2013Dec</span>"
+    ],
+    "rows": [
+      [
+        "REVENUE",
+        "hdr"
+      ],
+      [
+        "Gross Revenue excl. PG",
+        "\u2014",
+        "$814.37",
+        "\u2014"
+      ],
+      [
+        "REVENUE SHARE",
+        "hdr"
+      ],
+      [
+        "Revenue Share %",
+        "23.5%",
+        "23.5%",
+        "23.5%"
+      ],
+      [
+        "Author Revenue Share",
+        "\u2014",
+        "$162.67",
+        "\u2014"
+      ],
+      [
+        "MG RECOUPMENT",
+        "hdr"
+      ],
+      [
+        "Opening MG",
+        "\u2014",
+        "$9,652.71",
+        "$9,490.04*"
+      ],
+      [
+        "MG Recouped",
+        "\u2014",
+        "$162.67",
+        "\u2014"
+      ],
+      [
+        "Closing MG Available",
+        "\u2014",
+        "$9,490.04",
+        "\u2014"
+      ],
+      [
+        "Revenue Share Payable",
+        "$0.00",
+        "$0.00",
+        "\u2014"
+      ]
+    ],
+    "footnote": "Amounts reflect audited finance worksheet values. Remaining MG to recoup: $9,490.04."
+  },
+  "Blake Larsen": {
+    "title": "Blake Larsen",
+    "badge": "Gross",
+    "author": "Ben North (writing as JS), Clipstone Press Limited",
+    "rev_pct": "15%",
+    "orig_mg": "$10,000.00",
+    "recouped_mg": "$28.42",
+    "avail_mg": "$9,971.58",
+    "headers": [
+      "Calculation Field",
+      "Q2 2026<br><span style='font-size:11px;font-weight:400;'>Apr\u2013Jun</span>",
+      "Q3 2026<br><span style='font-size:11px;font-weight:400;'>Jul\u2013Sep</span>",
+      "Q4 2026<br><span style='font-size:11px;font-weight:400;'>Oct\u2013Dec</span>"
+    ],
+    "rows": [
+      [
+        "REVENUE",
+        "hdr"
+      ],
+      [
+        "Gross Revenue excl. PG",
+        "\u2014",
+        "$189.43",
+        "\u2014"
+      ],
+      [
+        "REVENUE SHARE",
+        "hdr"
+      ],
+      [
+        "Revenue Share %",
+        "15%",
+        "15%",
+        "15%"
+      ],
+      [
+        "Author Revenue Share",
+        "\u2014",
+        "$28.42",
+        "\u2014"
+      ],
+      [
+        "MG RECOUPMENT",
+        "hdr"
+      ],
+      [
+        "Opening MG",
+        "\u2014",
+        "$10,000.00",
+        "$9,971.58*"
+      ],
+      [
+        "MG Recouped",
+        "\u2014",
+        "$28.42",
+        "\u2014"
+      ],
+      [
+        "Closing MG Available",
+        "\u2014",
+        "$9,971.58",
+        "\u2014"
+      ],
+      [
+        "Revenue Share Payable",
+        "$0.00",
+        "$0.00",
+        "\u2014"
+      ]
+    ],
+    "footnote": "Amounts reflect audited finance worksheet values. Remaining MG to recoup: $9,971.58."
+  },
+  "After Darkness Falls": {
+    "title": "After Darkness Falls",
+    "badge": "Gross",
+    "author": "May Sage",
+    "rev_pct": "15%",
+    "orig_mg": "$3,000.00",
+    "recouped_mg": "$4.96",
+    "avail_mg": "$2,995.04",
+    "headers": [
+      "Calculation Field",
+      "Q2 2026<br><span style='font-size:11px;font-weight:400;'>Apr\u2013Jun</span>",
+      "Q3 2026<br><span style='font-size:11px;font-weight:400;'>Jul\u2013Sep</span>",
+      "Q4 2026<br><span style='font-size:11px;font-weight:400;'>Oct\u2013Dec</span>"
+    ],
+    "rows": [
+      [
+        "REVENUE",
+        "hdr"
+      ],
+      [
+        "Gross Revenue excl. PG",
+        "\u2014",
+        "$33.09",
+        "\u2014"
+      ],
+      [
+        "REVENUE SHARE",
+        "hdr"
+      ],
+      [
+        "Revenue Share %",
+        "15%",
+        "15%",
+        "15%"
+      ],
+      [
+        "Author Revenue Share",
+        "\u2014",
+        "$4.96",
+        "\u2014"
+      ],
+      [
+        "MG RECOUPMENT",
+        "hdr"
+      ],
+      [
+        "Opening MG",
+        "\u2014",
+        "$3,000.00",
+        "$2,995.04*"
+      ],
+      [
+        "MG Recouped",
+        "\u2014",
+        "$4.96",
+        "\u2014"
+      ],
+      [
+        "Closing MG Available",
+        "\u2014",
+        "$2,995.04",
+        "\u2014"
+      ],
+      [
+        "Revenue Share Payable",
+        "$0.00",
+        "$0.00",
+        "\u2014"
+      ]
+    ],
+    "footnote": "Amounts reflect audited finance worksheet values. Remaining MG to recoup: $2,995.04."
+  },
+  "Lana Harvey, Reapers Inc.": {
+    "title": "Lana Harvey, Reapers Inc.",
+    "badge": "Gross",
+    "author": "Angela Mothersbaugh",
+    "rev_pct": "20%",
+    "orig_mg": "$7,500.00",
+    "recouped_mg": "$0.00",
+    "avail_mg": "$7,500.00",
+    "headers": [
+      "Calculation Field",
+      "Q2 2026<br><span style='font-size:11px;font-weight:400;'>Apr\u2013Jun</span>",
+      "Q3 2026<br><span style='font-size:11px;font-weight:400;'>Jul\u2013Sep</span>",
+      "Q4 2026<br><span style='font-size:11px;font-weight:400;'>Oct\u2013Dec</span>"
+    ],
+    "rows": [
+      [
+        "REVENUE",
+        "hdr"
+      ],
+      [
+        "Gross Revenue excl. PG",
+        "\u2014",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "REVENUE SHARE",
+        "hdr"
+      ],
+      [
+        "Revenue Share %",
+        "20%",
+        "20%",
+        "20%"
+      ],
+      [
+        "Author Revenue Share",
+        "\u2014",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "MG RECOUPMENT",
+        "hdr"
+      ],
+      [
+        "Opening MG",
+        "\u2014",
+        "$7,500.00",
+        "$7,500.00*"
+      ],
+      [
+        "MG Recouped",
+        "\u2014",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Closing MG Available",
+        "\u2014",
+        "$7,500.00",
+        "\u2014"
+      ],
+      [
+        "Revenue Share Payable",
+        "$0.00",
+        "$0.00",
+        "\u2014"
+      ]
+    ],
+    "footnote": "Amounts reflect audited finance worksheet values. Remaining MG to recoup: $7,500.00."
+  },
+  "The Sedona Files": {
+    "title": "The Sedona Files",
+    "badge": "Gross",
+    "author": "Christine Pope",
+    "rev_pct": "15%",
+    "orig_mg": "$500.00",
+    "recouped_mg": "$0.00",
+    "avail_mg": "$500.00",
+    "headers": [
+      "Calculation Field",
+      "Q2 2026<br><span style='font-size:11px;font-weight:400;'>Apr\u2013Jun</span>",
+      "Q3 2026<br><span style='font-size:11px;font-weight:400;'>Jul\u2013Sep</span>",
+      "Q4 2026<br><span style='font-size:11px;font-weight:400;'>Oct\u2013Dec</span>"
+    ],
+    "rows": [
+      [
+        "REVENUE",
+        "hdr"
+      ],
+      [
+        "Gross Revenue excl. PG",
+        "\u2014",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "REVENUE SHARE",
+        "hdr"
+      ],
+      [
+        "Revenue Share %",
+        "15%",
+        "15%",
+        "15%"
+      ],
+      [
+        "Author Revenue Share",
+        "\u2014",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "MG RECOUPMENT",
+        "hdr"
+      ],
+      [
+        "Opening MG",
+        "\u2014",
+        "$500.00",
+        "$500.00*"
+      ],
+      [
+        "MG Recouped",
+        "\u2014",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Closing MG Available",
+        "\u2014",
+        "$500.00",
+        "\u2014"
+      ],
+      [
+        "Revenue Share Payable",
+        "$0.00",
+        "$0.00",
+        "\u2014"
+      ]
+    ],
+    "footnote": "Amounts reflect audited finance worksheet values. Remaining MG to recoup: $500.00."
+  },
+  "I'm a Fake Genius in a Cultivation Sect": {
+    "title": "I'm a Fake Genius in a Cultivation Sect",
+    "badge": "Gross",
+    "author": "Travis Harvey",
+    "rev_pct": "12%",
+    "orig_mg": "$0.00",
+    "recouped_mg": "$0.00",
+    "avail_mg": "$0.00",
+    "headers": [
+      "Calculation Field",
+      "Q2 2026<br><span style='font-size:11px;font-weight:400;'>Apr\u2013Jun</span>",
+      "Q3 2026<br><span style='font-size:11px;font-weight:400;'>Jul\u2013Sep</span>",
+      "Q4 2026<br><span style='font-size:11px;font-weight:400;'>Oct\u2013Dec</span>"
+    ],
+    "rows": [
+      [
+        "REVENUE",
+        "hdr"
+      ],
+      [
+        "Gross Revenue excl. PG",
+        "\u2014",
+        "$55.69",
+        "\u2014"
+      ],
+      [
+        "REVENUE SHARE",
+        "hdr"
+      ],
+      [
+        "Revenue Share %",
+        "12%",
+        "12%",
+        "12%"
+      ],
+      [
+        "Author Revenue Share",
+        "\u2014",
+        "$6.68",
+        "\u2014"
+      ],
+      [
+        "MG RECOUPMENT",
+        "hdr"
+      ],
+      [
+        "Opening MG",
+        "\u2014",
+        "$0.00",
+        "$0.00*"
+      ],
+      [
+        "MG Recouped",
+        "\u2014",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Closing MG Available",
+        "\u2014",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Revenue Share Payable",
+        "$0.00",
+        "$6.68",
+        "\u2014"
+      ]
+    ],
+    "footnote": "Amounts reflect audited finance worksheet values. Remaining MG to recoup: $0.00."
+  },
+  "Rend": {
+    "title": "Rend",
+    "badge": "Gross",
+    "author": "Gerardo Diaz",
+    "rev_pct": "17%",
+    "orig_mg": "$3,000.00",
+    "recouped_mg": "$0.00",
+    "avail_mg": "$3,000.00",
+    "headers": [
+      "Calculation Field",
+      "Q2 2026<br><span style='font-size:11px;font-weight:400;'>Apr\u2013Jun</span>",
+      "Q3 2026<br><span style='font-size:11px;font-weight:400;'>Jul\u2013Sep</span>",
+      "Q4 2026<br><span style='font-size:11px;font-weight:400;'>Oct\u2013Dec</span>"
+    ],
+    "rows": [
+      [
+        "REVENUE",
+        "hdr"
+      ],
+      [
+        "Gross Revenue excl. PG",
+        "\u2014",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "REVENUE SHARE",
+        "hdr"
+      ],
+      [
+        "Revenue Share %",
+        "17%",
+        "17%",
+        "17%"
+      ],
+      [
+        "Author Revenue Share",
+        "\u2014",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "MG RECOUPMENT",
+        "hdr"
+      ],
+      [
+        "Opening MG",
+        "\u2014",
+        "$3,000.00",
+        "$3,000.00*"
+      ],
+      [
+        "MG Recouped",
+        "\u2014",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Closing MG Available",
+        "\u2014",
+        "$3,000.00",
+        "\u2014"
+      ],
+      [
+        "Revenue Share Payable",
+        "$0.00",
+        "$0.00",
+        "\u2014"
+      ]
+    ],
+    "footnote": "Amounts reflect audited finance worksheet values. Remaining MG to recoup: $3,000.00."
+  },
+  "Hedgewitch for Hire": {
+    "title": "Hedgewitch for Hire",
+    "badge": "Gross",
+    "author": "Christine Pope",
+    "rev_pct": "15%",
+    "orig_mg": "$1,500.00",
+    "recouped_mg": "$7.00",
+    "avail_mg": "$1,493.00",
+    "headers": [
+      "Calculation Field",
+      "Q2 2026<br><span style='font-size:11px;font-weight:400;'>Apr\u2013Jun</span>",
+      "Q3 2026<br><span style='font-size:11px;font-weight:400;'>Jul\u2013Sep</span>",
+      "Q4 2026<br><span style='font-size:11px;font-weight:400;'>Oct\u2013Dec</span>"
+    ],
+    "rows": [
+      [
+        "REVENUE",
+        "hdr"
+      ],
+      [
+        "Gross Revenue excl. PG",
+        "\u2014",
+        "$46.68",
+        "\u2014"
+      ],
+      [
+        "REVENUE SHARE",
+        "hdr"
+      ],
+      [
+        "Revenue Share %",
+        "15%",
+        "15%",
+        "15%"
+      ],
+      [
+        "Author Revenue Share",
+        "\u2014",
+        "$7.00",
+        "\u2014"
+      ],
+      [
+        "MG RECOUPMENT",
+        "hdr"
+      ],
+      [
+        "Opening MG",
+        "\u2014",
+        "$1,500.00",
+        "$1,493.00*"
+      ],
+      [
+        "MG Recouped",
+        "\u2014",
+        "$7.00",
+        "\u2014"
+      ],
+      [
+        "Closing MG Available",
+        "\u2014",
+        "$1,493.00",
+        "\u2014"
+      ],
+      [
+        "Revenue Share Payable",
+        "$0.00",
+        "$0.00",
+        "\u2014"
+      ]
+    ],
+    "footnote": "Amounts reflect audited finance worksheet values. Remaining MG to recoup: $1,493.00."
+  },
+  "The Witches of Cleopatra Hill (Q2 AMJ)": {
+    "title": "The Witches of Cleopatra Hill",
+    "badge": "Gross",
+    "author": "Christine Pope",
+    "rev_pct": "15%",
+    "orig_mg": "$1,500.00",
+    "recouped_mg": "$37.02",
+    "avail_mg": "$1,481.49",
+    "headers": [
+      "Calculation Field",
+      "Q2 2026<br><span style='font-size:11px;font-weight:400;'>Apr\u2013Jun</span>",
+      "Q3 2026<br><span style='font-size:11px;font-weight:400;'>Jul\u2013Sep</span>",
+      "Q4 2026<br><span style='font-size:11px;font-weight:400;'>Oct\u2013Dec</span>"
+    ],
+    "rows": [
+      [
+        "REVENUE",
+        "hdr"
+      ],
+      [
+        "Revenue incl. PG",
+        "$141.92",
+        "$141.91",
+        "\u2014"
+      ],
+      [
+        "PG Charges",
+        "($18.51)",
+        "($18.51)",
+        "\u2014"
+      ],
+      [
+        "Gross Revenue excl. PG",
+        "$123.40",
+        "$123.40",
+        "\u2014"
+      ],
+      [
+        "REVENUE SHARE",
+        "hdr"
+      ],
+      [
+        "Revenue Share %",
+        "15%",
+        "15%",
+        "15%"
+      ],
+      [
+        "Author Revenue Share",
+        "$18.51",
+        "$18.51",
+        "\u2014"
+      ],
+      [
+        "MG RECOUPMENT",
+        "hdr"
+      ],
+      [
+        "Opening MG",
+        "$1,500.00",
+        "$1,481.49",
+        "$1,481.49*"
+      ],
+      [
+        "MG Recouped",
+        "$18.51",
+        "$18.51",
+        "\u2014"
+      ],
+      [
+        "Closing MG Available",
+        "$1,481.49",
+        "$1,481.49",
+        "\u2014"
+      ],
+      [
+        "Revenue Share Payable",
+        "$0.00",
+        "$0.00",
+        "\u2014"
+      ]
+    ],
+    "footnote": "Q2 and Q3 figures are from audited finance sheets. Q4 opening balance assumes previous quarters are finalized."
+  },
+  "Blood Vice (Q2 AMJ)": {
+    "title": "Blood Vice",
+    "badge": "Gross",
+    "author": "Angela Roquet",
+    "rev_pct": "20%",
+    "orig_mg": "$1,500.00",
+    "recouped_mg": "$89.89",
+    "avail_mg": "$1,410.11",
+    "headers": [
+      "Calculation Field",
+      "Q2 2026<br><span style='font-size:11px;font-weight:400;'>Apr\u2013Jun</span>",
+      "Q3 2026<br><span style='font-size:11px;font-weight:400;'>Jul\u2013Sep</span>",
+      "Q4 2026<br><span style='font-size:11px;font-weight:400;'>Oct\u2013Dec</span>"
+    ],
+    "rows": [
+      [
+        "REVENUE",
+        "hdr"
+      ],
+      [
+        "Revenue incl. PG",
+        "$196.82",
+        "$304.65",
+        "\u2014"
+      ],
+      [
+        "PG Charges",
+        "($25.45)",
+        "($26.58)",
+        "\u2014"
+      ],
+      [
+        "Gross Revenue excl. PG",
+        "$171.38",
+        "$278.06",
+        "\u2014"
+      ],
+      [
+        "REVENUE SHARE",
+        "hdr"
+      ],
+      [
+        "Revenue Share %",
+        "20%",
+        "20%",
+        "20%"
+      ],
+      [
+        "Author Revenue Share",
+        "$34.28",
+        "$55.61",
+        "\u2014"
+      ],
+      [
+        "MG RECOUPMENT",
+        "hdr"
+      ],
+      [
+        "Opening MG",
+        "$1,500.00",
+        "$1,465.72",
+        "$1,410.11*"
+      ],
+      [
+        "MG Recouped",
+        "$34.28",
+        "$55.61",
+        "\u2014"
+      ],
+      [
+        "Closing MG Available",
+        "$1,465.72",
+        "$1,410.11",
+        "\u2014"
+      ],
+      [
+        "Revenue Share Payable",
+        "$0.00",
+        "$0.00",
+        "\u2014"
+      ]
+    ],
+    "footnote": "Q2 and Q3 figures are from audited finance sheets. Q4 is pending. *The proposed Q4 opening balance assumes the previous quarters are finalized and there are no additional adjustments."
+  }
+};
+    const NET_DEALS_DATA = {
+  "St. Marin's Cozy Mysteries": {
+    "title": "St. Marin's Cozy Mysteries",
+    "badge": "Net",
+    "author": "Andilit, LLC",
+    "rev_pct": "15%",
+    "avail_mg": "$12,500",
+    "recouped_mg": "$0",
+    "payable": "$0",
+    "headers": [
+      "Calculation Field",
+      "Apr\u2013Sep 2026<br><span style='font-size:11px;font-weight:400;'>6-Month Combined</span>",
+      "Oct\u2013Dec 2026<br><span style='font-size:11px;font-weight:400;'>Q4 Pending</span>"
+    ],
+    "rows": [
+      [
+        "REVENUE",
+        "hdr"
+      ],
+      [
+        "Gross Revenue excl. PG",
+        "$24.77",
+        "\u2014"
+      ],
+      [
+        "Marketing Spends",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Marketing Deduction",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Production Costs Reported",
+        "$2,258.00",
+        "\u2014"
+      ],
+      [
+        "Deductible Production Costs",
+        "$24.77",
+        "\u2014"
+      ],
+      [
+        "Distribution Fees",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "REVENUE SHARE",
+        "hdr"
+      ],
+      [
+        "Revenue for Share Calculation",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Revenue Share %",
+        "15%",
+        "15%"
+      ],
+      [
+        "Author Revenue Share",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "MG RECOUPMENT",
+        "hdr"
+      ],
+      [
+        "Opening MG Available",
+        "$12,500.00",
+        "$12,500.00*"
+      ],
+      [
+        "MG Recouped",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Closing MG Available",
+        "$12,500.00*",
+        "\u2014"
+      ],
+      [
+        "Revenue Share Payable",
+        "$0.00",
+        "\u2014"
+      ]
+    ],
+    "footnote": "Apr\u2013Sept figures reflect the current Rev Share Report. The $12,500 closing balance is inferred from zero recoupment, not a confirmed sent-statement balance. The next quarter remains blank pending financial inputs and validation."
+  },
+  "Vital Secrets": {
+    "title": "Vital Secrets",
+    "badge": "Net",
+    "author": "DF Hart",
+    "rev_pct": "15%",
+    "avail_mg": "$4,000",
+    "recouped_mg": "$0",
+    "payable": "$0",
+    "headers": [
+      "Calculation Field",
+      "Apr\u2013Sep 2026<br><span style='font-size:11px;font-weight:400;'>6-Month Combined</span>",
+      "Oct\u2013Dec 2026<br><span style='font-size:11px;font-weight:400;'>Q4 Pending</span>"
+    ],
+    "rows": [
+      [
+        "REVENUE",
+        "hdr"
+      ],
+      [
+        "Gross Revenue excl. PG",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Marketing Spends",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Marketing Deduction",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Production Costs Reported",
+        "$1,339.00",
+        "\u2014"
+      ],
+      [
+        "Deductible Production Costs",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Distribution Fees",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "REVENUE SHARE",
+        "hdr"
+      ],
+      [
+        "Revenue for Share Calculation",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Revenue Share %",
+        "15%",
+        "15%"
+      ],
+      [
+        "Author Revenue Share",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "MG RECOUPMENT",
+        "hdr"
+      ],
+      [
+        "Opening MG Available",
+        "$4,000.00",
+        "$4,000.00*"
+      ],
+      [
+        "MG Recouped",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Closing MG Available",
+        "$4,000.00*",
+        "\u2014"
+      ],
+      [
+        "Revenue Share Payable",
+        "$0.00",
+        "\u2014"
+      ]
+    ],
+    "footnote": "Deductible production costs are capped at gross revenue. Remaining MG balance to recoup: $4,000.00."
+  },
+  "Mrs. Lillywhite Investigates Mysteries": {
+    "title": "Mrs. Lillywhite Investigates Mysteries",
+    "badge": "Net",
+    "author": "Willow Hill Books LLC - Emily Queen",
+    "rev_pct": "15%",
+    "avail_mg": "$2,500",
+    "recouped_mg": "$0",
+    "payable": "$0",
+    "headers": [
+      "Calculation Field",
+      "Apr\u2013Sep 2026<br><span style='font-size:11px;font-weight:400;'>6-Month Combined</span>",
+      "Oct\u2013Dec 2026<br><span style='font-size:11px;font-weight:400;'>Q4 Pending</span>"
+    ],
+    "rows": [
+      [
+        "REVENUE",
+        "hdr"
+      ],
+      [
+        "Gross Revenue excl. PG",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Marketing Spends",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Marketing Deduction",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Production Costs Reported",
+        "$853.00",
+        "\u2014"
+      ],
+      [
+        "Deductible Production Costs",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Distribution Fees",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "REVENUE SHARE",
+        "hdr"
+      ],
+      [
+        "Revenue for Share Calculation",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Revenue Share %",
+        "15%",
+        "15%"
+      ],
+      [
+        "Author Revenue Share",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "MG RECOUPMENT",
+        "hdr"
+      ],
+      [
+        "Opening MG Available",
+        "$2,500.00",
+        "$2,500.00*"
+      ],
+      [
+        "MG Recouped",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Closing MG Available",
+        "$2,500.00*",
+        "\u2014"
+      ],
+      [
+        "Revenue Share Payable",
+        "$0.00",
+        "\u2014"
+      ]
+    ],
+    "footnote": "Deductible production costs are capped at gross revenue. Remaining MG balance to recoup: $2,500.00."
+  },
+  "Detective Emilia Cruz": {
+    "title": "Detective Emilia Cruz",
+    "badge": "Net",
+    "author": "Carmen Amato",
+    "rev_pct": "13%",
+    "avail_mg": "$3,000",
+    "recouped_mg": "$0",
+    "payable": "$0",
+    "headers": [
+      "Calculation Field",
+      "Apr\u2013Sep 2026<br><span style='font-size:11px;font-weight:400;'>6-Month Combined</span>",
+      "Oct\u2013Dec 2026<br><span style='font-size:11px;font-weight:400;'>Q4 Pending</span>"
+    ],
+    "rows": [
+      [
+        "REVENUE",
+        "hdr"
+      ],
+      [
+        "Gross Revenue excl. PG",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Marketing Spends",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Marketing Deduction",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Production Costs Reported",
+        "$1,549.00",
+        "\u2014"
+      ],
+      [
+        "Deductible Production Costs",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Distribution Fees",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "REVENUE SHARE",
+        "hdr"
+      ],
+      [
+        "Revenue for Share Calculation",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Revenue Share %",
+        "13%",
+        "13%"
+      ],
+      [
+        "Author Revenue Share",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "MG RECOUPMENT",
+        "hdr"
+      ],
+      [
+        "Opening MG Available",
+        "$3,000.00",
+        "$3,000.00*"
+      ],
+      [
+        "MG Recouped",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Closing MG Available",
+        "$3,000.00*",
+        "\u2014"
+      ],
+      [
+        "Revenue Share Payable",
+        "$0.00",
+        "\u2014"
+      ]
+    ],
+    "footnote": "Deductible production costs are capped at gross revenue. Remaining MG balance to recoup: $3,000.00."
+  },
+  "Death Before Dragon Series": {
+    "title": "Death Before Dragon Series",
+    "badge": "Net",
+    "author": "Lindsay Buroker",
+    "rev_pct": "25%",
+    "avail_mg": "$0",
+    "recouped_mg": "$0",
+    "payable": "$0",
+    "headers": [
+      "Calculation Field",
+      "Apr\u2013Sep 2026<br><span style='font-size:11px;font-weight:400;'>6-Month Combined</span>",
+      "Oct\u2013Dec 2026<br><span style='font-size:11px;font-weight:400;'>Q4 Pending</span>"
+    ],
+    "rows": [
+      [
+        "REVENUE",
+        "hdr"
+      ],
+      [
+        "Gross Revenue excl. PG",
+        "$3,309.97",
+        "\u2014"
+      ],
+      [
+        "Marketing Spends",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Marketing Deduction",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Production Costs Reported",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Deductible Production Costs",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Distribution Fees",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "REVENUE SHARE",
+        "hdr"
+      ],
+      [
+        "Revenue for Share Calculation",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Revenue Share %",
+        "25%",
+        "25%"
+      ],
+      [
+        "Author Revenue Share",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "MG RECOUPMENT",
+        "hdr"
+      ],
+      [
+        "Opening MG Available",
+        "$0.00",
+        "$0.00*"
+      ],
+      [
+        "MG Recouped",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Closing MG Available",
+        "$0.00*",
+        "\u2014"
+      ],
+      [
+        "Revenue Share Payable",
+        "$0.00",
+        "\u2014"
+      ]
+    ],
+    "footnote": "Deductible production costs are capped at gross revenue. Remaining MG balance to recoup: $0.00."
+  },
+  "Nocturne Falls": {
+    "title": "Nocturne Falls",
+    "badge": "Net",
+    "author": "Kristen Painter",
+    "rev_pct": "18%",
+    "avail_mg": "$20,000",
+    "recouped_mg": "$0",
+    "payable": "$0",
+    "headers": [
+      "Calculation Field",
+      "Apr\u2013Sep 2026<br><span style='font-size:11px;font-weight:400;'>6-Month Combined</span>",
+      "Oct\u2013Dec 2026<br><span style='font-size:11px;font-weight:400;'>Q4 Pending</span>"
+    ],
+    "rows": [
+      [
+        "REVENUE",
+        "hdr"
+      ],
+      [
+        "Gross Revenue excl. PG",
+        "$1,145.18",
+        "\u2014"
+      ],
+      [
+        "Marketing Spends",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Marketing Deduction",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Production Costs Reported",
+        "$3,532.00",
+        "\u2014"
+      ],
+      [
+        "Deductible Production Costs",
+        "$1,145.18",
+        "\u2014"
+      ],
+      [
+        "Distribution Fees",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "REVENUE SHARE",
+        "hdr"
+      ],
+      [
+        "Revenue for Share Calculation",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Revenue Share %",
+        "18%",
+        "18%"
+      ],
+      [
+        "Author Revenue Share",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "MG RECOUPMENT",
+        "hdr"
+      ],
+      [
+        "Opening MG Available",
+        "$20,000.00",
+        "$20,000.00*"
+      ],
+      [
+        "MG Recouped",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Closing MG Available",
+        "$20,000.00*",
+        "\u2014"
+      ],
+      [
+        "Revenue Share Payable",
+        "$0.00",
+        "\u2014"
+      ]
+    ],
+    "footnote": "Deductible production costs are capped at gross revenue. Remaining MG balance to recoup: $20,000.00."
+  },
+  "Billionaire Bear Brotherhood": {
+    "title": "Billionaire Bear Brotherhood",
+    "badge": "Net",
+    "author": "Lily Cahill",
+    "rev_pct": "12%",
+    "avail_mg": "$1,000",
+    "recouped_mg": "$0",
+    "payable": "$0",
+    "headers": [
+      "Calculation Field",
+      "Apr\u2013Sep 2026<br><span style='font-size:11px;font-weight:400;'>6-Month Combined</span>",
+      "Oct\u2013Dec 2026<br><span style='font-size:11px;font-weight:400;'>Q4 Pending</span>"
+    ],
+    "rows": [
+      [
+        "REVENUE",
+        "hdr"
+      ],
+      [
+        "Gross Revenue excl. PG",
+        "$3.53",
+        "\u2014"
+      ],
+      [
+        "Marketing Spends",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Marketing Deduction",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Production Costs Reported",
+        "$426.00",
+        "\u2014"
+      ],
+      [
+        "Deductible Production Costs",
+        "$3.53",
+        "\u2014"
+      ],
+      [
+        "Distribution Fees",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "REVENUE SHARE",
+        "hdr"
+      ],
+      [
+        "Revenue for Share Calculation",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Revenue Share %",
+        "12%",
+        "12%"
+      ],
+      [
+        "Author Revenue Share",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "MG RECOUPMENT",
+        "hdr"
+      ],
+      [
+        "Opening MG Available",
+        "$1,000.00",
+        "$1,000.00*"
+      ],
+      [
+        "MG Recouped",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Closing MG Available",
+        "$1,000.00*",
+        "\u2014"
+      ],
+      [
+        "Revenue Share Payable",
+        "$0.00",
+        "\u2014"
+      ]
+    ],
+    "footnote": "Deductible production costs are capped at gross revenue. Remaining MG balance to recoup: $1,000.00."
+  },
+  "Game Day": {
+    "title": "Game Day",
+    "badge": "Net",
+    "author": "Couerdalene Chambers (Lily Cahill)",
+    "rev_pct": "12%",
+    "avail_mg": "$2,000",
+    "recouped_mg": "$0",
+    "payable": "$0",
+    "headers": [
+      "Calculation Field",
+      "Apr\u2013Sep 2026<br><span style='font-size:11px;font-weight:400;'>6-Month Combined</span>",
+      "Oct\u2013Dec 2026<br><span style='font-size:11px;font-weight:400;'>Q4 Pending</span>"
+    ],
+    "rows": [
+      [
+        "REVENUE",
+        "hdr"
+      ],
+      [
+        "Gross Revenue excl. PG",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Marketing Spends",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Marketing Deduction",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Production Costs Reported",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Deductible Production Costs",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Distribution Fees",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "REVENUE SHARE",
+        "hdr"
+      ],
+      [
+        "Revenue for Share Calculation",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Revenue Share %",
+        "12%",
+        "12%"
+      ],
+      [
+        "Author Revenue Share",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "MG RECOUPMENT",
+        "hdr"
+      ],
+      [
+        "Opening MG Available",
+        "$2,000.00",
+        "$2,000.00*"
+      ],
+      [
+        "MG Recouped",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Closing MG Available",
+        "$2,000.00*",
+        "\u2014"
+      ],
+      [
+        "Revenue Share Payable",
+        "$0.00",
+        "\u2014"
+      ]
+    ],
+    "footnote": "Deductible production costs are capped at gross revenue. Remaining MG balance to recoup: $2,000.00."
+  },
+  "Teddy Bears on Brigade": {
+    "title": "Teddy Bears on Brigade",
+    "badge": "Net",
+    "author": "Shannon Livingston",
+    "rev_pct": "12%",
+    "avail_mg": "$3,000",
+    "recouped_mg": "$0",
+    "payable": "$0",
+    "headers": [
+      "Calculation Field",
+      "Apr\u2013Sep 2026<br><span style='font-size:11px;font-weight:400;'>6-Month Combined</span>",
+      "Oct\u2013Dec 2026<br><span style='font-size:11px;font-weight:400;'>Q4 Pending</span>"
+    ],
+    "rows": [
+      [
+        "REVENUE",
+        "hdr"
+      ],
+      [
+        "Gross Revenue excl. PG",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Marketing Spends",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Marketing Deduction",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Production Costs Reported",
+        "$2,273.00",
+        "\u2014"
+      ],
+      [
+        "Deductible Production Costs",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Distribution Fees",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "REVENUE SHARE",
+        "hdr"
+      ],
+      [
+        "Revenue for Share Calculation",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Revenue Share %",
+        "12%",
+        "12%"
+      ],
+      [
+        "Author Revenue Share",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "MG RECOUPMENT",
+        "hdr"
+      ],
+      [
+        "Opening MG Available",
+        "$3,000.00",
+        "$3,000.00*"
+      ],
+      [
+        "MG Recouped",
+        "$0.00",
+        "\u2014"
+      ],
+      [
+        "Closing MG Available",
+        "$3,000.00*",
+        "\u2014"
+      ],
+      [
+        "Revenue Share Payable",
+        "$0.00",
+        "\u2014"
+      ]
+    ],
+    "footnote": "Deductible production costs are capped at gross revenue. Remaining MG balance to recoup: $3,000.00."
+  }
+};
+
+    </script>
 
 </body>
 </html>

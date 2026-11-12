@@ -59,6 +59,7 @@ The script relies on specific columns and exact date/status combinations to dete
 - **Action:** Dispatches onboarding packet and invoice requirements.
 
 ### 3. MG Payout Initiated
+- **Automatic Prerequisite:** When Welcome Email (Col R) and Vendor Onboarding Email (Col S) are both `Sent`, Col T is automatically set to `Not due yet` until milestone dates are reached.
 - **Conditions:**
   - `Vendor Lifecycle Exited` date is **Today** & `Vendor Status` == `Done` -> Drafts MG Initiated email (`Col T -> draft ready`).
   - `Vendor Lifecycle Exited` date is **in the past (< TODAY)** & `Vendor Status` == `Done` & not sent -> Sets `Col T -> Overdue`.
@@ -66,6 +67,7 @@ The script relies on specific columns and exact date/status combinations to dete
 - **Action:** Notifies author that NetSuite bill has been approved.
 
 ### 4. MG Payout Confirmation
+- **Automatic Prerequisite:** When Welcome Email (Col R) and Vendor Onboarding Email (Col S) are both `Sent`, Col U is automatically set to `Not due yet` until milestone dates are reached.
 - **Conditions:**
   - `MG Payout Exited` date is **Today** & `MG Status` == `Done` -> Drafts MG Confirmed email (`Col U -> draft ready`), stamps `Col V` with Today's Date (*Feedback Mail Date*).
   - `MG Payout Exited` date is **in the past (< TODAY)** & `MG Status` == `Done` & not sent -> Sets `Col U -> Overdue`.
@@ -107,13 +109,19 @@ The script relies on specific columns and exact date/status combinations to dete
 - **Action:** Drafts creator community newsletter (*"What's new at Pocket FM + a few things worth knowing"*). Sets `Col AD -> Draft Ready`.
 
 ### 9. Quarterly Revenue Statements
-- **9A & 9B (Worked Well - Content & Payment Ready):**
+- **Revenue Statement Engine & Portal:** Generates confidential branded statements hosted live on Vercel (`https://pocketfm-statements.vercel.app`), accessible via the [Internal Statement Hub](https://pocketfm-statements.vercel.app/internal_hub).
+- **9A (Worked Well - Content Review):**
   - `Launch Status` is `Testing_PGC` / `Launched (ROW)`.
-  - Strictly requires a valid Revenue Statement Drive Link in `Col AL` (suppressed if blank).
-  - Drafts Content Review & Payment Ready emails. Updates `Col AM -> Draft Ready`.
+  - Automatically drafted during standard outreach runs.
+  - Requires a valid Revenue Statement Link in `Col AL` (suppressed if blank).
+  - Drafts Content Review email with Argus performance snapshot. Updates `Col AM -> Draft Ready`.
+- **9B (Worked Well - Payment Ready):**
+  - `Launch Status` is `Testing_PGC` / `Launched (ROW)`.
+  - **Decoupled from standard runs:** Triggered only when royalties are payable post-MG recoupment (or when explicitly selected from the menu), preventing premature invoice requests to authors.
+  - Drafts Payment Ready email. Updates `Col AM -> Draft Ready`.
 - **9C (Content Didn't Work Well):**
   - `Launch Status` is `Dropped` / `Bad` / `Sunset`.
-  - Strictly requires a valid Revenue Statement Drive Link in `Col AL` (suppressed if blank).
+  - Requires a valid Revenue Statement Link in `Col AL` (suppressed if blank).
   - Drafts Sunset Update email. Updates `Col AM -> Draft Ready`.
 
 ---
