@@ -36,7 +36,7 @@ AMJ_PATH = os.path.join(BASE_DIR, "AMJ Self-Pub Revenue Payouts.xlsx")
 
 VERCEL_PROJECT_NAME = "pocketfm-statements"
 VERCEL_BASE_URL = "https://pocketfm-statements.vercel.app"
-HUB_DATA_VERSION = "2026_jas_finance_master_recoupment_v2"
+HUB_DATA_VERSION = "2026_jas_finance_master_recoupment_v3"
 
 
 def ensure_directories():
@@ -1124,7 +1124,8 @@ def build_master_summary_rows(finance_shows, amj_shows, urls_map):
 def update_internal_hub_html(shows_list, master_rows):
     """
     Updates internal_hub.html with the tabbed navigation between Statement Cards
-    and the horizontal Master Revenue Summary ledger.
+    and the horizontal Master Revenue Summary ledger, and pre-renders all statement
+    cards directly into HTML to guarantee the dashboard always shows all shows.
     """
     if not os.path.exists(INTERNAL_HUB_FILE):
         print(f"⚠ Warning: {INTERNAL_HUB_FILE} not found, skipping hub update.")
@@ -1147,18 +1148,24 @@ def update_internal_hub_html(shows_list, master_rows):
         if end_idx != -1:
             content = content[:start_idx] + js_array_str + content[end_idx + 2:]
 
-    # 2. Inject MASTER_SUMMARY_DATA JS array
+    # 2. Clean out ANY and ALL previous HUB_DATA_VERSION declarations
+    content = re.sub(r"const HUB_DATA_VERSION\s*=\s*['\"].*?['\"];\s*", "", content)
+
+    # 3. Inject MASTER_SUMMARY_DATA JS array
     master_json_str = "const MASTER_SUMMARY_DATA = " + json.dumps(master_rows, indent=2) + ";"
     m_tag = "const MASTER_SUMMARY_DATA = "
     m_start = content.find(m_tag)
     if m_start != -1:
-        m_end = content.find(";", m_start)
-        content = content[:m_start] + master_json_str + content[m_end + 1:]
+        m_end = content.find("];", m_start)
+        if m_end != -1:
+            content = content[:m_start] + master_json_str + content[m_end + 2:]
+        else:
+            m_end_semi = content.find(";", m_start)
+            content = content[:m_start] + master_json_str + content[m_end_semi + 1:]
     else:
-        # Insert before getStoredShows
         content = content.replace("function getStoredShows()", f"{master_json_str}\n\n    function getStoredShows()")
 
-    # 3. Inject Version Block
+    # 4. Inject clean single Version Block
     version_block = f"""const HUB_DATA_VERSION = '{HUB_DATA_VERSION}';
     function getStoredShows() {{
       try {{
@@ -1175,12 +1182,94 @@ def update_internal_hub_html(shows_list, master_rows):
     }}"""
 
     content = re.sub(
-        r"(?:const HUB_DATA_VERSION = '.*?';\s*)?function getStoredShows\(\)\s*\{[\s\S]*?return DEFAULT_SHOWS;\s*\}",
+        r"function getStoredShows\(\)\s*\{[\s\S]*?return DEFAULT_SHOWS;\s*\}",
         lambda m: version_block,
         content
     )
 
-    # 4. Inject CSS Styles for Master Summary & Hub Tabs if not present
+    # 5. Pre-render Statement Cards into HTML
+    six_month_shows = [s for s in shows_list if s.get("category", "").startswith("6-Month")]
+    three_month_shows = [s for s in shows_list if s.get("category", "").startswith("3-Month")]
+
+    def make_card_html(s):
+        model = (s.get("model") or "gross").lower()
+        badge_class = "badge-gross"
+        badge_label = "Gross Style"
+        if model == "net":
+            badge_class = "badge-net"
+            badge_label = "Net Style"
+        elif model == "both":
+            badge_class = "badge-both"
+            badge_label = "Gross & Net"
+        elif model == "tiered":
+            badge_class = "badge-tiered"
+            badge_label = "Tiered"
+        elif model == "carryover":
+            badge_class = "badge-carryover"
+            badge_label = "Carryover / Recoup"
+        elif model == "flat":
+            badge_class = "badge-flat"
+            badge_label = "Flat Buyout"
+
+        key_esc = s["key"].replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
+        author_esc = s["author"].replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
+        period_esc = s["periodLabel"].replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
+        url_esc = s["url"].replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
+        url_js = s["url"].replace("'", "\\'")
+
+        return f"""        <div class="statement-card">
+          <div class="card-header">
+            <div class="card-title">{key_esc}</div>
+            <span class="style-badge {badge_class}">{badge_label}</span>
+          </div>
+          <div class="card-meta">
+            <div><strong>Author:</strong> {author_esc}</div>
+            <div><strong>Period:</strong> {period_esc}</div>
+            <div class="card-link-box">{url_esc}</div>
+          </div>
+          <div class="card-footer">
+            <div class="footer-left">
+              <button class="btn-copy" onclick="copyUrl('{url_js}', this)">
+                Copy Link
+              </button>
+              <a href="{url_esc}" class="btn-view" target="_blank">
+                View
+              </a>
+            </div>
+            <button class="btn-delete" title="Delete Statement" onclick="deleteStatement('{s['id']}')">
+              🗑️ Delete
+            </button>
+          </div>
+        </div>"""
+
+    six_cards_html = "\n".join(make_card_html(s) for s in six_month_shows)
+    three_cards_html = "\n".join(make_card_html(s) for s in three_month_shows)
+
+    # Replace sixMonthCount and sixMonthGrid
+    content = re.sub(
+        r'<span class="count-badge" id="sixMonthCount">.*?</span>',
+        f'<span class="count-badge" id="sixMonthCount">{len(six_month_shows)} Shows</span>',
+        content
+    )
+    content = re.sub(
+        r'<div class="grid" id="sixMonthGrid">[\s\S]*?</div>\s*<!-- 3-Month Quarterly Section -->',
+        f'<div class="grid" id="sixMonthGrid">\n{six_cards_html}\n    </div>\n\n    <!-- 3-Month Quarterly Section -->',
+        content
+    )
+
+    # Replace threeMonthCount and threeMonthGrid
+    content = re.sub(
+        r'<span class="count-badge" id="threeMonthCount">.*?</span>',
+        f'<span class="count-badge" id="threeMonthCount">{len(three_month_shows)} Shows</span>',
+        content
+    )
+    content = re.sub(
+        r'<div class="grid" id="threeMonthGrid">[\s\S]*?</div>\s*<!-- Annual & Other Period Section -->',
+        f'<div class="grid" id="threeMonthGrid">\n{three_cards_html}\n    </div>\n\n    <!-- Annual & Other Period Section -->',
+        content
+    )
+
+    # 6. Inject CSS Styles for Master Summary & Hub Tabs if not present
     if ".master-summary-card" not in content:
         hub_extra_css = """
     /* Hub Navigation Tabs */
@@ -1360,7 +1449,7 @@ def update_internal_hub_html(shows_list, master_rows):
 """
         content = content.replace("</style>", f"{hub_extra_css}\n  </style>")
 
-    # 5. Build Master Table Rows HTML
+    # 7. Build Master Table Rows HTML
     table_tbody_html = ""
     for r in master_rows:
         orig_str = f"${r['original_mg']:,.0f}" if r['original_mg'] is not None else "—"
@@ -1386,7 +1475,7 @@ def update_internal_hub_html(shows_list, master_rows):
                 <td style="text-align: right; font-weight: 700;">{cur_str}</td>
               </tr>"""
 
-    # 6. Inject the Tab Switcher and Master Summary Card DOM into <main class="container">
+    # 8. Inject the Tab Switcher and Master Summary Card DOM into <main class="container">
     master_dom = f"""
     <!-- Hub Navigation Tabs -->
     <div class="hub-tabs-container">
@@ -1476,7 +1565,7 @@ def update_internal_hub_html(shows_list, master_rows):
         if close_target in content:
             content = content.replace(close_target, "</div>\n\n    " + close_target)
 
-    # 7. Add JS handlers for Tabs, Filter, and Excel Export
+    # 9. Add JS handlers for Tabs, Filter, and Excel Export
     js_handlers = """
     function switchHubTab(tabName) {
       const tabCards = document.getElementById('tabContentCards');
@@ -1546,7 +1635,7 @@ def update_internal_hub_html(shows_list, master_rows):
     with open(INTERNAL_HUB_FILE, "w", encoding="utf-8") as f:
         f.write(content)
 
-    print(f"✓ Updated internal_hub.html with Master Revenue Summary and Tabs!")
+    print(f"✓ Updated internal_hub.html with Master Revenue Summary, Tabs, and Pre-rendered Cards!")
 
 
 def deploy_to_vercel():
