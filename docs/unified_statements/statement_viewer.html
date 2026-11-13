@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="pageTitle">Revenue Statement | Pocket FM</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="alternate icon" type="image/png" sizes="32x32" href="/favicon.png">
+    <link rel="apple-touch-icon" sizes="128x128" href="/favicon-128.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
@@ -124,25 +127,158 @@
             font-weight: 700;
             color: #000000;
         }
-        .items-table {
-            margin-bottom: 35px;
+        /* Recoupment Section Styles Matching Modern Spec (Clean White Box Theme) */
+        .calculation-card {
+            background-color: transparent;
+            border: none;
+            border-radius: 0;
+            padding: 0;
+            color: #1f2328;
+            margin: 25px 0 35px 0;
+            box-shadow: none;
         }
-        .items-table th {
+        .calc-header {
+            margin-bottom: 20px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid #eaecef;
+        }
+        .calc-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .calc-title {
+            font-size: 20px;
             font-weight: 700;
-            text-align: left;
-            background-color: #E51A4D;
-            color: #ffffff;
+            color: #0c0c0c;
+            letter-spacing: -0.2px;
+        }
+        .deal-badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
             text-transform: uppercase;
-            font-size: 13px;
             letter-spacing: 0.5px;
         }
-        .items-table td:first-child { text-align: left; }
-        .items-table td:last-child { text-align: right; }
-        .payout-row {
-            background-color: #d9d9d9;
-            font-weight: 700;
-            font-size: 15px;
+        .deal-badge.badge-gross {
+            background-color: #ddf4ff;
+            color: #0969da;
+            border: 1px solid #80ccff;
         }
+        .deal-badge.badge-net {
+            background-color: #dafbe1;
+            color: #1a7f37;
+            border: 1px solid #82e299;
+        }
+        .kpi-row {
+            display: flex;
+            gap: 14px;
+            margin-bottom: 22px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid #eaecef;
+        }
+        .kpi-box {
+            flex: 1;
+            background: #f6f8fa;
+            border: 1px solid #d0d7de;
+            border-radius: 8px;
+            padding: 12px 16px;
+            text-align: left;
+        }
+        .kpi-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #57606a;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+        .kpi-val {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1f2328;
+        }
+        .calc-table-wrap {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .calc-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            border: 1px solid #000000;
+        }
+        .calc-table th {
+            text-align: right;
+            padding: 10px 12px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #000000;
+            background-color: #f0f0f0;
+            border: 1px solid #000000;
+            vertical-align: middle;
+            text-transform: none;
+            letter-spacing: normal;
+        }
+        .calc-table th:first-child {
+            text-align: left;
+            padding-left: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #000000;
+            background-color: #f0f0f0;
+            border: 1px solid #000000;
+        }
+        .calc-table th .sub-th {
+            font-size: 11px;
+            color: #444444;
+            font-weight: normal;
+            margin-top: 2px;
+        }
+        .calc-table td {
+            padding: 9px 12px;
+            border: 1px solid #000000;
+            text-align: right;
+            color: #000000;
+            font-size: 13px;
+            vertical-align: middle;
+            background-color: #ffffff;
+        }
+        .calc-table td:first-child {
+            text-align: left;
+            padding-left: 12px;
+            color: #000000;
+            font-weight: 600;
+            background-color: #ffffff;
+            border: 1px solid #000000;
+        }
+        .calc-table tr.section-heading td {
+            background-color: #f0f0f0;
+            padding: 9px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #000000;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            border: 1px solid #000000;
+            text-align: left;
+        }
+        .calc-table tr.highlight-row td {
+            font-weight: 700;
+            background-color: #fbfbfb;
+            color: #000000;
+            border: 1px solid #000000;
+        }
+        .calc-table tr[style*="border-bottom: 2px solid"] td,
+        .calc-table tr.highlight-row[style*="border-bottom: 2px solid"] td {
+            font-weight: 700;
+            color: #000000;
+            background-color: #f0f0f0;
+            border: 1px solid #000000 !important;
+        }
+
         .notes-block {
             margin-bottom: 35px;
             font-size: 13.5px;
@@ -193,10 +329,215 @@
             background-color: #c4123e;
             transform: translateY(-2px);
         }
+        @page {
+            size: auto;
+            margin: 8mm 12mm 8mm 12mm;
+        }
         @media print {
-            body { background-color: #ffffff; padding: 0; }
-            .document-container { box-shadow: none; margin: 0; padding: 0; max-width: 100%; }
-            .download-btn { display: none !important; }
+            html, body {
+                background-color: #ffffff !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                font-size: 11.5px !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+            .document-container {
+                box-shadow: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                max-width: 100% !important;
+                width: 100% !important;
+                border: none !important;
+            }
+            .content-padding {
+                padding: 0 !important;
+            }
+            .download-btn {
+                display: none !important;
+            }
+            .header {
+                margin-bottom: 8px !important;
+                padding-bottom: 8px !important;
+            }
+            .header-title {
+                font-size: 22px !important;
+            }
+            .intro-block {
+                margin: 8px 0 !important;
+                font-size: 11.5px !important;
+                line-height: 1.4 !important;
+            }
+            .intro-greeting {
+                font-size: 13.5px !important;
+                margin-bottom: 3px !important;
+            }
+            .metrics-row {
+                margin: 8px 0 !important;
+                gap: 12px !important;
+            }
+            .metric-label {
+                padding: 5px 10px !important;
+                font-size: 10.5px !important;
+                background-color: #f0f0f0 !important;
+            }
+            .metric-value {
+                padding: 5px 10px !important;
+                font-size: 14px !important;
+                background-color: #ffffff !important;
+            }
+            .info-table {
+                margin-bottom: 10px !important;
+            }
+            .info-table td {
+                padding: 5px 10px !important;
+                font-size: 11px !important;
+            }
+            .info-table td:first-child {
+                background-color: #f0f0f0 !important;
+            }
+            .calculation-card {
+                background-color: transparent !important;
+                border: none !important;
+                border-radius: 0 !important;
+                padding: 0 !important;
+                margin: 8px 0 10px 0 !important;
+                box-shadow: none !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+            .calc-header {
+                margin-bottom: 6px !important;
+                padding-bottom: 5px !important;
+                border-bottom: 1px solid #eaecef !important;
+            }
+            .calc-title {
+                font-size: 15px !important;
+                color: #0c0c0c !important;
+            }
+            .deal-badge {
+                font-size: 9.5px !important;
+                padding: 2px 7px !important;
+            }
+            .deal-badge.badge-gross, span.deal-badge[style*="ddf4ff"] {
+                background-color: #ddf4ff !important;
+                color: #0969da !important;
+                border: 1px solid #80ccff !important;
+            }
+            .deal-badge.badge-net, span.deal-badge[style*="dafbe1"] {
+                background-color: #dafbe1 !important;
+                color: #1a7f37 !important;
+                border: 1px solid #82e299 !important;
+            }
+            .kpi-row {
+                gap: 8px !important;
+                margin-bottom: 8px !important;
+                padding-bottom: 6px !important;
+                border-bottom: 1px solid #eaecef !important;
+            }
+            .kpi-box {
+                padding: 5px 8px !important;
+                background-color: #f6f8fa !important;
+                border: 1px solid #d0d7de !important;
+                border-radius: 6px !important;
+            }
+            .kpi-label {
+                font-size: 9.5px !important;
+                color: #57606a !important;
+                margin-bottom: 1px !important;
+            }
+            .kpi-val {
+                font-size: 14px !important;
+                color: #1f2328 !important;
+            }
+            .calc-table {
+                border-collapse: collapse !important;
+                border: 1px solid #000000 !important;
+                width: 100% !important;
+            }
+            .calc-table th {
+                background-color: #f0f0f0 !important;
+                color: #000000 !important;
+                font-size: 10.5px !important;
+                font-weight: 700 !important;
+                padding: 4px 8px !important;
+                border: 1px solid #000000 !important;
+                vertical-align: middle !important;
+            }
+            .calc-table th:first-child {
+                font-size: 10.5px !important;
+                padding-left: 6px !important;
+                color: #000000 !important;
+                background-color: #f0f0f0 !important;
+                border: 1px solid #000000 !important;
+                text-align: left !important;
+            }
+            .calc-table th .sub-th {
+                font-size: 9px !important;
+                color: #444444 !important;
+            }
+            .calc-table td {
+                padding: 3.5px 8px !important;
+                font-size: 10px !important;
+                border: 1px solid #000000 !important;
+                color: #000000 !important;
+                vertical-align: middle !important;
+                background-color: #ffffff !important;
+            }
+            .calc-table td:first-child {
+                padding-left: 6px !important;
+                color: #000000 !important;
+                border: 1px solid #000000 !important;
+                font-weight: 600 !important;
+                text-align: left !important;
+                background-color: #ffffff !important;
+            }
+            .calc-table tr.section-heading td {
+                background-color: #f0f0f0 !important;
+                color: #000000 !important;
+                font-size: 9.5px !important;
+                font-weight: 700 !important;
+                padding: 4px 6px !important;
+                border: 1px solid #000000 !important;
+                text-align: left !important;
+            }
+            .calc-table tr.highlight-row td {
+                background-color: #fbfbfb !important;
+                color: #000000 !important;
+                font-weight: 700 !important;
+                border: 1px solid #000000 !important;
+            }
+            .calc-table tr[style*="border-bottom: 2px solid"] td,
+            .calc-table tr.highlight-row[style*="border-bottom: 2px solid"] td {
+                background-color: #f0f0f0 !important;
+                border: 1px solid #000000 !important;
+                font-weight: 700 !important;
+            }
+            .notes-block {
+                margin-top: 8px !important;
+                margin-bottom: 8px !important;
+                font-size: 10px !important;
+                line-height: 1.35 !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+            .notes-title {
+                font-size: 11px !important;
+                margin-bottom: 2px !important;
+            }
+            .footer {
+                margin-top: 8px !important;
+                padding-top: 5px !important;
+                font-size: 9px !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
         }
     </style>
 </head>
@@ -252,39 +593,39 @@
                     </tr>
                 </table>
 
-                <table class="items-table">
-                    <thead>
-                        <tr>
-                            <th colspan="2">Revenue Breakdown</th>
-                        </tr>
-                    </thead>
-                    <tbody id="itemsTableBody">
-                        <tr>
-                            <td style="font-weight: 700;">Revenue Generated (Gross) $</td>
-                            <td id="dispGross">0.00</td>
-                        </tr>
-                        <tr>
-                            <td id="dispRevShareLabel">Revenue Share at 15% Gross Revenue $</td>
-                            <td id="dispRevShare">0.00</td>
-                        </tr>
-                        <tr>
-                            <td style="color: transparent;">-</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td>MG Paid $</td>
-                            <td id="dispMgPaid">0.00</td>
-                        </tr>
-                        <tr>
-                            <td>MG to be recouped $</td>
-                            <td id="dispMgRecouped">0.00</td>
-                        </tr>
-                        <tr class="payout-row">
-                            <td style="padding: 12px;">Final Payout $</td>
-                            <td style="padding: 12px;" id="dispPayout">0.00</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <!-- Multi-Quarter MG Recoupment Section -->
+                <div class="calculation-card" id="calculationCard">
+                    <div class="calc-header">
+                        <div class="calc-title-row">
+                            <span class="calc-title" id="dispCalcTitle">—</span>
+                            <span id="dispDealBadge"></span>
+                        </div>
+                    </div>
+
+                    <div class="kpi-row" id="dispKpiRow">
+                        <div class="kpi-box">
+                            <div class="kpi-label">MG Available</div>
+                            <div class="kpi-val" id="dispKpiMgAvail">$0.00</div>
+                        </div>
+                        <div class="kpi-box">
+                            <div class="kpi-label">MG Recouped</div>
+                            <div class="kpi-val" id="dispKpiMgRecouped">$0.00</div>
+                        </div>
+                        <div class="kpi-box">
+                            <div class="kpi-label">Revenue Share Payable</div>
+                            <div class="kpi-val" id="dispKpiPayable">$0.00</div>
+                        </div>
+                    </div>
+
+                    <div class="calc-table-wrap">
+                        <table class="calc-table" id="calcTable">
+                            <thead id="calcTableHead">
+                            </thead>
+                            <tbody id="calcTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
                 <div class="notes-block">
                     <div class="notes-title">Please Note</div>
@@ -338,64 +679,50 @@
         const model = (statementData ? statementData.model : (params.get('model') || 'gross')).toLowerCase();
         const curr = statementData ? (statementData.curr || '$') : (params.get('curr') || '$');
 
-        let gross = parseFloat(statementData ? statementData.gross : (params.get('gross') || 0)) || 0;
-        let net = parseFloat(statementData ? statementData.net : (params.get('net') || 0)) || 0;
-        const deductPct = parseFloat(statementData ? statementData.deductPct : (params.get('deduct_pct') || 30)) || 30;
-        const revPct = parseFloat(statementData ? statementData.revPct : (params.get('revpct') || 15)) || 15;
-        const tierThreshold = parseFloat(statementData ? statementData.tierThreshold : (params.get('tier_thresh') || 50000)) || 50000;
-        const tier2Pct = parseFloat(statementData ? statementData.tier2Pct : (params.get('tier2_pct') || 20)) || 20;
+        // Revenue fields
+        const grossInclPg = parseFloat(statementData?.grossInclPg ?? params.get('gross_incl_pg') ?? 0) || 0;
+        const pgCharges = parseFloat(statementData?.pgCharges ?? params.get('pg_charges') ?? 0) || 0;
+        let grossExclPg = parseFloat(statementData?.grossExclPg ?? params.get('gross_excl_pg') ?? statementData?.net_gross ?? params.get('net_gross') ?? statementData?.gross ?? params.get('gross') ?? 0) || 0;
+        if (grossExclPg === 0 && grossInclPg > 0) {
+            grossExclPg = Math.max(0, grossInclPg - pgCharges);
+        }
 
-        const mgPaid = parseFloat(statementData ? statementData.mgPaid : (params.get('mg') || 0)) || 0;
-        const prevRecouped = parseFloat(statementData ? statementData.prevRecouped : (params.get('prev_recouped') || 0)) || 0;
-        const withholdingPct = parseFloat(statementData ? statementData.withholdingPct : (params.get('withholding_pct') || 0)) || 0;
+        const mktgSpend = parseFloat(statementData?.mktgSpend ?? params.get('mktg_spend') ?? 0) || 0;
+        const mktgDeduct = parseFloat(statementData?.mktgDeduct ?? params.get('mktg_deduct') ?? 0) || 0;
+        const prodCost = parseFloat(statementData?.prodCost ?? params.get('prod_cost') ?? 0) || 0;
+        const prodDeduct = parseFloat(statementData?.prodDeduct ?? params.get('prod_deduct') ?? 0) || 0;
+        const distFee = parseFloat(statementData?.distFee ?? params.get('dist_fee') ?? 0) || 0;
+
+        let shareRev = parseFloat(statementData?.shareRev ?? params.get('share_rev') ?? statementData?.net ?? params.get('net') ?? 0) || 0;
+        if (model === 'net' && shareRev === 0 && grossExclPg > 0) {
+            shareRev = Math.max(0, grossExclPg - mktgDeduct - prodDeduct - distFee);
+        }
+
+        const revPct = parseFloat(statementData?.revPct ?? params.get('revpct') ?? 15) || 15;
+        const openingMg = parseFloat(statementData?.openingMg ?? params.get('opening_mg') ?? statementData?.mgPaid ?? params.get('mg') ?? 0) || 0;
+        const withholdingPct = parseFloat(statementData?.taxPct ?? params.get('tax_pct') ?? statementData?.withholdingPct ?? params.get('withholding_pct') ?? 0) || 0;
 
         const plays = statementData ? statementData.plays : (params.get('plays') || '—');
         const listeners = statementData ? statementData.listeners : (params.get('listeners') || '—');
         const episodes = statementData ? statementData.episodes : (params.get('episodes') || '');
         const customNote = statementData ? statementData.customNote : (params.get('note') || '');
 
-        // Model Calculations
-        let revShareAmt = 0;
-        let deductAmt = 0;
-        let tier1Share = 0;
-        let tier2Share = 0;
-
+        // Recoupment & Rev Share Calculation
+        let authorShare = 0;
         if (model === 'net') {
-            revShareAmt = (net * revPct) / 100.0;
-        } else if (model === 'both') {
-            if (gross > 0 && net === 0) {
-                deductAmt = (gross * deductPct) / 100.0;
-                net = Math.max(0, gross - deductAmt);
-            } else if (gross > 0 && net > 0) {
-                deductAmt = Math.max(0, gross - net);
-            }
-            revShareAmt = (net * revPct) / 100.0;
-        } else if (model === 'tiered') {
-            const baseAmount = net > 0 ? net : gross;
-            if (baseAmount <= tierThreshold) {
-                tier1Share = (baseAmount * revPct) / 100.0;
-                revShareAmt = tier1Share;
-            } else {
-                tier1Share = (tierThreshold * revPct) / 100.0;
-                tier2Share = ((baseAmount - tierThreshold) * tier2Pct) / 100.0;
-                revShareAmt = tier1Share + tier2Share;
-            }
-        } else if (model === 'flat') {
-            revShareAmt = mgPaid;
-        } else if (model === 'carryover') {
-            revShareAmt = (gross * revPct) / 100.0;
+            authorShare = +(shareRev * (revPct / 100.0)).toFixed(2);
         } else {
-            // Gross (default)
-            revShareAmt = (gross * revPct) / 100.0;
+            authorShare = +(grossExclPg * (revPct / 100.0)).toFixed(2);
         }
 
-        const remainingMgBefore = Math.max(0, mgPaid - prevRecouped);
-        const mgRecoupedThisPeriod = Math.min(remainingMgBefore, revShareAmt);
-        const remainingMgAfter = Math.max(0, remainingMgBefore - mgRecoupedThisPeriod);
-        
-        let subtotalPayout = model === 'flat' ? mgPaid : Math.max(0, revShareAmt - remainingMgBefore);
-        let withholdingAmt = (subtotalPayout * withholdingPct) / 100.0;
-        let finalPayout = Math.max(0, subtotalPayout - withholdingAmt);
+        const mgRecouped = Math.min(openingMg, authorShare);
+        const closingMg = Math.max(0, +(openingMg - authorShare).toFixed(2));
+        let payable = Math.max(0, +(authorShare - openingMg).toFixed(2));
+        let withholdingAmt = 0;
+        if (withholdingPct > 0) {
+            withholdingAmt = +((payable * withholdingPct) / 100.0).toFixed(2);
+            payable = Math.max(0, +(payable - withholdingAmt).toFixed(2));
+        }
 
         let defaultPeriod = category === '3-Month'
             ? 'July 1, 2026 – September 30, 2026 (3-Month Statement / Q3)'
@@ -408,13 +735,7 @@
         document.getElementById('pageTitle').innerText = `${title} - Revenue Statement | Pocket FM`;
         document.getElementById('greetingText').innerText = `Hi ${firstName},`;
         
-        let introModelDesc = 'revenue statement';
-        if (model === 'both') introModelDesc = 'revenue statement (Gross & Net breakdown)';
-        else if (model === 'net') introModelDesc = 'net revenue statement';
-        else if (model === 'tiered') introModelDesc = 'tiered revenue statement';
-        else if (model === 'carryover') introModelDesc = 'royalty status & recoupment statement';
-        else if (model === 'flat') introModelDesc = 'advance buyout statement';
-
+        let introModelDesc = model === 'net' ? 'net revenue statement' : 'revenue statement';
         document.getElementById('introDesc').innerHTML = `Here's your ${category.toLowerCase()} ${introModelDesc} for <span style="font-weight: 700; color: #000;">${title}</span>. Thank you for partnering with Pocket FM. Below is a summary of your show's performance and revenue calculations.`;
 
         document.getElementById('dispPlays').innerText = formatInteger(plays);
@@ -434,223 +755,81 @@
         document.getElementById('dispAuthor').innerText = author;
         document.getElementById('dispPeriod').innerText = periodLabel;
 
+        // Populate Card Header & Top KPIs
+        document.getElementById('dispCalcTitle').innerText = title;
+        document.getElementById('dispDealBadge').innerHTML = model === 'net'
+            ? '<span class="deal-badge badge-net" style="background: #dafbe1; color: #1a7f37; border: 1px solid #82e299;">Net</span>'
+            : '<span class="deal-badge badge-gross" style="background: #ddf4ff; color: #0969da; border: 1px solid #80ccff;">Gross</span>';
+
+        document.getElementById('dispKpiMgAvail').innerText = `${curr}${formatNumber(openingMg, curr)}`;
+        document.getElementById('dispKpiMgRecouped').innerText = `${curr}${formatNumber(mgRecouped, curr)}`;
+        document.getElementById('dispKpiPayable').innerText = `${curr}${formatNumber(payable, curr)}`;
+
+        // Dynamic Table Column Headers
+        let colPeriodHeader = 'Apr–Sep 2026';
+        let colNextHeader = 'Oct–Dec 2026';
+        if (category === '3-Month' || periodLabel.includes('Q3')) {
+            colPeriodHeader = 'Jul–Sep 2026';
+            colNextHeader = 'Oct–Dec 2026';
+        } else if (category === 'Custom') {
+            colPeriodHeader = periodLabel;
+            colNextHeader = 'Next Period';
+        }
+
+        document.getElementById('calcTableHead').innerHTML = `
+            <tr>
+                <th style="text-align: left; width: 46%;">Calculation</th>
+                <th style="width: 27%;">${escapeHtml(colPeriodHeader)}</th>
+                <th style="width: 27%;">${escapeHtml(colNextHeader)}</th>
+            </tr>
+        `;
+
         // Render Table based on Model
         let tableHtml = '';
         if (model === 'net') {
             tableHtml = `
-                <tr>
-                    <td style="font-weight: 700;">Revenue Generated (Net) ${curr}</td>
-                    <td>${formatNumber(net, curr)}</td>
-                </tr>
-                <tr>
-                    <td>Revenue Share at ${revPct}% Net Revenue ${curr}</td>
-                    <td>${formatNumber(revShareAmt, curr)}</td>
-                </tr>
-                <tr>
-                    <td style="color: transparent;">-</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>MG Paid ${curr}</td>
-                    <td>${formatNumber(mgPaid, curr)}</td>
-                </tr>
-                <tr>
-                    <td>MG Recouped This Period ${curr}</td>
-                    <td>${formatNumber(mgRecoupedThisPeriod, curr)}</td>
-                </tr>
-                ${remainingMgAfter > 0 ? `
-                <tr>
-                    <td style="color: #666;">Remaining MG to be Recouped ${curr}</td>
-                    <td style="color: #666;">${formatNumber(remainingMgAfter, curr)}</td>
-                </tr>` : ''}
-                ${withholdingAmt > 0 ? `
-                <tr>
-                    <td>Tax Withholding (${withholdingPct}%) ${curr}</td>
-                    <td>-${formatNumber(withholdingAmt, curr)}</td>
-                </tr>` : ''}
-                <tr class="payout-row">
-                    <td style="padding: 12px;">Final Payout ${curr}</td>
-                    <td style="padding: 12px;">${formatNumber(finalPayout, curr)}</td>
-                </tr>
-            `;
-        } else if (model === 'both') {
-            tableHtml = `
-                <tr>
-                    <td style="font-weight: 700;">Revenue Generated (Gross) ${curr}</td>
-                    <td>${formatNumber(gross, curr)}</td>
-                </tr>
-                <tr>
-                    <td>Platform & Store Deductions (${deductPct}%) ${curr}</td>
-                    <td>-${formatNumber(deductAmt, curr)}</td>
-                </tr>
-                <tr style="background-color: #f7f7f7; font-weight: 600;">
-                    <td>Revenue Generated (Net) ${curr}</td>
-                    <td>${formatNumber(net, curr)}</td>
-                </tr>
-                <tr>
-                    <td>Revenue Share at ${revPct}% Net Revenue ${curr}</td>
-                    <td>${formatNumber(revShareAmt, curr)}</td>
-                </tr>
-                <tr>
-                    <td style="color: transparent;">-</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>MG Paid ${curr}</td>
-                    <td>${formatNumber(mgPaid, curr)}</td>
-                </tr>
-                <tr>
-                    <td>MG Recouped This Period ${curr}</td>
-                    <td>${formatNumber(mgRecoupedThisPeriod, curr)}</td>
-                </tr>
-                ${remainingMgAfter > 0 ? `
-                <tr>
-                    <td style="color: #666;">Remaining MG to be Recouped ${curr}</td>
-                    <td style="color: #666;">${formatNumber(remainingMgAfter, curr)}</td>
-                </tr>` : ''}
-                ${withholdingAmt > 0 ? `
-                <tr>
-                    <td>Tax Withholding (${withholdingPct}%) ${curr}</td>
-                    <td>-${formatNumber(withholdingAmt, curr)}</td>
-                </tr>` : ''}
-                <tr class="payout-row">
-                    <td style="padding: 12px;">Final Payout ${curr}</td>
-                    <td style="padding: 12px;">${formatNumber(finalPayout, curr)}</td>
-                </tr>
-            `;
-            const notes = document.getElementById('notesList');
-            notes.innerHTML += '<li>Platform & store deductions cover standard iOS App Store and Google Play payment processing fees.</li>';
-        } else if (model === 'tiered') {
-            tableHtml = `
-                <tr>
-                    <td style="font-weight: 700;">Revenue Generated ${curr}</td>
-                    <td>${formatNumber(gross > 0 ? gross : net, curr)}</td>
-                </tr>
-                <tr>
-                    <td>Tier 1 (${revPct}% up to ${curr}${formatNumber(tierThreshold)}) ${curr}</td>
-                    <td>${formatNumber(tier1Share, curr)}</td>
-                </tr>
-                <tr>
-                    <td>Tier 2 (${tier2Pct}% above ${curr}${formatNumber(tierThreshold)}) ${curr}</td>
-                    <td>${formatNumber(tier2Share, curr)}</td>
-                </tr>
-                <tr style="font-weight: 600; background: #fbfbfb;">
-                    <td>Total Revenue Share Earned ${curr}</td>
-                    <td>${formatNumber(revShareAmt, curr)}</td>
-                </tr>
-                <tr>
-                    <td style="color: transparent;">-</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>MG Paid ${curr}</td>
-                    <td>${formatNumber(mgPaid, curr)}</td>
-                </tr>
-                <tr>
-                    <td>MG Recouped This Period ${curr}</td>
-                    <td>${formatNumber(mgRecoupedThisPeriod, curr)}</td>
-                </tr>
-                ${remainingMgAfter > 0 ? `
-                <tr>
-                    <td style="color: #666;">Remaining MG to be Recouped ${curr}</td>
-                    <td style="color: #666;">${formatNumber(remainingMgAfter, curr)}</td>
-                </tr>` : ''}
-                <tr class="payout-row">
-                    <td style="padding: 12px;">Final Payout ${curr}</td>
-                    <td style="padding: 12px;">${formatNumber(finalPayout, curr)}</td>
-                </tr>
-            `;
-        } else if (model === 'carryover') {
-            tableHtml = `
-                <tr>
-                    <td style="font-weight: 700;">Revenue Generated (Gross) ${curr}</td>
-                    <td>${formatNumber(gross, curr)}</td>
-                </tr>
-                <tr>
-                    <td>Revenue Share at ${revPct}% Gross Revenue ${curr}</td>
-                    <td>${formatNumber(revShareAmt, curr)}</td>
-                </tr>
-                <tr>
-                    <td style="color: transparent;">-</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>Total MG Paid / Advance ${curr}</td>
-                    <td>${formatNumber(mgPaid, curr)}</td>
-                </tr>
-                <tr>
-                    <td>Previously Recouped MG ${curr}</td>
-                    <td>${formatNumber(prevRecouped, curr)}</td>
-                </tr>
-                <tr>
-                    <td>Recouped This Period ${curr}</td>
-                    <td>${formatNumber(mgRecoupedThisPeriod, curr)}</td>
-                </tr>
-                <tr style="background-color: #fff9e6; font-weight: 600;">
-                    <td>Unrecouped MG Carried Forward ${curr}</td>
-                    <td>${formatNumber(remainingMgAfter, curr)}</td>
-                </tr>
-                <tr class="payout-row">
-                    <td style="padding: 12px;">Final Payout ${curr}</td>
-                    <td style="padding: 12px;">${formatNumber(0, curr)}</td>
-                </tr>
-            `;
-        } else if (model === 'flat') {
-            tableHtml = `
-                <tr>
-                    <td style="font-weight: 700;">Agreed Buyout / Advance Fee ${curr}</td>
-                    <td>${formatNumber(mgPaid, curr)}</td>
-                </tr>
-                ${withholdingAmt > 0 ? `
-                <tr>
-                    <td>Tax Withholding (${withholdingPct}%) ${curr}</td>
-                    <td>-${formatNumber(withholdingAmt, curr)}</td>
-                </tr>` : ''}
-                <tr class="payout-row">
-                    <td style="padding: 12px;">Final Payout ${curr}</td>
-                    <td style="padding: 12px;">${formatNumber(finalPayout, curr)}</td>
-                </tr>
+                <tr class="section-heading"><td colspan="3">REVENUE</td></tr>
+                <tr><td>Gross Revenue excl. PG</td><td>${curr}${formatNumber(grossExclPg, curr)}</td><td>—</td></tr>
+                <tr><td>Marketing Spends</td><td>${curr}${formatNumber(mktgSpend, curr)}</td><td>—</td></tr>
+                <tr><td>Marketing Deduction</td><td>${curr}${formatNumber(mktgDeduct, curr)}</td><td>—</td></tr>
+                <tr><td>Production Costs Reported</td><td>${curr}${formatNumber(prodCost, curr)}</td><td>—</td></tr>
+                <tr><td>Deductible Production Costs</td><td>${curr}${formatNumber(prodDeduct, curr)}</td><td>—</td></tr>
+                <tr><td>Distribution Fees</td><td>${curr}${formatNumber(distFee, curr)}</td><td>—</td></tr>
+
+                <tr class="section-heading"><td colspan="3">REVENUE SHARE</td></tr>
+                <tr class="highlight-row"><td>Revenue for Share Calculation</td><td>${curr}${formatNumber(shareRev, curr)}</td><td>—</td></tr>
+                <tr><td>Revenue Share %</td><td>${revPct}%</td><td>${revPct}%</td></tr>
+                <tr class="highlight-row"><td>Author Revenue Share</td><td>${curr}${formatNumber(authorShare, curr)}</td><td>—</td></tr>
+
+                <tr class="section-heading"><td colspan="3">MG RECOUPMENT</td></tr>
+                <tr><td>Opening MG Available</td><td>${curr}${formatNumber(openingMg, curr)}</td><td>${curr}${formatNumber(closingMg, curr)}*</td></tr>
+                <tr><td>MG Recouped</td><td>${curr}${formatNumber(mgRecouped, curr)}</td><td>—</td></tr>
+                <tr class="highlight-row"><td>Closing MG Available</td><td>${curr}${formatNumber(closingMg, curr)}*</td><td>—</td></tr>
+                ${withholdingAmt > 0 ? `<tr><td>Tax Withholding (${withholdingPct}%)</td><td>-${curr}${formatNumber(withholdingAmt, curr)}</td><td>—</td></tr>` : ''}
+                <tr class="highlight-row" style="border-bottom: 2px solid #333;"><td>Revenue Share Payable</td><td>${curr}${formatNumber(payable, curr)}</td><td>—</td></tr>
             `;
         } else {
-            // Gross (default)
+            // Gross Deal (default)
             tableHtml = `
-                <tr>
-                    <td style="font-weight: 700;">Revenue Generated (Gross) ${curr}</td>
-                    <td>${formatNumber(gross, curr)}</td>
-                </tr>
-                <tr>
-                    <td>Revenue Share at ${revPct}% Gross Revenue ${curr}</td>
-                    <td>${formatNumber(revShareAmt, curr)}</td>
-                </tr>
-                <tr>
-                    <td style="color: transparent;">-</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>MG Paid ${curr}</td>
-                    <td>${formatNumber(mgPaid, curr)}</td>
-                </tr>
-                <tr>
-                    <td>MG to be recouped ${curr}</td>
-                    <td>${formatNumber(mgRecoupedThisPeriod, curr)}</td>
-                </tr>
-                ${remainingMgAfter > 0 ? `
-                <tr>
-                    <td style="color: #666;">Remaining MG to be Recouped ${curr}</td>
-                    <td style="color: #666;">${formatNumber(remainingMgAfter, curr)}</td>
-                </tr>` : ''}
-                ${withholdingAmt > 0 ? `
-                <tr>
-                    <td>Tax Withholding (${withholdingPct}%) ${curr}</td>
-                    <td>-${formatNumber(withholdingAmt, curr)}</td>
-                </tr>` : ''}
-                <tr class="payout-row">
-                    <td style="padding: 12px;">Final Payout ${curr}</td>
-                    <td style="padding: 12px;">${formatNumber(finalPayout, curr)}</td>
-                </tr>
+                <tr class="section-heading"><td colspan="3">REVENUE</td></tr>
+                <tr><td>Revenue incl. PG</td><td>${grossInclPg > 0 ? curr + formatNumber(grossInclPg, curr) : '—'}</td><td>—</td></tr>
+                <tr><td>PG Charges</td><td>${pgCharges > 0 ? curr + formatNumber(pgCharges, curr) : '—'}</td><td>—</td></tr>
+                <tr class="highlight-row"><td>Gross Revenue excl. PG</td><td>${curr}${formatNumber(grossExclPg, curr)}</td><td>—</td></tr>
+
+                <tr class="section-heading"><td colspan="3">REVENUE SHARE</td></tr>
+                <tr><td>Revenue Share %</td><td>${revPct}%</td><td>${revPct}%</td></tr>
+                <tr class="highlight-row"><td>Author Revenue Share</td><td>${curr}${formatNumber(authorShare, curr)}</td><td>—</td></tr>
+
+                <tr class="section-heading"><td colspan="3">MG RECOUPMENT</td></tr>
+                <tr><td>Opening MG Available</td><td>${curr}${formatNumber(openingMg, curr)}</td><td>${curr}${formatNumber(closingMg, curr)}*</td></tr>
+                <tr><td>MG Recouped</td><td>${curr}${formatNumber(mgRecouped, curr)}</td><td>—</td></tr>
+                <tr class="highlight-row"><td>Closing MG Available</td><td>${curr}${formatNumber(closingMg, curr)}*</td><td>—</td></tr>
+                ${withholdingAmt > 0 ? `<tr><td>Tax Withholding (${withholdingPct}%)</td><td>-${curr}${formatNumber(withholdingAmt, curr)}</td><td>—</td></tr>` : ''}
+                <tr class="highlight-row" style="border-bottom: 2px solid #333;"><td>Revenue Share Payable</td><td>${curr}${formatNumber(payable, curr)}</td><td>—</td></tr>
             `;
         }
-        document.getElementById('itemsTableBody').innerHTML = tableHtml;
+
+        document.getElementById('calcTableBody').innerHTML = tableHtml;
 
         if (customNote) {
             const notes = document.getElementById('notesList');

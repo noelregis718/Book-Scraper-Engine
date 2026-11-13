@@ -1,0 +1,321 @@
+<html xmlns:o='urn:schemas-microsoft-com:office:office'
+      xmlns:w='urn:schemas-microsoft-com:office:word'
+      xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+    <meta charset="utf-8">
+    <title>Pocket FM Revenue Statement Template - Net Deal</title>
+    <!--[if gte mso 9]>
+    <xml>
+      <w:WordDocument>
+        <w:View>Print</w:View>
+        <w:Zoom>100</w:Zoom>
+        <w:DoNotOptimizeForBrowser/>
+      </w:WordDocument>
+    </xml>
+    <![endif]-->
+    <style>
+        body {
+            font-family: 'Segoe UI', Calibri, Arial, sans-serif;
+            font-size: 10pt;
+            color: #000000;
+            background-color: #ffffff;
+            margin: 20pt 30pt;
+        }
+        .header-table {
+            width: 100%;
+            background-color: #0c0c0c;
+            border-collapse: collapse;
+            margin-bottom: 16pt;
+        }
+        .header-table td {
+            padding: 16pt 20pt;
+            text-align: center;
+            color: #ffffff;
+            border: none;
+        }
+        .header-title {
+            font-size: 22pt;
+            font-weight: bold;
+            margin-bottom: 3pt;
+            color: #ffffff;
+        }
+        .header-title .red { color: #E51A4D; }
+        .header-subtitle {
+            font-size: 10.5pt;
+            color: #cccccc;
+        }
+        .intro-block {
+            margin-bottom: 14pt;
+            font-size: 10pt;
+            line-height: 1.45;
+            color: #222222;
+        }
+        .intro-greeting {
+            font-weight: bold;
+            font-size: 11pt;
+            margin-bottom: 4pt;
+            color: #000000;
+        }
+        .metrics-table, .info-table, .kpi-table, .calc-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 14pt;
+        }
+        .metrics-table td, .info-table td, .kpi-table td, .calc-table td, .calc-table th {
+            border: 1pt solid #000000;
+            padding: 6pt 9pt;
+            font-size: 9.5pt;
+            vertical-align: middle;
+        }
+        .label-cell {
+            background-color: #f0f0f0;
+            font-weight: bold;
+            color: #000000;
+        }
+        .calc-table th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+            color: #000000;
+            text-align: right;
+            padding: 7pt 9pt;
+        }
+        .calc-table th:first-child {
+            text-align: left;
+        }
+        .calc-table td.num-cell {
+            text-align: right;
+            white-space: nowrap;
+        }
+        .calc-table tr.section-heading td {
+            background-color: #f0f0f0;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5pt;
+            padding: 5pt 9pt;
+            font-size: 9pt;
+            color: #000000;
+        }
+        .calc-table tr.highlight-row td {
+            background-color: #fbfbfb;
+            font-weight: bold;
+            color: #000000;
+        }
+        .calc-table tr.payout-row td {
+            background-color: #f0f0f0;
+            font-weight: bold;
+            border-bottom: 2pt solid #000000;
+            color: #000000;
+        }
+        .kpi-table td {
+            width: 33.33%;
+            padding: 8pt 10pt;
+            vertical-align: top;
+            background-color: #ffffff;
+        }
+        .kpi-title {
+            font-size: 8pt;
+            font-weight: bold;
+            color: #555555;
+            text-transform: uppercase;
+            letter-spacing: 0.5pt;
+            margin-bottom: 3pt;
+        }
+        .kpi-val {
+            font-size: 14pt;
+            font-weight: bold;
+            color: #000000;
+        }
+        .notes-block {
+            margin-bottom: 14pt;
+            font-size: 9.5pt;
+            color: #333333;
+            line-height: 1.45;
+        }
+        .notes-title {
+            font-weight: bold;
+            font-size: 10.5pt;
+            margin-bottom: 4pt;
+            color: #000000;
+        }
+        .notes-block ul {
+            margin: 0;
+            padding-left: 18pt;
+        }
+        .notes-block li {
+            margin-bottom: 2pt;
+        }
+        .footer-text {
+            border-top: 1pt solid #000000;
+            padding-top: 8pt;
+            margin-top: 20pt;
+            font-size: 8.5pt;
+            color: #444444;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Banner -->
+    <table class="header-table">
+        <tr>
+            <td>
+                <div class="header-title"><span class="red">Revenue</span> Statement</div>
+                <div class="header-subtitle">Pocket Entertainment Services LLC</div>
+            </td>
+        </tr>
+    </table>
+
+    <!-- Intro Greeting -->
+    <div class="intro-block">
+        <div class="intro-greeting">Hi [Author First Name],</div>
+        <div>Here is your revenue statement for <strong>[Show Title]</strong>. Thank you for partnering with Pocket FM. Below is a summary of your show's performance and revenue calculations.</div>
+    </div>
+
+    <!-- Audience Metrics Table -->
+    <table class="metrics-table">
+        <tr>
+            <td class="label-cell" style="width: 25%;">TOTAL PLAYS</td>
+            <td class="num-cell" style="width: 25%; font-weight: bold; font-size: 12pt;">[e.g. 26,647]</td>
+            <td class="label-cell" style="width: 25%;">TOTAL LISTENERS</td>
+            <td class="num-cell" style="width: 25%; font-weight: bold; font-size: 12pt;">[e.g. 5,993]</td>
+        </tr>
+    </table>
+
+    <!-- Series Information Table -->
+    <table class="info-table">
+        <tr>
+            <td class="label-cell" style="width: 32%;">Series Name</td>
+            <td><strong>[Enter Series Name Here]</strong></td>
+        </tr>
+        <tr>
+            <td class="label-cell">Author</td>
+            <td><strong>[Enter Author Full Name Here]</strong></td>
+        </tr>
+        <tr>
+            <td class="label-cell">Reporting Period</td>
+            <td><strong>[e.g. April 1, 2026 – September 30, 2026 (6-Month Combined / Q2 + Q3)]</strong></td>
+        </tr>
+    </table>
+
+    <!-- Recoupment KPI Summary Tiles -->
+    <table class="kpi-table">
+        <tr>
+            <td>
+                <div class="kpi-title">MG AVAILABLE</div>
+                <div class="kpi-val">$[Enter Opening MG]</div>
+            </td>
+            <td>
+                <div class="kpi-title">MG RECOUPED</div>
+                <div class="kpi-val">$[Enter Recouped]</div>
+            </td>
+            <td>
+                <div class="kpi-title">REVENUE SHARE PAYABLE</div>
+                <div class="kpi-val">$[Enter Payout]</div>
+            </td>
+        </tr>
+    </table>
+
+    <!-- Big Calculation Table (NET DEAL) -->
+    <table class="calc-table">
+        <thead>
+            <tr>
+                <th style="width: 44%; text-align: left;">Calculation Field</th>
+                <th style="width: 28%;">Current Period<br><span style="font-size: 8pt; font-weight: normal; color: #555555;">[e.g. Apr–Sep 2026]</span></th>
+                <th style="width: 28%;">Next Period / Projection<br><span style="font-size: 8pt; font-weight: normal; color: #555555;">[e.g. Oct–Dec 2026]</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- REVENUE -->
+            <tr class="section-heading"><td colspan="3">REVENUE</td></tr>
+            <tr>
+                <td>Gross Revenue excl. PG</td>
+                <td class="num-cell">$0.00</td>
+                <td class="num-cell">—</td>
+            </tr>
+            <tr>
+                <td>Marketing Spends</td>
+                <td class="num-cell">$0.00</td>
+                <td class="num-cell">—</td>
+            </tr>
+            <tr>
+                <td>Marketing Deduction</td>
+                <td class="num-cell">$0.00</td>
+                <td class="num-cell">—</td>
+            </tr>
+            <tr>
+                <td>Production Costs Reported</td>
+                <td class="num-cell">$0.00</td>
+                <td class="num-cell">—</td>
+            </tr>
+            <tr>
+                <td>Deductible Production Costs</td>
+                <td class="num-cell">$0.00</td>
+                <td class="num-cell">—</td>
+            </tr>
+            <tr>
+                <td>Distribution Fees</td>
+                <td class="num-cell">$0.00</td>
+                <td class="num-cell">—</td>
+            </tr>
+
+            <!-- REVENUE SHARE -->
+            <tr class="section-heading"><td colspan="3">REVENUE SHARE</td></tr>
+            <tr class="highlight-row">
+                <td>Revenue for Share Calculation</td>
+                <td class="num-cell">$0.00</td>
+                <td class="num-cell">—</td>
+            </tr>
+            <tr>
+                <td>Revenue Share %</td>
+                <td class="num-cell">15%</td>
+                <td class="num-cell">15%</td>
+            </tr>
+            <tr class="highlight-row">
+                <td>Author Revenue Share</td>
+                <td class="num-cell">$0.00</td>
+                <td class="num-cell">—</td>
+            </tr>
+
+            <!-- MG RECOUPMENT -->
+            <tr class="section-heading"><td colspan="3">MG RECOUPMENT</td></tr>
+            <tr>
+                <td>Opening MG Available</td>
+                <td class="num-cell">$12,500.00</td>
+                <td class="num-cell">$12,500.00*</td>
+            </tr>
+            <tr>
+                <td>MG Recouped</td>
+                <td class="num-cell">$0.00</td>
+                <td class="num-cell">—</td>
+            </tr>
+            <tr class="highlight-row">
+                <td>Closing MG Available</td>
+                <td class="num-cell">$12,500.00*</td>
+                <td class="num-cell">—</td>
+            </tr>
+            <tr class="payout-row">
+                <td>Revenue Share Payable</td>
+                <td class="num-cell">$0.00</td>
+                <td class="num-cell">—</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Notes -->
+    <div class="notes-block">
+        <div class="notes-title">Please Note</div>
+        <ul>
+            <li>Revenue is first adjusted against your Minimum Guarantee (MG).</li>
+            <li>Once the MG has been fully recouped, future quarterly statements will include payable earnings.</li>
+        </ul>
+    </div>
+
+    <!-- Official Legal Footer -->
+    <div class="footer-text">
+        <p><strong>Address:</strong> Pocket Entertainment Services LLC, 13 West Main Street, PO BOX 953, Felton, Delaware, USA 19943</p>
+        <p><strong>Email:</strong> us-licensing@pocketfm.com &nbsp;|&nbsp; <strong>Website:</strong> <a href="https://www.pocketfm.com" style="color: #0056b3;">www.pocketfm.com</a></p>
+    </div>
+
+</body>
+</html>
