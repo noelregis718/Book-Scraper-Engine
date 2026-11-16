@@ -12,6 +12,22 @@
  */
 
 /**
+ * Helper: Validates whether a value is a genuine web URL and not placeholder text
+ */
+function isValidWebUrl(rawUrl) {
+  if (!rawUrl) return false;
+  let str = rawUrl.toString().trim();
+  if (str === "" || str === "#" || str.includes("#REF") || str.includes("#N/A") || str.includes("#VALUE")) return false;
+  if (/\s/.test(str)) return false;
+  let lower = str.toLowerCase();
+  if (lower === "none" || lower === "na" || lower === "n/a" || lower === "tbd" || lower === "pending" || lower === "-" || lower === "--") return false;
+  if (lower.includes("untested") || lower.includes("never") || lower.includes("live") || lower.includes("show") || lower.includes("dropped") || lower.includes("bad") || lower.includes("review")) return false;
+  if (/^https?:\/\/[a-zA-Z0-9\-._~%]+(\.[a-zA-Z0-9\-._~%]+)+/i.test(str)) return true;
+  if (/^(www\.|drive\.google\.com\/|[a-zA-Z0-9\-]+\.(?:com|app|net|org|io|dev|in|co)\/)/i.test(str)) return true;
+  return false;
+}
+
+/**
  * CORE DRAFT CREATOR & SPREADSHEET STATUS UPDATER
  */
 function createDraft(rawEmail, subject, firstName, type, title, link, rIdx, cIdx, customSendTime, rawCcMail, revLink, argus, showName = "", optPsSheet = null, optQueueSheet = null, colMappings = {}) {
@@ -41,6 +57,14 @@ function createDraft(rawEmail, subject, firstName, type, title, link, rIdx, cIdx
   if (!type || !validTemplates.includes(type)) {
     Logger.log(`${rowPrefix}[RECOMMENDED NOTIFICATION] Email template not selected: Email template not selected or unrecognized for stage type: "${type}" (Title: "${title}"). Draft creation skipped.`);
     return false;
+  }
+
+  // 2b. Strict Revenue Statement Link Validation (Col AL):
+  if (type.startsWith('revStatement') || type === 'contentBad') {
+    if (!isValidWebUrl(revLink)) {
+      Logger.log(`${rowPrefix}[RECOMMENDED NOTIFICATION] Missing Revenue Statement Link: Revenue Statement draft suppressed for "${title}" because Column AL does not contain a valid URL link (Found: "${revLink || 'Blank'}"). Col AM untouched.`);
+      return false;
+    }
   }
 
   // 3. Variable Mapping (Singular vs Plural logic from 'Variable Mapping' tab)
@@ -260,6 +284,8 @@ function syncSentEmails() {
     let sNewsletterCol = cols.newsletterCol !== undefined ? cols.newsletterCol : 29; // Col AD
     let sNewsletterDateCol = cols.newsletterDateCol !== undefined ? cols.newsletterDateCol : 30; // Col AE
     let sRevStatementCol = cols.jasSentCol !== undefined ? cols.jasSentCol : (cols.revStatementSentCol !== undefined ? cols.revStatementSentCol : 38); // Col AM (index 38)
+    let sRevLinkCol = cols.jasLinkCol !== undefined && cols.jasLinkCol !== -1 ? cols.jasLinkCol : (cols.revLinkCol !== undefined ? cols.revLinkCol : 37); // Col AL (index 37)
+    let sRevStatementDateCol = cols.jasSentDateCol !== undefined && cols.jasSentDateCol !== -1 ? cols.jasSentDateCol : (cols.revStatementDateCol !== undefined ? cols.revStatementDateCol : 36); // Col AK (index 36, Sent Date)
 
     Logger.log(`[SYNC STEP 3] Column Mappings: TitleCol=${sTitleCol+1}, EmailCol=${sEmailCol+1}, WelcomeCol=${sWelcomeCol+1}, VendorCol=${sVendorCol+1}, LaunchSentCol=${sLaunchSentCol+1}`);
 
@@ -500,8 +526,18 @@ function syncSentEmails() {
               let kwMatched = kwList.some(kw => msgSubj.includes(norm(kw)));
               let titleMatched = titleNorm && msgSubj.includes(titleNorm);
 
-              // Proven flexible condition from commit 25a6baa
-              if (kwMatched || titleMatched || (toMatch && (msgSubj.includes("pocket fm") || msgSubj.includes("welcome") || msgSubj.includes("vendor") || msgSubj.includes("live") || msgSubj.includes("update") || msgSubj.includes("payment")))) {
+              // Proven flexible condition from commit 25a6baa with strict protection for Revenue Statements
+              let conditionMet = false;
+              if (statusColIdx === sRevStatementCol) {
+                // Revenue Statement strict condition:
+                // 1. MUST match specific Revenue Statement keywords in subject
+                // 2. AND must match recipient or title
+                conditionMet = kwMatched && (titleMatched || toMatch);
+              } else {
+                conditionMet = kwMatched || titleMatched || (toMatch && (msgSubj.includes("pocket fm") || msgSubj.includes("welcome") || msgSubj.includes("vendor") || msgSubj.includes("live") || msgSubj.includes("update") || msgSubj.includes("payment")));
+              }
+
+              if (conditionMet) {
                 let sentDate = msg.getDate();
                 psSheet.getRange(actualRow, statusColIdx + 1).setValue("Sent");
                 rowVals[statusColIdx] = "Sent";
@@ -558,8 +594,19 @@ function syncSentEmails() {
         // 5. MG Payout Confirmation (Col U, Date Col V)
         checkStatusCol(sMgConfCol, sFeedbackDateCol, ["minimum guarantee", "payment has been processed", "processed"]);
 
-        // 6. Quarterly Revenue Statement (Col AM)
-        checkStatusCol(sRevStatementCol, -1, ["content update", "earnings are waiting", "an update on", "revenue statement", "insights"]);
+        // 6. Quarterly Revenue Statement (Col AM, Sent Date in Col AK)
+        // Strict guard: ONLY check and mark Col AM as Sent if Col AL contains a genuine, valid Revenue Statement URL!
+        let revLinkVal = (sRevLinkCol !== -1 && sRevLinkCol < rowVals.length && rowVals[sRevLinkCol]) ? rowVals[sRevLinkCol].toString().trim() : "";
+        let hasValidRevLink = isValidWebUrl(revLinkVal);
+        if (hasValidRevLink) {
+          checkStatusCol(sRevStatementCol, sRevStatementDateCol, ["content update", "earnings are waiting", "an update on", "revenue statement", "insights"]);
+        } else {
+          // If Col AM was marked "Draft Ready" but link is missing/invalid, suppress sync
+          let curAmVal = (sRevStatementCol !== -1 && sRevStatementCol < rowVals.length && rowVals[sRevStatementCol]) ? rowVals[sRevStatementCol].toString().trim() : "";
+          if (curAmVal.toLowerCase() === "draft ready") {
+            Logger.log(`[ROW ${actualRow}] [Rev Statement Sync] Suppressed sync for Col AM: Missing or invalid statement link in Col AL ("${revLinkVal || 'Blank'}").`);
+          }
+        }
 
         // 7. Automatic Prerequisite Rule: If Welcome Email & Vendor Onboarding Email are both Sent -> MG Initiated (Col T) & MG Confirmation (Col U) become "Not Due Yet" if not Sent/Draft Ready/Overdue
         let wSent = (rowVals[sWelcomeCol] || "").toString().toLowerCase().trim() === "sent";

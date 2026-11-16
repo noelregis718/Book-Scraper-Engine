@@ -414,6 +414,7 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
   const jasSentCol = psHeaders.findIndex((h, idx) => idx >= 34 && idx <= 39 && h.toString().toLowerCase().includes("sent")) !== -1
                      ? psHeaders.findIndex((h, idx) => idx >= 34 && idx <= 39 && h.toString().toLowerCase().includes("sent"))
                      : 38; // Col AM (index 38, Primary Progress Sent Dropdown)
+  const jasSentDateCol = 36; // Col AK (index 36, Revenue Statement Sent Date stamped by syncSentEmails)
 
   // 3. OND Quarter (October–December) - Columns AN to AQ
   const ondDueCol = psHeaders.findIndex(h => h.toString().toLowerCase().includes("ond") && (h.toString().toLowerCase().includes("due") || h.toString().toLowerCase().includes("date")));
@@ -424,6 +425,7 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
   // 4. Approved Progress Target (Col AM in Columns AI-AM)
   const revLinkCol = jasLinkCol; // Col AL (index 37)
   const revStatementSentCol = jasSentCol; // Col AM (index 38)
+  const revStatementSentDateCol = jasSentDateCol; // Col AK (index 36)
   const revStatementEmailCol = jasStatusCol; // Col AJ (index 35) 
 
   // =============================================================
@@ -1516,7 +1518,6 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
       // Strict suppression if already Sent or Draft Ready to prevent duplicate drafts/emails
       const isRevProcessed = curRevStatus === "sent" || 
                              curRevStatus === "draft ready" || 
-                             curRevStatus === "ready" ||
                              curRevEmailStatus === "sent" || 
                              curRevEmailStatus === "draft ready";
 
@@ -1525,12 +1526,19 @@ function processOutreachQueue(isDelayedRun = false, targetStage = null) {
       // DO NOT create drafts and DO NOT mark Draft Ready in Col AM!
       const hasValidRevLink = isValidWebUrl(revLink);
 
+      // Col AJ status suppression: if status indicates no statement, check with content, or not due yet
+      const isStatusSuppressed = curRevEmailStatus.includes("no statement") || 
+                                 curRevEmailStatus.includes("check with content") || 
+                                 curRevEmailStatus.includes("not due yet");
+
       if (isRevProcessed) {
         Logger.log(`[ROW ${rowNum}] [Rev Statement] Evaluated for "${title}" - Col AM Status: "${curRevStatus || curRevEmailStatus}" (Already processed / Draft Ready - Skipped duplicate creation)`);
       } else if (!hasValidRevLink) {
         let rawVal = (revLinkRaw ? revLinkRaw.toString().trim() : "Blank");
         Logger.log(`[ROW ${rowNum}] [Rev Statement] [SKIPPED] Missing or non-URL Revenue Statement link in Col AL for "${title}" (Found: "${rawVal}"). Draft creation suppressed; Col AM untouched.`);
         logNotification("Missing Revenue Statement Link", title, `Revenue Statement draft suppressed for "${title}" because Column AL does not contain a valid URL link (Found: "${rawVal}").`, rowNum);
+      } else if (isStatusSuppressed) {
+        Logger.log(`[ROW ${rowNum}] [Rev Statement] [SKIPPED] Col AJ status indicates not eligible to send: "${curRevEmailStatus}" for "${title}". Draft creation suppressed; Col AM untouched.`);
       } else {
         if (isShowDropped) {
           // Stage 9C: Sunset / Dropped / Content Bad ONLY (Mutually exclusive from 9A & 9B)

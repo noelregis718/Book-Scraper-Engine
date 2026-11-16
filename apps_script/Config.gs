@@ -533,6 +533,8 @@ function resolveTrackerColumns(headers) {
                ? headers.findIndex(h => h.toString().toLowerCase().includes("jas") && (h.toString().toLowerCase().includes("due") || h.toString().toLowerCase().includes("date"))) : 34,
     jasStatusCol: headers.findIndex(h => h.toString().toLowerCase().includes("jas") && h.toString().toLowerCase().includes("status")) > -1 
                   ? headers.findIndex(h => h.toString().toLowerCase().includes("jas") && h.toString().toLowerCase().includes("status")) : 35,
+    jasSentDateCol: headers.findIndex((h, idx) => idx >= 35 && idx <= 37 && (h.toString().toLowerCase().includes("due") || h.toString().toLowerCase().includes("date"))) > -1 
+                    ? headers.findIndex((h, idx) => idx >= 35 && idx <= 37 && (h.toString().toLowerCase().includes("due") || h.toString().toLowerCase().includes("date"))) : 36, // Col AK (index 36)
     jasLinkCol: headers.findIndex(h => h.toString().toLowerCase().includes("jas") && h.toString().toLowerCase().includes("drive")) > -1 
                 ? headers.findIndex(h => h.toString().toLowerCase().includes("jas") && h.toString().toLowerCase().includes("drive")) : 37,
     jasSentCol: headers.findIndex((h, idx) => idx >= 34 && idx <= 39 && h.toString().toLowerCase().includes("sent")) > -1 
