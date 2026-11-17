@@ -1,10 +1,6 @@
 # Pocket FM — Confidential Partner Portal & Internal Management Hub
 
-[![Live Production](https://img.shields.io/badge/Production-Live-success?style=flat-square&logo=vercel)](https://pocketfm-statements.vercel.app)
-[![Internal Hub](https://img.shields.io/badge/Internal-Hub-E51A4D?style=flat-square)](https://pocketfm-statements.vercel.app/internal_hub)
-[![Statements](https://img.shields.io/badge/Statements-33%20Live%20Series-blue?style=flat-square)](#-statements-directory--catalog)
-[![Deal Models](https://img.shields.io/badge/Deal%20Models-Gross%20%26%20Net-purple?style=flat-square)](#-royalty--recoupment-accounting-mathematics)
-[![Print Engine](https://img.shields.io/badge/Print%20Engine-1--Page%20Exact%20Fit-orange?style=flat-square)](#-single-page-print--pdf-export-engine)
+> **Confidential Document** — For internal licensing operations, authorized management, and partner royalty settlement workflows.
 
 Welcome to the official documentation for the **Pocket FM Confidential Partner Portal & Internal Management Hub** website. This platform provides an enterprise-grade, confidential royalty accounting, statement generation, and partner distribution ecosystem for Pocket FM authors, rights holders, and executive licensing managers.
 
@@ -13,7 +9,7 @@ Welcome to the official documentation for the **Pocket FM Confidential Partner P
 ## 📑 Table of Contents
 
 1. [Executive Summary & Architecture](#-executive-summary--architecture)
-2. [Live Production URLs](#-live-production-urls)
+2. [Architecture & Route Endpoints](#-architecture--route-endpoints)
 3. [Website Structure & Page Guide](#-website-structure--page-guide)
    - [1. Confidential Partner Portal Gateway (`index.html`)](#1-confidential-partner-portal-gateway-indexhtml)
    - [2. Internal Statement Management Hub (`internal_hub.html`)](#2-internal-statement-management-hub-internal_hubhtml)
@@ -76,22 +72,24 @@ The Pocket FM Revenue Statements web ecosystem bridges the gap between raw audit
 
 ---
 
-## 🌐 Live Production URLs
+## 🌐 Architecture & Route Endpoints
 
-The web application is deployed to production on Vercel:
+The web application is structured around clean, extensionless routing served via local preview or private internal hosting:
 
-| Endpoint | Target File | Purpose | Access Audience |
+| Route / View | Source File | Purpose | Access Audience |
 | :--- | :--- | :--- | :--- |
-| **`https://pocketfm-statements.vercel.app/`** | [index.html](file:///e:/Internship/PocketFM/docs/unified_statements/index.html) | Public confidential gate & partner help info | Authors, Public |
-| **`https://pocketfm-statements.vercel.app/internal_hub`** | [internal_hub.html](file:///e:/Internship/PocketFM/docs/unified_statements/internal_hub.html) | Internal management hub, ledgers & creator tool | Licensing Team, Execs |
-| **`https://pocketfm-statements.vercel.app/statement_viewer`** | [statement_viewer.html](file:///e:/Internship/PocketFM/docs/unified_statements/statement_viewer.html) | Dynamic single-statement renderer & PDF exporter | Authors, Licensing Team |
-| **`https://pocketfm-statements.vercel.app/statements/<slug>.html`** | [statements/](file:///e:/Internship/PocketFM/docs/unified_statements/statements) | 33 standalone pre-rendered official statements | Contracted Partners |
+| **`/` (Gateway)** | `docs/unified_statements/index.html` | Public confidential gate & partner help info | Authors, Public |
+| **`/internal_hub`** | `docs/unified_statements/internal_hub.html` | Internal management hub, ledgers & creator tool | Licensing Team, Execs |
+| **`/statement_viewer`** | `docs/unified_statements/statement_viewer.html` | Dynamic single-statement renderer & PDF exporter | Authors, Licensing Team |
+| **`/statements/<slug>.html`** | `docs/unified_statements/statements/` | Standalone pre-rendered official statements | Contracted Partners |
+
+> 🔒 **Access Notice**: Deployed production domains, cloud credentials, and author-specific URLs remain strictly private to Pocket FM internal infrastructure. For local development and verification, run a local web server (e.g., Python `http.server` or `npx serve`).
 
 ---
 
 ## 💻 Website Structure & Page Guide
 
-The website root is located at [`docs/unified_statements/`](file:///e:/Internship/PocketFM/docs/unified_statements):
+The website root is located at `docs/unified_statements/`:
 
 ```text
 docs/unified_statements/
@@ -246,7 +244,7 @@ docs/unified_statements/
 
 ### 4. Pre-Rendered Standalone Statements (`statements/*.html`)
 
-- **Directory**: [`docs/unified_statements/statements/`](file:///e:/Internship/PocketFM/docs/unified_statements/statements)
+- **Directory**: `docs/unified_statements/statements/`
 - **File Count**: 33 self-contained, independent HTML documents.
 - **Naming Scheme**: Deterministic URL slugs with truncated 8-character cryptographic hashes for privacy and anti-enumeration:
   - Example: `blood-vice-504adcc0.html`
@@ -456,7 +454,7 @@ Excel Data Sources
           [ vercel deploy --prod ]
                      │
                      ▼
-  https://pocketfm-statements.vercel.app
+        [Private Production Domain]
 ```
 
 ### Pipeline Script: `backend/generate_revenue_statements.py`
@@ -467,16 +465,16 @@ Excel Data Sources
    - Filterable cards for all 33 shows.
    - Comprehensive `Master Revenue Summary` horizontal matrix.
    - Separate `Gross Deals Ledger` and `Net Deals Ledger`.
-5. **`deploy_to_vercel()`**: Invokes the Vercel CLI to deploy `docs/unified_statements` straight to the production URL.
+5. **`deploy_to_vercel()`**: Invokes the Vercel CLI to deploy `docs/unified_statements` to the private production environment.
 
 ### One-Click Batch Automation
-A Windows batch runner is provided at [`backend/run_revenue_generator.bat`](file:///e:/Internship/PocketFM/backend/run_revenue_generator.bat). Double-clicking or executing this file runs the entire ingestion, compilation, and Vercel deployment pipeline automatically.
+A Windows batch runner is provided at `backend/run_revenue_generator.bat`. Double-clicking or executing this file runs the entire ingestion, compilation, and private deployment pipeline automatically.
 
 ---
 
 ## 🚀 Deployment & Hosting Infrastructure
 
-The application is hosted on **Vercel** under the project name `pocketfm-statements`.
+The application is hosted on **Vercel** with clean extensionless routing.
 
 ### Configuration (`vercel.json`)
 ```json
@@ -490,9 +488,9 @@ Enables clean, extensionless routing (`/internal_hub` resolves to `/internal_hub
 To deploy updates manually from terminal:
 ```powershell
 # Navigate to the website root directory
-cd e:\Internship\PocketFM\docs\unified_statements
+cd docs/unified_statements
 
-# Deploy directly to Vercel production
+# Deploy directly to private Vercel production
 vercel deploy --prod --yes
 ```
 
@@ -501,7 +499,7 @@ vercel deploy --prod --yes
 ## 📖 Operations & Maintenance Playbook
 
 ### 1. Generating a PDF for an Author
-1. Open the author's private link (e.g. `https://pocketfm-statements.vercel.app/statements/blood-vice-504adcc0.html`).
+1. Open the author's statement file (e.g. `/statements/<series-slug-hash>.html` or locally in `docs/unified_statements/statements/<series-slug-hash>.html`).
 2. Click the floating red **"Download Statement (PDF)"** button in the bottom right corner (or press `Ctrl + P` / `Cmd + P`).
 3. In the Chrome/Edge Print Dialog:
    - **Destination**: *Save as PDF*.
@@ -511,7 +509,7 @@ vercel deploy --prod --yes
 4. Click **Save**.
 
 ### 2. Adding a New Deal via the Hub
-1. Navigate to `https://pocketfm-statements.vercel.app/internal_hub`.
+1. Navigate to `/internal_hub` on your local server or internal deployment.
 2. Click **`+ Add New Revenue Statement`**.
 3. Select the Deal Type (**Gross Deal** or **Net Deal**).
 4. Enter the Series Title, Author Name, Currency, and Reporting Period.
@@ -525,16 +523,16 @@ When a new quarter's financial report is released:
    ```cmd
    backend\run_revenue_generator.bat
    ```
-3. The script will rebuild all 33+ static statements, update `internal_hub.html`, and push the changes live to Vercel production.
+3. The script will rebuild all 33+ static statements, update `internal_hub.html`, and deploy updates.
 
 ---
 
 ## 🗄 Appendix: Legacy Scraping & Automation Suite
 
 For reference, the PocketFM repository also houses an industrial-grade intelligence and CRM automation suite:
-- **Agency Catalog Scraper** ([`backend/agency_mission_control.py`](file:///e:/Internship/PocketFM/backend/agency_mission_control.py)): Multi-tier Playwright scraper for Amazon and Goodreads metadata.
-- **Google Drive Bulk Injection** ([`backend/upload_and_link.py`](file:///e:/Internship/PocketFM/backend/upload_and_link.py)): Headless bulk document uploader mapping shareable Drive links to CRM Excel trackers.
-- **CRM Lifecycle Email Drafter** ([`docs/apps_script_drafter.js`](file:///e:/Internship/PocketFM/docs/apps_script_drafter.js)): Google Apps Script automation engine creating branded outreach drafts in Gmail for author lifecycle events (Welcome, Vendor Onboarding, MG Confirmed, Check-ins, Show Launch).
+- **Agency Catalog Scraper** (`backend/agency_mission_control.py`): Multi-tier Playwright scraper for Amazon and Goodreads metadata.
+- **Google Drive Bulk Injection** (`backend/upload_and_link.py`): Headless bulk document uploader mapping shareable Drive links to CRM Excel trackers.
+- **CRM Lifecycle Email Drafter** (`docs/apps_script_drafter.js`): Google Apps Script automation engine creating branded outreach drafts in Gmail for author lifecycle events (Welcome, Vendor Onboarding, MG Confirmed, Check-ins, Show Launch).
 
 ---
 

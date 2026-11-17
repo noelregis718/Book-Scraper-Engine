@@ -108,21 +108,64 @@ The script relies on specific columns and exact date/status combinations to dete
   - `Col AD` is not already `Sent` or `Draft Ready`.
 - **Action:** Drafts creator community newsletter (*"What's new at Pocket FM + a few things worth knowing"*). Sets `Col AD -> Draft Ready`.
 
-### 9. Quarterly Revenue Statements
-- **Revenue Statement Engine & Portal:** Generates confidential branded statements hosted live on Vercel (`https://pocketfm-statements.vercel.app`), accessible via the [Internal Statement Hub](https://pocketfm-statements.vercel.app/internal_hub).
-- **9A (Worked Well - Content Review):**
-  - `Launch Status` is `Testing_PGC` / `Launched (ROW)`.
-  - Automatically drafted during standard outreach runs.
-  - Requires a valid Revenue Statement Link in `Col AL` (suppressed if blank).
-  - Drafts Content Review email with Argus performance snapshot. Updates `Col AM -> Draft Ready`.
-- **9B (Worked Well - Payment Ready):**
-  - `Launch Status` is `Testing_PGC` / `Launched (ROW)`.
-  - **Decoupled from standard runs:** Triggered only when royalties are payable post-MG recoupment (or when explicitly selected from the menu), preventing premature invoice requests to authors.
-  - Drafts Payment Ready email. Updates `Col AM -> Draft Ready`.
-- **9C (Content Didn't Work Well):**
-  - `Launch Status` is `Dropped` / `Bad` / `Sunset`.
-  - Requires a valid Revenue Statement Link in `Col AL` (suppressed if blank).
-  - Drafts Sunset Update email. Updates `Col AM -> Draft Ready`.
+### 9. Quarterly Revenue Statements (AMJ, JAS, OND)
+
+#### Column Layout & Cycle Reference
+The Post-Sales Tracker organizes quarterly statements into 3 distinct cycles:
+* **AMJ (Q2: April – June):**
+  * `Col AE`: AMJ Rev Statement Due Date
+  * `Col AF`: AMJ Revenue Statement + Insights Email Status
+  * `Col AG`: AMJ Revenue Statement Drive Links
+  * `Col AH`: Revenue Statement + Insights Email Sent?
+* **JAS (Q3: July – September):**
+  * `Col AI`: JAS Rev Statement Date
+  * `Col AJ`: JAS Revenue Statement + Insights Email Status
+  * `Col AK`: Revenue Statement Sent Date *(stamped upon Gmail sync)*
+  * `Col AL`: JAS Revenue Statement Drive Links *(Vercel / Drive Statement URL)*
+  * `Col AM`: Revenue Statement + Insights Email Sent? *(Draft Ready / Sent)*
+* **OND (Q4: October – December):**
+  * `Col AN`: OND Rev Statement Due Date
+  * `Col AO`: Revenue Statement + Insights Email Status
+  * `Col AP`: Revenue Statement Drive Links
+  * `Col AQ`: Revenue Statement + Insights Email Sent?
+
+---
+
+#### Detailed Trigger & Validation Logic (Columns AJ, AK, AL, AM)
+
+1. **Column AJ (`JAS Revenue Statement + Insights Email Status`):**
+   * **Draft Suppression:** If Col AJ contains `"no statement to be shared"`, `"check with content"`, or `"not due yet"`, email drafting is **strictly suppressed** (no draft generated, regardless of title status).
+   * **Draft Permitted:** Statuses such as `"ready"`, `"eligible to send, statement attached"`, or blank will allow drafting to proceed, subject to Col AL validation.
+
+2. **Column AL (`JAS Revenue Statement Drive Links`):**
+   * **Strict URL Validation (`isValidWebUrl`):** The engine validates that Col AL contains an active web URL (starts with `http://`, `https://`, pointing to the live Vercel portal `pocketfm-statements.vercel.app` or Google Drive).
+   * **Missing Link Guardrail:** If Col AL is blank, empty, or contains non-URL placeholder text (e.g. `"Show Untested / Never Made Live"`), the drafter **suppresses email drafting**. No draft will be created until a valid link is supplied.
+
+3. **Column AK (`Revenue Statement Sent Date`):**
+   * **Automatic Date Stamping:** When an author's revenue statement email is sent from Gmail, the background sync trigger (`syncSentEmails`) detects the sent message via title and tracking code and stamps **Col AK** with the exact dispatch date (`YYYY-MM-DD`).
+
+4. **Column AM (`Revenue Statement + Insights Email Sent?`):**
+   * **Draft Generation:** When `processOutreachQueue` generates a draft, Col AM is set to **`Draft Ready`** (only if Col AL is valid).
+   * **Sent Confirmation:** When dispatched in Gmail, `syncSentEmails` updates Col AM to **`Sent`**.
+   * **Anti-False-Positive Guard:** Even during sync, Col AM will **NOT** be marked as `Sent` if Col AL lacks a valid link, preventing unintended status updates from unrelated correspondence.
+
+---
+
+#### Statement Email Sub-Types:
+* **Revenue Statement Engine & Portal:** Generates confidential branded statements hosted live on Vercel (`https://pocketfm-statements.vercel.app`), accessible via the [Internal Statement Hub](https://pocketfm-statements.vercel.app/internal_hub).
+* **9A (Worked Well - Content Review):**
+  * `Launch Status` is `Testing_PGC` / `Launched (ROW)`.
+  * Automatically drafted during standard outreach runs.
+  * Requires a valid Revenue Statement Link in `Col AL` (suppressed if blank).
+  * Drafts Content Review email with Argus performance snapshot. Updates `Col AM -> Draft Ready`.
+* **9B (Worked Well - Payment Ready):**
+  * `Launch Status` is `Testing_PGC` / `Launched (ROW)`.
+  * **Decoupled from standard runs:** Triggered only when royalties are payable post-MG recoupment (or when explicitly selected from the menu), preventing premature invoice requests to authors.
+  * Drafts Payment Ready email. Updates `Col AM -> Draft Ready`.
+* **9C (Content Didn't Work Well):**
+  * `Launch Status` is `Dropped` / `Bad` / `Sunset`.
+  * Requires a valid Revenue Statement Link in `Col AL` (suppressed if blank).
+  * Drafts Sunset Update email. Updates `Col AM -> Draft Ready`.
 
 ---
 
