@@ -1,6 +1,6 @@
 # Pocket FM — Partner Portal & Management Hub
 
-Welcome to the official documentation for the **Pocket FM Partner Portal & Internal Management Hub** website. This platform provides an enterprise-grade, confidential royalty accounting, statement generation, and partner distribution ecosystem for Pocket FM authors, rights holders, and executive licensing managers.
+Welcome to the official documentation for the **Pocket FM Partner Portal & Management Hub** website. This platform provides an enterprise-grade, confidential royalty accounting, statement generation, and partner distribution ecosystem for Pocket FM authors, rights holders, and executive licensing managers.
 
 ---
 
