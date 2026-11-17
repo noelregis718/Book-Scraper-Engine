@@ -51,6 +51,5 @@ An end-to-end operational suite combining large-scale catalog intelligence, CMS 
 ├── apps_script/          # Google Apps Script modular CRM automation files
 ├── backend/              # Python scrapers, data pipelines, and statement generators
 ├── docs/                 # Workflow guides, templates, and setup documentation
-├── frontend/             # Web dashboard and UI applications
-└── US_Licensing_Lifecycle_Tracker.xlsx # Post-sales and lifecycle tracking workbook
+└── frontend/             # Web dashboard and UI applications
 ```
