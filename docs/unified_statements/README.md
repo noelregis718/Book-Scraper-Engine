@@ -1,7 +1,5 @@
 # Pocket FM — Confidential Partner Portal & Internal Management Hub
 
-> **Confidential Document** — For internal licensing operations, authorized management, and partner royalty settlement workflows.
-
 Welcome to the official documentation for the **Pocket FM Confidential Partner Portal & Internal Management Hub** website. This platform provides an enterprise-grade, confidential royalty accounting, statement generation, and partner distribution ecosystem for Pocket FM authors, rights holders, and executive licensing managers.
 
 ---
